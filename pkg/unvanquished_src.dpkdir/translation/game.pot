@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-12 16:50+0200\n"
+"POT-Creation-Date: 2024-10-15 02:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "Build"
 msgstr ""
 
-#: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
-#: ui/human_buy.rml:232
+#: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
+#: ui/human_buy.rml:233
 msgid "Price:"
 msgstr ""
 
@@ -454,27 +454,27 @@ msgstr ""
 msgid "Credits"
 msgstr ""
 
-#: ui/human_buy.rml:208 ui/options_player.rml:77
+#: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
 msgstr ""
 
-#: ui/human_buy.rml:209 ui/human_buy.rml:225
+#: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
 msgstr ""
 
-#: ui/human_buy.rml:217
+#: ui/human_buy.rml:218
 msgid "Range:"
 msgstr ""
 
-#: ui/human_buy.rml:218
+#: ui/human_buy.rml:219
 msgid "Damage:"
 msgstr ""
 
-#: ui/human_buy.rml:219
+#: ui/human_buy.rml:220
 msgid "Fire Rate:"
 msgstr ""
 
-#: ui/human_buy.rml:224
+#: ui/human_buy.rml:225
 msgid "Upgrades"
 msgstr ""
 
@@ -689,7 +689,7 @@ msgstr ""
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:55 ui/options_graphics.rml:280
+#: ui/options_fov.rml:67 ui/options_graphics.rml:55 ui/options_graphics.rml:298
 #: ui/options_mouse.rml:21 ui/options_ui.rml:74 ui/options_ui.rml:153
 #: ui/options_ui.rml:183 ui/options_ui.rml:197 ui/server_setup.rml:73
 msgid "reset"
@@ -761,12 +761,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:28
 msgid ""
-"Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "
+"Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:144
-#: ui/options_graphics.rml:268
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:286
 msgid "Low"
 msgstr ""
 
@@ -776,7 +775,7 @@ msgid ""
 "pixel textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:35 ui/options_graphics.rml:145
+#: ui/options_graphics.rml:35
 msgid "Medium"
 msgstr ""
 
@@ -786,7 +785,7 @@ msgid ""
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:266
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:284
 msgid "High"
 msgstr ""
 
@@ -830,7 +829,7 @@ msgstr ""
 msgid "Fullscreen"
 msgstr ""
 
-#: ui/options_graphics.rml:74 ui/options_graphics.rml:269
+#: ui/options_graphics.rml:74 ui/options_graphics.rml:287
 msgid "Off"
 msgstr ""
 
@@ -857,9 +856,9 @@ msgstr ""
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr ""
 
-#: ui/options_graphics.rml:88 ui/options_graphics.rml:135
-#: ui/options_graphics.rml:174 ui/options_graphics.rml:208
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:88 ui/options_graphics.rml:130
+#: ui/options_graphics.rml:187 ui/options_graphics.rml:221
+#: ui/options_graphics.rml:259
 msgid "Apply now"
 msgstr ""
 
@@ -880,7 +879,7 @@ msgid "normal"
 msgstr ""
 
 #: ui/options_graphics.rml:98
-msgid "Grid lighting"
+msgid "Vertex lighting"
 msgstr ""
 
 #: ui/options_graphics.rml:98
@@ -924,7 +923,7 @@ msgstr ""
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
-#: ui/options_graphics.rml:124 ui/options_graphics.rml:250
+#: ui/options_graphics.rml:124 ui/options_graphics.rml:268
 #: ui/options_ui.rml:176
 msgid "None"
 msgstr ""
@@ -938,249 +937,284 @@ msgid "low"
 msgstr ""
 
 #: ui/options_graphics.rml:127
-msgid "Exponential mapping"
-msgstr ""
-
-#: ui/options_graphics.rml:128
-msgid "Variance mapping"
-msgstr ""
-
-#: ui/options_graphics.rml:129
-msgid "Exponential + variance"
-msgstr ""
-
-#: ui/options_graphics.rml:129
-msgid "high"
-msgstr ""
-
-#: ui/options_graphics.rml:132
 msgid "Shadows"
 msgstr ""
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:134
 msgid "Textures"
 msgstr ""
 
-#: ui/options_graphics.rml:141 ui/server_setup.rml:13
+#: ui/options_graphics.rml:136 ui/server_setup.rml:13
 msgid "General"
 msgstr ""
 
+#: ui/options_graphics.rml:139 ui/options_graphics.rml:154
+msgid "No limit"
+msgstr ""
+
+#: ui/options_graphics.rml:140
+msgid "(ultra)"
+msgstr ""
+
+#: ui/options_graphics.rml:141
+msgid "(high)"
+msgstr ""
+
+#: ui/options_graphics.rml:142
+msgid "(medium)"
+msgstr ""
+
+#: ui/options_graphics.rml:143
+msgid "(low)"
+msgstr ""
+
+#: ui/options_graphics.rml:144
+msgid "(lowest)"
+msgstr ""
+
 #: ui/options_graphics.rml:146
-msgid "Full"
+msgid "Image size limit"
 msgstr ""
 
-#: ui/options_graphics.rml:148
-msgid "Texture size"
-msgstr ""
-
-#: ui/options_graphics.rml:149
-msgid ""
-"Lower texture size is useful for cards with limited video memory (VRAM)."
+#: ui/options_graphics.rml:147
+msgid "Limit image size to save on memory."
 msgstr ""
 
 #: ui/options_graphics.rml:152
-msgid "Mip-mapping"
+msgid "No larger than screen"
 msgstr ""
 
 #: ui/options_graphics.rml:153
+msgid "No smaller than screen"
+msgstr ""
+
+#: ui/options_graphics.rml:156
+msgid "Menu image size limit"
+msgstr ""
+
+#: ui/options_graphics.rml:157
+msgid "Limit menu image size to save on memory."
+msgstr ""
+
+#: ui/options_graphics.rml:160
+msgid "High-precision rendering"
+msgstr ""
+
+#: ui/options_graphics.rml:163
+msgid "Use high-precision pixel buffers, which reduce color banding."
+msgstr ""
+
+#: ui/options_graphics.rml:165
+msgid "Mip-mapping"
+msgstr ""
+
+#: ui/options_graphics.rml:166
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
 
-#: ui/options_graphics.rml:156 ui/options_ui.rml:46
+#: ui/options_graphics.rml:169 ui/options_ui.rml:46
 msgid "No"
 msgstr ""
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:175
 msgid "Anisotropic mip-mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:163
+#: ui/options_graphics.rml:176
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:167
+#: ui/options_graphics.rml:180
 msgid "Bilinear"
 msgstr ""
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:181
 msgid "Trilinear"
 msgstr ""
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:181
 msgid "better"
 msgstr ""
 
-#: ui/options_graphics.rml:170
+#: ui/options_graphics.rml:183
 msgid "Texture scaling filter"
 msgstr ""
 
-#: ui/options_graphics.rml:180
+#: ui/options_graphics.rml:193
 msgid "Materials"
 msgstr ""
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:195
 msgid "Normal mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:197
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:200
 msgid "Deluxe mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:189
+#: ui/options_graphics.rml:202
 msgid "Light direction based on baked textures."
 msgstr ""
 
-#: ui/options_graphics.rml:192
+#: ui/options_graphics.rml:205
 msgid "Relief mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:207
 msgid "Adds bumps on supported surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:194 ui/options_graphics.rml:228
+#: ui/options_graphics.rml:207 ui/options_graphics.rml:246
 msgid "Experimental."
 msgstr ""
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:210
 msgid "Specular mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:199
+#: ui/options_graphics.rml:212
 msgid "Simulate light specularity."
 msgstr ""
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:215
 msgid "Physical mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:204
+#: ui/options_graphics.rml:217
 msgid "Material appearance based on physical approximations."
 msgstr ""
 
-#: ui/options_graphics.rml:214 ui/options_sound.rml:13
+#: ui/options_graphics.rml:227 ui/options_sound.rml:13
 msgid "Effects"
 msgstr ""
 
-#: ui/options_graphics.rml:216
+#: ui/options_graphics.rml:229
 msgid "Bloom"
 msgstr ""
 
-#: ui/options_graphics.rml:218
+#: ui/options_graphics.rml:231
 msgid "Makes bright areas on your screen glow."
 msgstr ""
 
-#: ui/options_graphics.rml:221
-msgid "Heat-haze"
-msgstr ""
-
-#: ui/options_graphics.rml:223
-msgid "Simulate air refraction in severe heat."
-msgstr ""
-
-#: ui/options_graphics.rml:226
-msgid "Screen space ambient occlusion (SSAO)"
-msgstr ""
-
-#: ui/options_graphics.rml:228
-msgid "Simulate dark corners."
-msgstr ""
-
-#: ui/options_graphics.rml:231
-msgid "Marks"
-msgstr ""
-
-#: ui/options_graphics.rml:233
-msgid "Draw marks (such as bullet holes or creep) on surfaces"
+#: ui/options_graphics.rml:234
+msgid "Color grading"
 msgstr ""
 
 #: ui/options_graphics.rml:236
-msgid "Particle physics"
+msgid "Alter colors to create specific ambiences."
 msgstr ""
 
-#: ui/options_graphics.rml:238
-msgid "Allow particles to bounce off surfaces."
+#: ui/options_graphics.rml:239
+msgid "Heat-haze"
 msgstr ""
 
-#: ui/options_graphics.rml:245
-msgid "Gameplay"
+#: ui/options_graphics.rml:241
+msgid "Simulate air refraction in severe heat."
 msgstr ""
 
-#: ui/options_graphics.rml:247
-msgid "Building markers"
+#: ui/options_graphics.rml:244
+msgid "Screen space ambient occlusion (SSAO)"
 msgstr ""
 
-#: ui/options_graphics.rml:250
-msgid "disabled"
+#: ui/options_graphics.rml:246
+msgid "Simulate dark corners."
+msgstr ""
+
+#: ui/options_graphics.rml:249
+msgid "Marks"
 msgstr ""
 
 #: ui/options_graphics.rml:251
-msgid "All structures"
-msgstr ""
-
-#: ui/options_graphics.rml:252
-msgid "Support structures"
-msgstr ""
-
-#: ui/options_graphics.rml:253
-msgid "Offensive structures"
+msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
 
 #: ui/options_graphics.rml:254
-msgid "Alien structures"
-msgstr ""
-
-#: ui/options_graphics.rml:255
-msgid "Human structures"
+msgid "Particle physics"
 msgstr ""
 
 #: ui/options_graphics.rml:256
-msgid "Alien support structures"
-msgstr ""
-
-#: ui/options_graphics.rml:257
-msgid "Human support structures"
-msgstr ""
-
-#: ui/options_graphics.rml:258
-msgid "Offensive alien structures"
-msgstr ""
-
-#: ui/options_graphics.rml:259
-msgid "Offensive human structures"
-msgstr ""
-
-#: ui/options_graphics.rml:261
-msgid "Building ranges"
+msgid "Allow particles to bounce off surfaces."
 msgstr ""
 
 #: ui/options_graphics.rml:263
-msgid "Motion blur"
+msgid "Gameplay"
 msgstr ""
 
-#: ui/options_graphics.rml:267
-msgid "Moderate"
+#: ui/options_graphics.rml:265
+msgid "Building markers"
+msgstr ""
+
+#: ui/options_graphics.rml:268
+msgid "disabled"
+msgstr ""
+
+#: ui/options_graphics.rml:269
+msgid "All structures"
+msgstr ""
+
+#: ui/options_graphics.rml:270
+msgid "Support structures"
 msgstr ""
 
 #: ui/options_graphics.rml:271
-msgid "Intensity"
+msgid "Offensive structures"
 msgstr ""
 
 #: ui/options_graphics.rml:272
-msgid "Level of motion-blur."
+msgid "Alien structures"
+msgstr ""
+
+#: ui/options_graphics.rml:273
+msgid "Human structures"
+msgstr ""
+
+#: ui/options_graphics.rml:274
+msgid "Alien support structures"
 msgstr ""
 
 #: ui/options_graphics.rml:275
+msgid "Human support structures"
+msgstr ""
+
+#: ui/options_graphics.rml:276
+msgid "Offensive alien structures"
+msgstr ""
+
+#: ui/options_graphics.rml:277
+msgid "Offensive human structures"
+msgstr ""
+
+#: ui/options_graphics.rml:279
+msgid "Building ranges"
+msgstr ""
+
+#: ui/options_graphics.rml:281
+msgid "Motion blur"
+msgstr ""
+
+#: ui/options_graphics.rml:285
+msgid "Moderate"
+msgstr ""
+
+#: ui/options_graphics.rml:289
+msgid "Intensity"
+msgstr ""
+
+#: ui/options_graphics.rml:290
+msgid "Level of motion-blur."
+msgstr ""
+
+#: ui/options_graphics.rml:293
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr ""
 
-#: ui/options_graphics.rml:279 ui/options_mouse.rml:20 ui/server_setup.rml:72
+#: ui/options_graphics.rml:297 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr ""
 
@@ -1427,6 +1461,14 @@ msgstr ""
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
+msgstr ""
+
+#: ui/options_mouse.rml:35
+msgid "Circle menu mouse capture"
+msgstr ""
+
+#: ui/options_mouse.rml:37
+msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
@@ -3580,139 +3622,139 @@ msgstr ""
 msgid "%s under attack"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:470
+#: src/cgame/cg_main.cpp:472
 msgid "Calling home…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:470
+#: src/cgame/cg_main.cpp:472
 msgid "Sending to the front…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:477
 msgid "Tracking your movements…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:477
 msgid "Letting out the magic smoke…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:481
 msgid "Collecting bees for the hives…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:481
 msgid "Initialising fireworks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:481
 msgid "Causing electrical faults…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:485
 msgid "Reading the manual…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:485
 msgid "Looking at blueprints…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:489
 msgid "Generating annoying noises…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:489
 msgid "Recording granger purring…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:493
 msgid "Hello World!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:493
 msgid "Making a scene…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:497
 msgid "Taking pictures of the world…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:497
 msgid "Drawing smiley faces…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:501
 msgid "Sharpening the aliens' claws…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:501
 msgid "Overloading lucifer cannons…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:505
 msgid "Unwrapping jetpacks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:505
 msgid "Spinning silk for reticles…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:509
 msgid "Adding turret spam…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:509
 msgid "Awakening the overmind…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:511
+#: src/cgame/cg_main.cpp:513
 msgid "Teleporting soldiers…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:511
+#: src/cgame/cg_main.cpp:513
 msgid "Replicating alien DNA…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:515
+#: src/cgame/cg_main.cpp:517
 msgid "Customizing helmets…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:519
+#: src/cgame/cg_main.cpp:521
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:523
+#: src/cgame/cg_main.cpp:525
 msgid "Surveying the map…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:527
+#: src/cgame/cg_main.cpp:529
 msgid "Done!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1134
+#: src/cgame/cg_main.cpp:1136
 msgid "Generating bot navigation meshes"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1178
+#: src/cgame/cg_main.cpp:1180
 #, c-format
 msgid "by %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1445
+#: src/cgame/cg_players.cpp:1435
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1452
+#: src/cgame/cg_players.cpp:1442
 #, c-format
 msgid "%s^* left the %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1457
+#: src/cgame/cg_players.cpp:1447
 #, c-format
 msgid "%s^* joined the %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1462
+#: src/cgame/cg_players.cpp:1452
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr ""
@@ -4265,12 +4307,12 @@ msgstr ""
 msgid "ESCAPE"
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:125 src/cgame/rocket/rocket_keys.cpp:339
+#: src/cgame/cg_tutorial.cpp:125 src/cgame/rocket/rocket_keys.cpp:356
 #, c-format
 msgid "%s or %s"
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:343
+#: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
 msgstr ""
@@ -4508,7 +4550,7 @@ msgstr ""
 msgid "Press %s for the menu."
 msgstr ""
 
-#: src/cgame/rocket/rocket_keys.cpp:326
+#: src/cgame/rocket/rocket_keys.cpp:343
 msgid "Unbound"
 msgstr ""
 
