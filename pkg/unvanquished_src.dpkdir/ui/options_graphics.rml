@@ -157,9 +157,9 @@
 					<p><translate>Limit menu image size to save on memory.</translate></p>
 				</row>
 
-				<h2><translate>High-precision rendering</translate></h2>
 				<row>
 					<input cvar="r_highPrecisionRendering" type="checkbox" />
+					<h3><translate>High-precision rendering</translate></h3>
 					<p><translate>Use high-precision pixel buffers, which reduce color banding.</translate></p>
 				</row>
 				<h2><translate>Mip-mapping</translate></h2>
