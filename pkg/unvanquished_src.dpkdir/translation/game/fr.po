@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-10-16 10:45+0000\n"
+"PO-Revision-Date: 2024-10-16 15:11+0000\n"
 "Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -726,7 +726,7 @@ msgstr "Listes des serveurs"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr "Démarrer le jeu en local/LAN"
+msgstr "Jeu en local (LAN)"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
@@ -1636,11 +1636,14 @@ msgstr "Désactivez-le uniquement si vous êtes accro à Quake."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Capture de la souris dans les menus circulaires"
 
 #: ui/options_mouse.rml:37
+#, fuzzy
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
+"Les menus circulaires (excepté celui de l'Armurerie) prennent les entrées à "
+"la souris"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
@@ -1652,7 +1655,7 @@ msgstr "Mouvement"
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
-msgstr "Tangage automatique de marche murale"
+msgstr "Ajustement automatique de l'orientation en marche murale"
 
 #: ui/options_movements_cosmetic.rml:12
 msgid ""
@@ -1664,13 +1667,13 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:21
 msgid "Wall-walking pitch-speed"
-msgstr "Vitesse de tangage de marche murale"
+msgstr "Vitesse d'orientation de la vue en marche murale"
 
 #: ui/options_movements_cosmetic.rml:22
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
-"La vitesse à laquelle votre vue tourne et se tord lorsque vous marchez sur "
-"le mur."
+"La rapidité avec laquelle votre vue s'oriente lorsque vous marchez sur un "
+"mur."
 
 #: ui/options_movements_cosmetic.rml:25
 msgid "Wall-walking toggles"
@@ -1724,7 +1727,7 @@ msgstr "Mode gaucher"
 
 #: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
-msgstr "Miroir des modèles d'armes à la première personne."
+msgstr "Réflexion des modèles d'armes à la première personne."
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
@@ -1740,21 +1743,22 @@ msgstr "Pseudonyme"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr "Votre nom est visible pour les autres."
+msgstr "Votre nom est visible par tous."
 
 #: ui/options_player.rml:26
 msgid "Colour codes and symbols"
-msgstr "Codes de couleurs et symboles"
+msgstr "Code-couleurs et symboles"
 
 #: ui/options_player.rml:29
+#, fuzzy
 msgid ""
 "Colours are used by typing their escape code starting with a caret (^) "
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
 "Les couleurs sont utilisées en tapant leur code commençant par un signe "
-"insertion (^). La couleur peut être réinitialisée à la normale en utilisant "
-"^*, ou un curseur réel peut être tapé en utilisant ^^."
+"insertion (^). La couleur peut être remise à défaut en utilisant ^*. Un vrai "
+"signe chapeau peut être tapé en utilisant ^^."
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
@@ -1791,8 +1795,9 @@ msgid "Tutorial mode"
 msgstr "Mode tutoriel"
 
 #: ui/options_player.rml:216
+#, fuzzy
 msgid "Display hints for key bindings on-screen."
-msgstr "Affichez des conseils pour les raccourcis clavier à l'écran."
+msgstr "Affiche un aide mémoire des raccourcis clavier à l'écran."
 
 #: ui/options_player.rml:220
 msgid "Show only team chat"
@@ -1800,7 +1805,7 @@ msgstr "Afficher uniquement la discussion d'équipe"
 
 #: ui/options_player.rml:222
 msgid "Show obituaries"
-msgstr ""
+msgstr "Afficher les messages annonçant les morts"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -1920,19 +1925,19 @@ msgstr "Couleurs de la console"
 
 #: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Red:"
-msgstr "Rouge :"
+msgstr "Rouge :"
 
 #: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Green:"
-msgstr "Vert :"
+msgstr "Vert :"
 
 #: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Blue:"
-msgstr "Bleu :"
+msgstr "Bleu :"
 
 #: ui/options_ui.rml:90 ui/options_ui.rml:169 ui/options_ui.rml:213
 msgid "Alpha:"
-msgstr "Alpha :"
+msgstr "Alpha :"
 
 #: ui/options_ui.rml:95
 msgid "Crosshair"
@@ -1940,7 +1945,8 @@ msgstr "Réticule"
 
 #: ui/options_ui.rml:99
 msgid "WARN: Preview only works in game."
-msgstr "ATT : La prévisualisation fonctionne seulement en jeu."
+msgstr ""
+"ATTENTION : La prévisualisation des réticules fonctionne seulement en jeu."
 
 #: ui/options_ui.rml:103
 msgid "Weapon"
@@ -1984,11 +1990,11 @@ msgstr "Fusil à impulsions"
 
 #: ui/options_ui.rml:115
 msgid "Lucifer Cannon"
-msgstr "Canon démoniaque"
+msgstr "Canon Démoniaque"
 
 #: ui/options_ui.rml:126
 msgid "Crosshair visiblity"
-msgstr "Visibilité du viseur"
+msgstr "Visibilité du réticule"
 
 #: ui/options_ui.rml:128
 msgid "Never"
@@ -2004,28 +2010,28 @@ msgstr "Toujours"
 
 #: ui/options_ui.rml:135
 msgid "Crosshair size"
-msgstr "Taille du viseur"
+msgstr "Taille du réticule"
 
 #: ui/options_ui.rml:137
 msgid "Tiny"
-msgstr "Miniscule"
+msgstr "Minuscule"
 
 # Cette traduction est incorrecte en contexte car non accordée
 #: ui/options_ui.rml:138
 msgid "Small"
-msgstr "Petite"
+msgstr "Petit"
 
 #: ui/options_ui.rml:139
 msgid "Regular"
-msgstr "Ordinaire"
+msgstr "Normal"
 
 #: ui/options_ui.rml:140
 msgid "Huge"
-msgstr "Énorme"
+msgstr "Grand"
 
 #: ui/options_ui.rml:145
 msgid "Crosshair colour"
-msgstr "Couleur de réticule"
+msgstr "Couleur du réticule"
 
 #: ui/options_ui.rml:147
 msgid "Image colour"
@@ -2037,11 +2043,11 @@ msgstr "Couleur personnalisée"
 
 #: ui/options_ui.rml:153
 msgid "Crosshair colours"
-msgstr "Couleurs de réticule"
+msgstr "Couleurs du réticule"
 
 #: ui/options_ui.rml:174
 msgid "Crosshair outline colour"
-msgstr "Couleur de bordure de réticule"
+msgstr "Couleur de bordure du réticule"
 
 #: ui/options_ui.rml:177
 msgid "Auto colour"
@@ -2059,15 +2065,15 @@ msgstr ""
 
 #: ui/options_ui.rml:188
 msgid "Scale:"
-msgstr "Échelle :"
+msgstr "Échelle :"
 
 #: ui/options_ui.rml:192
 msgid "Offset:"
-msgstr "Déplacement :"
+msgstr "Décalage :"
 
 #: ui/options_ui.rml:197
 msgid "Crosshair outline colours"
-msgstr "Couleurs de bordure de réticule"
+msgstr "Couleurs de bordure du réticule"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2079,7 +2085,7 @@ msgstr "Comment doit-on t’appeler ?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr "Couleurs et symboles peuvent être utilisés."
+msgstr "Les couleurs et symboles peuvent être utilisés."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
@@ -2091,11 +2097,11 @@ msgstr "Quelle langue souhaitez-vous employer ?"
 
 #: ui/options_welcome.rml:36
 msgid "Select Battlefield"
-msgstr "Choisir le champs de bataille"
+msgstr "Choisir le champ de bataille"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr "Listes de serveurs"
+msgstr "Liste des serveurs"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
@@ -2103,11 +2109,11 @@ msgstr "Internet"
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr "Nom :"
+msgstr "Nom :"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr "Joueurs (Robots)"
+msgstr "Joueurs (bots)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
@@ -2127,7 +2133,7 @@ msgstr "Réseau local"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr "Nom de l'hôte"
+msgstr "Nom du serveur"
 
 #: ui/server_create.rml:44
 msgid "Password"
@@ -2147,7 +2153,7 @@ msgstr "Layout de construction à utiliser"
 
 #: ui/server_create.rml:67
 msgid "Start"
-msgstr "Commencer"
+msgstr "Lancer"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
@@ -2156,8 +2162,7 @@ msgstr "Fréquence des financements gratuits"
 #: ui/server_setup.rml:17
 msgid "Every X seconds the player is alive, they will receive free funds."
 msgstr ""
-"Toutes les X secondes où le joueur est en vie, il recevra des financements "
-"gratuits."
+"Toutes les X secondes où le joueur est en vie, il recevra un bonus d'argent."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
@@ -2165,7 +2170,7 @@ msgstr "secondes"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
-msgstr "Multiplicateurs de dégâts de tir ami"
+msgstr "Multiplicateurs de dégâts du tir ami"
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
@@ -2175,11 +2180,11 @@ msgstr ""
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr "Extraterrestres :"
+msgstr "Extraterrestres :"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr "Humains :"
+msgstr "Humains :"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
@@ -2195,12 +2200,11 @@ msgstr "Échauffement"
 
 #: ui/server_setup.rml:48
 msgid "Do warmups at every game start"
-msgstr "Faire des échauffements à chaque début de partie"
+msgstr "Ajouter un temps d'échauffements à chaque début de partie"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
-msgstr ""
-"Donne aux joueurs sur des ordinateurs plus lents le temps de se joindre."
+msgstr "Donne aux joueurs sur des ordinateurs plus lents le temps de rejoindre."
 
 #: ui/server_setup.rml:57
 msgid "Teams"
@@ -2216,11 +2220,11 @@ msgstr "Autoriser les constructions humaines"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr "La physique"
+msgstr "Physique"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr "La gravité"
+msgstr "Gravité"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
