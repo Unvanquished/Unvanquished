@@ -121,8 +121,8 @@
 				</row>
 				<row>
 					<select cvar="cg_shadows" style="width:20em;">
-						<option value="0"><translate>None</translate></option>
 						<option value="1"><translate>Blobs</translate>&nbsp;(<translate>low</translate>)</option>
+						<option value="0"><translate>None</translate></option>
 					</select>
 					<h3><translate>Shadows</translate></h3>
 				</row>
@@ -149,9 +149,9 @@
 
 				<row>
 					<select cvar="r_imageFitScreen">
-						<option value="2"><translate>No larger than screen</translate></option>
-						<option value="1"><translate>No smaller than screen</translate></option>
 						<option value="0"><translate>No limit</translate></option>
+						<option value="1"><translate>No smaller than screen</translate></option>
+						<option value="2"><translate>No larger than screen</translate></option>
 					</select>
 					<h3><translate>Menu image size limit</translate></h3>
 					<p><translate>Limit menu image size to save on memory.</translate></p>
@@ -166,19 +166,19 @@
 				<p><translate>Mip-mapping makes distant surfaces look better by using lower-resolution textures on them. This generally does not affect performance.</translate></p>
 				<row>
 					<select cvar="r_ext_texture_filter_anisotropic">
-						<option value="0"><translate>No</translate></option>
-						<option value="2">2×</option>
-						<option value="4">4×</option>
-						<option value="8">8×</option>
 						<option value="16">16×</option>
+						<option value="8">8×</option>
+						<option value="4">4×</option>
+						<option value="2">2×</option>
+						<option value="0"><translate>No</translate></option>
 					</select>
 					<h3><translate>Anisotropic mip-mapping</translate></h3>
 					<p><translate>Better interpretation of mip-maps on angled surfaces.</translate></p>
 				</row>
 				<row>
 					<select cvar="r_textureMode">
-						<option value="GL_LINEAR_MIPMAP_NEAREST"><translate>Bilinear</translate></option>
 						<option value="GL_LINEAR_MIPMAP_LINEAR"><translate>Trilinear</translate>&nbsp;(<translate>better</translate>)</option>
+						<option value="GL_LINEAR_MIPMAP_NEAREST"><translate>Bilinear</translate></option>
 					</select>
 					<h3><translate>Texture scaling filter</translate></h3>
 				</row>
