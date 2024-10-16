@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-10-16 15:11+0000\n"
+"PO-Revision-Date: 2024-10-16 23:41+0000\n"
 "Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -1007,7 +1007,7 @@ msgstr "Anticrénelage approximatif rapide"
 #: ui/options_graphics.rml:187 ui/options_graphics.rml:221
 #: ui/options_graphics.rml:259
 msgid "Apply now"
-msgstr "Appliquer maintenant"
+msgstr "Appliquer"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
@@ -2085,7 +2085,7 @@ msgstr "Comment doit-on t’appeler ?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr "Les couleurs et symboles peuvent être utilisés."
+msgstr "Vous pouvez utiliser les couleurs et symboles."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
@@ -3997,7 +3997,7 @@ msgstr "Personalisée : %dx%d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 msgid "Same as screen"
-msgstr ""
+msgstr "Comme à l'écran"
 
 #: src/cgame/cg_rocket_draw.cpp:2534
 msgid "You are at the front of the spawn queue"
@@ -5051,7 +5051,7 @@ msgstr "$1$ : ce joueur à déjà ses droits de construction"
 
 #: src/sgame/sg_votes.cpp:197 src/sgame/sg_votes.cpp:263
 msgid "$1$: map name not specified"
-msgstr ""
+msgstr "$1$: nom de carte non précisé"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
