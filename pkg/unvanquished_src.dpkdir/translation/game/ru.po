@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-10-16 15:11+0000\n"
+"PO-Revision-Date: 2024-10-16 19:30+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -169,7 +169,7 @@ msgstr "Узнайте больше об игре на вики: <web dest=\"wik
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Пожалуйста, сообщайте о ошибках здесь: <web dest=\"bugs\" />"
+msgstr "Пожалуйста, сообщайте о ошибках сюда: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
@@ -485,11 +485,11 @@ msgstr "Продвинутый Фермер может быть разблоки
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
-msgstr "Со времен Tremulous"
+msgstr "Со времён Tremulous"
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "Со времен Tremulous, количество очков здоровья было увеличено."
+msgstr "Со времён Tremulous количество очков здоровья было увеличено."
 
 #: ui/help_gameplay.rml:161
 msgid ""
@@ -667,7 +667,7 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"Это бета версия игры Unvanquished. Пожалуйста сообщайте нам о любых багах на "
+"Это бета-версия Unvanquished. Пожалуйста, сообщайте нам о любых ошибках на "
 "<web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
@@ -1357,8 +1357,7 @@ msgstr "Степень размытия движения."
 
 #: ui/options_graphics.rml:293
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
-"Минимальная необходимая скорость движения для активации размытия движения"
+msgstr "Мин. скорость движения для активации размытия движения"
 
 #: ui/options_graphics.rml:297 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
@@ -1625,7 +1624,7 @@ msgstr "Круговые меню (за исключением меню «Ору
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr "Движение и косметика"
+msgstr "Движение и вид"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -1814,15 +1813,16 @@ msgstr "Интенсивность эффекта Допплера"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr "Эффект смещения частоты звука когда объект движется к вам или от вас."
+msgstr ""
+"Эффект сдвига высоты тона, когда источник звука движется от вас или к вам."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr "OpenAL девайс"
+msgstr "Устройство OpenAL"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr "Устройство/карта для вывода аудио"
+msgstr "Устройство/карта вывода звука"
 
 #: ui/options_ui.rml:18
 msgid "User interface"
@@ -1842,7 +1842,7 @@ msgstr "Некоторые языки не полностью поддержив
 
 #: ui/options_ui.rml:41 ui/options_welcome.rml:35
 msgid "Change language"
-msgstr "Изменить язык"
+msgstr "Сменить язык"
 
 #: ui/options_ui.rml:44
 msgid "Real-time clock"
@@ -1866,7 +1866,7 @@ msgstr "Часы игрового времени"
 
 #: ui/options_ui.rml:55
 msgid "Show how long a match has lasted."
-msgstr "Показывает насколько долго длиться матч."
+msgstr "Показывает длительность матча."
 
 #: ui/options_ui.rml:59
 msgid "Show ping"
@@ -1890,7 +1890,7 @@ msgstr "Показывать FPS"
 
 #: ui/options_ui.rml:71
 msgid "Frames per second."
-msgstr "Кол-во кадров в секунду."
+msgstr "Счётчик кадров в секунду."
 
 #: ui/options_ui.rml:74
 msgid "Console colors"
@@ -2030,7 +2030,7 @@ msgstr "Масштаб контура прицела"
 
 #: ui/options_ui.rml:185
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr "Отрицательные значения сделают так что контур будет внутри прицела."
+msgstr "При отрицательных значениях контур будет внутри прицела."
 
 #: ui/options_ui.rml:188
 msgid "Scale:"
@@ -3890,7 +3890,7 @@ msgstr "Кастомизируем шлемы…"
 
 #: src/cgame/cg_main.cpp:521
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr "Компилируем GLSL шейдеры (пожалуйста, будьте терпеливы)…"
+msgstr "Компиляция шейдеров GLSL (пожалуйста, подождите)…"
 
 #: src/cgame/cg_main.cpp:525
 msgid "Surveying the map…"
