@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-10-15 05:01+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2024-10-16 10:45+0000\n"
+"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -1030,8 +1030,9 @@ msgid "Vertex lighting"
 msgstr ""
 
 #: ui/options_graphics.rml:98
+#, fuzzy
 msgid "low, ugly"
-msgstr "lent, laid"
+msgstr "basse, laid"
 
 #: ui/options_graphics.rml:100
 msgid "Lighting system"
@@ -1063,7 +1064,7 @@ msgstr "Éclairage des contours"
 
 #: ui/options_graphics.rml:115
 msgid "Light the edges of models from behind."
-msgstr "Éclairez les bords des modèles par derrière."
+msgstr "Éclairer les bords des modèles par derrière."
 
 #: ui/options_graphics.rml:118
 msgid "Half Lambert lighting"
@@ -1077,7 +1078,7 @@ msgstr ""
 #: ui/options_graphics.rml:124 ui/options_graphics.rml:268
 #: ui/options_ui.rml:176
 msgid "None"
-msgstr "Aucun"
+msgstr "Aucune"
 
 # Pour les "Blob shadows"
 #: ui/options_graphics.rml:125
@@ -1086,11 +1087,11 @@ msgstr "Tâches"
 
 #: ui/options_graphics.rml:125
 msgid "low"
-msgstr "faible"
+msgstr "basse"
 
 #: ui/options_graphics.rml:127
 msgid "Shadows"
-msgstr "ombres"
+msgstr "Ombres"
 
 #: ui/options_graphics.rml:134
 msgid "Textures"
@@ -1102,72 +1103,74 @@ msgstr "Général"
 
 #: ui/options_graphics.rml:139 ui/options_graphics.rml:154
 msgid "No limit"
-msgstr ""
+msgstr "Sans limite"
 
 #: ui/options_graphics.rml:140
 msgid "(ultra)"
-msgstr ""
+msgstr "(ultra)"
 
 #: ui/options_graphics.rml:141
 msgid "(high)"
-msgstr ""
+msgstr "(haute)"
 
 #: ui/options_graphics.rml:142
 msgid "(medium)"
-msgstr ""
+msgstr "(moyenne)"
 
 #: ui/options_graphics.rml:143
 msgid "(low)"
-msgstr ""
+msgstr "(basse)"
 
 #: ui/options_graphics.rml:144
 msgid "(lowest)"
-msgstr ""
+msgstr "(minimale)"
 
 #: ui/options_graphics.rml:146
 msgid "Image size limit"
-msgstr ""
+msgstr "Limite de taille d'image"
 
 #: ui/options_graphics.rml:147
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Limiter la taille d'image pour économiser en mémoire."
 
 #: ui/options_graphics.rml:152
 msgid "No larger than screen"
-msgstr ""
+msgstr "Pas plus grand que l'écran"
 
 #: ui/options_graphics.rml:153
 msgid "No smaller than screen"
-msgstr ""
+msgstr "Pas plus petit que l'écran"
 
 #: ui/options_graphics.rml:156
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Limite de taille d'image dans les menus"
 
 #: ui/options_graphics.rml:157
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Limiter la taille d'image dans les menus pour économiser en mémoire."
 
 #: ui/options_graphics.rml:160
 msgid "High-precision rendering"
-msgstr ""
+msgstr "Rendu haute précision"
 
 #: ui/options_graphics.rml:163
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
+"Utiliser des tampons à haute profondeur de couleur pour réduire la "
+"postérisation."
 
 #: ui/options_graphics.rml:165
 msgid "Mip-mapping"
 msgstr "Mip-mapping"
 
 #: ui/options_graphics.rml:166
+#, fuzzy
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
-"Le mip-mapping améliore l'apparence des surfaces distantes en utilisant des "
-"textures de résolution inférieure. Cela n'affecte généralement pas les "
-"performances."
+"Le mip-mapping améliore l'apparence des surfaces distantes avec textures de "
+"résolution inférieure. Cela n'affecte généralement pas les performances."
 
 #: ui/options_graphics.rml:169 ui/options_ui.rml:46
 msgid "No"
@@ -1256,15 +1259,16 @@ msgstr "Éblouissement"
 
 #: ui/options_graphics.rml:231
 msgid "Makes bright areas on your screen glow."
-msgstr "Fait briller les zones lumineuses de votre écran."
+msgstr "Fait briller les zones lumineuses de l'écran."
 
 #: ui/options_graphics.rml:234
 msgid "Color grading"
-msgstr ""
+msgstr "Retouches de couleur (color grading)"
 
 #: ui/options_graphics.rml:236
+#, fuzzy
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Ajuste les teintes pour des effets d'ambiance."
 
 #: ui/options_graphics.rml:239
 msgid "Heat-haze"
@@ -1272,7 +1276,7 @@ msgstr "Brume de chaleur"
 
 #: ui/options_graphics.rml:241
 msgid "Simulate air refraction in severe heat."
-msgstr "Simule la réfraction de l'air en cas de forte chaleur."
+msgstr "Simule la déflexion de la lumière par l'air en cas de forte chaleur."
 
 #: ui/options_graphics.rml:244
 msgid "Screen space ambient occlusion (SSAO)"
@@ -1293,8 +1297,9 @@ msgstr ""
 "surfaces"
 
 #: ui/options_graphics.rml:254
+#, fuzzy
 msgid "Particle physics"
-msgstr "Physique de particule"
+msgstr "Effets de particules"
 
 #: ui/options_graphics.rml:256
 msgid "Allow particles to bounce off surfaces."
@@ -1314,7 +1319,7 @@ msgstr "désactivé"
 
 #: ui/options_graphics.rml:269
 msgid "All structures"
-msgstr "toute les structures"
+msgstr "Toute les structures"
 
 #: ui/options_graphics.rml:270
 msgid "Support structures"
@@ -1322,7 +1327,7 @@ msgstr "Structures de soutien"
 
 #: ui/options_graphics.rml:271
 msgid "Offensive structures"
-msgstr "structures offensives"
+msgstr "Structures offensives"
 
 #: ui/options_graphics.rml:272
 msgid "Alien structures"
@@ -1334,11 +1339,11 @@ msgstr "Structures humaines"
 
 #: ui/options_graphics.rml:274
 msgid "Alien support structures"
-msgstr "Structures extraterrestres de support"
+msgstr "Structures extraterrestres de soutien"
 
 #: ui/options_graphics.rml:275
 msgid "Human support structures"
-msgstr "Structures humaines de support"
+msgstr "Structures humaines de soutien"
 
 #: ui/options_graphics.rml:276
 msgid "Offensive alien structures"
@@ -1349,6 +1354,7 @@ msgid "Offensive human structures"
 msgstr "Structures offensives humaines"
 
 #: ui/options_graphics.rml:279
+#, fuzzy
 msgid "Building ranges"
 msgstr "Portées des constructions"
 
@@ -1374,7 +1380,7 @@ msgstr "Vitesse de déplacement minimale pour activer le flou de mouvement"
 
 #: ui/options_graphics.rml:297 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr "Actuel :"
+msgstr "Réglage :"
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
@@ -1414,43 +1420,43 @@ msgstr "Ne fonctionne pas encore dans les menus,<br />&nbsp;Expérimental."
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr "Déplacement"
+msgstr "Déplacements"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr "Courir / marcher :"
+msgstr "Courir / marcher :"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr "Sprinter :"
+msgstr "Sprinter :"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr "Avancer :"
+msgstr "Avancer :"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr "Reculer :"
+msgstr "Reculer :"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr "Se déplacer à gauche :"
+msgstr "Se déplacer à gauche :"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr "Se déplacer à droite :"
+msgstr "Se déplacer à droite :"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr "Sauter :"
+msgstr "Sauter :"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr "S’accroupir :"
+msgstr "S’accroupir :"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr "Marcher sur les murs :"
+msgstr "Marcher sur les murs :"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
@@ -1458,35 +1464,35 @@ msgstr "Capacités"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr "Attaque principale :"
+msgstr "Attaque principale :"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr "Attaque secondaire :"
+msgstr "Attaque secondaire :"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
-msgstr "Cracher  :"
+msgstr "Cracher  :"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr "Lancer la grenade :"
+msgstr "Lancer de grenade :"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr "Recharger :"
+msgstr "Recharger :"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr "Utilisez le kit médical :"
+msgstr "Utilisez le kit de soin :"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr "Utiliser la structure :"
+msgstr "Utiliser la structure :"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr "Évoluer :"
+msgstr "Évoluer :"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
@@ -1494,35 +1500,35 @@ msgstr "Discuter/Voter"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr "Faire un geste :"
+msgstr "Faire un geste :"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr "Discussion générale :"
+msgstr "Discussion générale :"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr "Discussion d'équipe :"
+msgstr "Discussion d'équipe :"
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr "Discussion avec l’admin :"
+msgstr "Discussion avec l’admin :"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr "Vote Oui :"
+msgstr "Vote Oui :"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr "Vote Non :"
+msgstr "Vote Non :"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr "Vote d'équipe Oui :"
+msgstr "Vote d'équipe Oui :"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr "Vote d'équipe Non :"
+msgstr "Vote d'équipe Non :"
 
 #: ui/options_keys.rml:142
 msgid "Misc"
@@ -1530,11 +1536,11 @@ msgstr "Divers"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr "Afficher les scores :"
+msgstr "Afficher les scores :"
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
-msgstr "Marquer une structure pour être remplacée :"
+msgstr "Marquer une structure pour remplacement :"
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
@@ -1542,7 +1548,7 @@ msgstr "Maintenir la touche pour déconstruire la structure."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr "Menu balise :"
+msgstr "Menu balise :"
 
 #: ui/options_keys.rml:159
 msgid "Toggle console:"
@@ -1550,27 +1556,27 @@ msgstr "Alterner la console :"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
-msgstr "Capture d’écran :"
+msgstr "Capture d’écran :"
 
 #: ui/options_keys.rml:165
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
 msgstr ""
-"Maintenir SHIFT lorsque vous prenez une capture d'écran pour capturer un "
-"PNG, sinon les photos sont prises en JPEG."
+"Maintenir SHIFT lorsque vous prenez une capture d'écran pour enregistrer en "
+"PNG, sinon les captures sont en JPEG."
 
 #: ui/options_keys.rml:167
 msgid "Quake-look"
-msgstr "Vision à la Quake"
+msgstr "Visée à la Quake"
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr "Regarder vers le haut :"
+msgstr "Regarder vers le haut :"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr "Baisser les yeux :"
+msgstr "Regarder vers le bas :"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
@@ -1582,11 +1588,11 @@ msgstr "Tourner à droite :"
 
 #: ui/options_keys.rml:187
 msgid "Mouse look:"
-msgstr "Vue à la souris :"
+msgstr "Viser à la souris :"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
-msgstr "Centrer la vue :"
+msgstr "Centrer la vue :"
 
 #: ui/options_mouse.rml:7 ui/options.rml:19
 msgid "Mouse and Aiming"
@@ -1626,7 +1632,7 @@ msgstr "Vision libre"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr "Désactivez-le uniquement si vous êtes un accro de Quake."
+msgstr "Désactivez-le uniquement si vous êtes accro à Quake."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
