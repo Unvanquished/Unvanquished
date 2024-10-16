@@ -195,7 +195,7 @@
 				</buttonbar>
 			</panel>
 
-			<tab>Materials</tab>
+			<tab><translate>Materials</translate></tab>
 			<panel>
 				<h2><translate>Materials</translate></h2>
 				<row>
@@ -277,7 +277,7 @@
 				</buttonbar>
 			</panel>
 
-			<tab>Effects</tab>
+			<tab><translate>Effects</translate></tab>
 			<panel>
 				<h2><translate>Effects</translate></h2>
 				<row>
