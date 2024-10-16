@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-08-19 18:09+0000\n"
-"Last-Translator: Masmblr <masmblr@gmail.com>\n"
+"PO-Revision-Date: 2024-10-16 15:11+0000\n"
+"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.8-rc\n"
 "X-POOTLE-MTIME: 1398345746.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -2104,7 +2104,7 @@ msgstr "Passwort"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr "Entwicklermodus (ermögliche Cheats )"
+msgstr "Entwicklermodus (ermögliche Cheats)"
 
 #: ui/server_create.rml:54
 msgid "Extra packages to load"
