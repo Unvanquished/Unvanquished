@@ -192,6 +192,11 @@
 			<panel>
 				<h2><translate>Materials</translate></h2>
 				<row>
+					<h3><translate>Sky</translate></h3>
+					<input cvar="r_drawSky" type="checkbox" />
+					<p><translate>Draw the sky.</translate></p>
+				</row>
+				<row>
 					<h3><translate>Normal mapping</translate></h3>
 					<input cvar="r_normalMapping" type="checkbox" />
 					<p><translate>Simulates extra lighting detail on flat surfaces.</translate></p>
