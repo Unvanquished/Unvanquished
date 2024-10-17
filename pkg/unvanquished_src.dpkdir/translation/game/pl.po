@@ -387,7 +387,7 @@ msgid "Healing"
 msgstr "Leczenie"
 
 #: ui/help_gameplay.rml:117
-msgid "Dying feeds the ennemy, you may want to save your life!"
+msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr "Wasza śmierć karmi przeciwnika, możecie chcieć oszczędzać swoje życia!"
 
 #: ui/help_gameplay.rml:121

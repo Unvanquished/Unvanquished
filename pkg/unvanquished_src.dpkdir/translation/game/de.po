@@ -386,7 +386,7 @@ msgid "Healing"
 msgstr "Heilung"
 
 #: ui/help_gameplay.rml:117
-msgid "Dying feeds the ennemy, you may want to save your life!"
+msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr ""
 "Wer stirbt, gibt dem Gegner Ressourcen. Es lohnt sich also, am Leben zu "
 "bleiben!"

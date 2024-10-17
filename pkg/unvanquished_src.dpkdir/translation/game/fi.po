@@ -389,7 +389,7 @@ msgid "Healing"
 msgstr "Parantuminen"
 
 #: ui/help_gameplay.rml:117
-msgid "Dying feeds the ennemy, you may want to save your life!"
+msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr "Kuoleminen ruokkii vihollista, saatat haluta pelastautua!"
 
 #: ui/help_gameplay.rml:121
