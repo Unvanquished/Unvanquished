@@ -14,7 +14,7 @@
 			end
 		</script>
 	</head>
-	<body id="options_ui" template="window" class="window-options" style="margin-top: 10%; width: 32em;">
+	<body id="options_ui" template="window" class="window-options" style="margin-top: 2%; width: 32em;">
 		<h1><translate>User interface</translate></h1>
 		<tabset ontabchange='setWeapon(document, "rifle")'>
 			<tab><translate>Main</translate></tab>
