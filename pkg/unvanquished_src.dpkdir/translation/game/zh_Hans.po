@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 02:44+0200\n"
+"POT-Creation-Date: 2024-10-17 02:07+0200\n"
 "PO-Revision-Date: 2024-03-10 11:01+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -751,9 +751,10 @@ msgstr "度"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:55 ui/options_graphics.rml:298
-#: ui/options_mouse.rml:21 ui/options_ui.rml:74 ui/options_ui.rml:153
-#: ui/options_ui.rml:183 ui/options_ui.rml:197 ui/server_setup.rml:73
+#: ui/options_fov.rml:67 ui/options_graphics.rml:55 ui/options_graphics.rml:262
+#: ui/options_graphics.rml:384 ui/options_mouse.rml:21 ui/options_ui.rml:74
+#: ui/options_ui.rml:153 ui/options_ui.rml:183 ui/options_ui.rml:197
+#: ui/server_setup.rml:73
 msgid "reset"
 msgstr "重置"
 
@@ -827,7 +828,8 @@ msgid ""
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:286
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:248
+#: ui/options_graphics.rml:363 ui/options_graphics.rml:372
 msgid "Low"
 msgstr "低"
 
@@ -847,7 +849,8 @@ msgid ""
 "textures…"
 msgstr "基本、镜面与物理映射，亮光，三线性过滤，512 像素材质……"
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:284
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:250
+#: ui/options_graphics.rml:362 ui/options_graphics.rml:370
 msgid "High"
 msgstr "高"
 
@@ -891,7 +894,7 @@ msgstr "无边框窗口"
 msgid "Fullscreen"
 msgstr "全屏"
 
-#: ui/options_graphics.rml:74 ui/options_graphics.rml:287
+#: ui/options_graphics.rml:74 ui/options_graphics.rml:373
 msgid "Off"
 msgstr "关"
 
@@ -921,8 +924,9 @@ msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr "快速近似抗锯齿 (FXAA)"
 
 #: ui/options_graphics.rml:88 ui/options_graphics.rml:130
-#: ui/options_graphics.rml:187 ui/options_graphics.rml:221
-#: ui/options_graphics.rml:259
+#: ui/options_graphics.rml:194 ui/options_graphics.rml:233
+#: ui/options_graphics.rml:276 ui/options_graphics.rml:314
+#: ui/options_graphics.rml:337
 msgid "Apply now"
 msgstr "立即应用"
 
@@ -987,18 +991,18 @@ msgstr "半 Lambert 光照"
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "非物理的光照方式，使模型不会过暗。"
 
-#: ui/options_graphics.rml:124 ui/options_graphics.rml:268
-#: ui/options_ui.rml:176
-msgid "None"
-msgstr "无"
-
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:124
 msgid "Blobs"
 msgstr "圆状"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:124
 msgid "low"
 msgstr "低质量"
+
+#: ui/options_graphics.rml:125 ui/options_graphics.rml:346
+#: ui/options_ui.rml:176
+msgid "None"
+msgstr "无"
 
 #: ui/options_graphics.rml:127
 msgid "Shadows"
@@ -1012,7 +1016,7 @@ msgstr "材质"
 msgid "General"
 msgstr "通用"
 
-#: ui/options_graphics.rml:139 ui/options_graphics.rml:154
+#: ui/options_graphics.rml:139 ui/options_graphics.rml:152
 msgid "No limit"
 msgstr ""
 
@@ -1044,12 +1048,12 @@ msgstr ""
 msgid "Limit image size to save on memory."
 msgstr ""
 
-#: ui/options_graphics.rml:152
-msgid "No larger than screen"
-msgstr ""
-
 #: ui/options_graphics.rml:153
 msgid "No smaller than screen"
+msgstr ""
+
+#: ui/options_graphics.rml:154
+msgid "No larger than screen"
 msgstr ""
 
 #: ui/options_graphics.rml:156
@@ -1060,7 +1064,7 @@ msgstr ""
 msgid "Limit menu image size to save on memory."
 msgstr ""
 
-#: ui/options_graphics.rml:160
+#: ui/options_graphics.rml:162
 msgid "High-precision rendering"
 msgstr ""
 
@@ -1068,11 +1072,28 @@ msgstr ""
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 
-#: ui/options_graphics.rml:165
+#: ui/options_graphics.rml:167
+msgid "Use bindless textures if possible"
+msgstr ""
+
+#: ui/options_graphics.rml:169
+msgid ""
+"Use bindless textures if supported by hardware/driver. This might improve "
+"performance."
+msgstr ""
+
+#: ui/options_graphics.rml:169 ui/options_graphics.rml:219
+#: ui/options_graphics.rml:243 ui/options_graphics.rml:301
+#: ui/options_graphics.rml:324 ui/options_graphics.rml:329
+#: ui/options_graphics.rml:334
+msgid "Experimental."
+msgstr "实验性的。"
+
+#: ui/options_graphics.rml:172
 msgid "Mip-mapping"
 msgstr "Mip-map"
 
-#: ui/options_graphics.rml:166
+#: ui/options_graphics.rml:173
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1080,209 +1101,303 @@ msgstr ""
 "Mip-map 通过为远处的平面使用低分辨率材质以取得更好的视觉效果。这通常不影响性"
 "能。"
 
-#: ui/options_graphics.rml:169 ui/options_ui.rml:46
+#: ui/options_graphics.rml:180 ui/options_ui.rml:46
 msgid "No"
 msgstr "无"
 
-#: ui/options_graphics.rml:175
+#: ui/options_graphics.rml:182
 msgid "Anisotropic mip-mapping"
 msgstr "各向异性 Mip-map"
 
-#: ui/options_graphics.rml:176
+#: ui/options_graphics.rml:183
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "对有角度的平面实现的更好的 Mip-map。"
 
-#: ui/options_graphics.rml:180
-msgid "Bilinear"
-msgstr "双线性"
-
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:187
 msgid "Trilinear"
 msgstr "三线性"
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:187
 msgid "better"
 msgstr "更好"
 
-#: ui/options_graphics.rml:183
+#: ui/options_graphics.rml:188
+msgid "Bilinear"
+msgstr "双线性"
+
+#: ui/options_graphics.rml:190
 msgid "Texture scaling filter"
 msgstr "材质缩放过滤"
 
-#: ui/options_graphics.rml:193
+#: ui/options_graphics.rml:198 ui/options_graphics.rml:200
 msgid "Materials"
 msgstr "材质"
 
-#: ui/options_graphics.rml:195
+#: ui/options_graphics.rml:202
+msgid "Sky"
+msgstr ""
+
+#: ui/options_graphics.rml:204
+msgid "Draw the sky."
+msgstr ""
+
+#: ui/options_graphics.rml:207
 msgid "Normal mapping"
 msgstr "一般映射"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:209
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "在平坦的平面上模拟更强的光照。"
 
-#: ui/options_graphics.rml:200
+#: ui/options_graphics.rml:212
 msgid "Deluxe mapping"
 msgstr "高级映射"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:214
 msgid "Light direction based on baked textures."
 msgstr "基于处理后材质的光照方向。"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:217
 msgid "Relief mapping"
 msgstr "交替映射"
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:219
 msgid "Adds bumps on supported surfaces."
 msgstr "在有支撑的平面上添加突起。"
 
-#: ui/options_graphics.rml:207 ui/options_graphics.rml:246
-msgid "Experimental."
-msgstr "实验性的。"
-
-#: ui/options_graphics.rml:210
+#: ui/options_graphics.rml:222
 msgid "Specular mapping"
 msgstr "镜面映射"
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:224
 msgid "Simulate light specularity."
 msgstr "模拟光的反射。"
 
-#: ui/options_graphics.rml:215
+#: ui/options_graphics.rml:227
 msgid "Physical mapping"
 msgstr "物理映射"
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:229
 msgid "Material appearance based on physical approximations."
 msgstr "基于物理估量的材质外观。"
 
-#: ui/options_graphics.rml:227 ui/options_sound.rml:13
-msgid "Effects"
-msgstr "特效"
-
-#: ui/options_graphics.rml:229
-msgid "Bloom"
-msgstr "闪光"
-
-#: ui/options_graphics.rml:231
-msgid "Makes bright areas on your screen glow."
-msgstr "让屏幕上可见的光照发光。"
-
-#: ui/options_graphics.rml:234
-msgid "Color grading"
+#: ui/options_graphics.rml:237 ui/options_graphics.rml:239
+msgid "Reflections"
 msgstr ""
-
-#: ui/options_graphics.rml:236
-msgid "Alter colors to create specific ambiences."
-msgstr ""
-
-#: ui/options_graphics.rml:239
-msgid "Heat-haze"
-msgstr "热力波"
 
 #: ui/options_graphics.rml:241
-msgid "Simulate air refraction in severe heat."
-msgstr "模拟高温环境下的空气折射。"
+msgid "Static reflections"
+msgstr ""
 
-#: ui/options_graphics.rml:244
-msgid "Screen space ambient occlusion (SSAO)"
-msgstr "屏幕空间环境光遮蔽 (SSAO)"
+#: ui/options_graphics.rml:243
+msgid ""
+"Adds static cubemap reflections on supported surfaces. Requires normal, "
+"specular and deluxe mapping. Currently unsupported with physical mapping."
+msgstr ""
 
-#: ui/options_graphics.rml:246
-msgid "Simulate dark corners."
-msgstr "模拟阴暗的角落。"
+#: ui/options_graphics.rml:247
+msgid "Very low"
+msgstr ""
 
-#: ui/options_graphics.rml:249
-msgid "Marks"
-msgstr "印记"
-
-#: ui/options_graphics.rml:251
-msgid "Draw marks (such as bullet holes or creep) on surfaces"
-msgstr "在平面上绘制印记（如弹孔和爪印）"
-
-#: ui/options_graphics.rml:254
-msgid "Particle physics"
-msgstr "粒子物理"
-
-#: ui/options_graphics.rml:256
-msgid "Allow particles to bounce off surfaces."
-msgstr "允许粒子在平面弹跳。"
-
-#: ui/options_graphics.rml:263
-msgid "Gameplay"
-msgstr "游戏"
-
-#: ui/options_graphics.rml:265
-msgid "Building markers"
-msgstr "建筑标识"
-
-#: ui/options_graphics.rml:268
-msgid "disabled"
-msgstr "禁用"
-
-#: ui/options_graphics.rml:269
-msgid "All structures"
-msgstr "所有设施"
-
-#: ui/options_graphics.rml:270
-msgid "Support structures"
-msgstr "支援设施"
-
-#: ui/options_graphics.rml:271
-msgid "Offensive structures"
-msgstr "攻击设施"
-
-#: ui/options_graphics.rml:272
-msgid "Alien structures"
-msgstr "异形设施"
-
-#: ui/options_graphics.rml:273
-msgid "Human structures"
-msgstr "人类设施"
-
-#: ui/options_graphics.rml:274
-msgid "Alien support structures"
-msgstr "异形支援设施"
-
-#: ui/options_graphics.rml:275
-msgid "Human support structures"
-msgstr "人类支援设施"
-
-#: ui/options_graphics.rml:276
-msgid "Offensive alien structures"
-msgstr "异形攻击设施"
-
-#: ui/options_graphics.rml:277
-msgid "Offensive human structures"
-msgstr "人类攻击设施"
-
-#: ui/options_graphics.rml:279
-msgid "Building ranges"
-msgstr "建筑范围"
-
-#: ui/options_graphics.rml:281
-msgid "Motion blur"
-msgstr "动态模糊"
-
-#: ui/options_graphics.rml:285
+#: ui/options_graphics.rml:249 ui/options_graphics.rml:371
 msgid "Moderate"
 msgstr "少量"
 
+#: ui/options_graphics.rml:251
+msgid "Very high"
+msgstr ""
+
+#: ui/options_graphics.rml:253 ui/options_graphics.rml:365
+msgid "Quality"
+msgstr ""
+
+#: ui/options_graphics.rml:254
+msgid "Quality of static reflection cubemaps."
+msgstr ""
+
+#: ui/options_graphics.rml:257
+msgid "Cubemap grid spacing"
+msgstr ""
+
+#: ui/options_graphics.rml:261 ui/options_graphics.rml:383
+#: ui/options_mouse.rml:20 ui/server_setup.rml:72
+msgid "Current:"
+msgstr "当前："
+
+#: ui/options_graphics.rml:267 ui/options_ui.rml:128
+msgid "Never"
+msgstr "无准星"
+
+#: ui/options_graphics.rml:268
+msgid "Cache on disk"
+msgstr ""
+
+#: ui/options_graphics.rml:269
+msgid "Always rebuild"
+msgstr ""
+
+#: ui/options_graphics.rml:271
+msgid "Static reflection cubemaps autobuild"
+msgstr ""
+
+#: ui/options_graphics.rml:272
+msgid "Automatically build/load/save reflection cubemaps."
+msgstr ""
+
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:282
+#: ui/options_sound.rml:13
+msgid "Effects"
+msgstr "特效"
+
+#: ui/options_graphics.rml:284
+msgid "Bloom"
+msgstr "闪光"
+
+#: ui/options_graphics.rml:286
+msgid "Makes bright areas on your screen glow."
+msgstr "让屏幕上可见的光照发光。"
+
 #: ui/options_graphics.rml:289
+msgid "Color grading"
+msgstr ""
+
+#: ui/options_graphics.rml:291
+msgid "Alter colors to create specific ambiences."
+msgstr ""
+
+#: ui/options_graphics.rml:294
+msgid "Heat-haze"
+msgstr "热力波"
+
+#: ui/options_graphics.rml:296
+msgid "Simulate air refraction in severe heat."
+msgstr "模拟高温环境下的空气折射。"
+
+#: ui/options_graphics.rml:299
+msgid "Screen space ambient occlusion (SSAO)"
+msgstr "屏幕空间环境光遮蔽 (SSAO)"
+
+#: ui/options_graphics.rml:301
+msgid "Simulate dark corners."
+msgstr "模拟阴暗的角落。"
+
+#: ui/options_graphics.rml:304
+msgid "Marks"
+msgstr "印记"
+
+#: ui/options_graphics.rml:306
+msgid "Draw marks (such as bullet holes or creep) on surfaces"
+msgstr "在平面上绘制印记（如弹孔和爪印）"
+
+#: ui/options_graphics.rml:309
+msgid "Particle physics"
+msgstr "粒子物理"
+
+#: ui/options_graphics.rml:311
+msgid "Allow particles to bounce off surfaces."
+msgstr "允许粒子在平面弹跳。"
+
+#: ui/options_graphics.rml:318
+msgid "Renderer"
+msgstr ""
+
+#: ui/options_graphics.rml:320 ui/options_graphics.rml:322
+msgid "Material system"
+msgstr ""
+
+#: ui/options_graphics.rml:324
+msgid ""
+"Use a new system that significantly improves performance. Some drivers may "
+"fail with this on (e. g. Mesa and AMD proprietary drivers)."
+msgstr ""
+
+#: ui/options_graphics.rml:327
+msgid "GPU frustum culling"
+msgstr ""
+
+#: ui/options_graphics.rml:329
+msgid "Cull surfaces that are out of view."
+msgstr ""
+
+#: ui/options_graphics.rml:332
+msgid "GPU occlusion culling"
+msgstr ""
+
+#: ui/options_graphics.rml:334
+msgid "Cull hidden surfaces."
+msgstr ""
+
+#: ui/options_graphics.rml:341
+msgid "Gameplay"
+msgstr "游戏"
+
+#: ui/options_graphics.rml:343
+msgid "Building markers"
+msgstr "建筑标识"
+
+#: ui/options_graphics.rml:346
+msgid "disabled"
+msgstr "禁用"
+
+#: ui/options_graphics.rml:347
+msgid "All structures"
+msgstr "所有设施"
+
+#: ui/options_graphics.rml:348
+msgid "Support structures"
+msgstr "支援设施"
+
+#: ui/options_graphics.rml:349
+msgid "Offensive structures"
+msgstr "攻击设施"
+
+#: ui/options_graphics.rml:350
+msgid "Alien structures"
+msgstr "异形设施"
+
+#: ui/options_graphics.rml:351
+msgid "Human structures"
+msgstr "人类设施"
+
+#: ui/options_graphics.rml:352
+msgid "Alien support structures"
+msgstr "异形支援设施"
+
+#: ui/options_graphics.rml:353
+msgid "Human support structures"
+msgstr "人类支援设施"
+
+#: ui/options_graphics.rml:354
+msgid "Offensive alien structures"
+msgstr "异形攻击设施"
+
+#: ui/options_graphics.rml:355
+msgid "Offensive human structures"
+msgstr "人类攻击设施"
+
+#: ui/options_graphics.rml:357
+msgid "Building ranges"
+msgstr "建筑范围"
+
+#: ui/options_graphics.rml:359
+msgid "Models"
+msgstr ""
+
+#: ui/options_graphics.rml:367
+msgid "Motion blur"
+msgstr "动态模糊"
+
+#: ui/options_graphics.rml:375
 msgid "Intensity"
 msgstr "密集度"
 
-#: ui/options_graphics.rml:290
+#: ui/options_graphics.rml:376
 msgid "Level of motion-blur."
 msgstr "动态模糊等级。"
 
-#: ui/options_graphics.rml:293
+#: ui/options_graphics.rml:379
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "激活动态模糊的最小移动速度"
-
-#: ui/options_graphics.rml:297 ui/options_mouse.rml:20 ui/server_setup.rml:72
-msgid "Current:"
-msgstr "当前："
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
@@ -1749,7 +1864,7 @@ msgstr "语言"
 msgid "Some languages are not fully translated."
 msgstr "一些语言的翻译尚未完成。"
 
-#: ui/options_ui.rml:41 ui/options_welcome.rml:35
+#: ui/options_ui.rml:41 ui/options_welcome.rml:36
 msgid "Change language"
 msgstr "更改语言"
 
@@ -1877,10 +1992,6 @@ msgstr "星神炮"
 msgid "Crosshair visiblity"
 msgstr "准星可见性"
 
-#: ui/options_ui.rml:128
-msgid "Never"
-msgstr "无准星"
-
 #: ui/options_ui.rml:129
 msgid "Ranged weapons only"
 msgstr "仅远程武器"
@@ -1973,7 +2084,7 @@ msgstr "你可以在选项中随时更改名称。"
 msgid "What language do you want to use?"
 msgstr "你想使用哪种语言？"
 
-#: ui/options_welcome.rml:36
+#: ui/options_welcome.rml:37
 msgid "Select Battlefield"
 msgstr "选择战场"
 
@@ -3833,7 +3944,8 @@ msgid "Custom: %dx%d"
 msgstr ""
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
-msgid "Same as screen"
+#, c-format
+msgid "Same as screen (%dx%d)"
 msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2534
