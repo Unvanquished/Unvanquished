@@ -102,7 +102,7 @@
 				<row>
 					<h3><translate>Brightness clamping</translate></h3>
 					<input cvar="r_overbrightDefaultClamp" type="checkbox" />
-					<p><translate>Limit max brightness of map lighting of world surfaces and models (better compat with majority of legacy maps)</translate></p>
+					<p><translate>Old brightness limit of map lighting of world surfaces and models (the way legacy maps looked before)</translate></p>
 				</row>
 				<row>
 					<h3><translate>Light styles</translate></h3>
