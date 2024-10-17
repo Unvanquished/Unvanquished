@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-17 21:04+0200\n"
-"PO-Revision-Date: 2024-10-17 05:48+0000\n"
-"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2024-10-17 20:17+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -4877,7 +4877,7 @@ msgstr "Trouvez une armurerie pour plus de munitions."
 #: src/cgame/cg_tutorial.cpp:392
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr "Appuie sur %s pour tirer le %s."
+msgstr "Appuyez sur %s pour tirer le %s."
 
 #: src/cgame/cg_tutorial.cpp:379
 #, c-format
