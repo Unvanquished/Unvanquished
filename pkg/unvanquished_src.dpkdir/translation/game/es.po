@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-17 21:04+0200\n"
-"PO-Revision-Date: 2024-10-17 20:17+0000\n"
+"PO-Revision-Date: 2024-10-17 22:52+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
@@ -127,15 +127,15 @@ msgstr "Realizar acción"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr "Error!"
+msgstr "¡Error!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr "Ok"
+msgstr "De acuerdo"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr "Bienvenido"
+msgstr "Bienvenid@"
 
 #: ui/help_gameplay.rml:20
 msgid ""
@@ -168,7 +168,7 @@ msgstr "Conoce más acerca del juego en la Wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Por favor, reporta cualquier error en: <web dest=\"bugs\" />"
+msgstr "Por favor, informa de errores en: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
@@ -215,8 +215,9 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Los humanos sólo pueden comprar y vender armas en la [armería], si no hay "
-"alguna en pie. ¡Usa el kit de construcción para crear una cuanto antes!."
+"Los humanos compran y venden armas en la armería [armoury], ¡asegúrate de "
+"que se construya una! Usa el kit de construcción para construir una armería "
+"si falta."
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
@@ -230,11 +231,12 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"Para construir una estructura se requieren los puntos de construcción. Tu "
-"equipo empieza con una pequeña cantidad de puntos de construcción, si deseas "
-"colocar más estructuras en un área. Puedes construir una minería de "
-"[Sanguíjuelas]. Ten en cuenta que los puntos de construcción se pierden si "
-"la estructura para minar se destruye."
+"Construir una estructura requiere puntos de construcción. Tu equipo empezará "
+"con una pequeña reserva de puntos de construcción, pero si quieres colocar "
+"un mayor número de estructuras en una zona, puedes construir una estructura "
+"minera [leech] para aumentar la potencia disponible y conseguir más puntos "
+"de construcción. Ten en cuenta que perderás los puntos de construcción si "
+"las estructuras mineras son destruidas."
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -1030,6 +1032,8 @@ msgid ""
 "Old brightness limit of map lighting of world surfaces and models (the way "
 "legacy maps looked before)"
 msgstr ""
+"Límite de brillo antiguo de la iluminación del mapa de las superficies del "
+"mundo y los modelos (el aspecto que tenían antes los mapas heredados)"
 
 #: ui/options_graphics.rml:108
 msgid "Light styles"
@@ -1093,35 +1097,35 @@ msgstr "General"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "Sin límite"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr ""
+msgstr "(ultra)"
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
-msgstr ""
+msgstr "(alto)"
 
 #: ui/options_graphics.rml:147
 msgid "(medium)"
-msgstr ""
+msgstr "(medio)"
 
 #: ui/options_graphics.rml:148
 msgid "(low)"
-msgstr ""
+msgstr "(baja)"
 
 #: ui/options_graphics.rml:149
 msgid "(lowest)"
-msgstr ""
+msgstr "(más baja)"
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
-msgstr ""
+msgstr "Límite del tamaño de la imagen"
 
 #: ui/options_graphics.rml:152
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Reducir el tamaño de la imagen para ahorrar memoria."
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
