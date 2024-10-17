@@ -778,11 +778,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Пресет"
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "Най-ниско"
 
 #: ui/options_graphics.rml:28
 msgid ""
