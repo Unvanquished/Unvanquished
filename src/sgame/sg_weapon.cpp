@@ -461,19 +461,24 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	G_WideTrace( &tr, self, muzzle, forward, range, width, height, &traceEnt );
 
-	if ( not TakesDamages( traceEnt ) )
+	if ( traceEnt == nullptr )
 	{
 		return nullptr;
 	}
 
-	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), forward, 0, mod );
+	bool sendDamage = TakesDamages( traceEnt );
+
+	if ( sendDamage )
+	{
+		traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), forward, 0, mod );
+	}
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
 	if ( falseRanged )
 	{
 		SendRangedHitEvent( self, muzzle, traceEnt, &tr );
 	}
-	else
+	else if ( sendDamage )
 	{
 		SendMeleeHitEvent( self, traceEnt, &tr );
 	}
