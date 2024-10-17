@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-17 07:23+0200\n"
-"PO-Revision-Date: 2024-10-16 23:41+0000\n"
-"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
+"PO-Revision-Date: 2024-10-17 05:48+0000\n"
+"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -1053,13 +1053,16 @@ msgstr "Système d'éclairage"
 
 #: ui/options_graphics.rml:103
 msgid "Brightness clamping"
-msgstr ""
+msgstr "Réglage de la luminosité"
 
 #: ui/options_graphics.rml:105
+#, fuzzy
 msgid ""
 "Old brightness limit of map lighting of world surfaces and models (the way "
 "legacy maps looked before)"
 msgstr ""
+"Ancienne limite de luminosité de l'éclairage des surfaces de la map et des "
+"modèles du monde (à quoi ressemblaient les anciennes cartes auparavant)"
 
 #: ui/options_graphics.rml:108 ui/options_graphics.rml:103
 msgid "Light styles"
@@ -1187,13 +1190,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:172 ui/options_graphics.rml:167
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "Utilisez des textures sans lien si possible"
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:169
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"Utiliser des textures sans liaison si elles sont supportées matériel/pilote. "
+"Cela pourrait améliorer les performances."
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:224
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:306
@@ -1252,11 +1257,11 @@ msgstr "Matériaux"
 
 #: ui/options_graphics.rml:207 ui/options_graphics.rml:202
 msgid "Sky"
-msgstr ""
+msgstr "Ciel"
 
 #: ui/options_graphics.rml:209 ui/options_graphics.rml:204
 msgid "Draw the sky."
-msgstr ""
+msgstr "Dessine le ciel."
 
 #: ui/options_graphics.rml:212 ui/options_graphics.rml:207
 msgid "Normal mapping"
@@ -1302,21 +1307,24 @@ msgstr "Aspect matériel basé sur des approximations physiques."
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 #: ui/options_graphics.rml:237 ui/options_graphics.rml:239
 msgid "Reflections"
-msgstr ""
+msgstr "Reflets"
 
 #: ui/options_graphics.rml:246 ui/options_graphics.rml:241
 msgid "Static reflections"
-msgstr ""
+msgstr "Reflets statiques"
 
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:243
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
+"Ajoute des réflexions de cubemap statiques sur les surfaces prises en "
+"charge. Nécessite un mappage normal, spéculaire et deluxe. Actuellement non "
+"pris en charge avec le mappage physique."
 
 #: ui/options_graphics.rml:252 ui/options_graphics.rml:247
 msgid "Very low"
-msgstr ""
+msgstr "Très bas"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 #: ui/options_graphics.rml:249 ui/options_graphics.rml:371
@@ -1325,20 +1333,21 @@ msgstr "Modéré"
 
 #: ui/options_graphics.rml:256 ui/options_graphics.rml:251
 msgid "Very high"
-msgstr ""
+msgstr "Thès haut"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 #: ui/options_graphics.rml:253 ui/options_graphics.rml:365
 msgid "Quality"
-msgstr ""
+msgstr "Qualité"
 
 #: ui/options_graphics.rml:259 ui/options_graphics.rml:254
 msgid "Quality of static reflection cubemaps."
-msgstr ""
+msgstr "Qualité des cubmaps de réflection statique."
 
 #: ui/options_graphics.rml:262 ui/options_graphics.rml:257
+#, fuzzy
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "Espacement de la grille de cubemap"
 
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72 ui/options_graphics.rml:261
@@ -1353,19 +1362,20 @@ msgstr "Jamais"
 
 #: ui/options_graphics.rml:273 ui/options_graphics.rml:268
 msgid "Cache on disk"
-msgstr ""
+msgstr "Cache sur le disque"
 
 #: ui/options_graphics.rml:274 ui/options_graphics.rml:269
 msgid "Always rebuild"
-msgstr ""
+msgstr "Toujours reconstruire"
 
 #: ui/options_graphics.rml:276 ui/options_graphics.rml:271
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Création automatique de cubemaps de réflexion statique"
 
 #: ui/options_graphics.rml:277 ui/options_graphics.rml:272
+#, fuzzy
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr ""
+msgstr "Construire/charger/sauvegarder des réflections cubemaps"
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13 ui/options_graphics.rml:280
@@ -1427,34 +1437,39 @@ msgstr "Permettre aux particules de rebondir sur les surfaces."
 
 #: ui/options_graphics.rml:323 ui/options_graphics.rml:318
 msgid "Renderer"
-msgstr ""
+msgstr "Moteur de rendu"
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 #: ui/options_graphics.rml:320 ui/options_graphics.rml:322
+#, fuzzy
 msgid "Material system"
-msgstr ""
+msgstr "System de matériaux"
 
 #: ui/options_graphics.rml:329 ui/options_graphics.rml:324
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Utiliser un nouveau système qui améliore considérablement les performances. "
+"Certains pilotes peuvent échouer si cette option est activée (ex, les "
+"pilotes propriétaires Mesa et AMD)."
 
 #: ui/options_graphics.rml:332 ui/options_graphics.rml:327
+#, fuzzy
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "Élimination du frustum du GPU"
 
 #: ui/options_graphics.rml:334 ui/options_graphics.rml:329
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "Éliminer les surfaces qui sont hors de vue."
 
 #: ui/options_graphics.rml:337 ui/options_graphics.rml:332
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "Élimination de l'occlusion du GPU"
 
 #: ui/options_graphics.rml:339 ui/options_graphics.rml:334
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "Éliminer les surfaces cachées."
 
 #: ui/options_graphics.rml:346 ui/options_graphics.rml:341
 msgid "Gameplay"
@@ -1511,7 +1526,7 @@ msgstr "Portées des constructions"
 
 #: ui/options_graphics.rml:364 ui/options_graphics.rml:359
 msgid "Models"
-msgstr ""
+msgstr "Modèles"
 
 #: ui/options_graphics.rml:372 ui/options_graphics.rml:367
 msgid "Motion blur"
@@ -4140,9 +4155,9 @@ msgid "Custom: %dx%d"
 msgstr "Personalisée : %dx%d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
-#, c-format
+#, c-format, fuzzy
 msgid "Same as screen (%dx%d)"
-msgstr ""
+msgstr "Identique à l'écran (%dx%d)"
 
 #: src/cgame/cg_rocket_draw.cpp:2534
 msgid "You are at the front of the spawn queue"
