@@ -46,7 +46,7 @@ msgstr ""
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
@@ -3959,7 +3959,7 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:453
 msgid "The alien team has too many players"
-msgstr "O equipo dos extraterrestres ten demasiados xogadores."
+msgstr "O equipo dos extraterrestres ten demasiados xogadores"
 
 #: src/cgame/cg_servercmds.cpp:457
 msgid ""
