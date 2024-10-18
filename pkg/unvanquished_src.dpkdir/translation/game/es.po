@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-17 21:04+0200\n"
 "PO-Revision-Date: 2024-10-18 05:57+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -82,7 +82,7 @@ msgstr "Ambos equipos"
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:105
 msgid "Aliens"
-msgstr "Aliens"
+msgstr "Extraterrestres"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
@@ -111,7 +111,7 @@ msgstr "Votar: establecer el mapa actual"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "Cambiar de mapa (host)"
+msgstr "Establecer mapa actual (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
@@ -147,24 +147,25 @@ msgstr ""
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr "¡Más información en nuestro sitio web y otros sitios de la comunidad!"
+msgstr ""
+"¡Encontrará más información en nuestra página web y en otros lugares de la "
+"comunidad!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Conversa con los jugadores y desarrolladores en los clientes IRC como Libera."
-"Chat y Matrix, y también por Discord <web dest=\"chat\" />"
+"Chatea con jugadores y desarrolladores en IRC, Matrix o Discord de Libera."
+"Chat: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
-"Consulta las noticias más recientes en los foros <web dest=\"forums\" />"
+msgstr "Discutir novedades en los foros: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr "Conoce más acerca del juego en la Wiki: <web dest=\"wiki\" />"
+msgstr "Descubre más sobre el juego en la wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
@@ -188,17 +189,18 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"Los alienígenas pueden evolucionar siempre y cuando no estén a la vista de "
-"los humanos o sus estructuras. También pueden involucionar a formas menos "
-"avanzadas (a cierto costo) cuando están cerca del [overmind] overmind."
+"Los extranjeros pueden evolucionar desde cualquier lugar si no en la línea "
+"de visión de un jugador humano o edificable. Los extraterrestres también "
+"pueden degenerar en formas menos avanzadas [granger] (a un costo) cuando "
+"están cerca de la supermente [overmind]."
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Usa un [labrador] para construir un Overmind si éste fuese destruido. ¡Lo "
-"necesitas vivo para evolucionar!"
+"Construye una supermente con un [granger] granger si se destruye, ¡necesitas "
+"una supermente viva para evolucionar!"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -206,22 +208,23 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
-"Los humanos obtienen créditos cada vez que matan a un alienígena o destruyen "
-"una de sus estructuras. Con éstos, pueden comprar nuevas [armas], "
-"[armaduras] y otros artilugios como un radar o un jetpack."
+"Los humanos pueden ganar créditos matando alienígenas y destruyendo "
+"construcciones alienígenas, y luego pueden usar esos créditos para comprar "
+"nuevas armas [lcannon], armaduras o trajes de batalla [bsuit], y accesorios "
+"como un radar o una mochila propulsora."
 
 #: ui/help_gameplay.rml:50
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Los humanos compran y venden armas en la armería [armoury], ¡asegúrate de "
-"que se construya una! Usa el kit de construcción para construir una armería "
-"si falta."
+"Los humanos compran y venden armas en la [armoury] armería, ¡asegúrate de "
+"que hay una construida! Utiliza el kit de construcción para construir una "
+"armería si falta."
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
-msgstr "Suministro de estructuras"
+msgstr "Suministro a las estructuras"
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -261,7 +264,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
-msgstr "Estructuras de minería"
+msgstr "Estructuras mineras"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -278,8 +281,8 @@ msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
-"No coloques estructuras para minar cerca de otras. ¡Esto disminuiría la "
-"cantidad de recursos minados al tener que competir entre si!"
+"No construyas estructuras mineras demasiado cerca unas de otras o competirán "
+"entre ellas y, en última instancia, ¡te costarán recursos de construcción!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -289,11 +292,12 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
-"Los constructores verán otra barra por encima de la barra de salud de un "
+"Los constructores verán otra barra encima de la barra de salud de un "
 "generador de recursos que representa su eficiencia. Se mostrará una "
-"predicción antes de colocarlo. Los puntos de construcción están disponibles "
-"al instante cuando la estructura minera se termine de construir, y se "
-"restará si el edificio es destruido. ¡No construyas drills sin protección!"
+"predicción cuando coloques el edificable. Los puntos de construcción están "
+"disponibles al instante cuando la estructura minera termina de construirse, "
+"y se volverán a restar si el edificio es destruido. ¡No construyas "
+"perforadoras desprotegidas!"
 
 #: ui/help_gameplay.rml:77
 msgid ""
@@ -302,10 +306,11 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"Cuando un edificio es destruido, los mineros recuperarán sus puntos de "
-"construcción lentamente. La tasa de recuperación de puntos disminuye a lo "
-"largo del tiempo, de manera que cada vez es más difícil reconstruir "
-"edificios destruidos en una partida larga. Esto sustituye la muerte súbita."
+"Cuando se destruye un edificio, los mineros recuperan sus puntos de "
+"construcción lentamente. La tasa de recuperación de las minas disminuye con "
+"el tiempo, de modo que cada vez es más difícil reconstruir los edificios "
+"destruidos en una partida de larga duración. Esto sustituye a la muerte "
+"súbita."
 
 #: ui/help_gameplay.rml:81
 msgid "Stages &amp; Momentum"
@@ -317,8 +322,8 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
-"Construir y destruir estructuras así como matar enemigos gana a su equipo un "
-"nuevo recurso llamado momentum. Si ganas suficiente momentum, se "
+"Construir y destruir estructuras, así como matar enemigos gana a tu equipo "
+"un nuevo recurso llamado momentum. Si ganas suficiente impulso, se "
 "desbloquearán nuevas armas, estructuras o clases."
 
 #: ui/help_gameplay.rml:87
@@ -326,9 +331,9 @@ msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"El momentum disminuye exponencialmente con el tiempo, si no haces nada tu "
-"equipo perderás el acceso a nuevos artículos. Los ítems ya adquiridos "
-"seguirán operativos."
+"El momentum disminuye exponencialmente con el tiempo, por lo que si no hace "
+"nada tu equipo perderá acceso a los nuevos objetos. Las actualizaciones "
+"existentes seguirán siendo funcionales."
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
@@ -355,17 +360,17 @@ msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
-"Un pequeño [fuego] fuego se apagará después de un tiempo, pero un grupo de "
-"estructuras en llamas se mantendrá lo suficientemente caliente para generar "
-"más caos."
+"Un incendio pequeño [fire] tiene muchas posibilidades de apagarse al cabo de "
+"un rato, pero un grupo de estructuras en llamas se mantendrá lo "
+"suficientemente caliente como para provocar un caos mayor."
 
 #: ui/help_gameplay.rml:103
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
-"¡El ataque del [advgranger] granger avanzado puede usarse para apagar "
-"incendios o frenar a los intrusos!"
+"¡El ataque de escupitajo del granger avanzado [advgranger] puede usarse para "
+"apagar incendios o ralentizar a los intrusos!"
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
@@ -378,10 +383,10 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"El [reactor] reactor y el [overmind] overmind emitirán advertencias al "
-"equipo cuando estén al 75%, 50%, 25% de salud y cuando sean destruidos. "
-"Destruir otros edificios desencadenará advertencias “bajo ataque” para el "
-"equipo afectado."
+"El reactor [reactor] y la supermente [overmind] emitirán advertencias al "
+"equipo cuando se encuentre en 75% de salud, 50% de salud, 25% de salud y "
+"cuando esté destruido. Destruir otros edificios activará advertencias de "
+"\"bajo ataque\" para el equipo propietario."
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
@@ -389,7 +394,7 @@ msgstr "Curación"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr "Morir alimenta al enemigo, ¡cuida de tu vida!"
+msgstr "Morir alimenta al enemigo, ¡puede que quieras salvar tu vida!"
 
 #: ui/help_gameplay.rml:121
 msgid ""
@@ -398,10 +403,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
-"Los aliens sanan lentamente estén donde estén, pero sanan más rápido en "
-"grupo y cerca de construcciones alienígenas. ¡Construir algunas cerca del "
-"enemigo puede ser decisivo! Cualquier curación también contribuirá a "
-"restaurar los proyectiles de [advdragoon] dragoon avanzados."
+"Los alienígenas se curan lentamente dondequiera que estén, pero se curan más "
+"rápido en grupos y cerca de los objetos edificables alienígenas. ¡Construir "
+"los avanzados puede ser decisivo! La curación de cualquier manera también "
+"contribuirá a restaurar los proyectiles avanzados del dragón [advdragoon]."
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -409,9 +414,10 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"El booster cura rápidamente a los aliens cercanos, trata de desbloquearlo "
-"pronto y construye uno tan pronto como sea posible. El booster también te "
-"dará un poco de veneno para hacer sus ataques más mortales."
+"El refuerzo da una rápida curación para los alienígenas cercanos, construir "
+"uno tan pronto como puedas, tratar de desbloquear lo más rápido posible. El "
+"potenciador también te dará un poco de veneno para hacer tus ataques más "
+"mortales."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -1129,15 +1135,15 @@ msgstr "Reducir el tamaño de la imagen para ahorrar memoria."
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
-msgstr ""
+msgstr "No menor que la pantalla"
 
 #: ui/options_graphics.rml:159
 msgid "No larger than screen"
-msgstr ""
+msgstr "No más grande que la pantalla"
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Límite en el tamaño de la imagen del menú"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
