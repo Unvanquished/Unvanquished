@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-17 21:04+0200\n"
+"POT-Creation-Date: 2024-10-18 08:30+0200\n"
 "PO-Revision-Date: 2023-12-31 12:54+0000\n"
 "Last-Translator: Marco Aurélio Cardoso <marcoaurelio.cardoso@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -81,7 +81,7 @@ msgid "Both teams"
 msgstr "Ambas as equipes"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:105
+#: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
 msgstr "Alienígenas"
 
@@ -812,8 +812,8 @@ msgstr "graus"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:55 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:389 ui/options_mouse.rml:21 ui/options_ui.rml:74
-#: ui/options_ui.rml:153 ui/options_ui.rml:183 ui/options_ui.rml:197
+#: ui/options_graphics.rml:389 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "redefinir"
@@ -1081,7 +1081,7 @@ msgid "low"
 msgstr "baixo"
 
 #: ui/options_graphics.rml:130 ui/options_graphics.rml:351
-#: ui/options_ui.rml:176
+#: ui/options_ui.rml:177
 msgid "None"
 msgstr "Nenhum"
 
@@ -1182,7 +1182,7 @@ msgstr ""
 "Mip-mapping faz superfícies distantes parecerem melhores ao usar texturas de "
 "menor resolução nelas. Geralmente não afeta o desempenho."
 
-#: ui/options_graphics.rml:185 ui/options_ui.rml:46
+#: ui/options_graphics.rml:185 ui/options_ui.rml:47
 msgid "No"
 msgstr "Não"
 
@@ -1293,7 +1293,9 @@ msgid "Quality"
 msgstr ""
 
 #: ui/options_graphics.rml:259
-msgid "Quality of static reflection cubemaps."
+msgid ""
+"Quality of static reflection cubemaps. Higher qualities may use up a lot of "
+"disk space."
 msgstr ""
 
 #: ui/options_graphics.rml:262
@@ -1305,7 +1307,7 @@ msgstr ""
 msgid "Current:"
 msgstr "Atual:"
 
-#: ui/options_graphics.rml:272 ui/options_ui.rml:128
+#: ui/options_graphics.rml:272 ui/options_ui.rml:129
 msgid "Never"
 msgstr "Nunca"
 
@@ -1955,203 +1957,203 @@ msgstr "Idioma"
 msgid "Some languages are not fully translated."
 msgstr "Algumas línguas não estão totalmente traduzidas."
 
-#: ui/options_ui.rml:41 ui/options_welcome.rml:36
+#: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
 msgstr "Mudar idioma"
 
-#: ui/options_ui.rml:44
+#: ui/options_ui.rml:45
 msgid "Real-time clock"
 msgstr "Relógio em tempo real"
 
-#: ui/options_ui.rml:47
+#: ui/options_ui.rml:48
 msgid "12 Hour"
 msgstr "12 horas"
 
-#: ui/options_ui.rml:48
+#: ui/options_ui.rml:49
 msgid "24 Hour"
 msgstr "24 horas"
 
-#: ui/options_ui.rml:50
+#: ui/options_ui.rml:51
 msgid "Show the time in real-life."
 msgstr "Mostrar o tempo na vida real."
 
-#: ui/options_ui.rml:53
+#: ui/options_ui.rml:54
 msgid "Game-time clock"
 msgstr "Relógio de tempo de jogo"
 
-#: ui/options_ui.rml:55
+#: ui/options_ui.rml:56
 msgid "Show how long a match has lasted."
 msgstr "Mostrar quanto tempo uma partida durou."
 
-#: ui/options_ui.rml:59
+#: ui/options_ui.rml:60
 msgid "Show ping"
 msgstr "Mostrar ping"
 
-#: ui/options_ui.rml:61
+#: ui/options_ui.rml:62
 msgid "Time that information takes to get to the server and back."
 msgstr "Tempo que a informação leva para chegar ao servidor e voltar."
 
-#: ui/options_ui.rml:64
+#: ui/options_ui.rml:65
 msgid "Show movement speed"
 msgstr "Mostrar velocidade de movimento"
 
-#: ui/options_ui.rml:66
+#: ui/options_ui.rml:67
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Atual, máximo e gráfico da velocidade de movimento."
 
-#: ui/options_ui.rml:69
+#: ui/options_ui.rml:70
 msgid "Show FPS"
 msgstr "Mostrar FPS"
 
-#: ui/options_ui.rml:71
+#: ui/options_ui.rml:72
 msgid "Frames per second."
 msgstr "Quadros por segundo."
 
-#: ui/options_ui.rml:74
+#: ui/options_ui.rml:75
 msgid "Console colors"
 msgstr "Cores do console"
 
-#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
+#: ui/options_ui.rml:79 ui/options_ui.rml:158 ui/options_ui.rml:202
 msgid "Red:"
 msgstr "Vermelho:"
 
-#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
+#: ui/options_ui.rml:83 ui/options_ui.rml:162 ui/options_ui.rml:206
 msgid "Green:"
 msgstr "Verde:"
 
-#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
+#: ui/options_ui.rml:87 ui/options_ui.rml:166 ui/options_ui.rml:210
 msgid "Blue:"
 msgstr "Azul:"
 
-#: ui/options_ui.rml:90 ui/options_ui.rml:169 ui/options_ui.rml:213
+#: ui/options_ui.rml:91 ui/options_ui.rml:170 ui/options_ui.rml:214
 msgid "Alpha:"
 msgstr "Alfa:"
 
-#: ui/options_ui.rml:95
+#: ui/options_ui.rml:96
 msgid "Crosshair"
 msgstr ""
 
-#: ui/options_ui.rml:99
+#: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
 msgstr ""
 
-#: ui/options_ui.rml:103
+#: ui/options_ui.rml:104
 msgid "Weapon"
 msgstr ""
 
-#: ui/options_ui.rml:106
+#: ui/options_ui.rml:107
 msgid "Blaster"
 msgstr ""
 
-#: ui/options_ui.rml:107
+#: ui/options_ui.rml:108
 msgid "Rifle"
 msgstr ""
 
-#: ui/options_ui.rml:108
+#: ui/options_ui.rml:109
 msgid "Pain Saw"
 msgstr ""
 
-#: ui/options_ui.rml:109
+#: ui/options_ui.rml:110
 msgid "Shotgun"
 msgstr ""
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:111
 msgid "Lasgun"
 msgstr ""
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:112
 msgid "Mass Driver"
 msgstr ""
 
-#: ui/options_ui.rml:112
+#: ui/options_ui.rml:113
 msgid "Chaingun"
 msgstr ""
 
-#: ui/options_ui.rml:113
+#: ui/options_ui.rml:114
 msgid "Flamer"
 msgstr ""
 
-#: ui/options_ui.rml:114
+#: ui/options_ui.rml:115
 msgid "Pulse Rifle"
 msgstr ""
 
-#: ui/options_ui.rml:115
+#: ui/options_ui.rml:116
 msgid "Lucifer Cannon"
 msgstr ""
 
-#: ui/options_ui.rml:126
+#: ui/options_ui.rml:127
 msgid "Crosshair visiblity"
 msgstr "Visibilidade da mira"
 
-#: ui/options_ui.rml:129
+#: ui/options_ui.rml:130
 msgid "Ranged weapons only"
 msgstr "Apenas armas de longo alcance"
 
-#: ui/options_ui.rml:130
+#: ui/options_ui.rml:131
 msgid "Always"
 msgstr "Sempre"
 
-#: ui/options_ui.rml:135
+#: ui/options_ui.rml:136
 msgid "Crosshair size"
 msgstr "Tamanho da mira"
 
-#: ui/options_ui.rml:137
+#: ui/options_ui.rml:138
 msgid "Tiny"
 msgstr "Minúsculo"
 
-#: ui/options_ui.rml:138
+#: ui/options_ui.rml:139
 msgid "Small"
 msgstr "Pequeno"
 
-#: ui/options_ui.rml:139
+#: ui/options_ui.rml:140
 msgid "Regular"
 msgstr "Regular"
 
-#: ui/options_ui.rml:140
+#: ui/options_ui.rml:141
 msgid "Huge"
 msgstr "Enorme"
 
-#: ui/options_ui.rml:145
+#: ui/options_ui.rml:146
 msgid "Crosshair colour"
 msgstr ""
 
-#: ui/options_ui.rml:147
+#: ui/options_ui.rml:148
 msgid "Image colour"
 msgstr ""
 
-#: ui/options_ui.rml:148 ui/options_ui.rml:178
+#: ui/options_ui.rml:149 ui/options_ui.rml:179
 msgid "Custom colour"
 msgstr ""
 
-#: ui/options_ui.rml:153
+#: ui/options_ui.rml:154
 msgid "Crosshair colours"
 msgstr ""
 
-#: ui/options_ui.rml:174
+#: ui/options_ui.rml:175
 msgid "Crosshair outline colour"
 msgstr ""
 
-#: ui/options_ui.rml:177
+#: ui/options_ui.rml:178
 msgid "Auto colour"
 msgstr ""
 
-#: ui/options_ui.rml:183
+#: ui/options_ui.rml:184
 msgid "Crosshair outline scale"
 msgstr ""
 
-#: ui/options_ui.rml:185
+#: ui/options_ui.rml:186
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
 
-#: ui/options_ui.rml:188
+#: ui/options_ui.rml:189
 msgid "Scale:"
 msgstr ""
 
-#: ui/options_ui.rml:192
+#: ui/options_ui.rml:193
 msgid "Offset:"
 msgstr ""
 
-#: ui/options_ui.rml:197
+#: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
 msgstr ""
 
