@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-17 21:04+0200\n"
-"PO-Revision-Date: 2024-10-17 20:17+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2024-10-18 05:57+0000\n"
+"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -1036,7 +1036,7 @@ msgstr "Plaquage de la lumière"
 
 #: ui/options_graphics.rml:97
 msgid "normal"
-msgstr "normal"
+msgstr "normale"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
@@ -1044,7 +1044,7 @@ msgstr "Éclairage par vertex"
 
 #: ui/options_graphics.rml:98
 msgid "low, ugly"
-msgstr "bas, moche"
+msgstr "basse, moche"
 
 #: ui/options_graphics.rml:100
 msgid "Lighting system"
