@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-18 05:57+0000\n"
+"PO-Revision-Date: 2024-10-18 16:07+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
@@ -453,7 +453,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr "Caminar sobre las paredes"
+msgstr "Caminar por la pared"
 
 #: ui/help_gameplay.rml:142
 msgid ""
@@ -494,33 +494,34 @@ msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
-"Todos los costos y ganancias de la evolución alienígena se han duplicado. El "
-"nuevo máximo de evos que un alien puede almacenar es 20 (antes 9)."
+"Se han duplicado todos los costes y ganancias de evolución de los "
+"alienígenas. El nuevo máximo de evos que puede almacenar un alienígena es 20 "
+"(antes 9)."
 
 #: ui/help_gameplay.rml:164
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
-"Las etapas han sido sustituidas por el momentum, y los puntos de "
-"construcción dependen directamente del número de drills."
+"Las etapas se sustituyeron por el impulso, y los puntos de acumulación "
+"dependen directamente del número de ejercicios."
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
-"Los humanos ya no tienen la torre de defensa de Tesla ni la computadora de "
-"defensa, pero pueden construir torres lanzacohetes."
+"Los humanos ya no tienen la torre de defensa Tesla ni el ordenador de "
+"defensa, pero pueden construir vainas de cohetes."
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Los alienígenas tienen la construcción spiker, que puede herir profundamente "
-"a los humanos imprudentes, pero es una estructura muy vulnerable, ¡no lo "
-"pongas a la vista!"
+"Los extraterrestres tienen el spiker construible que puede herir "
+"profundamente a los humanos imprudentes, pero es una estructura muy "
+"vulnerable, ¡no la pongas a la vista!"
 
 #: ui/help_gameplay.rml:173
 msgid ""
@@ -1147,7 +1148,7 @@ msgstr "Límite en el tamaño de la imagen del menú"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Limitar el tamaño de la imagen en los menús para ahorrar memoria."
 
 #: ui/options_graphics.rml:167
 msgid "High-precision rendering"
