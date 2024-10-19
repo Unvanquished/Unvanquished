@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-16 19:30+0000\n"
+"PO-Revision-Date: 2024-10-20 08:46+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -52,8 +52,7 @@ msgstr "Фермер"
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr ""
-"Подонки - скрытно атакующая форма, а Фермер - строительная форма Чужих."
+msgstr "Подонки — скрытно атакующая форма, а Фермер — строительная форма Чужих."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
@@ -148,8 +147,7 @@ msgstr ""
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
-"Больше информации можно найти на нашем веб-сайте и в других местах "
-"сообщества!"
+"Подробности можно найти на нашем веб-сайте и в других местах сообщества!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
@@ -496,8 +494,8 @@ msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
-"Вся эволюция пришельцев была переработана; теперь она стоит дороже но и "
-"выгоды от нее больше. Самое большое кол-во эволюций теперь 20 (раньше было "
+"Вся эволюция пришельцев была переработана; теперь она стоит дороже, но и "
+"выгоды от неё больше. Максимальное число эволюций теперь равно 20 (ранее — "
 "9)."
 
 #: ui/help_gameplay.rml:164
@@ -605,7 +603,7 @@ msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
-"SMG — стартовое скорострельное оружие, а набор конструктора - инструмент, "
+"SMG — стартовое скорострельное оружие, а набор конструктора — инструмент, "
 "который строит и ремонтирует структуры людей. Все снаряжение можно обменять "
 "в Арсенале."
 
@@ -1031,13 +1029,15 @@ msgstr "Система освещения"
 
 #: ui/options_graphics.rml:103
 msgid "Brightness clamping"
-msgstr ""
+msgstr "Фиксация яркости"
 
 #: ui/options_graphics.rml:105
 msgid ""
 "Old brightness limit of map lighting of world surfaces and models (the way "
 "legacy maps looked before)"
 msgstr ""
+"Старый предел яркости освещения поверхностей мира и моделей на карте (то, "
+"как раньше выглядели старые карты)"
 
 #: ui/options_graphics.rml:108
 msgid "Light styles"
@@ -1070,11 +1070,12 @@ msgstr "Освещать края моделей сзади."
 
 #: ui/options_graphics.rml:123
 msgid "Half Lambert lighting"
-msgstr "Освещение полу-Ламберта (Half Lambert)"
+msgstr "Половинное освещение Ламберта"
 
 #: ui/options_graphics.rml:125
 msgid "Non-physical lighting technique to make models less dark."
-msgstr "Не-физическая техника освещения, чтобы сделать модели менее тёмными."
+msgstr ""
+"Нефизическая техника освещения, позволяющая сделать модели менее тёмными."
 
 #: ui/options_graphics.rml:129
 msgid "Blobs"
@@ -1161,13 +1162,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "Использовать текстуры без привязки по возможности"
 
 #: ui/options_graphics.rml:174
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"Использовать текстуры без привязки, если они поддерживаются оборудованием/"
+"драйвером. Это может повысить производительность."
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:224
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:306
@@ -1223,11 +1226,11 @@ msgstr "Материалы"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "Небо"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "Рисовать небо."
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
@@ -1272,21 +1275,24 @@ msgstr ""
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "Отражения"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr ""
+msgstr "Статичные отражения"
 
 #: ui/options_graphics.rml:248
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
+"Добавляет статические отражения кубической карты на поддерживаемые "
+"поверхности. Требуются нормальное, спекулярное и делюксовое текстурирования. "
+"В настоящее время не поддерживается с физическим текстурированием."
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "Очень низкий"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
@@ -1294,21 +1300,23 @@ msgstr "Среднее"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "Очень высокий"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "Качество"
 
 #: ui/options_graphics.rml:259
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"Качества кубических карт статичного отражения. Более высокое качество может "
+"занять больше места на диске."
 
 #: ui/options_graphics.rml:262
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "Расстояние между сетками кубических карт"
 
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
@@ -1321,19 +1329,19 @@ msgstr "Никогда"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
-msgstr ""
+msgstr "Кэш на диске"
 
 #: ui/options_graphics.rml:274
 msgid "Always rebuild"
-msgstr ""
+msgstr "Всегда перестраивать"
 
 #: ui/options_graphics.rml:276
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Автосборка кубических карт статичного отражения"
 
 #: ui/options_graphics.rml:277
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr ""
+msgstr "Автоматически создавать/загружать/сохранять кубические карты отражения."
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
@@ -1390,33 +1398,36 @@ msgstr "Позволить частицам отскакивать от пове
 
 #: ui/options_graphics.rml:323
 msgid "Renderer"
-msgstr ""
+msgstr "Отрисовщик"
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
-msgstr ""
+msgstr "Система материалов"
 
 #: ui/options_graphics.rml:329
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Использовать новую систему, которая значительно повышает производительность. "
+"Некоторые драйверы могут не работать в этом режиме (например, Mesa и "
+"проприетарные драйверы AMD)."
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "Уборка фрагментов графического процессора"
 
 #: ui/options_graphics.rml:334
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "Убирать поверхности, которые вне видимости."
 
 #: ui/options_graphics.rml:337
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "Устранение окклюзии графического процессора"
 
 #: ui/options_graphics.rml:339
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "Убирать скрытые поверхности."
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
@@ -1472,7 +1483,7 @@ msgstr "Радиус построек"
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr ""
+msgstr "Модели"
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
@@ -4060,7 +4071,7 @@ msgstr "Своё: %dx%d"
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 #, c-format
 msgid "Same as screen (%dx%d)"
-msgstr ""
+msgstr "То же, что и у экрана (%dx%d)"
 
 #: src/cgame/cg_rocket_draw.cpp:2534
 msgid "You are at the front of the spawn queue"
