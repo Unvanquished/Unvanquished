@@ -14,7 +14,7 @@
 			end
 		</script>
 	</head>
-	<body id="options_ui" template="window" class="window-options" style="margin-top: 10%; width: 32em;">
+	<body id="options_ui" template="window" class="window-options" style="margin-top: 2%; width: 32em;">
 		<h1><translate>User interface</translate></h1>
 		<tabset ontabchange='setWeapon(document, "rifle")'>
 			<tab><translate>Main</translate></tab>
@@ -32,6 +32,7 @@
 						<option value="de">Deutsch</option>
 						<option value="it">Italiano</option>
 						<option value="es">Español</option>
+						<option value="pt">Português</option>
 						<option value="pt_BR">Português (Brasil)</option>
 						<option value="fi">Suomi</option>
 						<option value="zh_Hans">中文（简体）</option>

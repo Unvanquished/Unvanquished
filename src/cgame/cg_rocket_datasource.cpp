@@ -525,8 +525,7 @@ static void SelectCurrentResolution()
 	int width = cgs.glconfig.vidWidth;
 	int height = cgs.glconfig.vidHeight;
 
-	// TODO(0.55): verify that current size equals display size
-	if ( mode == -2 /* && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight */ )
+	if ( mode == -2 && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight )
 	{
 		width = height = 0; // see resolution_t comment
 	}

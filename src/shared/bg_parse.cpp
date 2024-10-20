@@ -777,7 +777,6 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 		ZOFFSET = 1 << 4,
 		OLDSCALE = 1 << 5,
 		OLDOFFSET = 1 << 6,
-		MODEL_ROTATION = 1 << 7
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -840,8 +839,6 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 			bc->modelRotation[ 1 ] = atof( token );
 			PARSE( text, token );
 			bc->modelRotation[ 2 ] = atof( token );
-
-			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "mins" ) )
 		{
@@ -1385,6 +1382,15 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
 			defined |= MODELSCALE;
 		}
+		else if ( !Q_stricmp( token, "modelRotation" ) )
+		{
+			PARSE( text, token );
+			cc->modelRotation[ 0 ] = atof( token );
+			PARSE( text, token );
+			cc->modelRotation[ 1 ] = atof( token );
+			PARSE( text, token );
+			cc->modelRotation[ 2 ] = atof( token );
+		}
 		else if ( !Q_stricmp( token, "shadowScale" ) )
 		{
 			float scale;
@@ -1521,10 +1527,6 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 			}
 
 			defined |= SHOULDEROFFSETS;
-		}
-		else if ( !Q_stricmp( token, "useNavMesh" ) ) // TODO(0.55): remove
-		{
-			PARSE(text, token);
 		}
 		else
 		{
@@ -2105,7 +2107,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		IMPACT_SOUND     = 1 << 20,
 		IMPACT_FLESH_SND = 1 << 21,
 		MODEL_SCALE      = 1 << 22,
-		MODEL_ROTATION   = 1 << 23,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof( text_buffer ) ) )
@@ -2143,8 +2144,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->modelRotation[ 1 ] = atof( token );
 			PARSE( text, token );
 			ma->modelRotation[ 2 ] = atof( token );
-
-			defined |= MODEL_ROTATION;
 		}
 		else if ( !Q_stricmp( token, "sound" ) )
 		{
@@ -2409,7 +2408,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Log::Warn( "Invalid beacon icon index %i in %s", index, filename );
 			else
-				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 #endif
 		}
 		else if ( !Q_stricmp( token, "hlIcon" ) )
@@ -2423,7 +2422,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Log::Warn( "Invalid beacon highlighted icon index %i in %s", index, filename );
 			else
-				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 #endif
 		}
 		else if ( !Q_stricmp( token, "inSound" ) )

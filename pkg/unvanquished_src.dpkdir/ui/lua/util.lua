@@ -41,6 +41,7 @@ function detectEscape(event, document)
 				v:Hide()
 			end
 		end
+		event:StopPropagation()
 	end
 end
 
@@ -101,6 +102,24 @@ function CirclemenuHandleKey(event, document, num_handler)
 		return
 	end
 	num_handler(index, event)
+	event:StopPropagation()
+end
+
+circlemenu_documents = {
+	"alien_build",
+	"alien_evo",
+	"human_build",
+	"human_buy",
+	"ingame_beaconmenu",
+}
+function CloseOtherCirclemenus(event)
+	-- The event is assumed to be on the <body> element
+	my_id = event.target_element.id
+	for _, doc_id in ipairs(circlemenu_documents) do
+		if doc_id ~= my_id then
+			Events.pushcmd("hide " .. doc_id)
+		end
+	end
 end
 
 function welcome()

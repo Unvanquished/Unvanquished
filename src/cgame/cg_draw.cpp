@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "common/Common.h"
 #include "cg_local.h"
+#include "rocket/rocket.h"
 
 // Moves `point` to (if !allowInterior) an edge of the rectangle, or (if allowInterior) to
 // any point on/inside the rectangle. Returns whether point was clamped.
@@ -174,30 +175,23 @@ void CG_MousePosEvent( int x, int y )
 {
 	rocketInfo.cursor_pos.x = x;
 	rocketInfo.cursor_pos.y = y;
-	if ( rocketInfo.keyCatcher & KEYCATCH_UI)
+	if ( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE )
 	{
 		Rocket_MouseMove( x, y );
 	}
-	else if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
-	     !cg.showScores )
-	{
-		CG_SetKeyCatcher( 0 );
-	}
 }
 
-void CG_KeyEvent( Keyboard::Key key, bool down )
+bool CG_KeyEvent( Keyboard::Key key, bool down )
 {
-	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
+	if ( down && key == Keyboard::Key(K_ESCAPE) && !CG_AnyMenuOpen() )
 	{
-		Rocket_ProcessKeyInput( key, down );
+		// Open the main menu if no menus are open
+		trap_SendConsoleCommand( "toggleMenu" );
+
+		return true;
 	}
-	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
-	       !cg.showScores ) )
-	{
-		CG_SetKeyCatcher( 0 );
-	}
+
+	return Rocket_ProcessKeyInput( key, down );
 }
 
 void CG_RunMenuScript( char **args )

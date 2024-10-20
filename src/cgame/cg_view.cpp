@@ -1906,6 +1906,8 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	cg.demoPlayback = demoPlayback;
 	cg.currentCmdNumber = trap_GetCurrentCmdNumber();
 
+	CG_ResetMarks();
+
 	CG_NotifyHooks();
 
 	// any looped sounds will be respecified as entities
@@ -1969,7 +1971,8 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	if ( !cg.hyperspace )
 	{
 		CG_AddPacketEntities(); // after calcViewValues, so predicted player state is correct
-		CG_AddMarks();
+		CG_ProcessMarks();
+		CG_AddMarkPolys();
 	}
 
 	CG_AddViewWeapon( &cg.predictedPlayerState );

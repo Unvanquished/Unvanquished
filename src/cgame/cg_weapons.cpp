@@ -71,7 +71,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 	icon = BG_Upgrade( upgradeNum )->icon;
 	if ( icon )
 	{
-		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 	}
 }
 
@@ -814,7 +814,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				break;
 			}
 
-			wi->weaponIcon = wi->ammoIcon = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+			wi->weaponIcon = wi->ammoIcon = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 			if ( !wi->weaponIcon )
 			{
@@ -832,7 +832,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				break;
 			}
 
-			wi->crossHair = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+			wi->crossHair = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 			if ( !wi->crossHair )
 			{
@@ -850,7 +850,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				break;
 			}
 
-			wi->crossHairIndicator = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+			wi->crossHairIndicator = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 			if ( !wi->crossHairIndicator )
 			{
@@ -2604,7 +2604,9 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	// mark
 	if ( wim->impactMark && wim->impactMarkSize > 0.0f )
 	{
-		CG_ImpactMark( wim->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, false, wim->impactMarkSize, false );
+		CG_RegisterMark( wim->impactMark, origin, normal,
+			random() * 360, 1, 1, 1, 1,
+			false, wim->impactMarkSize, false );
 	}
 
 	// tracer
@@ -2678,8 +2680,9 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	// mark
 	if ( ma->impactMark && ma->impactMarkSize > 0.0f )
 	{
-		CG_ImpactMark( ma->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, false,
-		               ma->impactMarkSize, false );
+		CG_RegisterMark( ma->impactMark, origin, normal,
+			random() * 360, 1, 1, 1, 1,
+			false, ma->impactMarkSize, false );
 	}
 }
 

@@ -188,7 +188,7 @@ static KeyModifier Rocket_GetKeyModifiers()
 static void Rocket_ProcessMouseClick( int button, bool down )
 {
 	static bool wasDownBefore = false;
-	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
 	{
 		return;
 	}
@@ -229,38 +229,51 @@ static void Rocket_ProcessMouseClick( int button, bool down )
 }
 
 #define MOUSEWHEEL_DELTA 5
-void Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
+bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 {
-	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !CG_AnyMenuOpen() )
 	{
-		return;
+		return false;
 	}
 
 	keyNum_t keynum = key.AsKeynum();
 	// Our input system sends mouse events as key presses.
 	if ( ( keynum >= K_MOUSE1 && keynum <= K_MOUSE5 ) || ( keynum >= K_AUX1 && keynum <= K_AUX16 ) )
 	{
+		if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+		{
+			return false;
+		}
+
 		Rocket_ProcessMouseClick( keynum, down );
-		return;
+		// TODO detect whether mouse click is consumed?
+		// Well it would probably be weird and bad if MOUSE1 were not consumed by the menu,
+		// but like MOUSE3 could be useful
+		return true;
 	}
 
 	if ( ( keynum == K_MWHEELDOWN || keynum == K_MWHEELUP ) )
 	{
+		if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+		{
+			return false;
+		}
+
 		// Our input system sends an up event right after a down event
 		// We only want to catch one of these.
 		if ( !down )
 		{
-			return;
+			return false;
 		}
 
-		menuContext->ProcessMouseWheel( keynum == K_MWHEELDOWN ? MOUSEWHEEL_DELTA : -MOUSEWHEEL_DELTA, Rocket_GetKeyModifiers() );
-		return;
+		return !menuContext->ProcessMouseWheel( keynum == K_MWHEELDOWN ? MOUSEWHEEL_DELTA : -MOUSEWHEEL_DELTA, Rocket_GetKeyModifiers() );
 	}
 	KeyIdentifier rocketKey = Rocket_FromQuake( key.AsLegacyInt() );
 	if ( down )
 	{
+		bool consumed = false;
 		if (rocketKey != KI_UNKNOWN) {
-			menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
+			consumed = !menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
 		}
 		Rml::Element* focus = menuContext->GetFocusElement();
 		if ( focus != nullptr ) {
@@ -270,19 +283,23 @@ void Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 			// it will cancel the binding and not bind Escape.
 			focus->DispatchEvent( BINDABLE_KEY_EVENT, dict );
 		}
+		// This will be incorrect if it was consumed by the bind menu, but the bind
+		// menu should have KEYCATCH_UI_KEY on so it doesn't matter
+		return consumed;
 	}
 	else
 	{
 		if (rocketKey != KI_UNKNOWN) {
-			menuContext->ProcessKeyUp( rocketKey, Rocket_GetKeyModifiers() );
+			return !menuContext->ProcessKeyUp( rocketKey, Rocket_GetKeyModifiers() );
 		}
+		return false;
 	}
 }
 
 
 void Rocket_ProcessTextInput( int c )
 {
-	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !( rocketInfo.keyCatcher & KEYCATCH_UI_KEY ) )
 	{
 		return;
 	}
@@ -300,7 +317,7 @@ void Rocket_ProcessTextInput( int c )
 
 void Rocket_MouseMove( int x, int y )
 {
-	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) || rocketInfo.cursorFreezeTime == rocketInfo.realtime )
+	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) || rocketInfo.cursorFreezeTime == rocketInfo.realtime )
 	{
 		return;
 	}

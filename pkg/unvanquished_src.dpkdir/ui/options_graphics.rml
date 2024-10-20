@@ -16,7 +16,7 @@
 			}
 		</style>
 	</head>
-	<body id="options_graphics" template="window" class="window-options" style="margin-top: 30%; width: 46em;" onload='Events.pushcmd("buildDS resolutions")'>
+	<body id="options_graphics" template="window" class="window-options" style="margin-top: 25%; width: 46em;" onload='Events.pushcmd("buildDS resolutions")'>
 		<h1><translate>Graphics</translate></h1>
 
 		<tabset>
@@ -25,7 +25,7 @@
 				<h2><translate>Presets</translate></h2>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/lowest.cfg")'><translate>Lowest</translate></button>
-					<span><translate>Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel textures…</translate></span>
+					<span><translate>Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel textures…</translate></span>
 				</row>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/low.cfg")'><translate>Low</translate></button>
@@ -93,20 +93,25 @@
 			<panel>
 				<h2><translate>Lights</translate></h2>
 				<row>
-					<select cvar="r_vertexLighting">
-						<option value="0"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
-						<option value="1"><translate>Grid lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
+					<select cvar="r_lightMode">
+						<option value="3"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
+						<option value="1"><translate>Vertex lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
 					</select>
 					<h3><translate>Lighting system</translate></h3>
 				</row>
 				<row>
+					<h3><translate>Brightness clamping</translate></h3>
+					<input cvar="r_overbrightDefaultClamp" type="checkbox" />
+					<p><translate>Old brightness limit of map lighting of world surfaces and models (the way legacy maps looked before)</translate></p>
+				</row>
+				<row>
 					<h3><translate>Light styles</translate></h3>
-					<input cvar="r_lightStyles" type="checkbox" checked-value="1" />
+					<input cvar="r_lightStyles" type="checkbox" />
 					<p><translate>Precomputed dynamic lights emitted by static map objects.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Dynamic lights</translate></h3>
-					<input cvar="r_dynamicLight" type="checkbox" checked-value="2" />
+					<input cvar="r_realtimeLighting" type="checkbox" />
 					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
 				</row>
 				<row>
@@ -121,13 +126,8 @@
 				</row>
 				<row>
 					<select cvar="cg_shadows" style="width:20em;">
-						<option value="0"><translate>None</translate></option>
 						<option value="1"><translate>Blobs</translate>&nbsp;(<translate>low</translate>)</option>
-						<!-- Implementations for those options are broken and can make the game unusable
-						<option value="3"><translate>Exponential mapping</translate></option>
-						<option value="5"><translate>Variance mapping</translate></option>
-						<option value="6"><translate>Exponential + variance</translate>&nbsp;(<translate>high</translate>)</option>
-						-->
+						<option value="0"><translate>None</translate></option>
 					</select>
 					<h3><translate>Shadows</translate></h3>
 				</row>
@@ -140,32 +140,57 @@
 			<panel>
 				<h2><translate>General</translate></h2>
 				<row>
-					<select cvar="r_picmip" style="width: 20em;">
-						<option value="2"><translate>Low</translate>&nbsp;(1:4)</option>
-						<option value="1"><translate>Medium</translate>&nbsp;(1:2)</option>
-						<option value="0"><translate>Full</translate>&nbsp;(1:1)</option>
+					<select cvar="r_imageMaxDimension">
+						<option value="0"><translate>No limit</translate></option>
+						<option value="4096">4096&nbsp;<translate>(ultra)</translate></option>
+						<option value="2048">2048&nbsp;<translate>(high)</translate></option>
+						<option value="512">512&nbsp;<translate>(medium)</translate></option>
+						<option value="256">256&nbsp;<translate>(low)</translate></option>
+						<option value="16">64&nbsp;<translate>(lowest)</translate></option>
 					</select>
-					<h3><translate>Texture size</translate></h3>
-					<p><translate>Lower texture size is useful for cards with limited video memory (VRAM).</translate></p>
+					<h3><translate>Image size limit</translate></h3>
+					<p><translate>Limit image size to save on memory.</translate></p>
+				</row>
+
+				<row>
+					<select cvar="r_imageFitScreen">
+						<option value="0"><translate>No limit</translate></option>
+						<option value="1"><translate>No smaller than screen</translate></option>
+						<option value="2"><translate>No larger than screen</translate></option>
+					</select>
+					<h3><translate>Menu image size limit</translate></h3>
+					<p><translate>Limit menu image size to save on memory.</translate></p>
+				</row>
+
+				<row>
+					<input cvar="r_highPrecisionRendering" type="checkbox" />
+					<h3><translate>High-precision rendering</translate></h3>
+					<p><translate>Use high-precision pixel buffers, which reduce color banding.</translate></p>
+				</row>
+
+				<row>
+					<h3><translate>Use bindless textures if possible</translate></h3>
+					<input cvar="r_preferBindlessTextures" type="checkbox" />
+					<p><translate>Use bindless textures if supported by hardware/driver. This might improve performance.</translate>&nbsp;<translate>Experimental.</translate></p>
 				</row>
 
 				<h2><translate>Mip-mapping</translate></h2>
 				<p><translate>Mip-mapping makes distant surfaces look better by using lower-resolution textures on them. This generally does not affect performance.</translate></p>
 				<row>
 					<select cvar="r_ext_texture_filter_anisotropic">
-						<option value="0"><translate>No</translate></option>
-						<option value="2">2×</option>
-						<option value="4">4×</option>
-						<option value="8">8×</option>
 						<option value="16">16×</option>
+						<option value="8">8×</option>
+						<option value="4">4×</option>
+						<option value="2">2×</option>
+						<option value="0"><translate>No</translate></option>
 					</select>
 					<h3><translate>Anisotropic mip-mapping</translate></h3>
 					<p><translate>Better interpretation of mip-maps on angled surfaces.</translate></p>
 				</row>
 				<row>
 					<select cvar="r_textureMode">
-						<option value="GL_LINEAR_MIPMAP_NEAREST"><translate>Bilinear</translate></option>
 						<option value="GL_LINEAR_MIPMAP_LINEAR"><translate>Trilinear</translate>&nbsp;(<translate>better</translate>)</option>
+						<option value="GL_LINEAR_MIPMAP_NEAREST"><translate>Bilinear</translate></option>
 					</select>
 					<h3><translate>Texture scaling filter</translate></h3>
 				</row>
@@ -175,9 +200,14 @@
 				</buttonbar>
 			</panel>
 
-			<tab>Materials</tab>
+			<tab><translate>Materials</translate></tab>
 			<panel>
 				<h2><translate>Materials</translate></h2>
+				<row>
+					<h3><translate>Sky</translate></h3>
+					<input cvar="r_drawSky" type="checkbox" />
+					<p><translate>Draw the sky.</translate></p>
+				</row>
 				<row>
 					<h3><translate>Normal mapping</translate></h3>
 					<input cvar="r_normalMapping" type="checkbox" />
@@ -209,13 +239,61 @@
 				</buttonbar>
 			</panel>
 
-			<tab>Effects</tab>
+			<tab><translate>Reflections</translate></tab>
+			<panel>
+				<h2><translate>Reflections</translate></h2>
+				<row>
+					<h3><translate>Static reflections</translate></h3>
+					<input cvar="r_reflectionMapping" type="checkbox" />
+					<p><translate>Adds static cubemap reflections on supported surfaces. Requires normal, specular and deluxe mapping. Currently unsupported with physical mapping.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<select cvar="r_cubeProbeSize">
+						<option value="32"><translate>Very low</translate>&nbsp;(32)</option>
+						<option value="64"><translate>Low</translate>&nbsp;(64)</option>
+						<option value="96"><translate>Moderate</translate>&nbsp;(96)</option>
+						<option value="128"><translate>High</translate>&nbsp;(128)</option>
+						<option value="160"><translate>Very high</translate>&nbsp;(160)</option>
+					</select>
+					<h3><translate>Quality</translate></h3>
+					<p><translate>Quality of static reflection cubemaps. Higher qualities may use up a lot of disk space.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Cubemap grid spacing</translate></h3>
+					<br/>
+					<input type="range" min="64" max="1024" step="64" cvar="r_cubeProbeSpacing"/>
+					<p class="inline">
+						<translate>Current:</translate>&nbsp;<inlinecvar cvar="r_cubeProbeSpacing" type="number" format="%.0f"/>
+						&nbsp;<ilink onclick='Cmd.exec("reset r_cubeProbeSpacing")'>(<translate>reset</translate>)</ilink>
+					</p>
+				</row>
+				<row>
+					<select cvar="r_autoBuildCubeMaps">
+						<option value="0"><translate>Never</translate></option>
+						<option value="1"><translate>Cache on disk</translate></option>
+						<option value="2"><translate>Always rebuild</translate></option>
+					</select>
+					<h3><translate>Static reflection cubemaps autobuild</translate></h3>
+					<p><translate>Automatically build/load/save reflection cubemaps.</translate></p>
+				</row>
+
+				<buttonbar>
+					<button onclick='Cmd.exec("vid_restart")'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
+			<tab><translate>Effects</translate></tab>
 			<panel>
 				<h2><translate>Effects</translate></h2>
 				<row>
 					<h3><translate>Bloom</translate></h3>
 					<input cvar="r_bloom" type="checkbox" />
 					<p><translate>Makes bright areas on your screen glow.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Color grading</translate></h3>
+					<input cvar="r_colorGrading" type="checkbox" />
+					<p><translate>Alter colors to create specific ambiences.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Heat-haze</translate></h3>
@@ -242,6 +320,29 @@
 				</buttonbar>
 			</panel>
 
+			<tab><translate>Renderer</translate></tab>
+			<panel>
+				<h2><translate>Material system</translate></h2>
+				<row>
+					<h3><translate>Material system</translate></h3>
+					<input cvar="r_materialSystem" type="checkbox" />
+					<p><translate>Use a new system that significantly improves performance. Some drivers may fail with this on (e. g. Mesa and AMD proprietary drivers).</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<h3><translate>GPU frustum culling</translate></h3>
+					<input cvar="r_gpuFrustumCulling" type="checkbox" />
+					<p><translate>Cull surfaces that are out of view.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<h3><translate>GPU occlusion culling</translate></h3>
+					<input cvar="r_gpuOcclusionCulling" type="checkbox" />
+					<p><translate>Cull hidden surfaces.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<buttonbar>
+					<button onclick='Cmd.exec("vid_restart")'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
 			<tab><translate>Gameplay</translate></tab>
 			<panel>
 				<h2><translate>Building markers</translate></h2>
@@ -259,6 +360,14 @@
 						<option value="humanoffensive"><translate>Offensive human structures</translate></option>
 					</select>
 					<h3><translate>Building ranges</translate></h3>
+				</row>
+				<h2><translate>Models</translate></h2>
+				<row>
+					<select cvar="cg_lowQualityModels">
+						<option value="off"><translate>High</translate></option>
+						<option value="on"><translate>Low</translate></option>
+					</select>
+					<h3><translate>Quality</translate></h3>
 				</row>
 				<h2><translate>Motion blur</translate></h2>
 				<row>
