@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-08-02 11:09+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2024-10-14 17:46+0000\n"
+"Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1750,7 +1750,7 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr ""
+msgstr "Movimento e Cosmesi"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -1807,11 +1807,11 @@ msgstr "Umani e alieni"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "Umani (traslucidi)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "Umani e alieni (traslucidi)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1861,32 +1861,33 @@ msgstr ""
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr ""
+msgstr "Emoticon"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr ""
+msgstr "Nel proprio nickname si possono inserire anche delle emoticon."
 
 #: ui/options_player.rml:70
 msgid ""
 "Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
 msgstr ""
+"Esempio: ^7^^3Fred^^1Baggins[^7grenade]^* diventa ^3Fred^1Baggins[grenade]"
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr ""
+msgstr "Ecco l'elenco delle emoticon disponibili:"
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
-msgstr ""
+msgstr "Costruzioni umane"
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
-msgstr ""
+msgstr "Costruzioni aliene"
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "Altri"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
@@ -1954,19 +1955,19 @@ msgstr "Interfaccia utente"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Principale"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr ""
+msgstr "Alcune lingue non sono completamente tradotte."
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "Cambia lingua"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
@@ -2039,55 +2040,55 @@ msgstr "Trasparenza:"
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
-msgstr ""
+msgstr "Crocino"
 
 #: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "ATTENZIONE: l'anteprima funziona solo nel gioco."
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr ""
+msgstr "Arma"
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
-msgstr ""
+msgstr "Blaster"
 
 #: ui/options_ui.rml:108
 msgid "Rifle"
-msgstr ""
+msgstr "Fucile"
 
 #: ui/options_ui.rml:109
 msgid "Pain Saw"
-msgstr ""
+msgstr "Sega del dolore"
 
 #: ui/options_ui.rml:110
 msgid "Shotgun"
-msgstr ""
+msgstr "Doppietta"
 
 #: ui/options_ui.rml:111
 msgid "Lasgun"
-msgstr ""
+msgstr "Fucile laser"
 
 #: ui/options_ui.rml:112
 msgid "Mass Driver"
-msgstr ""
+msgstr "Sposta massa"
 
 #: ui/options_ui.rml:113
 msgid "Chaingun"
-msgstr ""
+msgstr "Mitragliatrice"
 
 #: ui/options_ui.rml:114
 msgid "Flamer"
-msgstr ""
+msgstr "Lanciafiamme"
 
 #: ui/options_ui.rml:115
 msgid "Pulse Rifle"
-msgstr ""
+msgstr "Fucile a impulsi"
 
 #: ui/options_ui.rml:116
 msgid "Lucifer Cannon"
-msgstr ""
+msgstr "Cannone Lucifer"
 
 #: ui/options_ui.rml:127
 msgid "Crosshair visiblity"
@@ -2123,47 +2124,49 @@ msgstr "Enorme"
 
 #: ui/options_ui.rml:146
 msgid "Crosshair colour"
-msgstr ""
+msgstr "Colore mirino"
 
 #: ui/options_ui.rml:148
 msgid "Image colour"
-msgstr ""
+msgstr "Colore immagine"
 
 #: ui/options_ui.rml:149 ui/options_ui.rml:179
 msgid "Custom colour"
-msgstr ""
+msgstr "Colore personalizzato"
 
 #: ui/options_ui.rml:154
 msgid "Crosshair colours"
-msgstr ""
+msgstr "Colori mirino"
 
 #: ui/options_ui.rml:175
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "Colore contorno mirino"
 
 #: ui/options_ui.rml:178
 msgid "Auto colour"
-msgstr ""
+msgstr "Colore automatico"
 
 #: ui/options_ui.rml:184
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "Scala del contorno del mirino"
 
 #: ui/options_ui.rml:186
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
+"I valori negativi modificheranno il contorno, posizionandolo all'interno del "
+"mirino."
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr ""
+msgstr "Scala:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
-msgstr ""
+msgstr "Scostamento:"
 
 #: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "Colori del contorno del mirino"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2183,7 +2186,7 @@ msgstr "Puoi cambiarlo in qualsiasi momento nelle opzioni."
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "Quale lingua usare?"
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
@@ -3460,182 +3463,186 @@ msgstr "%s%s ^*è stato morso da %s%s%s^*; %s%s%s^* ha contribuito"
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*è stato tagliato dalla mantide di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*è stato tagliato dalla mantide di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*è stato tagliato dalla mantide di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato tagliato dalla mantide di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato tagliato dalla mantide di %s%s%s^*; %s%s%s^* ha assistito"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato tagliato dalla mantide di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*è stato fatto a pezzi dal predone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*è stato fatto a pezzi dal predone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*è stato fatto a pezzi dal predone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato fatto a pezzi dal predone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato fatto a pezzi dal predone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato fatto a pezzi dal predone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*è stato folgorato dal predone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*è stato folgorato dal predone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*è stato folgorato dal predone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato folgorato dal predone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato folgorato dal predone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato folgorato dal predone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato sventrato dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato sventrato dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato sventrato dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato sventrato dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato sventrato dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato sventrato dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato assalito dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato assalito dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato assalito dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato assalito dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato assalito dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato assalito dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato trafitto dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato trafitto dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*è stato trafitto dal dragone di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato trafitto dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato trafitto dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato trafitto dal dragone di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "male"
@@ -3655,47 +3662,47 @@ msgstr "%s%s ^*è stato riempito di spine"
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*è stato massacrato dal tiranno di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*è stato massacrato dal tiranno di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*è stato massacrato dal tiranno di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato massacrato dal tiranno di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato massacrato dal tiranno di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato massacrato dal tiranno di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*avrebbe dovuto togliersi di mezzo dal tiranno di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*avrebbe dovuto togliersi di mezzo dal tiranno di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*avrebbe dovuto togliersi di mezzo dal tiranno di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "male"
@@ -3703,6 +3710,8 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*avrebbe dovuto togliersi di mezzo dal tiranno di %s%s%s^*; %s%s%s^* "
+"ha aiutato"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "female"
@@ -3710,6 +3719,8 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*avrebbe dovuto togliersi di mezzo dal tiranno di %s%s%s^*; %s%s%s^* "
+"ha aiutato"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "neuter"
@@ -3717,6 +3728,8 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*avrebbe dovuto togliersi di mezzo dal tiranno di %s%s%s^*; %s%s%s^* "
+"ha aiutato"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "male"
@@ -3943,12 +3956,12 @@ msgstr "La nostra base è sotto attacco!"
 #: src/cgame/cg_event.cpp:1269
 #, c-format
 msgid "%s under attack – %s"
-msgstr ""
+msgstr "%s è sotto attacco – %s"
 
 #: src/cgame/cg_event.cpp:1273
 #, c-format
 msgid "%s under attack"
-msgstr ""
+msgstr "%s è sotto attacco"
 
 #: src/cgame/cg_main.cpp:472
 msgid "Calling home…"
@@ -4596,7 +4609,7 @@ msgstr "cgame: debug: menu inesistente %d"
 
 #: src/cgame/cg_servercmds.cpp:851
 msgid "^1*DEAD*^*"
-msgstr ""
+msgstr "^1*MORTO*^*"
 
 #: src/cgame/cg_servercmds.cpp:912
 #, c-format
@@ -4920,12 +4933,12 @@ msgstr "Sto aspettando che alcuni giocatori siano pronti."
 #: src/cgame/cg_tutorial.cpp:615
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr ""
+msgstr "Premi %s per chiacchierare con tutti i giocatori."
 
 #: src/cgame/cg_tutorial.cpp:617
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr ""
+msgstr "Premi %s per chiacchierare con la tua squadra."
 
 #: src/cgame/cg_tutorial.cpp:619
 #, c-format
@@ -4956,11 +4969,11 @@ msgstr "10 secondi se inattivi!"
 
 #: src/sgame/sg_bot.cpp:71
 msgid "^3Alien bot names:"
-msgstr ""
+msgstr "^3Nomi dei bot alieni:"
 
 #: src/sgame/sg_bot.cpp:72
 msgid "^3Human bot names:"
-msgstr ""
+msgstr "^3Nomi dei bot umani:"
 
 #: src/sgame/sg_bot.cpp:363
 msgid "$1$^* disconnected"
@@ -4968,11 +4981,11 @@ msgstr "$1$^* si è disconnesso"
 
 #: src/sgame/sg_bot_nav.cpp:160
 msgid "^1Bot navmesh generation failed!"
-msgstr ""
+msgstr "^1La generazione della navmesh del bot non è riuscita!"
 
 #: src/sgame/sg_bot_nav.cpp:173
 msgid "Server: generating bot navigation meshes... $1$%"
-msgstr ""
+msgstr "Server: generazione mesh di navigazione bot... $1$%"
 
 #: src/sgame/sg_buildable.cpp:1688
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
@@ -5239,16 +5252,20 @@ msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
+"$1$^7 ha chiesto una votazione:\n"
+"^7$2$"
 
 #: src/sgame/sg_votes.cpp:759
 msgid "$1$^* called a team vote: $2t$"
-msgstr "$1$^* ha richiesto un voto di squadra: $2t$"
+msgstr "$1$^* ha chiesto un voto di squadra: $2t$"
 
 #: src/sgame/sg_votes.cpp:764
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$1$^7 ha chiesto un voto di squadra:\n"
+"^7$2t$"
 
 #: src/sgame/sg_votes.cpp:877
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
