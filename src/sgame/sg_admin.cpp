@@ -237,14 +237,14 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"changemap",    G_admin_changemap,   false, "changemap",
-		N_("load a map (and optionally force layout)"),
+		"changedevmap",    G_admin_changedevmap,   false, "changedevmap",
+		N_("load a map with cheats (and optionally force layout)"),
 		N_("[^3mapname^7] (^5layout^7)")
 	},
 
 	{
-		"changedevmap",    G_admin_changedevmap,   false, "changedevmap",
-		N_("load a map with cheats (and optionally force layout)"),
+		"changemap",    G_admin_changemap,   false, "changemap",
+		N_("load a map (and optionally force layout)"),
 		N_("[^3mapname^7] (^5layout^7)")
 	},
 
