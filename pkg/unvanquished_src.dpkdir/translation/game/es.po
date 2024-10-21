@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-21 20:29+0000\n"
-"Last-Translator: José Muñoz <dr.cabra@disroot.org>\n"
+"PO-Revision-Date: 2024-10-22 04:41+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -1304,10 +1304,12 @@ msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"Calidad de los mapas cubos de reflexión estática. Las calidades más altas "
+"pueden ocupar mucho espacio en disco."
 
 #: ui/options_graphics.rml:262
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "Separación de la rejilla del mapeo de cubos"
 
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
@@ -4791,7 +4793,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:431
 #, c-format
 msgid "Hold %s to use the Jetpack."
-msgstr "Mantén %s para usar la mochila propulsora."
+msgstr "Mantenga pulsado %s para utilizar el Jetpack."
 
 #: src/cgame/cg_tutorial.cpp:439
 #, c-format
