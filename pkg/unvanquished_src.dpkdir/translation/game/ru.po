@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-20 08:46+0000\n"
+"PO-Revision-Date: 2024-10-21 20:29+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -592,7 +592,7 @@ msgstr "Выберите вашу стартовую экипировку:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr "SMG"
+msgstr "Пистолет-пулемёт"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
@@ -603,9 +603,9 @@ msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
-"SMG — стартовое скорострельное оружие, а набор конструктора — инструмент, "
-"который строит и ремонтирует структуры людей. Все снаряжение можно обменять "
-"в Арсенале."
+"Пистолет-пулемёт — стартовое скорострельное оружие, а набор конструктора — "
+"инструмент, который строит и ремонтирует структуры людей. Все снаряжение "
+"можно обменять в Арсенале."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
