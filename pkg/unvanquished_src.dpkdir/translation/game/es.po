@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
 "PO-Revision-Date: 2024-10-22 04:41+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: José Muñoz <dr.cabra@disroot.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -82,7 +82,7 @@ msgstr "Ambos equipos"
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr "Extraterrestres"
+msgstr "Alienígenas"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
@@ -189,10 +189,10 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"Los extranjeros pueden evolucionar desde cualquier lugar si no en la línea "
-"de visión de un jugador humano o edificable. Los extraterrestres también "
-"pueden degenerar en formas menos avanzadas [granger] (a un costo) cuando "
-"están cerca de la supermente [overmind]."
+"Los alienígenas pueden evolucionar desde cualquier lugar si no en la línea "
+"de visión de un jugador humano o edificable. Los alienígenas también pueden "
+"degenerar en formas menos avanzadas [granger] (a un costo) cuando están "
+"cerca de la supermente [overmind]."
 
 #: ui/help_gameplay.rml:43
 msgid ""
@@ -203,6 +203,7 @@ msgstr ""
 "una supermente viva para evolucionar!"
 
 #: ui/help_gameplay.rml:47
+#, fuzzy
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -447,9 +448,9 @@ msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
-"Los humanos llevan con ellos un medkit que pueden usar para curarse una vez, "
-"después de esto tienen que volver a la [medstat] medistation para curarse y "
-"rellenar su medkit."
+"Los humanos llevan con ellos un botiquín que pueden usar para curarse una "
+"vez, después de esto tienen que volver a la [medstat] medistation para "
+"curarse y rellenar su botiquín."
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
@@ -499,6 +500,7 @@ msgstr ""
 "(antes 9)."
 
 #: ui/help_gameplay.rml:164
+#, fuzzy
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
@@ -515,13 +517,14 @@ msgstr ""
 "defensa, pero pueden construir vainas de cohetes."
 
 #: ui/help_gameplay.rml:170
+#, fuzzy
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Los extraterrestres tienen el spiker construible que puede herir "
-"profundamente a los humanos imprudentes, pero es una estructura muy "
-"vulnerable, ¡no la pongas a la vista!"
+"Los alienígenas tienen el spiker construible que puede herir profundamente a "
+"los humanos imprudentes, pero es una estructura muy vulnerable, ¡no la "
+"pongas a la vista!"
 
 #: ui/help_gameplay.rml:173
 msgid ""
@@ -649,7 +652,7 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr "Unirse a los aliens"
+msgstr "Unirse a los alienígenas"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
@@ -1223,11 +1226,11 @@ msgstr "Materiales"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "Cielo"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "Dibuja el cielo."
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
@@ -1271,11 +1274,11 @@ msgstr "Aspecto material basado en aproximaciones físicas."
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "Reflejos"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr ""
+msgstr "Reflejos estáticos"
 
 #: ui/options_graphics.rml:248
 msgid ""
@@ -1402,6 +1405,9 @@ msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Usa un nuevo sistema que mejora el rendimiento significativamente. Puede que "
+"algunos controladores fallen con esta opción activada (p. ej. Mesa y "
+"controladores AMD propietarios)."
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
@@ -1445,7 +1451,7 @@ msgstr "Estructuras ofensivas"
 
 #: ui/options_graphics.rml:355
 msgid "Alien structures"
-msgstr "Estructuras extraterrestres"
+msgstr "Estructuras alienígenas"
 
 #: ui/options_graphics.rml:356
 msgid "Human structures"
@@ -1453,7 +1459,7 @@ msgstr "Estructuras humanas"
 
 #: ui/options_graphics.rml:357
 msgid "Alien support structures"
-msgstr "Estructuras extraterrestres de apoyo"
+msgstr "Estructuras alienígenas de apoyo"
 
 #: ui/options_graphics.rml:358
 msgid "Human support structures"
@@ -1461,7 +1467,7 @@ msgstr "Estructuras humanas de apoyo"
 
 #: ui/options_graphics.rml:359
 msgid "Offensive alien structures"
-msgstr "Estructuras extraterrestres ofensivas"
+msgstr "Estructuras alienígenas ofensivas"
 
 #: ui/options_graphics.rml:360
 msgid "Offensive human structures"
@@ -1592,7 +1598,7 @@ msgstr "Recargar:"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr "Usar medkit:"
+msgstr "Usar botiquín:"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
@@ -1803,7 +1809,7 @@ msgstr "Solo humanos"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr "Humanos y aliens"
+msgstr "Humanos y alienígenas"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
@@ -1811,7 +1817,7 @@ msgstr "Humanos (translúcidos)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr "Humanos y aliens (translúcidos)"
+msgstr "Humanos y alienígenas (translúcidos)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1883,7 +1889,7 @@ msgstr "Construible por humanos"
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
-msgstr "Construible por aliens"
+msgstr "Construible por alienígenas"
 
 #: ui/options_player.rml:186
 msgid "Others"
@@ -1967,7 +1973,7 @@ msgstr ""
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "Cambiar idioma"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
@@ -2131,7 +2137,7 @@ msgstr ""
 
 #: ui/options_ui.rml:149 ui/options_ui.rml:179
 msgid "Custom colour"
-msgstr ""
+msgstr "Color personalizado"
 
 #: ui/options_ui.rml:154
 msgid "Crosshair colours"
@@ -2167,11 +2173,11 @@ msgstr ""
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr "Hola!"
+msgstr "¡Hola!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr "¿Como debería llamarte?"
+msgstr "¿Cómo debería llamarte?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
@@ -3939,7 +3945,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:485
 msgid "Reading the manual…"
-msgstr ""
+msgstr "Leyendo el manual…"
 
 #: src/cgame/cg_main.cpp:485
 msgid "Looking at blueprints…"
@@ -3947,7 +3953,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:489
 msgid "Generating annoying noises…"
-msgstr ""
+msgstr "Generando ruidos molestos…"
 
 #: src/cgame/cg_main.cpp:489
 msgid "Recording granger purring…"
@@ -3955,7 +3961,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:493
 msgid "Hello World!"
-msgstr ""
+msgstr "¡Hola mundo!"
 
 #: src/cgame/cg_main.cpp:493
 msgid "Making a scene…"
@@ -3963,7 +3969,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:497
 msgid "Taking pictures of the world…"
-msgstr ""
+msgstr "Tomando fotos del mundo…"
 
 #: src/cgame/cg_main.cpp:497
 msgid "Drawing smiley faces…"
@@ -3971,7 +3977,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:501
 msgid "Sharpening the aliens' claws…"
-msgstr ""
+msgstr "Afilando las garras de los alienígenas…"
 
 #: src/cgame/cg_main.cpp:501
 msgid "Overloading lucifer cannons…"
@@ -3995,15 +4001,15 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:513
 msgid "Teleporting soldiers…"
-msgstr ""
+msgstr "Teletransportando soldados…"
 
 #: src/cgame/cg_main.cpp:513
 msgid "Replicating alien DNA…"
-msgstr ""
+msgstr "Replicando ADN alienígena…"
 
 #: src/cgame/cg_main.cpp:517
 msgid "Customizing helmets…"
-msgstr ""
+msgstr "Personalizando cascos…"
 
 #: src/cgame/cg_main.cpp:521
 msgid "Compiling GLSL shaders (please be patient)…"
@@ -4024,7 +4030,7 @@ msgstr ""
 #: src/cgame/cg_main.cpp:1180
 #, c-format
 msgid "by %s"
-msgstr ""
+msgstr "por %s"
 
 #: src/cgame/cg_players.cpp:1435
 #, c-format
@@ -4512,7 +4518,7 @@ msgstr "No puedes evolucionar hasta que tu contador de construcción expire"
 
 #: src/cgame/cg_servercmds.cpp:712
 msgid "Wait a second after attacking or evolving"
-msgstr ""
+msgstr "Espera un segundo después de atacar o evolucionar"
 
 #: src/cgame/cg_servercmds.cpp:720
 #, c-format
@@ -4599,8 +4605,9 @@ msgid "Reload"
 msgstr "Recargar"
 
 #: src/cgame/cg_tutorial.cpp:53
+#, fuzzy
 msgid "Use Medkit"
-msgstr "Usar Kit de Medicína"
+msgstr "Usar botiquín"
 
 #: src/cgame/cg_tutorial.cpp:54
 msgid "Use Structure/Evolve"
@@ -4710,11 +4717,11 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:245
 msgid "Touch humans to damage them."
-msgstr ""
+msgstr "Toca a los humanos para hacerles daño."
 
 #: src/cgame/cg_tutorial.cpp:248
 msgid "Aim at their heads to cause more damage."
-msgstr ""
+msgstr "Apunta a sus cabezas para causar más daño."
 
 #: src/cgame/cg_tutorial.cpp:265
 #, c-format
@@ -4995,7 +5002,7 @@ msgstr "Los humanos ganan"
 
 #: src/sgame/sg_main.cpp:2023
 msgid "Aliens win"
-msgstr ""
+msgstr "Los alienígenas ganan"
 
 #: src/sgame/sg_main.cpp:2037
 msgid "Empty teams skip map time exceeded."
@@ -5023,7 +5030,7 @@ msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:502
 msgid "Alien team has admitted defeat"
-msgstr ""
+msgstr "El equipo alienígena ha admitido la derrota"
 
 #: src/sgame/sg_svcmds.cpp:507
 msgid "Human team has admitted defeat"
