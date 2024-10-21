@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2023-12-31 12:54+0000\n"
-"Last-Translator: Marco Aurélio Cardoso <marcoaurelio.cardoso@gmail.com>\n"
+"PO-Revision-Date: 2024-10-21 20:29+0000\n"
+"Last-Translator: Tomaz-Vieira <tom.fogaca@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "unvanquished/unvanquished/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -887,6 +887,8 @@ msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"Poucas subdivisões, céu desativado, sombras desativadas, partículas simples, "
+"texturas de 16 pixels…"
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
@@ -1017,7 +1019,7 @@ msgstr "normal"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
-msgstr ""
+msgstr "Efeitos de luz a nível de vértice"
 
 #: ui/options_graphics.rml:98
 msgid "low, ugly"
@@ -1029,13 +1031,15 @@ msgstr "Sistema de iluminação"
 
 #: ui/options_graphics.rml:103
 msgid "Brightness clamping"
-msgstr ""
+msgstr "Restrição de brilho"
 
 #: ui/options_graphics.rml:105
 msgid ""
 "Old brightness limit of map lighting of world surfaces and models (the way "
 "legacy maps looked before)"
 msgstr ""
+"Antigo limite de brilho para as superfícies do mundo e dos modelos (como era "
+"nos maps antigos)"
 
 #: ui/options_graphics.rml:108
 msgid "Light styles"
@@ -1099,69 +1103,71 @@ msgstr "Geral"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "Sem limite"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr ""
+msgstr "(extremo)"
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
-msgstr ""
+msgstr "(alto)"
 
 #: ui/options_graphics.rml:147
 msgid "(medium)"
-msgstr ""
+msgstr "(médio)"
 
 #: ui/options_graphics.rml:148
 msgid "(low)"
-msgstr ""
+msgstr "(baixo)"
 
 #: ui/options_graphics.rml:149
 msgid "(lowest)"
-msgstr ""
+msgstr "(mais baixo possível)"
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
-msgstr ""
+msgstr "Limite de tamanho de imagem"
 
 #: ui/options_graphics.rml:152
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Limitar tamanho de imagem para economizar memória."
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
-msgstr ""
+msgstr "Pelo menos do tamanho da tela"
 
 #: ui/options_graphics.rml:159
 msgid "No larger than screen"
-msgstr ""
+msgstr "No máximo do tamanho da tela"
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Limite do tamanho de imagens do menu"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Limitar tamanho das imagens de menu para economizar memória."
 
 #: ui/options_graphics.rml:167
 msgid "High-precision rendering"
-msgstr ""
+msgstr "Renderização de alta precisão"
 
 #: ui/options_graphics.rml:168
 msgid "Use high-precision pixel buffers, which reduce color banding."
-msgstr ""
+msgstr "Usar buffers de pixels de alta precisão, reduzindo bandas de cor."
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "Usar \"bindless textures\" se possível"
 
 #: ui/options_graphics.rml:174
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"Usar \"bindless textures\" se suportado pelo hardware/driver. Isso pode "
+"melhorar a performance."
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:224
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:306
@@ -1216,11 +1222,11 @@ msgstr "Materiais"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "Céu"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "Desenhar o céu."
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
@@ -1264,21 +1270,24 @@ msgstr "Aparência do material baseada em aproximações físicas."
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "Reflexos"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr ""
+msgstr "Reflexos estáticos"
 
 #: ui/options_graphics.rml:248
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
+"Adiciona reflexos via \"cubemaps\" nas superfícies suportadas. Requer "
+"\"normal mapping\", \"specular mapping\" e \"deluxe mapping\". Atualmente "
+"não é suportado para \"physical mapping\"."
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "Muito baixo"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
@@ -1286,21 +1295,23 @@ msgstr "Moderado"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "Muito alto"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "Qualidade"
 
 #: ui/options_graphics.rml:259
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"Qualidade dos reflexos estáticos via \"cubemaps\". Qualidades mais altas "
+"podem consumir mais espaço em disco."
 
 #: ui/options_graphics.rml:262
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "Espaçamento da malha do \"cubemap\""
 
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
@@ -1313,19 +1324,19 @@ msgstr "Nunca"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
-msgstr ""
+msgstr "Armazenar em cache no disco"
 
 #: ui/options_graphics.rml:274
 msgid "Always rebuild"
-msgstr ""
+msgstr "Sempre reconstruir"
 
 #: ui/options_graphics.rml:276
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Reconstruir reflexos estáticos de \"cubemap\" automaticamente"
 
 #: ui/options_graphics.rml:277
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr ""
+msgstr "Construir/Carregar/Salvar reflexos de \"cubemap\" automaticamente."
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
@@ -1346,7 +1357,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:296
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Alterar cores para criar ambientes específicos."
 
 #: ui/options_graphics.rml:299
 msgid "Heat-haze"
@@ -1382,17 +1393,20 @@ msgstr "Permite que partículas quiquem em superfícies."
 
 #: ui/options_graphics.rml:323
 msgid "Renderer"
-msgstr ""
+msgstr "Renderizador"
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
-msgstr ""
+msgstr "Sistema de materiais"
 
 #: ui/options_graphics.rml:329
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Usar um novo sistema que melhora a performance sensivelmente. Alguns drivers "
+"podem ser incompatíveis (e.g. drivers do projeto Mesa e drivers "
+"proprietários da AMD)."
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
@@ -1400,7 +1414,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:334
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "Descartar superfícies fora de vista."
 
 #: ui/options_graphics.rml:337
 msgid "GPU occlusion culling"
@@ -5221,6 +5235,8 @@ msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$1$^7 requisitou uma votação do time:\n"
+"^7$2t$"
 
 #: src/sgame/sg_votes.cpp:877
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
