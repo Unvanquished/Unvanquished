@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-16 15:11+0000\n"
+"PO-Revision-Date: 2024-10-21 20:29+0000\n"
 "Last-Translator: Boyan Alexiev <nneauu@gmail.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/bg/>\n"
@@ -398,7 +398,7 @@ msgstr "Лечение"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr ""
+msgstr "Смъртта подхранва врага, може да искате да запазите живота си!"
 
 #: ui/help_gameplay.rml:121
 msgid ""
