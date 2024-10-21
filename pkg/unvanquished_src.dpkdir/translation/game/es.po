@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
 "PO-Revision-Date: 2024-10-21 20:29+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Last-Translator: José Muñoz <dr.cabra@disroot.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -1285,19 +1285,19 @@ msgstr ""
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "Muy baja"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
-msgstr "Moderado"
+msgstr "Moderada"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "Muy alta"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "Calidad"
 
 #: ui/options_graphics.rml:259
 msgid ""
@@ -1901,7 +1901,7 @@ msgstr "Mostrar únicamente el chat de equipo"
 
 #: ui/options_player.rml:222
 msgid "Show obituaries"
-msgstr ""
+msgstr "Mostrar obutiarios"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -1957,7 +1957,7 @@ msgstr "Principal"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -2045,7 +2045,7 @@ msgstr ""
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr ""
+msgstr "Arma"
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
@@ -2077,7 +2077,7 @@ msgstr "Chaingun"
 
 #: ui/options_ui.rml:114
 msgid "Flamer"
-msgstr ""
+msgstr "Lanzallamas"
 
 #: ui/options_ui.rml:115
 msgid "Pulse Rifle"
@@ -2153,7 +2153,7 @@ msgstr ""
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr ""
+msgstr "Escala:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
@@ -2181,7 +2181,7 @@ msgstr "Puedes cambiar esto en cualquier momento en las opciones."
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "¿Qué idioma quieres usar?"
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
@@ -4610,19 +4610,19 @@ msgstr "Demoler Estructura"
 
 #: src/cgame/cg_tutorial.cpp:56
 msgid "Previous Weapon"
-msgstr ""
+msgstr "Arma anterior"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Next Weapon"
-msgstr ""
+msgstr "Siguiente arma"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Global chat"
-msgstr ""
+msgstr "Chat global"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Team chat"
-msgstr ""
+msgstr "Chat de equipo"
 
 #: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Console"
@@ -4672,7 +4672,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:187
 #, c-format
 msgid "Press %s to build a structure."
-msgstr ""
+msgstr "Presiona %s para construir una estructura."
 
 #: src/cgame/cg_tutorial.cpp:197
 #, c-format
@@ -4722,7 +4722,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:279 src/cgame/cg_tutorial.cpp:299
 #, c-format
 msgid "Press %s to bite."
-msgstr ""
+msgstr "Presiona %s para morder."
 
 #: src/cgame/cg_tutorial.cpp:284
 #, c-format
@@ -4791,17 +4791,17 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:431
 #, c-format
 msgid "Hold %s to use the Jetpack."
-msgstr ""
+msgstr "Mantén %s para usar la mochila propulsora."
 
 #: src/cgame/cg_tutorial.cpp:439
 #, c-format
 msgid "Press %s to use your Medkit."
-msgstr ""
+msgstr "Presiona %s para usar tu botiqín."
 
 #: src/cgame/cg_tutorial.cpp:446
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
-msgstr ""
+msgstr "Presiona %s para comprar mejoras de equipamiento en la amería."
 
 #: src/cgame/cg_tutorial.cpp:459
 #, c-format
@@ -4811,7 +4811,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:462
 #, c-format
 msgid "Press %s to crouch."
-msgstr ""
+msgstr "Presiona %s para agacharte."
 
 #: src/cgame/cg_tutorial.cpp:477
 #, c-format
@@ -4826,7 +4826,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:488
 #, c-format
 msgid "Press %s to join a team."
-msgstr ""
+msgstr "Presiona %s para unirte a un equipo."
 
 #: src/cgame/cg_tutorial.cpp:494
 #, c-format
@@ -4856,7 +4856,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:594
 #, c-format
 msgid "Press %s to evolve."
-msgstr ""
+msgstr "Presiona %s para evolucionar."
 
 #: src/cgame/cg_tutorial.cpp:603
 #, c-format
@@ -4880,7 +4880,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:619
 #, c-format
 msgid "Press %s to open the console."
-msgstr ""
+msgstr "Presiona %s para abrir la consola."
 
 #: src/cgame/cg_tutorial.cpp:621
 #, c-format
@@ -4989,7 +4989,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:2009
 msgid "Humans win"
-msgstr ""
+msgstr "Los humanos ganan"
 
 #: src/sgame/sg_main.cpp:2023
 msgid "Aliens win"
@@ -5001,7 +5001,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:2201
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "El juego ha sido pausado. Por favor, espera."
 
 #: src/sgame/sg_main.cpp:2205
 msgid "Server: Game will auto-unpause in $1$ seconds"
@@ -5025,7 +5025,7 @@ msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:507
 msgid "Human team has admitted defeat"
-msgstr ""
+msgstr "El equipo humano ha admitido la derrota"
 
 #: src/sgame/sg_svcmds.cpp:540
 msgid "Evacuation ordered"
