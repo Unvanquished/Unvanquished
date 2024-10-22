@@ -99,6 +99,15 @@
 			padding: 0.5em;
 		}
 
+		div#perftimersbox {
+			display: block;
+			width: 25em;
+			height: 12em;
+			text-align: right;
+			float: right;
+			padding: 0.5em;
+		}
+
 		stat {
 			display: block;
 		}
@@ -206,6 +215,11 @@
 			<stat><ping/>&nbsp;<translate>ms</translate></stat>
 			<if cvar="cg_lagometer" condition="==" value="1">
 				<stat><lagometer /></stat>
+			</if>
+		</div>
+		<div id="perftimersbox">
+			<if cvar="cg_drawPerfTimers" condition="==" value="1">
+				<perfTimers/>
 			</if>
 		</div>
 	</region>

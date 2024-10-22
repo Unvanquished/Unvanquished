@@ -53,6 +53,8 @@ Cvar::Cvar<bool> cg_buildableShadows("cg_buildableShadows", "draw shadows of bui
 Cvar::Cvar<bool> cg_drawTimer("cg_drawTimer", "show game time", Cvar::NONE, true);
 Cvar::Range<Cvar::Cvar<int>> cg_drawClock("cg_drawClock", "draw clock (1 = 12-hour 2 = 24-hour)", Cvar::NONE, 0, 0, 2);
 Cvar::Cvar<bool> cg_drawFPS("cg_drawFPS", "show client's frames per second", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_drawPerfTimers( "cg_drawPerfTimers", "show performance timers", Cvar::NONE, false );
+Cvar::Cvar<std::string> cg_perfTimers( "cg_perfTimers", "specify which performance timers to use, separated by spaces (all, )", Cvar::NONE, "all" );
 Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshair("cg_drawCrosshair", "draw crosshair (1 = ranged weapons, 2 = always)", Cvar::NONE, 2, 0, 2);
 Cvar::Cvar<bool> cg_drawCrosshairHit("cg_drawCrosshairHit", "show damage indicator", Cvar::NONE, true);
 Cvar::Range<Cvar::Cvar<int>> cg_crosshairStyle( "cg_crosshairStyle", "crosshair colour style (0 = image colour, 1 = custom colour)", Cvar::NONE, 0, 0, 1 );
