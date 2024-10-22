@@ -8,27 +8,29 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-10-22 18:57+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ka/>\n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "აგება"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr ""
+msgstr "ფასი:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "განვითარება"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
@@ -40,11 +42,11 @@ msgstr ""
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "დამპალი"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "გრეინჯერი"
 
 #: ui/alien_spawn.rml:49
 msgid ""
@@ -62,7 +64,7 @@ msgstr ""
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "მიზეზი"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
@@ -79,20 +81,20 @@ msgstr ""
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr ""
+msgstr "უცხოპლანეტელები"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "ადამიანები"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "გუნდი"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "რაოდენობა"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
@@ -112,27 +114,27 @@ msgstr ""
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "მეთოდი"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "რუკა"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "ქმედების შესრულება"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "შეცდომა!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "დიახ"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "მოგესალმებით"
 
 #: ui/help_gameplay.rml:20
 msgid ""
@@ -279,7 +281,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "ხანძარი"
 
 #: ui/help_gameplay.rml:94
 msgid ""
@@ -319,7 +321,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr ""
+msgstr "აღდგენა"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
@@ -363,7 +365,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr ""
+msgstr "კედლებზე სიარული"
 
 #: ui/help_gameplay.rml:142
 msgid ""
@@ -431,19 +433,19 @@ msgstr ""
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr ""
+msgstr "თამაში"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "ცხოვრება"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr ""
+msgstr "კადრი/წმ"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr ""
+msgstr "მწმ"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -451,23 +453,23 @@ msgstr ""
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "კრედიტები"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "იარაღები"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "ტაბი"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "დიაპაზონი:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "დაზიანება:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
@@ -475,7 +477,7 @@ msgstr ""
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr ""
+msgstr "განახლებები"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
@@ -483,7 +485,7 @@ msgstr ""
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "პისტოლეტ-ტყვიამფრქვევი"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
@@ -497,20 +499,20 @@ msgstr ""
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "შუქურა"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "მაყურებლები"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "რუკა:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "დრო:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -542,7 +544,7 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr ""
+msgstr "ყურება"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -552,7 +554,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "დამთხვევა"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
@@ -564,7 +566,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr ""
+msgstr "დემოკრატია"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
@@ -584,11 +586,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "ბოტები"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr ""
+msgstr "მთავარი მენიუ"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
@@ -600,7 +602,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr ""
+msgstr "მორგება"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
@@ -612,7 +614,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr ""
+msgstr "ბეტა"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
@@ -636,15 +638,15 @@ msgstr ""
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr ""
+msgstr "დიახ"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr ""
+msgstr "ან"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr ""
+msgstr "არა"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
@@ -684,7 +686,7 @@ msgstr ""
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "გრადუსი"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -693,23 +695,23 @@ msgstr ""
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "reset"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
-msgstr ""
+msgstr "ჩოქელა"
 
 #: ui/options_fov.rml:48
 msgid "Marauder"
-msgstr ""
+msgstr "მძარცველი"
 
 #: ui/options_fov.rml:56
 msgid "Dragoon"
-msgstr ""
+msgstr "დრაგუნი"
 
 #: ui/options_fov.rml:64
 msgid "Tyrant"
-msgstr ""
+msgstr "ტირანი"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
@@ -721,19 +723,19 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "გამორთული"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "რბილი"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
-msgstr ""
+msgstr "ნაგულისხმევი"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "ძლიერი"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
@@ -749,15 +751,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr ""
+msgstr "გრაფიკა"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "პრესეტები"
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "უმდაბლესი"
 
 #: ui/options_graphics.rml:28
 msgid ""
@@ -768,7 +770,7 @@ msgstr ""
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
 msgid "Low"
-msgstr ""
+msgstr "დაბალი"
 
 #: ui/options_graphics.rml:32
 msgid ""
@@ -778,7 +780,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr ""
+msgstr "საშუალო"
 
 #: ui/options_graphics.rml:36
 msgid ""
@@ -789,7 +791,7 @@ msgstr ""
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:255
 #: ui/options_graphics.rml:367 ui/options_graphics.rml:375
 msgid "High"
-msgstr ""
+msgstr "მაღალი"
 
 #: ui/options_graphics.rml:40
 msgid ""
@@ -799,7 +801,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "ულტრა"
 
 #: ui/options_graphics.rml:44
 msgid ""
@@ -809,31 +811,31 @@ msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "ვიდეო"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr ""
+msgstr "სიკაშკაშე"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
-msgstr ""
+msgstr "გამა:"
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr ""
+msgstr "ეკრანის გარჩევადობა"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
-msgstr ""
+msgstr "ფანჯარა საზღვრების გარეშე"
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "სრულ ეკრანზე"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr ""
+msgstr "გამორთული"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
@@ -845,7 +847,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr ""
+msgstr "ვერტ. სინქრ"
 
 #: ui/options_graphics.rml:79
 msgid ""
@@ -863,15 +865,15 @@ msgstr ""
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "ახლა გადატარება"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "გამოკვეთა"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr ""
+msgstr "სინათლეები"
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
@@ -879,7 +881,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:97
 msgid "normal"
-msgstr ""
+msgstr "ნორმალური"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
@@ -938,52 +940,52 @@ msgstr ""
 
 #: ui/options_graphics.rml:129
 msgid "Blobs"
-msgstr ""
+msgstr "ლაქები"
 
 #: ui/options_graphics.rml:129
 msgid "low"
-msgstr ""
+msgstr "დაბალი"
 
 #: ui/options_graphics.rml:130 ui/options_graphics.rml:351
 #: ui/options_ui.rml:177
 msgid "None"
-msgstr ""
+msgstr "არაფერი"
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
-msgstr ""
+msgstr "ჩრდილები"
 
 #: ui/options_graphics.rml:139
 msgid "Textures"
-msgstr ""
+msgstr "ტექსტურები"
 
 #: ui/options_graphics.rml:141 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "ზოგადი"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "უსაზღვრო"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr ""
+msgstr "(ულტრა)"
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
-msgstr ""
+msgstr "(მაღალი)"
 
 #: ui/options_graphics.rml:147
 msgid "(medium)"
-msgstr ""
+msgstr "(საშუალო)"
 
 #: ui/options_graphics.rml:148
 msgid "(low)"
-msgstr ""
+msgstr "(დაბალი)"
 
 #: ui/options_graphics.rml:149
 msgid "(lowest)"
-msgstr ""
+msgstr "(უმდაბლესი)"
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
@@ -1032,11 +1034,11 @@ msgstr ""
 #: ui/options_graphics.rml:329 ui/options_graphics.rml:334
 #: ui/options_graphics.rml:339
 msgid "Experimental."
-msgstr ""
+msgstr "ექსპერიმენტული."
 
 #: ui/options_graphics.rml:177
 msgid "Mip-mapping"
-msgstr ""
+msgstr "Mip-ტექსტურები"
 
 #: ui/options_graphics.rml:178
 msgid ""
@@ -1046,7 +1048,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
 msgid "No"
-msgstr ""
+msgstr "არა"
 
 #: ui/options_graphics.rml:187
 msgid "Anisotropic mip-mapping"
@@ -1058,15 +1060,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:192
 msgid "Trilinear"
-msgstr ""
+msgstr "სამხაზოვანი"
 
 #: ui/options_graphics.rml:192
 msgid "better"
-msgstr ""
+msgstr "უკეთესი"
 
 #: ui/options_graphics.rml:193
 msgid "Bilinear"
-msgstr ""
+msgstr "ორხაზოვანი"
 
 #: ui/options_graphics.rml:195
 msgid "Texture scaling filter"
@@ -1074,11 +1076,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:203 ui/options_graphics.rml:205
 msgid "Materials"
-msgstr ""
+msgstr "მასალები"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "ცა"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
@@ -1126,7 +1128,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "ანარეკლები"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
@@ -1140,19 +1142,19 @@ msgstr ""
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "ძალიან დაბალი"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
-msgstr ""
+msgstr "საშუალო"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "ძალიან მაღალი"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "ხარისხი"
 
 #: ui/options_graphics.rml:259
 msgid ""
@@ -1167,11 +1169,11 @@ msgstr ""
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "მიმდინარე:"
 
 #: ui/options_graphics.rml:272 ui/options_ui.rml:129
 msgid "Never"
-msgstr ""
+msgstr "არასდროს"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
@@ -1192,11 +1194,11 @@ msgstr ""
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "ეფექტები"
 
 #: ui/options_graphics.rml:289
 msgid "Bloom"
-msgstr ""
+msgstr "გაფურჩქვნა"
 
 #: ui/options_graphics.rml:291
 msgid "Makes bright areas on your screen glow."
@@ -1228,7 +1230,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:309
 msgid "Marks"
-msgstr ""
+msgstr "ნიშნები"
 
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
@@ -1244,7 +1246,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:323
 msgid "Renderer"
-msgstr ""
+msgstr "რენდერერი"
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
@@ -1274,7 +1276,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
-msgstr ""
+msgstr "თამაში"
 
 #: ui/options_graphics.rml:348
 msgid "Building markers"
@@ -1282,7 +1284,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:351
 msgid "disabled"
-msgstr ""
+msgstr "გამორთულია"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
@@ -1326,7 +1328,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr ""
+msgstr "მოდელები"
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
@@ -1334,7 +1336,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:380
 msgid "Intensity"
-msgstr ""
+msgstr "ინტენსივობა"
 
 #: ui/options_graphics.rml:381
 msgid "Level of motion-blur."
@@ -1346,7 +1348,7 @@ msgstr ""
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
-msgstr ""
+msgstr "კლავიატურის ბმები"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
@@ -1369,7 +1371,7 @@ msgstr ""
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
-msgstr ""
+msgstr "გეიმპადი"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
@@ -1377,7 +1379,7 @@ msgstr ""
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr ""
+msgstr "გადატანა"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
@@ -1385,11 +1387,11 @@ msgstr ""
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "სპრინტი:"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "წინ:"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
@@ -1489,7 +1491,7 @@ msgstr ""
 
 #: ui/options_keys.rml:142
 msgid "Misc"
-msgstr ""
+msgstr "სხვა"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
@@ -1513,7 +1515,7 @@ msgstr ""
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
-msgstr ""
+msgstr "ეკრანის ანაბეჭდი:"
 
 #: ui/options_keys.rml:165
 msgid ""
@@ -1555,15 +1557,15 @@ msgstr ""
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "Y ღერძი"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr ""
+msgstr "ნორმალური"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "შებრუნებულია"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
@@ -1603,7 +1605,7 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
-msgstr ""
+msgstr "მოძრაობა"
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
@@ -1637,11 +1639,11 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
-msgstr ""
+msgstr "კოსმეტიკური"
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "გამორთვა"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
@@ -1677,15 +1679,15 @@ msgstr ""
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "მოთამაშის მორგება"
 
 #: ui/options_player.rml:20
 msgid "Personal"
-msgstr ""
+msgstr "პირადი"
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "მეტსახელი"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
@@ -1704,7 +1706,7 @@ msgstr ""
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr ""
+msgstr "ემოციები"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
@@ -1729,7 +1731,7 @@ msgstr ""
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "სხვები"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
@@ -1749,11 +1751,11 @@ msgstr ""
 
 #: ui/options.rml:11
 msgid "Player"
-msgstr ""
+msgstr "დამკვრელი"
 
 #: ui/options.rml:21 ui/options_sound.rml:7
 msgid "Sound"
-msgstr ""
+msgstr "ხმები"
 
 #: ui/options.rml:23
 msgid "User interface and HUD"
@@ -1765,7 +1767,7 @@ msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "მუსიკა"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1793,15 +1795,15 @@ msgstr ""
 
 #: ui/options_ui.rml:18
 msgid "User interface"
-msgstr ""
+msgstr "მომხმარებლის ინტერფეისი"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "მთავარი"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "ენა"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -1809,7 +1811,7 @@ msgstr ""
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "ენის შეცვლა"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
@@ -1817,11 +1819,11 @@ msgstr ""
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr ""
+msgstr "12 საათი"
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr ""
+msgstr "24 საათი"
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
@@ -1853,7 +1855,7 @@ msgstr ""
 
 #: ui/options_ui.rml:70
 msgid "Show FPS"
-msgstr ""
+msgstr "კადრი/წმ-ის ჩვენება"
 
 #: ui/options_ui.rml:72
 msgid "Frames per second."
@@ -1865,19 +1867,19 @@ msgstr ""
 
 #: ui/options_ui.rml:79 ui/options_ui.rml:158 ui/options_ui.rml:202
 msgid "Red:"
-msgstr ""
+msgstr "წითელი:"
 
 #: ui/options_ui.rml:83 ui/options_ui.rml:162 ui/options_ui.rml:206
 msgid "Green:"
-msgstr ""
+msgstr "მწვანე:"
 
 #: ui/options_ui.rml:87 ui/options_ui.rml:166 ui/options_ui.rml:210
 msgid "Blue:"
-msgstr ""
+msgstr "ლურჯი:"
 
 #: ui/options_ui.rml:91 ui/options_ui.rml:170 ui/options_ui.rml:214
 msgid "Alpha:"
-msgstr ""
+msgstr "ალფა:"
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
@@ -1889,15 +1891,15 @@ msgstr ""
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr ""
+msgstr "იარაღი"
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
-msgstr ""
+msgstr "ბლასტერი"
 
 #: ui/options_ui.rml:108
 msgid "Rifle"
-msgstr ""
+msgstr "რაიფლი"
 
 #: ui/options_ui.rml:109
 msgid "Pain Saw"
@@ -1941,7 +1943,7 @@ msgstr ""
 
 #: ui/options_ui.rml:131
 msgid "Always"
-msgstr ""
+msgstr "ყოველთვის"
 
 #: ui/options_ui.rml:136
 msgid "Crosshair size"
@@ -1949,19 +1951,19 @@ msgstr ""
 
 #: ui/options_ui.rml:138
 msgid "Tiny"
-msgstr ""
+msgstr "პაწაწინა"
 
 #: ui/options_ui.rml:139
 msgid "Small"
-msgstr ""
+msgstr "პატარა"
 
 #: ui/options_ui.rml:140
 msgid "Regular"
-msgstr ""
+msgstr "ჩვეულებრივი"
 
 #: ui/options_ui.rml:141
 msgid "Huge"
-msgstr ""
+msgstr "უზარმაზარი"
 
 #: ui/options_ui.rml:146
 msgid "Crosshair colour"
@@ -1997,11 +1999,11 @@ msgstr ""
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr ""
+msgstr "მასშტაბი:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
-msgstr ""
+msgstr "წანაცვლება:"
 
 #: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
@@ -2037,11 +2039,11 @@ msgstr ""
 
 #: ui/server_browser.rml:39
 msgid "Internet"
-msgstr ""
+msgstr "ინერნეტი"
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr ""
+msgstr "სახელი:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
@@ -2049,27 +2051,27 @@ msgstr ""
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
-msgstr ""
+msgstr "პინგი"
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr ""
+msgstr "მიერთება"
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
-msgstr ""
+msgstr "განახლება"
 
 #: ui/server_browser.rml:55
 msgid "LAN"
-msgstr ""
+msgstr "LAN"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr ""
+msgstr "ჰოსტის სახელი"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "პაროლი"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
@@ -2085,7 +2087,7 @@ msgstr ""
 
 #: ui/server_create.rml:67
 msgid "Start"
-msgstr ""
+msgstr "დაწყება"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
@@ -2097,7 +2099,7 @@ msgstr ""
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "წამი"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
@@ -2137,7 +2139,7 @@ msgstr ""
 
 #: ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "გუნდები"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
@@ -2149,11 +2151,11 @@ msgstr ""
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "ფიზიკა"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "მიზიდულობა"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
@@ -2181,7 +2183,7 @@ msgstr ""
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "წუთი"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
@@ -2285,7 +2287,7 @@ msgstr ""
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
-msgstr ""
+msgstr "გათიშვა"
 
 #: ui/transition_downloading.rml:57
 msgid "Additional files are required. Please be patient while they download."
@@ -2301,11 +2303,11 @@ msgstr ""
 
 #: ui/transition_downloading.rml:60
 msgid "Size:"
-msgstr ""
+msgstr "ზომა:"
 
 #: ui/transition_loading.rml:104
 msgid "Loading"
-msgstr ""
+msgstr "იტვირთება"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -3850,7 +3852,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:529
 msgid "Done!"
-msgstr ""
+msgstr "მზადაა!"
 
 #: src/cgame/cg_main.cpp:1136
 msgid "Generating bot navigation meshes"
@@ -3859,7 +3861,7 @@ msgstr ""
 #: src/cgame/cg_main.cpp:1180
 #, c-format
 msgid "by %s"
-msgstr ""
+msgstr "%s-სგან"
 
 #: src/cgame/cg_players.cpp:1435
 #, c-format
@@ -3939,7 +3941,7 @@ msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3224
 msgid "Command:"
-msgstr ""
+msgstr "ბრძანება:"
 
 #: src/cgame/cg_rocket_draw.cpp:3574
 msgid "FIGHT!"
@@ -4309,7 +4311,7 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:729
 msgid "Unknown class"
-msgstr ""
+msgstr "უცნობი კლასი"
 
 #: src/cgame/cg_servercmds.cpp:733
 #, c-format
@@ -4360,11 +4362,11 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:47
 msgid "Jump"
-msgstr ""
+msgstr "გადასვლა"
 
 #: src/cgame/cg_tutorial.cpp:48
 msgid "Crouch"
-msgstr ""
+msgstr "ხოხვა"
 
 #: src/cgame/cg_tutorial.cpp:49
 msgid "Primary Attack"
@@ -4380,7 +4382,7 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:52
 msgid "Reload"
-msgstr ""
+msgstr "თავიდან ჩატვირთვა"
 
 #: src/cgame/cg_tutorial.cpp:53
 msgid "Use Medkit"
@@ -4416,7 +4418,7 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Toggle Menu"
-msgstr ""
+msgstr "მენიუს ჩართ/გამორთ"
 
 #: src/cgame/cg_tutorial.cpp:62
 msgid "Throw a grenade"
@@ -4438,7 +4440,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: src/cgame/cg_tutorial.cpp:135
 #, c-format
@@ -4675,7 +4677,7 @@ msgstr ""
 
 #: src/cgame/rocket/rocket_keys.cpp:343
 msgid "Unbound"
-msgstr ""
+msgstr "მითითებული არაა"
 
 #: src/sgame/sg_active.cpp:730
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
@@ -5017,7 +5019,7 @@ msgstr ""
 
 #: src/shared/bg_misc.cpp:2488
 msgid "alien"
-msgstr ""
+msgstr "უცხოპლანეტელი"
 
 #: src/shared/bg_misc.cpp:2493
 msgid "human"
