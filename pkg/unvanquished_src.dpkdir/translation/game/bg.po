@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-21 20:29+0000\n"
+"PO-Revision-Date: 2024-10-24 07:15+0000\n"
 "Last-Translator: Boyan Alexiev <nneauu@gmail.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/bg/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -935,53 +935,55 @@ msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "Ултра"
 
 #: ui/options_graphics.rml:44
 msgid ""
 "Relief mapping and other features and effects enabled, up to 4096-pixel "
 "textures…"
 msgstr ""
+"Възможност за картографиране на релефа и други функции и ефекти, текстури до "
+"4096 пиксела…"
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "Видео"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr ""
+msgstr "Яркост"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
-msgstr ""
+msgstr "Гама:"
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Екранна Резолюция"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
-msgstr ""
+msgstr "Безрамков прозорец"
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "Цял екран"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr ""
+msgstr "Изключен"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Гъвкав Vsync"
 
 #: ui/options_graphics.rml:76
 msgid "Full Vsync"
-msgstr ""
+msgstr "Пълен Vsync"
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
 #: ui/options_graphics.rml:79
 msgid ""
