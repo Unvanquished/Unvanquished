@@ -4146,7 +4146,7 @@ bool G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
+		bot = p->pers.isBot ? 'R' : ' ';
 		muted = ( p->pers.namelog->muted
 		          || G_admin_permission( p->ent(), ADMF_NO_GLOBALCHAT )
 		          || G_admin_permission( p->ent(), ADMF_NO_TEAMCHAT ) ) ? 'M' : ' ';
@@ -6399,7 +6399,7 @@ bool G_admin_bot( gentity_t *ent )
 			return false;
 		}
 
-		if ( !( g_entities[ clientNum ].r.svFlags & SVF_BOT ) )
+		if ( !level.clients[ clientNum ].pers.isBot )
 		{
 			ADMP( QQ( "^3bot:^* client is not a bot" ) );
 			return false;
@@ -6545,7 +6545,7 @@ bool G_admin_listbots( gentity_t *ent )
 	ADMBP_begin();
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		if ( !( g_entities[i].r.svFlags & SVF_BOT ) )
+		if ( g_clients[ i ].pers.connected == CON_DISCONNECTED || !g_clients[ i ].pers.isBot )
 		{
 			continue;
 		}

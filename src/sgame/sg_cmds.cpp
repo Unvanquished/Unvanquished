@@ -2024,7 +2024,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 
 	evolveInfo_t evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 	// allow bots to bypass the unlock restriction
-	bool unlocked = BG_ClassUnlocked( newClass ) || (ent->r.svFlags & SVF_BOT && g_bot_infiniteMomentum.Get());
+	bool unlocked = BG_ClassUnlocked( newClass ) || (ent->client->pers.isBot && g_bot_infiniteMomentum.Get());
 	if ( BG_ClassDisabled( newClass ) || !unlocked || ent->client->pers.credit < evolveInfo.evolveCost )
 	{
 		if ( report )
@@ -3155,7 +3155,8 @@ static void Cmd_Tactic_f( gentity_t * ent )
 	do
 	{
 		id = nextTacticId( id );
-		if ( !( g_entities[ id ].r.svFlags & SVF_BOT ) || !G_OnSameTeam( &g_entities[ id ], ent ) )
+		gentity_t *target = &g_entities[ id ];
+		if ( !target->inuse || !target->client->pers.isBot || !G_OnSameTeam( target, ent ) )
 		{
 			continue;
 		}
@@ -3166,15 +3167,15 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		if ( Entities::IsAlive( ent ) )
 		{
 			glm::vec3 position = VEC2GLM( ent->s.origin );
-			g_entities[ id ].botMind->userSpecifiedPosition = position;
+			target->botMind->userSpecifiedPosition = position;
 		}
 		else
 		{
-			g_entities[ id ].botMind->userSpecifiedPosition = Util::nullopt;
+			target->botMind->userSpecifiedPosition = Util::nullopt;
 		}
 		// use the commanding player's client number as the bot's user specified client number
 		// not all bot actions use this number, but it cannot hurt to set it
-		g_entities[ id ].botMind->userSpecifiedClientNum = ent->s.number;
+		target->botMind->userSpecifiedClientNum = ent->s.number;
 		level.team[ userTeam ].lastTacticId = id;
 		changedBots++;
 	} while ( ( changedBots < numBots && id != stopId ) );

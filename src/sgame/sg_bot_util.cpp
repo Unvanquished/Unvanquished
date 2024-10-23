@@ -1703,7 +1703,7 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		testEntity = &g_entities[i];
-		if ( testEntity->r.svFlags & SVF_BOT )
+		if ( testEntity->inuse && testEntity->client->pers.isBot )
 		{
 			if ( testEntity->client->pers.team == team && numBots < maxBots )
 			{
@@ -1738,7 +1738,7 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 	{
 		do
 		{
-			if ( !( g_entities[sq->clients[ i ]].r.svFlags & SVF_BOT ) )
+			if ( !level.clients[ sq->clients[ i ] ].pers.isBot )
 			{
 				if ( i < sq->front )
 				{

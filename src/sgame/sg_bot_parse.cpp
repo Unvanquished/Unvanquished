@@ -455,7 +455,7 @@ static AIValue_t blackboardNumTransient( gentity_t *self, const AIValue_t *param
 	for ( int i = 0; i < MAX_CLIENTS; i++ )
 	{
 		gentity_t *ent = &g_entities[ i ];
-		if ( !( ent->r.svFlags & SVF_BOT ) || !G_OnSameTeam( ent, self ) )
+		if ( !ent->inuse || !ent->client->pers.isBot || !G_OnSameTeam( ent, self ) )
 		{
 			continue;
 		}

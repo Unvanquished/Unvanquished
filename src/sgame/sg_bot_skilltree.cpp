@@ -37,7 +37,7 @@ static void G_UpdateSkillsets()
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		gentity_t *bot = &g_entities[ i ];
-		if ( bot->r.svFlags & SVF_BOT )
+		if ( bot->inuse && bot->client->pers.isBot )
 		{
 			BotSetSkillLevel( bot, bot->botMind->skillLevel );
 		}
