@@ -2024,6 +2024,8 @@ void        CG_InitClasses();
 // cg_buildable.c
 //
 void     CG_GhostBuildable( int buildableInfo );
+void     CG_GetAllBuildableAnims( std::vector<centity_t*>& cent );
+void CG_AllBuildables( std::vector<centity_t*>& buildings );
 void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus();
@@ -2042,7 +2044,7 @@ int CG_AnimNumber( int anim );
 void CG_RunLerpFrame( lerpFrame_t *lf );
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, bool animChanged );
 void CG_BlendLerpFrame( lerpFrame_t *lf );
-void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton );
+void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton, skelAnimation_t* anim = nullptr );
 
 //
 // cg_animmapobj.c
