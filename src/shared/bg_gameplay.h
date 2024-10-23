@@ -125,6 +125,13 @@ extern const int   LCANNON_DAMAGE_HALF_LIFE; // in ms, damage half life time aft
 
 extern const int   HBUILD_HEALRATE;
 
+// no bsuit and not crouching variants
+extern const float UNSTABILIZED_CHAINGUN_JITTER_SCALE; // max random change of yaw or pitch angle in degrees per bullet fired
+extern const float UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS; // determistic component of pitch angle change in degrees per bullet fired
+// bsuit or crouching variants
+extern const float STABILIZED_CHAINGUN_JITTER_SCALE; // max random change of yaw or pitch angle in degrees per bullet fired
+extern const float STABILIZED_CHAINGUN_JITTER_PITCH_BIAS; // determistic component of pitch angle change in degrees per bullet fired
+
 /*
  * HUMAN upgrades
  */

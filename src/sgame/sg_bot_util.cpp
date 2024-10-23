@@ -1589,12 +1589,31 @@ static int BotGetAimTime( gentity_t *self )
 	return std::max( 1, int(time) );
 }
 
+// The aiming algorithm is some framerate-dependent nonsense. It does a
+// "linear interpolation" toward the desired position, but the starting direction
+// of this interpolation is the bot's *current* view direction, rather than the one
+// when it started aiming. So if the bot's position remains constant, the aim approaches
+// the desired position at a (faster than) exponential rate, with the exponent dependent
+// on the frame rate (higher sv_fps = faster aiming). The distance from the desired aim direction
+// can go up due to the bot moving, but it will still go down exponentially after.
+// Near the end of the aim interval aim errors are correctly almost instantly, e.g. if 90% of the
+// interval has passed, the diff goes down 90% in one frame. This is prevented from being too
+// powerful against moving targets by the fact that the aim position is quite outdated at that point.
 void BotAimAtEnemy( gentity_t *self )
 {
 	if ( self->botMind->futureAimTime < level.time )
 	{
 		int aimTime = self->botMind->futureAimTimeInterval = BotGetAimTime( self );
 		self->botMind->futureAimTime = level.time + aimTime;
+
+		// Save delta angles so we can be properly affected by chaingun view jitter etc.
+		// During the aim interval, we don't let the bot take into account these angle changes,
+		// except the predictable part of chaingun jitter.
+		for ( int i = 0; i < 3; i++ )
+		{
+			self->botMind->futureAimBaseDeltaAngles[ i ] =
+				SHORT2ANGLE( self->client->ps.delta_angles[ i ] );
+		}
 
 		// Do aim prediction
 		// Here, we cap aim prediction time because extrapolating too much is harmful if this bot is slow to aim
@@ -1611,13 +1630,27 @@ void BotAimAtEnemy( gentity_t *self )
 	float frac = ( 1.0f - ( static_cast<float>( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	glm::vec3 newAim = glm::mix( current, desired, frac );
 
-	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
 	glm::vec3 angles;
 	vectoangles( GLM4READ( newAim ), GLM4RW( angles ) );
 
 	for ( int i = 0; i < 3; i++ )
 	{
-		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angles[ i ] );
+		float angle = AngleSubtract( angles[ i ], self->botMind->futureAimBaseDeltaAngles[ i ] );
+		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angle );
+	}
+
+	// When firing chaingun, update for the deterministic upward component of chaingun jitter.
+	// Without this, low-skill bots constantly aim above the target.
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_CHAINGUN && self->client->ps.weaponTime > 0 )
+	{
+		int timeDelta = level.time - self->botMind->lastThink;
+		float degreesPerShot = BG_IsChaingunStabilized( &self->client->ps )
+			? STABILIZED_CHAINGUN_JITTER_PITCH_BIAS
+			: UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS;
+		float degreesPerMillisecond = degreesPerShot / BG_Weapon( WP_CHAINGUN )->repeatRate1;
+		float angleUpdate = degreesPerMillisecond * timeDelta;
+		self->botMind->futureAimBaseDeltaAngles[ PITCH ] = AngleSubtract(
+			self->botMind->futureAimBaseDeltaAngles[ PITCH ], -angleUpdate );
 	}
 }
 
@@ -1625,7 +1658,6 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 {
 	glm::vec3 aimVec, aimAngles, viewBase;
 	int i;
-	usercmd_t *rAngles = &self->botMind->cmdBuffer;
 
 	if ( !self->client )
 	{
@@ -1637,19 +1669,11 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 
 	vectoangles( GLM4READ( aimVec ), GLM4RW( aimAngles ) );
 
-	VectorSet( self->client->ps.delta_angles, 0.0f, 0.0f, 0.0f );
-
 	for ( i = 0; i < 3; i++ )
 	{
-		aimAngles[i] = ANGLE2SHORT( aimAngles[i] );
+		float angle = AngleSubtract( aimAngles[ i ], SHORT2ANGLE( self->client->ps.delta_angles[ i ] ) );
+		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angle );
 	}
-
-	//save bandwidth
-	//Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
-	aimAngles = glm::floor( aimAngles + 0.5f );
-	rAngles->angles[0] = aimAngles[0];
-	rAngles->angles[1] = aimAngles[1];
-	rAngles->angles[2] = aimAngles[2];
 }
 
 void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
@@ -2588,7 +2612,6 @@ void BotCalculateStuckTime( gentity_t *self )
 	{
 		BotResetStuckTime( self );
 	}
-	self->botMind->lastThink = level.time;
 }
 
 bool BotWalkIfStaminaLow( gentity_t *self )
