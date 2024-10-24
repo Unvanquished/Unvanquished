@@ -50,11 +50,6 @@
 			</row>
 
 			<row>
-				<input type="text" cvar="fs_extrapaks" class="text" id="extrapaks"/>
-				<h3><translate>Extra packages to load</translate></h3>
-			</row>
-
-			<row>
 				<input type="text" class="text" id="layout" name="layout"/>
 				<h3><translate>Building layout to use</translate></h3>
 			</row>
