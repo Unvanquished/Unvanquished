@@ -474,10 +474,13 @@ namespace Beacon //this should eventually become a class
 			BG_BoundingBox( static_cast<class_t>( parent->client->ps.stats[ STAT_CLASS ] ), &mins, &maxs, nullptr, nullptr, nullptr );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
-			// Also update weapon for humans.
 			if( parent->client->pers.team == TEAM_HUMANS )
 			{
+				// Also update weapon for humans.
 				ent->s.bc_data = BG_GetPlayerWeapon( &parent->client->ps );
+				// Nudge the center a bit upwards for human players, so we don't look at their butt too much
+				float height = maxs.z - mins.z;
+				center.z += 0.3f * height;
 			}
 		}
 		else if ( parent->s.eType == entityType_t::ET_BUILDABLE )
