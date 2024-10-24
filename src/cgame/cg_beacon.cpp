@@ -161,7 +161,8 @@ else if( !Q_stricmp( token.string, #x ) ) \
 }
 
 /**
- * @brief Sets location on exact center of target player entity.
+ * @brief Sets location from the position of target player entity known exactly.
+ * @note That position is shifted a bit upwards for beacons of human players entities.
  */
 static void SetClientBeaconPosition(centity_t *ent, cbeacon_t *beacon)
 {
@@ -171,6 +172,13 @@ static void SetClientBeaconPosition(centity_t *ent, cbeacon_t *beacon)
 	VectorCopy( ent->lerpOrigin, center );
 	BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
 	BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+	if( TargetTeam( beacon ) == TEAM_HUMANS )
+	{
+		// Nudge the center a bit upwards for human players, so we don't look at their butt too much
+		float height = maxs[2] - mins[2];
+		center[2] += 0.3f * height;
+	}
 
 	VectorCopy( center, beacon->origin );
 }
