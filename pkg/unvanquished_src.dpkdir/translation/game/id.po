@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-10-27 09:00+0000\n"
+"Last-Translator: Jeannes Bryan <jeannesbond@hotmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -24,7 +26,7 @@ msgstr ""
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr ""
+msgstr "Harga:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -62,7 +64,7 @@ msgstr ""
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Alasan"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
@@ -84,7 +86,7 @@ msgstr ""
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "Manusia"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
@@ -116,7 +118,7 @@ msgstr ""
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "Peta"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
@@ -128,11 +130,11 @@ msgstr ""
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Selamat datang"
 
 #: ui/help_gameplay.rml:20
 msgid ""
