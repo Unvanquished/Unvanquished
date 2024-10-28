@@ -1835,3 +1835,68 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	BotMoveToGoal( self );
 	return STATUS_RUNNING;
 }
+
+AINodeStatus_t BotActionBuyPrimary( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *buy = ( AIActionNode_t * ) node;
+
+	if ( buy->nparams != 1 )
+	{
+		return STATUS_FAILURE;
+	}
+
+	weapon_t weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
+
+	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+	{
+		Log::Warn("parameter 1 to action buyPrimary out of range" );
+		return STATUS_FAILURE;
+	}
+
+	if ( !g_bot_buy.Get() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( G_Team( self ) != TEAM_HUMANS )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( self->botMind->currentNode != node )
+	{
+		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_ARMOURY ].ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( !self->botMind->goal.targetsValidEntity() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !self->botMind->goal.getTargetedEntity()->powered )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( GoalInRange( self, ENTITY_USE_RANGE ) )
+	{
+		BotSellWeapons( self );
+		if ( !BotBuyWeapon( self, weapon ) )
+		{
+			return STATUS_FAILURE;
+		}
+		return STATUS_SUCCESS;
+	}
+
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
+}
