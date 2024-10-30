@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -116,7 +116,7 @@ msgstr "设置当前地图 (服务端)"
 msgid "Method"
 msgstr "方法"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "地图"
 
@@ -150,8 +150,9 @@ msgstr "可以在我们的网站和社区了解更多！"
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
-msgstr "在 Libera.Chat IRC、Matrix 或 Discord 与各位玩家和开发者聊天: <web dest="
-"\"chat\" />"
+msgstr ""
+"在 Libera.Chat IRC、Matrix 或 Discord 与各位玩家和开发者聊天: <web "
+"dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
@@ -180,22 +181,25 @@ msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
-msgstr "当异形不在人类视野或人类建筑范围内时，可以开始进化。在 "
-"[overmind]〔主脑〕旁时，也可以退化为 [granger] 低级形态。"
+msgstr ""
+"当异形不在人类视野或人类建筑范围内时，可以开始进化。在 [overmind]〔主脑〕旁"
+"时，也可以退化为 [granger] 低级形态。"
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
-msgstr "若主脑被摧毁，[granger]〔守卫者〕可负责再构造一只。只有主脑存在时才可以进化！"
+msgstr ""
+"若主脑被摧毁，[granger]〔守卫者〕可负责再构造一只。只有主脑存在时才可以进化！"
 
 #: ui/help_gameplay.rml:47
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
-msgstr "人类击杀异形、摧毁异形建筑，获得点数。使用点数可以购买 [lcannon] "
-"新武器、铠甲、[bsuit] 战斗服，以及雷达、喷气背包等装备。"
+msgstr ""
+"人类击杀异形、摧毁异形建筑，获得点数。使用点数可以购买 [lcannon] 新武器、铠"
+"甲、[bsuit] 战斗服，以及雷达、喷气背包等装备。"
 
 #: ui/help_gameplay.rml:50
 msgid ""
@@ -237,9 +241,9 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"以下设施【不受】建筑点缺失影响: 重生设施 — "
-"[egg]〔卵〕、[telenode]〔传送点〕；采掘设施 — 蛭、钻井；特殊设施 — "
-"[overmind]〔主脑〕、[reactor]〔反应机〕。"
+"以下设施【不受】建筑点缺失影响: 重生设施 — [egg]〔卵〕、[telenode]〔传送"
+"点〕；采掘设施 — 蛭、钻井；特殊设施 — [overmind]〔主脑〕、[reactor]〔反应"
+"机〕。"
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -250,7 +254,8 @@ msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
-msgstr "建筑点由两种采掘设施供给: 人类的 [drill]〔钻井〕和异形的 [leech]〔蛭〕。"
+msgstr ""
+"建筑点由两种采掘设施供给: 人类的 [drill]〔钻井〕和异形的 [leech]〔蛭〕。"
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -1100,8 +1105,9 @@ msgstr "Mip-map"
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
-msgstr "Mip-map "
-"通过为远处的平面使用低分辨率贴图以取得更好的视觉效果。这通常不影响性能。"
+msgstr ""
+"Mip-map 通过为远处的平面使用低分辨率贴图以取得更好的视觉效果。这通常不影响性"
+"能。"
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
 msgid "No"
@@ -1195,7 +1201,8 @@ msgstr "静态倒影"
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
-msgstr "在支持的平面添加静态立方贴图倒影。需要一般、镜面与高级映射。目前不支持与物理"
+msgstr ""
+"在支持的平面添加静态立方贴图倒影。需要一般、镜面与高级映射。目前不支持与物理"
 "映射同时使用。"
 
 #: ui/options_graphics.rml:252
@@ -1314,7 +1321,8 @@ msgstr "物质系统"
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
-msgstr "使用能够极度增强性能的系统。一些驱动可能不支持 (如 Mesa 和 AMD 专有驱动) 。"
+msgstr ""
+"使用能够极度增强性能的系统。一些驱动可能不支持 (如 Mesa 和 AMD 专有驱动) 。"
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
@@ -2138,14 +2146,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "开发者模式 (启用作弊)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "要加载的其他资源包"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "要使用的建筑布局"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "开始"
 
@@ -2364,10 +2368,6 @@ msgstr "下载速度:"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "大小:"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "加载中"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -5099,6 +5099,12 @@ msgstr "异形"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "人类"
+
+#~ msgid "Loading"
+#~ msgstr "加载中"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "要加载的其他资源包"
 
 #~ msgid ""
 #~ "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "

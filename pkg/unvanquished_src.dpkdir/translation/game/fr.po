@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: 2024-10-21 20:29+0000\n"
 "Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -117,7 +117,7 @@ msgstr "Définir la carte actuelle (hôte)"
 msgid "Method"
 msgstr "Méthode"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "Carte"
 
@@ -2272,14 +2272,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "Mode développeur (active la triche)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "Paquets supplémentaires à charger"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "Layout de construction à utiliser"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "Lancer"
 
@@ -2506,10 +2502,6 @@ msgstr "Taux de téléchargement :"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Taille :"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "Chargement"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -5361,6 +5353,12 @@ msgstr "extraterrestres"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "humains"
+
+#~ msgid "Loading"
+#~ msgstr "Chargement"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "Paquets supplémentaires à charger"
 
 #~ msgid "Quality of static reflection cubemaps."
 #~ msgstr "Qualité des cubmaps de réflection statique."

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: 2024-10-21 20:29+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
@@ -52,7 +52,8 @@ msgstr "Фермер"
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr "Подонки — скрытно атакующая форма, а Фермер — строительная форма Чужих."
+msgstr ""
+"Подонки — скрытно атакующая форма, а Фермер — строительная форма Чужих."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
@@ -116,7 +117,7 @@ msgstr "Задать текущую карту (хост)"
 msgid "Method"
 msgstr "Метод"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "Карта"
 
@@ -1341,7 +1342,8 @@ msgstr "Автосборка кубических карт статичного 
 
 #: ui/options_graphics.rml:277
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr "Автоматически создавать/загружать/сохранять кубические карты отражения."
+msgstr ""
+"Автоматически создавать/загружать/сохранять кубические карты отражения."
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
@@ -2247,14 +2249,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "Режим разработчика (включает читы)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "Дополнительные загружаемые пакеты"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "План постройки для использования"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "Начать"
 
@@ -2479,10 +2477,6 @@ msgstr "Скорость загрузки:"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Размер:"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "Загрузка"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -5277,6 +5271,12 @@ msgstr "пришельцы"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "люди"
+
+#~ msgid "Loading"
+#~ msgstr "Загрузка"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "Дополнительные загружаемые пакеты"
 
 #~ msgid "Same as screen"
 #~ msgstr "Такое же, как у экрана"
