@@ -1091,6 +1091,31 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
+AINodeStatus_t BotActionReload( gentity_t *self, AIGenericNode_t * )
+{
+	playerState_t *ps = &self->client->ps;
+	const weaponAttributes_t *wa = BG_Weapon( ps->weapon );
+
+	if ( G_Team( self ) != TEAM_HUMANS
+	     || BG_Weapon( ps->weapon )->infiniteAmmo
+	     || ps->clips <= 0
+	     || ps->ammo >= wa->maxAmmo )
+	{
+		// cannot reload (sensibly)
+		return STATUS_FAILURE;
+	}
+
+	if ( self->client->ps.weaponstate != WEAPON_RELOADING )
+	{
+		// can reload
+		self->client->ps.pm_flags |= PMF_WEAPON_RELOAD;
+		return STATUS_SUCCESS;
+	}
+
+	// currently reloading
+	return STATUS_FAILURE;
+}
+
 AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
