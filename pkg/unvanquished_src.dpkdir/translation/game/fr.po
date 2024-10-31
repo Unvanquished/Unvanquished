@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-30 04:59+0100\n"
-"PO-Revision-Date: 2024-10-21 20:29+0000\n"
-"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
+"PO-Revision-Date: 2024-10-31 17:32+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.8.2-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1176,7 +1176,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr "Utilisez des textures sans lien si possible"
+msgstr "Utiliser des textures sans lien si possible"
 
 #: ui/options_graphics.rml:174
 msgid ""
@@ -1401,7 +1401,7 @@ msgstr "Marques"
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
-"Dessiner des marques (telles que des trous de balles ou des fluages) sur les "
+"Dessiner des marques (telles que des impacts de balle ou des replis) sur les "
 "surfaces"
 
 #: ui/options_graphics.rml:314
