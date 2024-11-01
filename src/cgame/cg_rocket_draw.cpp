@@ -45,6 +45,10 @@ Maryland 20850 USA.
 
 Cvar::Cvar<bool> cg_drawPosition("cg_drawPosition", "show position. Requires cg_drawSpeed to be enabled.", Cvar::NONE, false);
 
+static Cvar::Cvar<bool> cg_showCrosshairShader(
+	"cg_showCrosshairShader", "draw name of shader on world surface under crosshair",
+	Cvar::NONE, false);
+
 static void CG_GetRocketElementColor( Color::Color& color )
 {
 	Rocket_GetProperty( "color", &color, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
@@ -1809,6 +1813,27 @@ public:
 	{
 		Rml::String name;
 		float alpha;
+
+		if ( cg_showCrosshairShader.Get() )
+		{
+			std::string CM_TraceShader( trace_t *results, const vec3_t start, const vec3_t end );
+			trace_t tr;
+
+			vec3_t end;
+			VectorMA( cg.refdef.vieworg, 2000, cg.refdef.viewaxis[ 0 ], end );
+			std::string shaderName = CM_TraceShader(&tr, cg.refdef.vieworg, end);
+			if ( !shaderName.empty() )
+			{
+				SetProperty( "opacity", "1" );
+				SetInnerRML( Str::Format( "%.0f %s", 2000 * tr.fraction, shaderName ) );
+			}
+			else
+			{
+				Clear();
+			}
+
+			return;
+		}
 
 		if ( ( !cg_drawCrosshairNames.Get() && !cg_drawEntityInfo.Get() ) || cg.renderingThirdPerson )
 		{
