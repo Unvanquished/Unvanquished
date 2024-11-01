@@ -1818,14 +1818,34 @@ public:
 		{
 			std::string CM_TraceShader( trace_t *results, const vec3_t start, const vec3_t end );
 			trace_t tr;
+			glm::vec3 start = VEC2GLM( cg.refdef.vieworg );
 
-			vec3_t end;
-			VectorMA( cg.refdef.vieworg, 2000, cg.refdef.viewaxis[ 0 ], end );
-			std::string shaderName = CM_TraceShader(&tr, cg.refdef.vieworg, end);
+			std::string shaderName;
+			for ( int i = 99; i--; )
+			{
+				glm::vec3 end = start + 10000.f * VEC2GLM( cg.refdef.viewaxis[ 0 ] );
+				shaderName = CM_TraceShader( &tr, GLM4READ( start ), GLM4READ( end ) );
+				if ( tr.fraction == 1.0f || tr.allsolid )
+				{
+					break;
+				}
+
+				if ( !( tr.surfaceFlags & SURF_NODRAW ) && shaderName != "noshader" )
+				{
+					break;
+				}
+
+				shaderName.clear();
+
+				// Skip ahead 1 unit. This doesn't always work as desired because often there is
+				// an invisible brush face at the same place as a visible one
+				start = VEC2GLM( tr.endpos ) + VEC2GLM( cg.refdef.viewaxis[ 0 ] );
+			}
+
 			if ( !shaderName.empty() )
 			{
 				SetProperty( "opacity", "1" );
-				SetInnerRML( Str::Format( "%.0f %s", 2000 * tr.fraction, shaderName ) );
+				SetInnerRML( name_ = Str::Format( "%.0f %s", Distance( cg.refdef.vieworg, tr.endpos ), shaderName ) );
 			}
 			else
 			{
