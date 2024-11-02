@@ -72,6 +72,7 @@ selector
 				}
 			}
 
+			behavior reload
 			sequence
 			{
 				condition ( distanceTo( E_H_ARMOURY ) < 500 )

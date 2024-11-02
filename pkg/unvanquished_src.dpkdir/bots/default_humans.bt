@@ -185,6 +185,7 @@ selector
 		}
 	}
 
+	behavior reload
 	action equip
 
 	selector

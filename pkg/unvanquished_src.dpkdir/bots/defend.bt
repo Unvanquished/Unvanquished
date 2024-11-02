@@ -139,6 +139,7 @@ selector
 				}
 			}
 
+			behavior reload
 			action equip
 
 			fallback

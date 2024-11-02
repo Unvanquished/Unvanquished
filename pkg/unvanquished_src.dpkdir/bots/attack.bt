@@ -53,6 +53,7 @@ selector
 				}
 			}
 
+			behavior reload
 			sequence
 			{
 				// the bot is required to attack, only visit an armoury
