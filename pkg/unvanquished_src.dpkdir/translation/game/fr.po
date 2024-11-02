@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-30 04:59+0100\n"
-"PO-Revision-Date: 2024-10-31 17:32+0000\n"
+"PO-Revision-Date: 2024-11-03 05:41+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"X-Generator: Weblate 5.8.2\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -433,7 +433,7 @@ msgid ""
 msgstr ""
 "Rester à une distance intermédiaire de l' [overmind] overmind ou des "
 "œufs[egg] vous donnera également une guérison légèrement améliorée, bien que "
-"inférieure au fluage. Cela peut aider à défendre les bases."
+"inférieure au creep. Cela peut aider à défendre les bases."
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -1401,7 +1401,7 @@ msgstr "Marques"
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
-"Dessiner des marques (telles que des impacts de balle ou des replis) sur les "
+"Dessiner des marques (telles que des impacts de balle ou le creep) sur les "
 "surfaces"
 
 #: ui/options_graphics.rml:314
