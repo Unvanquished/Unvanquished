@@ -1,0 +1,9 @@
+decorator return( STATUS_FAILURE )
+{
+	sequence
+	{
+		condition timeSinceLastCombat > 3000
+		condition percentAmmoClip < 0.4
+		action reload
+	}
+}
