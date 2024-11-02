@@ -1103,6 +1103,7 @@ static const struct AIActionMap_s
 	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
+	{ "reload",            BotActionReload,            0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
 	{ "resetMyTimer",      BotActionResetMyTimer,      0, 0 },
 	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
