@@ -1086,6 +1086,11 @@ struct WeaponOffsets
 
 #define NUM_BINARY_SHADERS 256
 
+struct snapshot_t : snapshotBase_t
+{
+	playerState_t ps;
+};
+
 struct cg_t
 {
 	int      clientFrame; // incremented each frame
@@ -1098,7 +1103,7 @@ struct cg_t
 
 	int currentCmdNumber; // usercmd_t number for this frame
 
-	// there are only one or two snapshot_t that are relevent at a time
+	// there are only one or two snapshots that are relevant at a time
 	int        latestSnapshotNum; // the number of snapshots the client system has received
 	int        latestSnapshotTime; // the time from latestSnapshotNum, so we don't need to read the snapshot yet
 
