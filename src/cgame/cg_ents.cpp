@@ -296,16 +296,13 @@ static void CG_EntityEffects( centity_t *cent )
 	// constant light glow
 	if ( cent->currentState.constantLight && ( cent->currentState.eType == entityType_t::ET_MOVER || cent->currentState.eType == entityType_t::ET_MODELDOOR ) )
 	{
-		int cl;
-		int i, r, g, b;
+		const int cl = cent->currentState.constantLight;
+		const float r = ( cl & 255 ) / 255.0;
+		const float g = ( ( cl >> 8 ) & 255 ) / 255.0;
+		const float b = ( ( cl >> 16 ) & 255 ) / 255.0;
+		const float radius = ( ( cl >> 24 ) & 255 ) * 4.0;
 
-		cl = cent->currentState.constantLight;
-		r = cl & 255;
-		g = ( cl >> 8 ) & 255;
-		b = ( cl >> 16 ) & 255;
-		i = ( ( cl >> 24 ) & 255 ) * 4;
-
-		trap_R_AddLightToScene( cent->lerpOrigin, i, 1.0, r, g, b, 0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, radius, 1, r, g, b, 0 );
 	}
 
 	if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
