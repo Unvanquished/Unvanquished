@@ -2339,7 +2339,7 @@ void CG_Buildable( centity_t *cent )
 				                        wi->wim[ WPM_PRIMARY ].flashDlightIntensity,
 				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
 				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
-				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
+				                        wi->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0 );
 			}
 		}
 
