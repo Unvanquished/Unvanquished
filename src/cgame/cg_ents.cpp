@@ -305,7 +305,7 @@ static void CG_EntityEffects( centity_t *cent )
 		b = ( cl >> 16 ) & 255;
 		i = ( ( cl >> 24 ) & 255 ) * 4;
 
-		trap_R_AddAdditiveLightToScene( cent->lerpOrigin, i, r, g, b );
+		trap_R_AddLightToScene( cent->lerpOrigin, i, 1.0, r, g, b, 0, 0 );
 	}
 
 	if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
