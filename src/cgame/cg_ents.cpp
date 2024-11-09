@@ -305,7 +305,7 @@ static void CG_EntityEffects( centity_t *cent )
 		b = ( cl >> 16 ) & 255;
 		i = ( ( cl >> 24 ) & 255 ) * 4;
 
-		trap_R_AddLightToScene( cent->lerpOrigin, i, 1.0, r, g, b, 0, 0 );
+		trap_R_AddLightToScene( cent->lerpOrigin, i, 1.0, r, g, b, 0 );
 	}
 
 	if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
@@ -407,7 +407,7 @@ static void CG_Missile( centity_t *cent )
 	if ( ma->usesDlight )
 	{
 		trap_R_AddLightToScene( cent->lerpOrigin, ma->dlight, ma->dlightIntensity,
-		                        ma->dlightColor[ 0 ], ma->dlightColor[ 1 ], ma->dlightColor[ 2 ], 0, 0 );
+		                        ma->dlightColor[ 0 ], ma->dlightColor[ 1 ], ma->dlightColor[ 2 ], 0 );
 	}
 
 	// add missile sound
