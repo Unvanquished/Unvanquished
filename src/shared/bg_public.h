@@ -105,7 +105,9 @@ struct playerState_t
 	int persistant[16];
 	int    viewheight;
 	int clientNum; // ranges from 0 to MAX_CLIENTS-1
-	int   delta_angles[ 3 ]; // add to command angles to get view direction
+	// add to command angles to get view direction
+	// these can be used for external disturbances to a player's view not caused by their inputs
+	int   delta_angles[ 3 ];
 	vec3_t viewangles; // for fixed views
 	int    commandTime; // cmd->serverTime of last executed command
 	// end of fields which must be identical to OpaquePlayerState
@@ -364,6 +366,8 @@ struct pmove_t
 // if a full pmove isn't done on the client, you can just update the angles
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
 void Pmove( pmove_t *pmove );
+
+bool BG_IsChaingunStabilized( const playerState_t *ps );
 
 //===================================================================================
 

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: 2024-10-14 17:46+0000\n"
 "Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
@@ -117,7 +117,7 @@ msgstr "Imposta la mappa corrente (host)"
 msgid "Method"
 msgstr "Metodo"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "Mappa"
 
@@ -2237,14 +2237,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "Modalità sviluppatore (abilita i cheat)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "Pacchetti extra da caricare"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "Costruendo lo schema da usare"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "Inizia"
 
@@ -2470,10 +2466,6 @@ msgstr "Velocità scaricamento:"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Dimensione:"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "Caricamento"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -5316,6 +5308,12 @@ msgstr "alieni"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "umani"
+
+#~ msgid "Loading"
+#~ msgstr "Caricamento"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "Pacchetti extra da caricare"
 
 #~ msgid ""
 #~ "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "

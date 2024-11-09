@@ -41,12 +41,16 @@ cp -a "${script_dir}/record-benchmark-demo.cfg" "${config_dir}"
 if "${daemon_path}" \
 	-homepath "${temp_home_path}" \
 	-set name 'benchmark' \
+	-set r_fullscreen 0 \
+	-set r_customWidth 640 \
+	-set r_customHeight 480 \
+	-set r_mode -1 \
 	-set common.shutdownOnDrop on \
-	-set g_synchronousClients 1 \
+	-set in_nograb 1 \
 	"${@}" \
 	+exec 'record-benchmark-demo.cfg'
 then
-	cp -a "${demo_dir}/"*'.dm_86' "${script_dir}/benchmark.dm_86"
+	cp -a "${demo_dir}/unvanquished-benchmark.dm_86" "${script_dir}/"
 fi
 
 rm -rf "${temp_home_path}"

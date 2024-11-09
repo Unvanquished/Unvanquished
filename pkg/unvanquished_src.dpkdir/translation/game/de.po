@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: 2024-10-19 18:26+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -117,7 +117,7 @@ msgstr "Karte ändern (Host)"
 msgid "Method"
 msgstr "Methode"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "Karte"
 
@@ -2230,14 +2230,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "Entwicklermodus (ermögliche Cheats)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "Zu ladende Extra Pakete"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "Zu verwendendes Bauwerklayout"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "Start"
 
@@ -2466,10 +2462,6 @@ msgstr "Download-Geschwindigkeit:"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Größe:"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "laden"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -5337,6 +5329,12 @@ msgstr "Außerirdische"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "Menschen"
+
+#~ msgid "Loading"
+#~ msgstr "laden"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "Zu ladende Extra Pakete"
 
 #~ msgid ""
 #~ "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "

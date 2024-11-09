@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: 2024-10-18 16:07+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -118,7 +118,7 @@ msgstr "Vaihda kenttä (isäntä)"
 msgid "Method"
 msgstr "Toimenpide"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "Kenttä"
 
@@ -2238,14 +2238,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "Kehittäjätila (huijaustoiminnot käytössä)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "Lisäpaketit, joita käytetään"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "Rakennelmien alkuasetelma, jota käytetään"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "Aloita"
 
@@ -2468,10 +2464,6 @@ msgstr "Latausnopeus:"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Koko:"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "Ladataan"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -5269,6 +5261,12 @@ msgstr "alienit"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid "Loading"
+#~ msgstr "Ladataan"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "Lisäpaketit, joita käytetään"
 
 #~ msgid "Quality of static reflection cubemaps."
 #~ msgstr "Kiinteiden heijastuksien kuutiokarttojen laatu."

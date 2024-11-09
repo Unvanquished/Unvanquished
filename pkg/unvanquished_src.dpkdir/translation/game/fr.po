@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
-"PO-Revision-Date: 2024-10-18 16:07+0000\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
+"PO-Revision-Date: 2024-11-03 05:41+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.8.2\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -117,7 +117,7 @@ msgstr "Définir la carte actuelle (hôte)"
 msgid "Method"
 msgstr "Méthode"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr "Carte"
 
@@ -433,7 +433,7 @@ msgid ""
 msgstr ""
 "Rester à une distance intermédiaire de l' [overmind] overmind ou des "
 "œufs[egg] vous donnera également une guérison légèrement améliorée, bien que "
-"inférieure au fluage. Cela peut aider à défendre les bases."
+"inférieure au creep. Cela peut aider à défendre les bases."
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -1176,7 +1176,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr "Utilisez des textures sans lien si possible"
+msgstr "Utiliser des textures sans lien si possible"
 
 #: ui/options_graphics.rml:174
 msgid ""
@@ -1401,7 +1401,7 @@ msgstr "Marques"
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
-"Dessiner des marques (telles que des trous de balles ou des fluages) sur les "
+"Dessiner des marques (telles que des impacts de balle ou le creep) sur les "
 "surfaces"
 
 #: ui/options_graphics.rml:314
@@ -2272,14 +2272,10 @@ msgid "Developer mode (enable cheats)"
 msgstr "Mode développeur (active la triche)"
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr "Paquets supplémentaires à charger"
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr "Layout de construction à utiliser"
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr "Lancer"
 
@@ -2506,10 +2502,6 @@ msgstr "Taux de téléchargement :"
 #: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Taille :"
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
-msgstr "Chargement"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
@@ -4064,7 +4056,7 @@ msgstr "Ajout de tourelles…"
 
 #: src/cgame/cg_main.cpp:509
 msgid "Awakening the overmind…"
-msgstr "Eveiller l'Overmind…"
+msgstr "Éveil de l'Overmind…"
 
 #: src/cgame/cg_main.cpp:513
 msgid "Teleporting soldiers…"
@@ -5361,6 +5353,12 @@ msgstr "extraterrestres"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "humains"
+
+#~ msgid "Loading"
+#~ msgstr "Chargement"
+
+#~ msgid "Extra packages to load"
+#~ msgstr "Paquets supplémentaires à charger"
 
 #~ msgid "Quality of static reflection cubemaps."
 #~ msgstr "Qualité des cubmaps de réflection statique."

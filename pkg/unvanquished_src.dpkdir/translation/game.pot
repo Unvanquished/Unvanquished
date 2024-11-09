@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:30+0200\n"
+"POT-Creation-Date: 2024-10-30 04:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Method"
 msgstr ""
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
 msgstr ""
 
@@ -2077,14 +2077,10 @@ msgid "Developer mode (enable cheats)"
 msgstr ""
 
 #: ui/server_create.rml:54
-msgid "Extra packages to load"
-msgstr ""
-
-#: ui/server_create.rml:59
 msgid "Building layout to use"
 msgstr ""
 
-#: ui/server_create.rml:67
+#: ui/server_create.rml:62
 msgid "Start"
 msgstr ""
 
@@ -2302,10 +2298,6 @@ msgstr ""
 
 #: ui/transition_downloading.rml:60
 msgid "Size:"
-msgstr ""
-
-#: ui/transition_loading.rml:104
-msgid "Loading"
 msgstr ""
 
 #: ui/welcome.rml:19

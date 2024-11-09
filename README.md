@@ -30,7 +30,7 @@ See below for [build](#building-the-game-binaries) and [launch](#running-the-gam
 
 [![Weblate](https://hosted.weblate.org/widgets/unvanquished/-/multi-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
 
-The Unvanquished game is translated on the [Weblate](https://hosted.weblate.org/projects/unvanquished/unvanquished) platform, this is the easier way to contribute translations since it offers a central place were people can contribute and review translations while reducing risks of merge conflicts. Weblate preserves authorship and automatically produces commits that can be associated with your GitHub account.
+The Unvanquished game is translated on the [Weblate](https://hosted.weblate.org/projects/unvanquished/unvanquished) platform, this is the easier way to contribute translations since it offers a central place where people can contribute and review translations while reducing risks of merge conflicts. Weblate preserves authorship and automatically produces commits that can be associated with your GitHub account.
 
 ## Requirements to build the game binaries
 

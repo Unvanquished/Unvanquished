@@ -155,6 +155,10 @@ selector
 
 	sequence
 	{
+		// TODO: add more conditions, like:
+		//   - bot is close to an armoury
+		//   - bot is close to the damaged building
+		//   - building is damaged by more than, say, 20% of its health
 		condition !teamateHasWeapon( WP_HBUILD )
 		condition buildingIsDamaged
 		decorator timer( 50000 )
@@ -181,6 +185,7 @@ selector
 		}
 	}
 
+	behavior reload
 	action equip
 
 	selector
