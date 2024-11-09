@@ -301,7 +301,7 @@ static void CG_RenderBeam( trailBeam_t *tb )
 						3,
 						( float ) btb->dLightColor[ 0 ] / ( float ) 0xFF,
 						( float ) btb->dLightColor[ 1 ] / ( float ) 0xFF,
-						( float ) btb->dLightColor[ 2 ] / ( float ) 0xFF, 0, 0 );
+						( float ) btb->dLightColor[ 2 ] / ( float ) 0xFF, 0 );
 		}
 
 		i = i->next;
