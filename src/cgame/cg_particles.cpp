@@ -2648,7 +2648,7 @@ static void CG_RenderParticle( particle_t *p )
 		                        3,
 		                        ( float ) bp->dLightColor[ 0 ] / ( float ) 0xFF,
 		                        ( float ) bp->dLightColor[ 1 ] / ( float ) 0xFF,
-		                        ( float ) bp->dLightColor[ 2 ] / ( float ) 0xFF, 0, 0 );
+		                        ( float ) bp->dLightColor[ 2 ] / ( float ) 0xFF, 0 );
 	}
 
 	VectorCopy( p->origin, re.origin );
