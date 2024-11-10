@@ -186,7 +186,7 @@ Builds the skeleton for the current animation
 Also blends between the old and new skeletons if necessary
 ===============
 */
-void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton )
+void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refEntity_t* ent, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton, bool useAnim2 )
 {
 	if( !lf->animation || !lf->animation->handle )
 	{
@@ -203,9 +203,22 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 		return;
 	}
 
-	if ( !trap_R_BuildSkeleton( newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1 - lf->backlerp, lf->animation->clearOrigin ) )
+	/* if ( !trap_R_BuildSkeleton(newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1 - lf->backlerp, lf->animation->clearOrigin) )
 	{
 		Log::Warn( "CG_BuildAnimSkeleton: Can't build skeleton" );
+	} */
+	if ( useAnim2 ) {
+		ent->animationHandle = lf->animation->handle;
+		ent->startFrame2 = lf->oldFrame;
+		ent->endFrame2 = lf->frame;
+		ent->lerp2 = 1 - lf->backlerp;
+		ent->clearOrigin2 = lf->animation->clearOrigin;
+	} else {
+		ent->animationHandle2 = lf->animation->handle;
+		ent->startFrame = lf->oldFrame;
+		ent->endFrame = lf->frame;
+		ent->lerp = 1 - lf->backlerp;
+		ent->clearOrigin = lf->animation->clearOrigin;
 	}
 
 	// lerp between old and new animation if possible
@@ -213,11 +226,12 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 	{
 		if ( newSkeleton->type != refSkeletonType_t::SK_INVALID && oldSkeleton->type != refSkeletonType_t::SK_INVALID && newSkeleton->numBones == oldSkeleton->numBones )
 		{
-			if ( !trap_R_BlendSkeleton( newSkeleton, oldSkeleton, lf->blendlerp ) )
+			/* if ( !trap_R_BlendSkeleton(newSkeleton, oldSkeleton, lf->blendlerp) )
 			{
 				Log::Warn( "CG_BuildAnimSkeleton: Can't blend skeletons" );
 				return;
-			}
+			} */
 		}
+		ent->blendLerp = lf->blendlerp;
 	}
 }
