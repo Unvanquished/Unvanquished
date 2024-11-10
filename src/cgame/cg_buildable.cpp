@@ -837,7 +837,7 @@ CG_SetBuildableLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_t *lf, int newAnimation )
+static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, refEntity_t* ent, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 
@@ -857,11 +857,16 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		{
 			if ( lf->old_animation != nullptr && lf->old_animation->handle )
 			{
-				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				/* if ( !trap_R_BuildSkeleton(&oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin) )
 				{
 					Log::Warn( "Can't build old buildable bSkeleton" );
 					return;
-				}
+				} */
+				ent->animationHandle = lf->old_animation->handle;
+				ent->startFrame = lf->oldFrame;
+				ent->endFrame = lf->frame;
+				ent->lerp = lf->blendlerp;
+				ent->clearOrigin = lf->old_animation->clearOrigin;
 			}
 		}
 	}
@@ -917,7 +922,7 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static void CG_RunBuildableLerpFrame( centity_t *cent )
+static void CG_RunBuildableLerpFrame( centity_t *cent, refEntity_t* ent )
 {
 	buildable_t           buildable = (buildable_t) cent->currentState.modelindex;
 	lerpFrame_t           *lf = &cent->lerpFrame;
@@ -926,7 +931,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		CG_SetBuildableLerpFrameAnimation( buildable, lf, newAnimation );
+		CG_SetBuildableLerpFrameAnimation( buildable, ent, lf, newAnimation );
 
 		if ( !cg_buildables[ buildable ].sounds[ newAnimation ].looped &&
 		     cg_buildables[ buildable ].sounds[ newAnimation ].enabled )
@@ -957,7 +962,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 CG_BuildableAnimation
 ===============
 */
-static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_BuildableAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
 {
 	entityState_t *es = &cent->currentState;
 	lerpFrame_t   *lf = &cent->lerpFrame;
@@ -1019,7 +1024,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 			cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 		}
 
-		CG_RunBuildableLerpFrame( cent );
+		CG_RunBuildableLerpFrame( cent, ent );
 
 		*old = cent->lerpFrame.oldFrame;
 		*now = cent->lerpFrame.frame;
@@ -1030,7 +1035,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, &bSkeleton, &oldbSkeleton );
+		CG_BuildAnimSkeleton( lf, ent, &bSkeleton, &oldbSkeleton );
 	}
 }
 
@@ -1190,8 +1195,14 @@ void CG_GhostBuildable( int buildableInfo )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, false );
-		CG_TransformSkeleton( &ent.skeleton, scale );
+		// trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, false );
+		// CG_TransformSkeleton( &ent.skeleton, scale );
+		ent.animationHandle = cg_buildables[buildable].animations[BANIM_IDLE1].handle;
+		ent.startFrame = 0;
+		ent.endFrame = 0;
+		ent.lerp = 0;
+		ent.clearOrigin = 0;
+		ent.scale = scale;
 	}
 
 	// Apply rotation from config.
@@ -2099,7 +2110,7 @@ void CG_Buildable( centity_t *cent )
 		trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, prebuildSound );
 	}
 
-	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+	CG_BuildableAnimation( cent, &ent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
 	// TODO: Merge the scaling and rotation of (non-)ghost buildables.
 

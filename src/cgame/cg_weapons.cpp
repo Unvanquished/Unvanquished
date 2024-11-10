@@ -1061,7 +1061,7 @@ CG_SetWeaponLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, int newAnimation )
+static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, refEntity_t* ent, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 	bool toggle = false;
@@ -1087,11 +1087,16 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 
 	if ( /*&cg_weapons[ weapon ].md5 &&*/ !toggle && lf->old_animation && lf->old_animation->handle )
 	{
-		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
+		/* if ( !trap_R_BuildSkeleton(&oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin) )
 		{
 			Log::Warn( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton" );
 			return;
-		}
+		} */
+		ent->animationHandle = lf->old_animation->handle;
+		ent->startFrame = lf->oldFrame;
+		ent->endFrame = lf->frame;
+		ent->lerp = lf->backlerp;
+		ent->clearOrigin = lf->old_animation->clearOrigin;
 	}
 }
 
@@ -1100,7 +1105,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 CG_WeaponAnimation
 ===============
 */
-static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_WeaponAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
 {
 	lerpFrame_t   *lf = &cent->pe.weapon;
 	entityState_t *es = &cent->currentState;
@@ -1108,7 +1113,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	// see if the animation sequence is switching
 	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ es->weapon ].md5 && !lf->animation->handle ) )
 	{
-		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, lf, es->weaponAnim );
+		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, ent, lf, es->weaponAnim );
 	}
 
 	CG_RunLerpFrame( lf );
@@ -1121,7 +1126,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, &gunSkeleton, &oldGunSkeleton );
+		CG_BuildAnimSkeleton( lf, ent, &gunSkeleton, &oldGunSkeleton );
 	}
 }
 
@@ -1401,7 +1406,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_PositionEntityOnTag( &gun, parent, "tag_weapon" );
 		if ( ps )
 		{
-			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+			CG_WeaponAnimation( cent, &gun, &gun.oldframe, &gun.frame, &gun.backlerp );
 		}
 
 		if ( weapon->md5 )
