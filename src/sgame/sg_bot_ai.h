@@ -217,6 +217,7 @@ struct AIActionNode_t
 	AIValue_t    *params;
 	int          nparams;
 	int lineNum; // for debugging/tracing
+	const char *name; // for debugging/tracing
 };
 
 bool isBinaryOp( AIOpType_t op );
