@@ -111,34 +111,7 @@ selector
 				}
 			}
 
-			sequence
-			{
-				condition !teamateHasWeapon( WP_HBUILD )
-				condition buildingIsDamaged
-				decorator timer( 50000 )
-				{
-					selector
-					{
-						condition !haveWeapon( WP_HBUILD )
-						{
-							sequence
-							{
-								decorator return( STATUS_SUCCESS )
-								{
-									action equip
-								}
-								action buy( WP_HBUILD )
-							}
-						}
-
-						condition haveWeapon( WP_HBUILD )
-						{
-							action repair
-						}
-					}
-				}
-			}
-
+			behavior repair
 			behavior reload
 			action equip
 
