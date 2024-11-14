@@ -264,6 +264,8 @@ A sequence will succeed if all of its child nodes succeed
 A concurrent node will always evaluate all of its child nodes unless one fails
 if one fails, the concurrent node will stop executing nodes and return failure
 A concurrent node succeeds if none of its child nodes fail
+Beware: children of concurrent will not work correctly if more than one returns STATUS_RUNNING as
+BT state only tracks a single running node.
 ======================
 */
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
@@ -348,9 +350,9 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *con = ( AINodeList_t * ) node;
-	int i = 0;
+	AINodeStatus_t result = STATUS_SUCCESS;
 
-	for ( ; i < con->numNodes; i++ )
+	for ( int i = 0; i < con->numNodes; i++ )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, con->list[ i ] );
 
@@ -358,8 +360,13 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		else if ( status == STATUS_RUNNING )
+		{
+			result = STATUS_RUNNING;
+		}
 	}
-	return STATUS_SUCCESS;
+
+	return result;
 }
 
 /*
