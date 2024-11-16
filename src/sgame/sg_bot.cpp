@@ -404,7 +404,9 @@ static void ShowRunningNode( gentity_t *self, AINodeStatus_t status )
 	case STATUS_RUNNING:
 		ASSERT( !self->botMind->runningNodes.empty() );
 		ASSERT_EQ( self->botMind->runningNodes[ 0 ]->type, AINode_t::ACTION_NODE );
-		int line = reinterpret_cast<AIActionNode_t *>( self->botMind->runningNodes[ 0 ] )->lineNum;
+		AIActionNode_t *actionNode = reinterpret_cast<AIActionNode_t *>( self->botMind->runningNodes[ 0 ] );
+		int line = actionNode->lineNum;
+		const char *actionName = actionNode->name;
 		const char *tree = "<unknown>";
 		for ( const AIGenericNode_t *node : self->botMind->runningNodes )
 		{
@@ -414,7 +416,7 @@ static void ShowRunningNode( gentity_t *self, AINodeStatus_t status )
 				break;
 			}
 		}
-		Log::defaultLogger.WithoutSuppression().Notice( "%s^* running at %s.bt:%d", name, tree, line );
+		Log::defaultLogger.WithoutSuppression().Notice( "%s^* running at %s.bt:%d, action %s", name, tree, line, actionName );
 		break;
 	}
 }

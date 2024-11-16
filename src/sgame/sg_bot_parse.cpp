@@ -1160,6 +1160,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 		*tokenlist = current;
 		return nullptr;
 	}
+	node.name = action->name;
 
 	parenBegin = current->next;
 
