@@ -1126,7 +1126,7 @@ static void CG_WeaponAnimation( centity_t *cent, refEntity_t* ent, int *old, int
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, ent, &gunSkeleton, &oldGunSkeleton );
+		CG_BuildAnimSkeleton( lf, ent, &gunSkeleton, &oldGunSkeleton, true );
 	}
 }
 
@@ -1440,7 +1440,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				BoundsAdd( gun.skeleton.bounds[ 0 ], gun.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
 			}
 
-			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
+			// CG_TransformSkeleton( &gun.skeleton, weapon->scale );
+			gun.scale = weapon->scale;
 		}
 
 		if ( cg_drawGun.Get() >= 3 && ps ) {
