@@ -1847,7 +1847,7 @@ AINodeStatus_t BotActionBuyPrimary( gentity_t *self, AIGenericNode_t *node )
 
 	weapon_t weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
 
-	if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
 	{
 		Log::Warn("parameter 1 to action buyPrimary out of range" );
 		return STATUS_FAILURE;
