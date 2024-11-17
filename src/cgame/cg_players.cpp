@@ -1655,7 +1655,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, refEntity_t* ent, lerpFrame
 		CG_BlendLerpFrame( lf );
 
 		if( ci->team != TEAM_NONE )
-			CG_BuildAnimSkeleton( lf, ent, skel, &oldSkeleton );
+			CG_BuildAnimSkeleton( lf, ent, skel, &oldSkeleton, true );
 	}
 	else
 	{
@@ -1701,6 +1701,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, refEntity_t* ent, lerpFrame
 		{
 			Log::Warn( "Can't build lf->skeleton" );
 		} */
+		ent->animationHandle2 = lf->animation->handle;
 		ent->startFrame2 = anim->numFrames - 1;
 		ent->endFrame2 = anim->numFrames - 1;
 		ent->lerp2 = 0;
@@ -1800,7 +1801,8 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent, refEntity_t* ent )
 	if ( blend.type == refSkeletonType_t::SK_RELATIVE )
 	{
 		CG_RunPlayerLerpFrame( ci, ent, &cent->pe.legs, cent->pe.legs.animationNumber, &blend );
-		trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
+		// trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
+		ent->blendLerp = 0.5;
 	}
 }
 
@@ -2409,6 +2411,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		CG_JetpackAnimation( cent, &jetpack, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
 		jetpack.skeleton = jetpackSkeleton;
 		// CG_TransformSkeleton( &jetpack.skeleton, 1.0f );
+		jetpack.scale = 1.0;
 
 		trap_R_AddRefEntityToScene( &jetpack );
 
@@ -2992,7 +2995,7 @@ void CG_Player( centity_t *cent )
 				// while spectating (switching between players on the human team)
 				// - don't treat as fatal, but doing so will (briefly?) cause rendering
 				// glitches if chasing; also, brief spam
-				Log::Warn( S_SKIPNOTIFY "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
+				// Log::Warn( S_SKIPNOTIFY "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
 			// apply skeleton modifiers
@@ -3381,7 +3384,8 @@ void CG_Corpse( centity_t *cent )
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
 		legs.skeleton = legsSkeleton;
-		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
+		// CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
+		legs.scale = ci->modelScale;
 	}
 	else if ( !ci->nonsegmented )
 	{
