@@ -2269,7 +2269,8 @@ void CG_Buildable( centity_t *cent )
 			QuatMultiply2( ent.skeleton.bones[ 38 ].t.rot, rotation );
 		}
 
-		CG_TransformSkeleton( &ent.skeleton, adjustScale );
+		// CG_TransformSkeleton( &ent.skeleton, adjustScale );
+		ent.scale = adjustScale;
 	}
 
 	if ( health <= 0 )
