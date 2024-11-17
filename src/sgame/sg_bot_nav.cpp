@@ -397,6 +397,8 @@ bool BotTraceForFloor( gentity_t *self, uint32_t dir )
 	{
 		return false;
 	}
+	dirVec.z = 0.f;
+	glm::normalize( dirVec );
 	glm::vec3 playerMins, playerMaxs;
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
 	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
@@ -405,7 +407,7 @@ bool BotTraceForFloor( gentity_t *self, uint32_t dir )
 	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( 1.414214f * radius );
 	start.z += playerMaxs.z;
 	glm::vec3 end = start;
-	end.z -= height * 1.5f;
+	end.z -= height * 2.f;
 	trap_Trace( &trace, &start[ 0 ], nullptr, nullptr, &end[ 0 ], self->num(), MASK_SOLID, 0 );
 	return trace.fraction < 1.f;
 }
