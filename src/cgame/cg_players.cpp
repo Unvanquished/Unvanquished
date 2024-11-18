@@ -3004,9 +3004,16 @@ void CG_Player( centity_t *cent )
 			ctx.torsoYawAngle = torsoAngles[YAW];
 			ctx.pitchAngle = cent->lerpAngles[PITCH];
 			ctx.legsSkeleton = &legsSkeleton;
+
+			uint32_t size = 0;
+			for ( auto& mod : ci->modifiers ) {
+				size += mod->GetBoneModCount( ctx );
+			}
+			legs.boneMods.reserve( size );
+
 			for ( auto& mod : ci->modifiers )
 			{
-				mod->Apply( ctx, &legs.skeleton );
+				mod->Apply( ctx, &legs, &legs.skeleton );
 			}
 
 		}
