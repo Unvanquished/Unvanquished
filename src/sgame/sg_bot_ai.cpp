@@ -1839,12 +1839,6 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionBuyPrimary( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *buy = ( AIActionNode_t * ) node;
-
-	if ( buy->nparams != 1 )
-	{
-		return STATUS_FAILURE;
-	}
-
 	weapon_t weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
 
 	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
