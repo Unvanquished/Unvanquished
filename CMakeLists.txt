@@ -114,14 +114,6 @@ include_directories(${LUA_INCLUDE_DIR})
 # Libraries we build from source #
 ##################################
 
-if (BUILDING_ANY_GAMELOGIC AND BUILD_CGAME)
-    # RmlUi
-    include_directories(${FREETYPE_INCLUDE_DIRS})
-    include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
-    set_target_properties(RMLUI_LIB PROPERTIES FOLDER "libs")
-    include_directories(${RMLUI_INCLUDE_DIRS})
-endif()
-
 # Configuration for Recast
 set(RC_MAX_LAYERS 63 CACHE STRING "Must be 255 or smaller.")
 set(RC_MAX_NEIS 16 CACHE STRING "")
@@ -129,6 +121,14 @@ set(RC_MAX_NEIS 16 CACHE STRING "")
 set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_NEIS)
 
 if (BUILDING_ANY_GAMELOGIC)
+    if (BUILD_CGAME)
+        # Freetype
+        include_directories(${FREETYPE_INCLUDE_DIRS})
+
+        # RmlUi
+        include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
+    endif()
+
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
     set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
@@ -251,7 +251,7 @@ if (BUILD_CGAME)
     FILES
         ${CGAMELIST}
     LIBS
-        RMLUI_LIB
+        srclibs-rmlui
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
         srclibs-tinygettext
