@@ -87,29 +87,6 @@ if ((BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL) AND (BUILD_CGAME OR
     set(BUILDING_ANY_GAMELOGIC 1)
 endif()
 
-#########################################
-# Externally built library dependencies #
-#########################################
-if (NACL)
-    set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
-    set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
-    set(FREETYPE_INCLUDE_DIRS ${DEPS_DIR}/pnacl_deps/include/freetype2)
-    set(LUA_INCLUDE_DIR ${DEPS_DIR}/pnacl_deps/include)
-    set(LUA_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/liblua.a)
-elseif (BUILDING_ANY_GAMELOGIC)
-    find_package(Lua REQUIRED)
-
-    if (BUILD_CGAME)
-        # Freetype (RmlUi dependency)
-        find_package(Freetype REQUIRED)
-        if (APPLE OR WIN32)
-            find_package(ZLIB REQUIRED)
-            set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
-        endif()
-    endif()
-endif()
-include_directories(${LUA_INCLUDE_DIR})
-
 ##################################
 # Libraries we build from source #
 ##################################
@@ -122,12 +99,33 @@ set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_
 
 if (BUILDING_ANY_GAMELOGIC)
     if (BUILD_CGAME)
-        # Freetype
+        # Freetype (RmlUi dependency), already found for a native game when the client is built.
+        if (NOT BUILD_CLIENT)
+            if (USE_SYSTEM_LIBS AND NOT NACL)
+                find_package(Freetype REQUIRED)
+                if (APPLE OR WIN32)
+                    find_package(ZLIB REQUIRED)
+                    set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
+                endif()
+            else()
+                include(${DAEMON_DIR}/freetype.cmake)
+            endif()
+        endif()
+
         include_directories(${FREETYPE_INCLUDE_DIRS})
 
         # RmlUi
         include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
     endif()
+
+    # Lua
+    if (USE_SYSTEM_LIBS AND NOT NACL)
+        find_package(Lua REQUIRED)
+    else()
+        include(${CMAKE_CURRENT_SOURCE_DIR}/lua.cmake)
+    endif()
+
+    include_directories(${LUA_INCLUDE_DIR})
 
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
