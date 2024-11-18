@@ -57,8 +57,10 @@ bool HumanSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* to
 	return false;
 }
 
-void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
+void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refEntity_t* ent, refSkeleton_t* skeleton)
 {
+	BoneMod mod;
+
 	// HACK: Stop taunt from clipping through the body.
 	int anim = CG_AnimNumber( ctx.es->torsoAnim );
 	if ( anim >= TORSO_GESTURE_BLASTER && anim <= TORSO_GESTURE_CKIT )
@@ -66,6 +68,10 @@ void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 		quat_t rot;
 		QuatFromAngles( rot, 15, 0, 0 );
 		QuatMultiply2( skeleton->bones[ 33 ].t.rot, rot );
+		mod.index = 33;
+		VectorCopy( vec3_origin, mod.translation );
+		QuatCopy( rot, mod.rotation );
+		ent->boneMods.emplace_back( mod );
 	}
 
 	// rotate torso
@@ -75,6 +81,10 @@ void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 		quat_t rotation;
 		QuatFromAngles( rotation, ctx.torsoYawAngle, 0, 0 );
 		QuatMultiply2( skeleton->bones[ torsoControlBone ].t.rot, rotation );
+		mod.index = torsoControlBone;
+		VectorCopy( vec3_origin, mod.translation );
+		QuatCopy( rotation, mod.rotation );
+		ent->boneMods.emplace_back( mod );
 	}
 
 	// HACK: limit angle (avoids worst of the gun clipping through the body)
@@ -83,10 +93,32 @@ void HumanSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 	quat_t rotation;
 	QuatFromAngles( rotation, -pitch, 0, 0 );
 	QuatMultiply2( skeleton->bones[ rightShoulderBone ].t.rot, rotation );
+	mod.index = torsoControlBone;
+	VectorCopy( vec3_origin, mod.translation );
+	QuatCopy( rotation, mod.rotation );
+	ent->boneMods.emplace_back( mod );
 
 	// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
 	QuatFromAngles( rotation, pitch, pitch < 0 ? -pitch / 9 : -pitch / ( 8 - ( 5 * ( pitch / 90 ) ) ), 0 );
 	QuatMultiply2( skeleton->bones[ leftShoulderBone ].t.rot, rotation );
+	mod.index = torsoControlBone;
+	VectorCopy( vec3_origin, mod.translation );
+	QuatCopy( rotation, mod.rotation );
+	ent->boneMods.emplace_back( mod );
+}
+
+uint32_t HumanSkeletonRotations::GetBoneModCount( const SkeletonModifierContext& ctx ) {
+	uint32_t count = 0;
+
+	const int anim = CG_AnimNumber( ctx.es->torsoAnim );
+	if ( anim >= TORSO_GESTURE_BLASTER && anim <= TORSO_GESTURE_CKIT ) {
+		count++;
+	}
+
+	// Close enough even without the extra check
+	count += 3;
+
+	return count;
 }
 
 bool BsuitSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p)
@@ -106,8 +138,10 @@ bool BsuitSkeletonRotations::ParseConfiguration(clientInfo_t* ci, const char* to
 	return false;
 }
 
-void BsuitSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
+void BsuitSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refEntity_t* ent, refSkeleton_t* skeleton)
 {
+	BoneMod mod;
+
 	// rotate torso
 	if ( torsoControlBone >= 0 && torsoControlBone < skeleton->numBones )
 	{
@@ -115,6 +149,10 @@ void BsuitSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 		quat_t rotation;
 		QuatFromAngles( rotation, ctx.torsoYawAngle, 0, 0 );
 		QuatMultiply2( skeleton->bones[ torsoControlBone ].t.rot, rotation );
+		mod.index = torsoControlBone;
+		VectorCopy( vec3_origin, mod.translation );
+		QuatCopy( rotation, mod.rotation );
+		ent->boneMods.emplace_back( mod );
 	}
 
 	// HACK: limit angle (avoids worst of the gun clipping through the body)
@@ -123,10 +161,23 @@ void BsuitSkeletonRotations::Apply(const SkeletonModifierContext& ctx, refSkelet
 	quat_t rotation;
 	QuatFromAngles( rotation, -pitch, 0, 0 );
 	QuatMultiply2( skeleton->bones[ rightShoulderBone ].t.rot, rotation );
+	mod.index = rightShoulderBone;
+	VectorCopy( vec3_origin, mod.translation );
+	QuatCopy( rotation, mod.rotation );
+	ent->boneMods.emplace_back( mod );
 
 	// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
 	QuatFromAngles( rotation, pitch, 0, 0);
 	QuatMultiply2( skeleton->bones[ leftShoulderBone ].t.rot, rotation );
+	mod.index = leftShoulderBone;
+	VectorCopy( vec3_origin, mod.translation );
+	QuatCopy( rotation, mod.rotation );
+	ent->boneMods.emplace_back( mod );
+}
+
+uint32_t BsuitSkeletonRotations::GetBoneModCount( const SkeletonModifierContext& ctx ) {
+	// Close enough even without the extra check
+	return 3;
 }
 
 bool SegmentedSkeletonCombiner::ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p)
@@ -156,9 +207,14 @@ bool SegmentedSkeletonCombiner::ParseConfiguration(clientInfo_t* ci, const char*
 	}
 }
 
-void SegmentedSkeletonCombiner::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
+void SegmentedSkeletonCombiner::Apply(const SkeletonModifierContext& ctx, refEntity_t* ent, refSkeleton_t* skeleton)
 {
 	for (int i : legBoneIndices) {
 		skeleton->bones[i] = ctx.legsSkeleton->bones[i];
 	}
+}
+
+uint32_t SegmentedSkeletonCombiner::GetBoneModCount( const SkeletonModifierContext& ctx ) {
+	// Doesn't actually use BoneMod
+	return 0;
 }
