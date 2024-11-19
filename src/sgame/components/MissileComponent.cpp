@@ -35,6 +35,7 @@ Maryland 20850 USA.
 */
 #include "MissileComponent.h"
 #include "sgame/sg_cm_world.h"
+#include "shared/math.hpp"
 
 MissileComponent::MissileComponent(Entity& entity, const missileAttributes_t* attributes, ThinkingComponent& r_ThinkingComponent)
 	: MissileComponentBase(entity, attributes, r_ThinkingComponent),
@@ -66,8 +67,7 @@ void MissileComponent::Expire(int)
 static trace2_t MissileTrace(gentity_t* ent)
 {
 	// get current position
-	vec3_t origin;
-	BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);
+	glm::vec3 origin = BG_EvaluateTrajectory(&ent->s.pos, level.time);
 
 	// ignore interactions with the missile owner
 	int passent = ent->r.ownerNum;
@@ -78,7 +78,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 	if (ma.pointAgainstWorld)
 	{
 		ASSERT(ent->clipmask & CONTENTS_BODY);
-		trace2_t trWorld = G_Trace2(ent->r.currentOrigin, nullptr, nullptr, origin,
+		trace2_t trWorld = G_Trace2(ent->r.currentOrigin, nullptr, nullptr, &origin[0],
 			passent, ent->clipmask & ~CONTENTS_BODY, 0);
 
 		if (trWorld.startsolid)
@@ -93,7 +93,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 	}
 	else
 	{
-		result = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
+		result = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, &origin[0],
 			passent, ent->clipmask, 0);
 	}
 
@@ -101,7 +101,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 	{
 		// In this case we have a collision, and so we want a normal vector, but there isn't one
 		// Try to use the missile's direction of travel
-		glm::vec3 dir = VEC2GLM(origin) - VEC2GLM(ent->r.currentOrigin);
+		glm::vec3 dir = origin - VEC2GLM(ent->r.currentOrigin);
 		if (VectorNormalize(GLM4RW(dir)))
 		{
 			VectorCopy(dir, result.plane.normal);

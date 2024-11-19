@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "cg_local.h"
 #include "rocket/rocket.h"
+#include "shared/math.hpp"
 
 /*
 =============
@@ -1438,7 +1439,8 @@ void CG_CheckEvents( centity_t *cent )
 	}
 
 	// calculate the position at exactly the frame time
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, cent->lerpOrigin );
+	glm::vec3 tmp = BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime );
+	VectorCopy( tmp, cent->lerpOrigin );
 	CG_SetEntitySoundPosition( cent );
 
 	CG_EntityEvent( cent, cent->lerpOrigin );

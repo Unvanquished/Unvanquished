@@ -30,9 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "shared/bg_gameplay.h" // MIN_WALK_NORMAL
 #include "Entities.h"
+#include "shared/math.hpp"
 
-#include <glm/geometric.hpp>
-#include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
 static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 3, 1, 9 );
@@ -1391,8 +1390,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				t.trTime = level.time - 50;
 
 				// find projectile's final position
-				glm::vec3 npos;
-				BG_EvaluateTrajectory( &t, level.time + BG_Missile( WP_FLAMER )->lifetime, GLM4RW( npos ) );
+				glm::vec3 npos = BG_EvaluateTrajectory( &t, level.time + BG_Missile( WP_FLAMER )->lifetime );
 
 				// find distance traveled by projectile along fire line
 				glm::vec3 proj = ProjectPointOntoVector( npos, muzzle, targetPos );

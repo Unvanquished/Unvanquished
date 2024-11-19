@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 #include "cg_animdelta.h"
 #include "cg_segmented_skeleton.h"
+#include "shared/math.hpp"
 
 // debugging
 int   debug_anim_current;
@@ -3492,8 +3493,11 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
 	                   &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton );
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );
+	glm::vec3 tmp;
+	tmp = BG_EvaluateTrajectory( &cent->currentState.pos, cg.time );
+	VectorCopy( tmp, cent->lerpOrigin );
+	tmp = BG_EvaluateTrajectory( &cent->currentState.apos, cg.time );
+	VectorCopy( tmp, cent->lerpAngles );
 
 	VectorCopy( cent->lerpOrigin, cent->rawOrigin );
 	VectorCopy( cent->lerpAngles, cent->rawAngles );

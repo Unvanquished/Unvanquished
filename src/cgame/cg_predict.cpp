@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "common/cm/cm_public.h"
 #include "cg_local.h"
+#include "shared/math.hpp"
 
 Log::Logger predictionLog("cgame.prediction", "[client-side prediction]", Log::Level::WARNING);
 
@@ -105,7 +106,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	clipHandle_t  cmodel;
 	vec3_t        tmins, tmaxs;
 	vec3_t        bmins, bmaxs;
-	vec3_t        origin, angles;
+	vec3_t        angles;
+	glm::vec3 origin = glm::vec3();
 
 	// calculate bounding box of the trace
 	ClearBounds( tmins, tmaxs );
@@ -140,7 +142,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			// special value for bmodel
 			cmodel = CM_InlineModel( ent->modelindex );
 			VectorCopy( cent->lerpAngles, angles );
-			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
+			origin = BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime );
 		}
 		else
 		{
@@ -174,14 +176,13 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 			cmodel = CM_TempBoxModel( bmins, bmaxs, /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );
-			VectorCopy( vec3_origin, origin );
 		}
 
 		switch ( collisionType )
 		{
 		case traceType_t::TT_CAPSULE:
 		case traceType_t::TT_AABB:
-			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, origin, angles, collisionType );
+			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, &origin[0], angles, collisionType );
 			break;
 
 		default: // Shouldn't Happen

@@ -20,4 +20,9 @@ glm::vec3 SafeNormalize( glm::vec3 const& o );
 		}                                        \
 	} while(0)
 
+struct trajectory_t;
+
+glm::vec3 BG_EvaluateTrajectory( const trajectory_t *tr, int atTime );
+glm::vec3 BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime );
+
 #endif
