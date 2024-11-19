@@ -17,7 +17,7 @@ sequence
 					{
 						action equip
 					}
-					action buy( WP_HBUILD )
+					action buyPrimary( WP_HBUILD )
 				}
 			}
 
