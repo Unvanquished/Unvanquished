@@ -198,11 +198,6 @@ void trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins
 		passEntityNum, contentmask, skipmask );
 }
 
-int trap_PointContents(const vec3_t point, int passEntityNum)
-{
-	return G_CM_PointContents( point, passEntityNum );
-}
-
 void trap_SetBrushModel(gentity_t *ent, const char *name)
 {
 	G_CM_SetBrushModel( ent, name );
