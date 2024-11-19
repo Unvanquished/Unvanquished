@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "sg_spawn.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "shared/math.hpp"
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100
 
@@ -418,9 +419,7 @@ G_MoverGroup
 */
 static void G_MoverGroup( gentity_t *ent )
 {
-	vec3_t    move, amove;
 	gentity_t *part, *obstacle;
-	vec3_t    origin, angles;
 
 	obstacle = nullptr;
 
@@ -438,12 +437,12 @@ static void G_MoverGroup( gentity_t *ent )
 		}
 
 		// get current position
-		BG_EvaluateTrajectory( &part->s.pos, level.time, origin );
-		BG_EvaluateTrajectory( &part->s.apos, level.time, angles );
-		VectorSubtract( origin, part->r.currentOrigin, move );
-		VectorSubtract( angles, part->r.currentAngles, amove );
+		glm::vec3 origin = BG_EvaluateTrajectory( &part->s.pos, level.time );
+		glm::vec3 angles = BG_EvaluateTrajectory( &part->s.apos, level.time );
+		glm::vec3 move = origin - VEC2GLM( part->r.currentOrigin );
+		glm::vec3 amove = angles - VEC2GLM( part->r.currentAngles );
 
-		if ( !G_MoverPush( part, move, amove, &obstacle ) )
+		if ( !G_MoverPush( part, &move[0], &amove[0], &obstacle ) )
 		{
 			break; // move was blocked
 		}
@@ -462,8 +461,13 @@ static void G_MoverGroup( gentity_t *ent )
 
 			part->s.pos.trTime += level.time - level.previousTime;
 			part->s.apos.trTime += level.time - level.previousTime;
-			BG_EvaluateTrajectory( &part->s.pos, level.time, part->r.currentOrigin );
-			BG_EvaluateTrajectory( &part->s.apos, level.time, part->r.currentAngles );
+
+			glm::vec3 tmp;
+			tmp = BG_EvaluateTrajectory( &part->s.pos, level.time );
+			VectorCopy( tmp, part->r.currentOrigin );
+			tmp = BG_EvaluateTrajectory( &part->s.apos, level.time );
+			VectorCopy( tmp, part->r.currentAngles );
+
 			trap_LinkEntity( part );
 		}
 
@@ -718,14 +722,17 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 			break;
 	}
 
+	glm::vec3 tmp;
 	if ( moverState >= MOVER_POS1 && moverState <= MOVER_2TO1 )
 	{
-		BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );
+		tmp = BG_EvaluateTrajectory( &ent->s.pos, level.time );
+		VectorCopy( tmp, ent->r.currentOrigin );
 	}
 
 	if ( moverState >= ROTATOR_POS1 && moverState <= ROTATOR_2TO1 )
 	{
-		BG_EvaluateTrajectory( &ent->s.apos, level.time, ent->r.currentAngles );
+		tmp = BG_EvaluateTrajectory( &ent->s.apos, level.time );
+		VectorCopy( tmp, ent->r.currentAngles );
 	}
 
 	trap_LinkEntity( ent );
@@ -2420,11 +2427,8 @@ Stop_Train
 */
 static void Stop_Train( gentity_t *self )
 {
-	vec3_t origin;
-
-	//get current origin
-	BG_EvaluateTrajectory( &self->s.pos, level.time, origin );
-	VectorCopy( origin, self->mapEntity.restingPosition );
+	glm::vec3 tmp  = BG_EvaluateTrajectory( &self->s.pos, level.time );
+	VectorCopy( tmp, self->mapEntity.restingPosition );
 	SetMoverState( self, MOVER_POS1, level.time );
 
 	self->mapEntity.spawnflags |= TRAIN_START_OFF;
