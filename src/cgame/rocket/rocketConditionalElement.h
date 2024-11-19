@@ -65,11 +65,11 @@ public:
 		if ( it != changed_attributes.end() )
 		{
 			std::string val = it->second.Get<std::string>();
-			try
+			float floatVal;
+			if ( Str::ToFloat( val, floatVal ) )
 			{
-				float floatVal = std::stof( val );
 				// Is either an integer or float
-				if ( static_cast< int >( floatVal ) == floatVal )
+				if ( floorf( floatVal ) == floatVal )
 				{
 					value = static_cast< int >( floatVal );
 				}
@@ -78,10 +78,10 @@ public:
 					value = floatVal;
 				}
 			}
-			// Failed conversion means it's a string.
-			catch ( const std::invalid_argument& )
+			else
 			{
-				value = it->second.Get<std::string>();
+				// Failed conversion means it's a string.
+				value = val;
 			}
 
 			dirty_value = true;
