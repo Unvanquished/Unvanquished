@@ -94,8 +94,8 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 		float spikeDamage  = ma->damage;
 		float distance     = glm::length( toTarget );
 		float bboxDiameter = glm::length( otherMins ) + glm::length( otherMaxs );
-		float bboxEdge     = (1.0f / M_ROOT3) * bboxDiameter; // Assumes a cube.
-		float hitEdge      = bboxEdge + ((1.0f / M_ROOT3) * ma->size); // Add half missile edge.
+		float bboxEdge     = Math::inv_sqrt3_f * bboxDiameter; // Assumes a cube.
+		float hitEdge      = bboxEdge + (Math::inv_sqrt3_f * ma->size); // Add half missile edge.
 		float hitArea      = hitEdge * hitEdge; // Approximate area resulting in a hit.
 		float effectArea   = 2.0f * M_PI * distance * distance; // Area of a half sphere.
 		float damage       = (hitArea / effectArea) * (float)MISSILES * spikeDamage;

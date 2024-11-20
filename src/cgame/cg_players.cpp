@@ -2160,7 +2160,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 		if ( cg.time < cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME )
 		{
 			stLocal = 1.0f - ( ( ( cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME ) - cg.time ) / MODEL_WWSMOOTHTIME );
-			sFraction = - ( cosf( stLocal * M_PI ) + 1.0f ) / 2.0f;
+			sFraction = - ( cosf( stLocal * Math::pi_f ) + 1.0f ) / 2.0f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cent->pe.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cent->pe.sList[ i ].rotAngle );
