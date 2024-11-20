@@ -5,7 +5,7 @@
 		<link type="text/rcss" href="loading.rcss" />
 		<style>
 			body {
-				background-color: black;
+				background-color: #00000000;
 			}
 
 			barbox {
