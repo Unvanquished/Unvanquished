@@ -559,6 +559,10 @@ set(Lua_SRC_FILES
     ${RMLUI_DIR}/Source/Lua/Vector2i.cpp
 )
 
+set_source_files_properties(
+    ${RMLUI_DIR}/Source/Core/SystemInterface.cpp # includes windows.h
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION 1)
+
 if (NOT FREETYPE_INCLUDE_DIRS)
     find_package(Freetype REQUIRED)
 endif()
@@ -585,4 +589,5 @@ set_property(TARGET RMLUI_LIB PROPERTY
 )
 set_target_properties(RMLUI_LIB PROPERTIES
     POSITION_INDEPENDENT_CODE 1
+    UNITY_BUILD 1
 )
