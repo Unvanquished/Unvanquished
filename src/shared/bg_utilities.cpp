@@ -187,15 +187,15 @@ void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right
 
 	// static to help MS compiler fp bugs
 
-	angle = angles[ YAW ] * ( M_PI * 2 / 360 );
+	angle = angles[ YAW ] * Math::divpi_180_f; // yaw * π * 2 / 360
 	sy = sin( angle );
 	cy = cos( angle );
 
-	angle = angles[ PITCH ] * ( M_PI * 2 / 360 );
+	angle = angles[ PITCH ] * Math::divpi_180_f; // pitch * π * 2 / 360
 	sp = sin( angle );
 	cp = cos( angle );
 
-	angle = angles[ ROLL ] * ( M_PI * 2 / 360 );
+	angle = angles[ ROLL ] * Math::divpi_180_f; // roll * π * 2 / 360
 	sr = sin( angle );
 	cr = cos( angle );
 

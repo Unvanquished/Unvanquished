@@ -2402,7 +2402,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 	// generate the "random" spread pattern
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
-		r = Q_crandom( &seed ) * M_PI;
+		r = Q_crandom( &seed ) * Math::pi_f;
 		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
 		u = sinf( r ) * a;
