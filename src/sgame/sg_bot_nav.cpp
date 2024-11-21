@@ -404,7 +404,12 @@ bool BotTraceForFloor( gentity_t *self, uint32_t dir )
 	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 	float width = playerMaxs.x - playerMins.x;
 	float height = playerMaxs.z - playerMins.z;
-	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( 1.414214f * width );
+	// a horizontal square with side length `width` that does not overlap with
+	// the player's bbox in a diagonal direction has to have a distance of
+	// at least sqrt(2) * width.
+	// even though we are doing a raytrace and are not tracing the path of a square
+	// area, this distance works well in experiments.
+	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( static_cast<float>( M_SQRT2 ) * width );
 	start.z += playerMaxs.z;
 	glm::vec3 end = start;
 	end.z -= height * 2.f;
