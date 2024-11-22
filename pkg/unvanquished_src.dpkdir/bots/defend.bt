@@ -67,50 +67,21 @@ selector
 							{
 								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
 								condition baseRushScore < 0.75
-								selector
-								{
-									decorator timer( 3000 )
-									{
-										action heal
-									}
-									action roamInRadius( E_H_MEDISTAT, 250 )
-								}
+								behavior heal_humans
 							}
 						}
 					}
 
-					sequence
-					{
-						//if goal is a close enough enemy building or if we're gonna die
-						condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
-						condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
-						selector
-						{
-							// no need to check the upgrade is in inventory, since action would fail
-							action activateUpgrade( UP_FIREBOMB )
-							action activateUpgrade( UP_GRENADE )
-						}
-					}
+					behavior throw_grenade
 					action fight
 				}
 			}
 
-			selector
+			sequence
 			{
-				sequence
-				{
-					condition healScore > 0.25
-					selector
-					{
-						decorator timer( 3000 )
-						{
-							action heal
-						}
-						action roamInRadius( E_H_MEDISTAT, 250 )
-					}
-				}
+				condition healScore > 0.25
+				behavior heal_humans
 			}
-
 			behavior repair
 			behavior reload
 			action equip
