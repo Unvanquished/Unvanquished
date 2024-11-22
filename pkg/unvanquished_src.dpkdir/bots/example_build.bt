@@ -19,8 +19,8 @@ selector
 	{
 		selector
 		{
-			behavior unstick
-			behavior use_medkit
+			behavior subroutine_unstick
+			behavior subroutine_use_medkit
 
 			sequence
 			{
@@ -46,7 +46,7 @@ selector
 	{
 		selector
 		{
-			behavior unstick
+			behavior subroutine_unstick
 
 			sequence
 			{

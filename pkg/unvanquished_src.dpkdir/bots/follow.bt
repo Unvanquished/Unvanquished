@@ -1,12 +1,12 @@
 selector
 {
-	behavior unstick
+	behavior subroutine_unstick
 
 	condition team == TEAM_HUMANS
 	{
 		selector
 		{
-			behavior use_medkit
+			behavior subroutine_use_medkit
 
 			sequence
 			{
@@ -28,12 +28,12 @@ selector
 							{
 								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
 								condition baseRushScore < 0.75
-								behavior heal_humans
+								behavior subroutine_heal_humans
 							}
 						}
 					}
 
-					behavior throw_grenade
+					behavior subroutine_throw_grenade
 					action fight
 				}
 			}
@@ -41,10 +41,10 @@ selector
 			sequence
 			{
 				condition healScore > 0.25
-				behavior heal_humans
+				behavior subroutine_heal_humans
 			}
 
-			behavior reload
+			behavior subroutine_reload
 			sequence
 			{
 				condition ( distanceTo( E_H_ARMOURY ) < 500 )
@@ -66,7 +66,7 @@ selector
 				action evolve
 			}
 
-			behavior fight_or_flight_aliens
+			behavior subroutine_fight_or_flight_aliens
 
 			action follow( 250 )
 			action roam

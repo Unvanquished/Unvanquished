@@ -1,19 +1,19 @@
 selector
 {
-	behavior unstick
+	behavior subroutine_unstick
 
 	condition ( team == TEAM_ALIENS )
 	{
 		selector
 		{
-			behavior extinguish_fire
+			behavior subroutine_extinguish_fire
 
 			condition ( aliveTime > 1500 && healScore < 0.5 )
 			{
 				action evolve
 			}
 
-			behavior fight_or_flight_aliens
+			behavior subroutine_fight_or_flight_aliens
 
 			fallback
 			{
@@ -29,7 +29,7 @@ selector
 	{
 		selector
 		{
-			behavior use_medkit
+			behavior subroutine_use_medkit
 
 			sequence
 			{
@@ -67,12 +67,12 @@ selector
 							{
 								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
 								condition baseRushScore < 0.75
-								behavior heal_humans
+								behavior subroutine_heal_humans
 							}
 						}
 					}
 
-					behavior throw_grenade
+					behavior subroutine_throw_grenade
 					action fight
 				}
 			}
@@ -80,10 +80,10 @@ selector
 			sequence
 			{
 				condition healScore > 0.25
-				behavior heal_humans
+				behavior subroutine_heal_humans
 			}
-			behavior repair
-			behavior reload
+			behavior subroutine_repair
+			behavior subroutine_reload
 			action equip
 
 			fallback
