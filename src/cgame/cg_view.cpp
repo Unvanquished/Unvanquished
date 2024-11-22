@@ -1523,8 +1523,8 @@ static void CG_AddReverbEffects( vec3_t loc )
 		}
 
 		dist = CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
-		weight = 1.0f - dist / cgs.gameReverbDistances[i];
-		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+
+		weight = 1.0f - dist / std::max( 0.01f, cgs.gameReverbDistances[i] );
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )
