@@ -2148,11 +2148,13 @@ static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 	vec3_t deltaVelocity;
 	vec3_t deltaAccel;
 
+	float inv_msec = msec ? 1.0f / msec : 1.0f;
+
 	VectorSubtract( ent->s.pos.trDelta, ent->oldVelocity, deltaVelocity );
-	VectorScale( deltaVelocity, 1.0f / ( float ) msec, ent->acceleration );
+	VectorScale( deltaVelocity, inv_msec, ent->acceleration );
 
 	VectorSubtract( ent->acceleration, ent->oldAccel, deltaAccel );
-	VectorScale( deltaAccel, 1.0f / ( float ) msec, ent->jerk );
+	VectorScale( deltaAccel, inv_msec, ent->jerk );
 
 	VectorCopy( ent->s.pos.trDelta, ent->oldVelocity );
 	VectorCopy( ent->acceleration, ent->oldAccel );
