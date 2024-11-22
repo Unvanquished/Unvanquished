@@ -2123,9 +2123,8 @@ Calculate the fraction of time passed
 */
 static float CG_CalculateTimeFrac( int birth, int life, int delay )
 {
-	float frac = ( ( float ) cg.time - ( float )( birth + delay ) ) / ( float )( life - delay );
-
-	return Math::Clamp( frac, 0.0f, 1.0f );
+	int diff = life - delay;
+	return diff ? Math::Clamp( (float) (cg.time - birth + delay) / (float) diff, 0.0f, 1.0f ) : 1.0f;
 }
 
 /*
