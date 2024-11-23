@@ -14,14 +14,10 @@ selector
 			}
 
 			behavior subroutine_fight_or_flight_aliens
-
-			fallback
-			{
-				action roamInRadius( E_A_OVERMIND, 500 )
-				action roamInRadius( E_A_SPAWN, 500 )
-				action roamInRadius( E_A_BOOSTER, 500 )
-				action roam
-			}
+			action roamInRadius( E_A_OVERMIND, 500 )
+			action roamInRadius( E_A_SPAWN, 500 )
+			action roamInRadius( E_A_BOOSTER, 500 )
+			action roam
 		}
 	}
 
@@ -30,70 +26,15 @@ selector
 		selector
 		{
 			behavior subroutine_use_medkit
-
-			sequence
-			{
-				condition alertedToEnemy
-				selector
-				{
-					decorator timer ( 1000 )
-					{
-						condition haveWeapon( WP_LUCIFER_CANNON ) && ( distanceTo( E_H_REACTOR ) <= 400 || distanceTo( E_H_ARMOURY ) <= 400 )
-						{
-							action buyPrimary( WP_PULSE_RIFLE )
-						}
-					}
-					condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
-					{
-						selector
-						{
-							action equip
-							action flee
-						}
-					}
-
-					decorator timer( 1000 )
-					{
-						selector
-						{
-							// defending reactor, or try to avoid being killed while healing (hence the different values)
-							// the isVisible check is here to prevent "defending" when enemies are detected by radars
-							condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 250 ) && isVisible( E_ENEMY ) )
-							{
-								action fight
-							}
-
-							sequence
-							{
-								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-								condition baseRushScore < 0.75
-								behavior subroutine_heal_humans
-							}
-						}
-					}
-
-					behavior subroutine_throw_grenade
-					action fight
-				}
-			}
-
-			sequence
-			{
-				condition healScore > 0.25
-				behavior subroutine_heal_humans
-			}
+			behavior subroutine_fight_or_flight_humans
 			behavior subroutine_repair
 			behavior subroutine_reload
 			action equip
-
-			fallback
-			{
-				action roamInRadius( E_H_REACTOR, 500 )
-				action roamInRadius( E_H_SPAWN, 500 )
-				action roamInRadius( E_H_ARMOURY, 500 )
-				action roamInRadius( E_H_MEDISTAT, 500 )
-				action roam
-			}
+			action roamInRadius( E_H_REACTOR, 500 )
+			action roamInRadius( E_H_SPAWN, 500 )
+			action roamInRadius( E_H_ARMOURY, 500 )
+			action roamInRadius( E_H_MEDISTAT, 500 )
+			action roam
 		}
 	}
 }
