@@ -62,7 +62,6 @@ glm::vec3 VEC2GLM( const rVec& ) = delete;
 // with a mutable vec3_t argument.
 #define GLM4RW( v ) ( glm4rw_impl( v ).data )
 
-
 inline std::array<const vec_t, 3> glm4read_impl( const glm::vec3 &v ) { return { v.x, v.y, v.z }; }
 
 struct glm4rw_impl
@@ -81,6 +80,10 @@ struct glm4rw_impl
 };
 
 #include "engine/qcommon/q_shared.h"
+
+/* Big enough that no one could confuse it with a normal distance,
+but small enough that it won't cause overflows. */
+constexpr float HUGE_DISTANCE = 1e15f;
 
 //Unvanquished balance header
 #include "bg_gameplay.h"
