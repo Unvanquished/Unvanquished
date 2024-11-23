@@ -64,14 +64,14 @@ selector
 		action resetMyTimer
 	}
 
-	behavior extinguish_fire
+	behavior subroutine_extinguish_fire
 
 	condition ( aliveTime > 1500 && healScore < 0.5 )
 	{
 		action evolve
 	}
 
-	behavior fight_or_flight_aliens
+	behavior subroutine_fight_or_flight_aliens
 
 	condition baseRushScore > 0.5
 	{

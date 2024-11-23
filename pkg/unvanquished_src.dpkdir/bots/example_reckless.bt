@@ -4,7 +4,7 @@
 
 selector
 {
-	behavior unstick
+	behavior subroutine_unstick
 	
 	condition alertedToEnemy
 	{

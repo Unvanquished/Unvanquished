@@ -46,7 +46,7 @@ selectClass
 
 selector
 {
-	behavior unstick
+	behavior subroutine_unstick
 
 	condition ( team == TEAM_ALIENS )
 	{

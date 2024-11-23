@@ -21,13 +21,13 @@ selector
 		action resetMyTimer
 	}
 
-	behavior unstick
+	behavior subroutine_unstick
 
 	condition team == TEAM_HUMANS
 	{
 		selector
 		{
-			behavior use_medkit
+			behavior subroutine_use_medkit
 
 			sequence
 			{
@@ -36,13 +36,13 @@ selector
 				{
 					selector
 					{
-						behavior throw_grenade
+						behavior subroutine_throw_grenade
 						action fight
 					}
 				}
 			}
 
-			behavior reload
+			behavior subroutine_reload
 			sequence
 			{
 				// the bot is required to attack, only visit an armoury
