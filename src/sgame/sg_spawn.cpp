@@ -1160,10 +1160,15 @@ void G_SpawnEntitiesFromString()
 
 void G_SpawnFakeEntities()
 {
+	/* The previous outOfRange value of 1.7e19f was doing an overflow
+	when calling VectorLengthSquared( eloc->r.currentOrigin )
+	in GetCloseLocationEntity() from sg_team.cpp. */
+	float outOfRange = HUGE_DISTANCE;
+
 	level.fakeLocation = G_NewEntity( NO_CBSE );
 	level.fakeLocation->s.origin[ 0 ] =
 	level.fakeLocation->s.origin[ 1 ] =
-	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
+	level.fakeLocation->s.origin[ 2 ] = outOfRange;
 	level.fakeLocation->mapEntity.message = nullptr;
 
 	level.fakeLocation->s.eType = entityType_t::ET_LOCATION;
