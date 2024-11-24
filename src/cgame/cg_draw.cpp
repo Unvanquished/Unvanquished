@@ -605,8 +605,8 @@ static void CG_DrawBinaryShadersFinalPhases()
 
 	trap_Cvar_VariableStringBuffer( "r_znear", str, sizeof( str ) );
 	f = atof( str ) + 0.01;
-	l = f * tanf( DEG2RAD( cg.refdef.fov_x / 2 ) ) * ss;
-	u = f * tanf( DEG2RAD( cg.refdef.fov_y / 2 ) ) * ss;
+	l = f * tanf( Math::DegToRad( cg.refdef.fov_x / 2 ) ) * ss;
+	u = f * tanf( Math::DegToRad( cg.refdef.fov_y / 2 ) ) * ss;
 
 	VectorMA( cg.refdef.vieworg, f, cg.refdef.viewaxis[ 0 ], verts[ 0 ].xyz );
 	VectorMA( verts[ 0 ].xyz, l, cg.refdef.viewaxis[ 1 ], verts[ 0 ].xyz );

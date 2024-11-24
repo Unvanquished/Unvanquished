@@ -61,7 +61,7 @@ void RocketMissileComponent::HandleMissileSteer() {
 
 	// Calculate new direction. Use a fixed turning angle.
 	CrossProduct(currentDir, targetDir, rotAxis);
-	rotAngle = RAD2DEG(acosf(DotProduct(currentDir, targetDir)));
+	rotAngle = Math::RadToDeg(acosf(DotProduct(currentDir, targetDir)));
 	RotatePointAroundVector(newDir, rotAxis, currentDir,
 		Math::Clamp(rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE));
 

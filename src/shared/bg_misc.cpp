@@ -1726,7 +1726,7 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	//can't rotate with no rotation vector
 	if ( VectorLength( xNormal ) != 0.0f )
 	{
-		rotAngle = RAD2DEG( acosf( DotProduct( localNormal, refNormal ) ) );
+		rotAngle = Math::RadToDeg( acosf( DotProduct( localNormal, refNormal ) ) );
 
 		if ( inverse )
 		{

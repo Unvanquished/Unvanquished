@@ -54,7 +54,7 @@ void SpikerComponent::SetGravityCompensation() {
 	glm::vec3 upwards = { 0.0f, 0.0f, 1.0f };
 	float uprightness = glm::dot( dorsal, upwards );
 	// A negative value means the Spiker's radius of damage increases.
-	gravityCompensation = -uprightness * sinf(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
+	gravityCompensation = -uprightness * sinf(Math::DegToRad(0.5f * GRAVITY_COMPENSATION_ANGLE));
 }
 
 void SpikerComponent::Think(int /*timeDelta*/) {
@@ -228,10 +228,10 @@ bool SpikerComponent::Fire() {
 			float spikeAzimuth = Math::mul2_pi_f * (((float)spike + 0.5f * crandom()) / (float)spikes);
 
 			// Set launch direction altitude.
-			RotatePointAroundVector(dir, rotAxis, zenith, RAD2DEG(Math::divpi_2_f - spikeAltitude));
+			RotatePointAroundVector(dir, rotAxis, zenith, Math::RadToDeg(Math::divpi_2_f - spikeAltitude));
 
 			// Set launch direction azimuth.
-			RotatePointAroundVector(dir, zenith, dir, RAD2DEG(spikeAzimuth));
+			RotatePointAroundVector(dir, zenith, dir, Math::RadToDeg(spikeAzimuth));
 
 			// Trace in the shooting direction and do not shoot spikes that are likely to harm
 			// friendly entities.
@@ -240,7 +240,7 @@ bool SpikerComponent::Fire() {
 			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
 				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->num(),
 				fire ? "fires" : "skips", row + 1, MISSILEROWS, spike + 1, spikes,
-				RAD2DEG(spikeAltitude), RAD2DEG(spikeAzimuth), dir[0], dir[1], dir[2]);
+				Math::RadToDeg(spikeAltitude), Math::RadToDeg(spikeAzimuth), dir[0], dir[1], dir[2]);
 
 			if (!fire) {
 				continue;

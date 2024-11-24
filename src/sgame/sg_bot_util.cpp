@@ -2039,7 +2039,7 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 	float angle = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * dr ) );
 
 	// give a result in degrees (ps.viewangles units)
-	return RAD2DEG( angle );
+	return Math::RadToDeg( angle );
 }
 
 float CalcPounceAimPitch( gentity_t *self, glm::vec3 &targetPos )
