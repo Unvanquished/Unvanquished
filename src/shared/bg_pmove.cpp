@@ -1491,7 +1491,7 @@ static void PM_LandJetpack( bool force )
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Log::Notice( "[PM_LandJetpack] Landing ignored (hit surface at %.0f°)\n", RAD2DEG( angle ) );
+				Log::Notice( "[PM_LandJetpack] Landing ignored (hit surface at %.0f°)\n", Math::RadToDeg( angle ) );
 			}
 
 			return;
@@ -1504,7 +1504,7 @@ static void PM_LandJetpack( bool force )
 		{
 			Log::Notice( "[PM_LandJetpack] %sJetpack thrust stopped (hit surface at %.0f°)%s\n",
 			            Color::ToString( Color::LtOrange ),
-			            RAD2DEG( angle ),
+			            Math::RadToDeg( angle ),
 			            force ? " ^1(FORCED)" : "" );
 		}
 
@@ -1522,7 +1522,7 @@ static void PM_LandJetpack( bool force )
 		{
 			Log::Notice( "[PM_LandJetpack] %sJetpack disabled (hit surface at %.0f°)%s\n",
 			            Color::ToString( Color::Yellow ),
-			            RAD2DEG( angle ),
+			            Math::RadToDeg( angle ),
 			            force ? " ^1(FORCED)" : "" );
 		}
 
@@ -2603,7 +2603,7 @@ static void PM_GroundClimbTrace()
 			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
 			traceDOTsurf = Math::Clamp( traceDOTsurf, -1.f, +1.f );
-			traceANGsurf = RAD2DEG( acosf( traceDOTsurf ) );
+			traceANGsurf = Math::RadToDeg( acosf( traceDOTsurf ) );
 
 			if ( traceANGsurf > 180.0f )
 			{
@@ -2613,7 +2613,7 @@ static void PM_GroundClimbTrace()
 			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
 			traceDOTref = Math::Clamp( traceDOTref, -1.f, +1.f );
-			traceANGref = RAD2DEG( acosf( traceDOTref ) );
+			traceANGref = Math::RadToDeg( acosf( traceDOTref ) );
 
 			if ( traceANGref > 180.0f )
 			{
@@ -2623,7 +2623,7 @@ static void PM_GroundClimbTrace()
 			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
 			surfDOTref = Math::Clamp( surfDOTref, -1.f, +1.f );
-			surfANGref = RAD2DEG( acosf( surfDOTref ) );
+			surfANGref = Math::RadToDeg( acosf( surfDOTref ) );
 
 			if ( surfANGref > 180.0f )
 			{
@@ -2652,7 +2652,7 @@ static void PM_GroundClimbTrace()
 					//calculate angle between refTOtrace and refTOsurfTOtrace
 					rTtDOTrTsTt = DotProduct( refTOtrace, refTOsurfTOtrace );
 					rTtDOTrTsTt = Math::Clamp( rTtDOTrTsTt, -1.f, +1.f );
-					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acosf( rTtDOTrTsTt ) ) );
+					rTtANGrTsTt = ANGLE2SHORT( Math::RadToDeg( acosf( rTtDOTrTsTt ) ) );
 
 					if ( rTtANGrTsTt > 32768 )
 					{

@@ -1055,9 +1055,9 @@ static int CG_CalcFov()
 		}
 	}
 
-	y = cg.refdef.height / tanf( 0.5f * DEG2RAD( fov_y ) );
+	y = cg.refdef.height / tanf( 0.5f * Math::DegToRad( fov_y ) );
 	fov_x = atan2f( cg.refdef.width, y );
-	fov_x = 2.0f * RAD2DEG( fov_x );
+	fov_x = 2.0f * Math::RadToDeg( fov_x );
 
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
@@ -1209,7 +1209,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		}
 		else
 		{
-			rotAngle = RAD2DEG( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = Math::RadToDeg( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
 		}
 
 		CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
