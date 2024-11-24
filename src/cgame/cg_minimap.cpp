@@ -577,7 +577,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		                       size * 1.5, size * 1.5f,
 		                       0.0f, 0.0f, 1.0f, 1.0f,
 		                       cgs.media.beaconIconArrow,
-		                       270.0f - atan2f( dir[ 1 ], dir[ 0 ] ) * 180 / M_PI );
+		                       270.0f - atan2f( dir[ 1 ], dir[ 0 ] ) * 180 * Math::inv_pi_f );
 	}
 }
 
