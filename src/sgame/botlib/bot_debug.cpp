@@ -33,6 +33,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 #include "common/Common.h"
 #include "engine/server/sg_msgdef.h"
+#include "engine/renderer/tr_types.h"
 #include "shared/VMMain.h"
 #include "DetourDebugDraw.h"
 #ifdef __GNUC__
@@ -46,9 +47,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "bot_local.h"
 #include "engine/botlib/bot_debug.h"
 #include "bot_navdraw.h"
-
-#include <glm/vec3.hpp>
-#include <glm/vec2.hpp>
 
 void DebugDrawQuake::texture(bool)
 {
@@ -69,7 +67,7 @@ void DebugDrawQuake::sendCommands()
 void DebugDrawQuake::depthMask(bool state)
 {
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::DEPTHMASK);
-	commands.Write<bool>(state);
+	commands.Write<bool8_t>(state);
 }
 
 void DebugDrawQuake::begin(duDebugDrawPrimitives prim, float s)
@@ -95,9 +93,9 @@ void DebugDrawQuake::vertex(const float* pos, unsigned int c)
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color)
 {
-	glm::vec3 vert{ x, z, y };
+	std::array<float, 3> vert{ x, z, y };
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
-	commands.Write<glm::vec3>(vert);
+	commands.Write<std::array<float, 3>>(vert);
 	commands.Write<unsigned int>(color);
 	
 	// When drawing quads convert v0 v1 v2 v3 -> v0 v1 v2 v2 v3 v0
@@ -112,13 +110,13 @@ void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigne
 	else if (quadCounter == 2)
 	{
 		commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
-		commands.Write<glm::vec3>(vert);
+		commands.Write<std::array<float, 3>>(vert);
 		commands.Write<unsigned int>(color);
 	}
 	else if (quadCounter == 3)
 	{
 		commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
-		commands.Write<glm::vec3>(quadFirstVertex);
+		commands.Write<std::array<float, 3>>(quadFirstVertex);
 		commands.Write<unsigned int>(quadFirstColor);
 	}
 
