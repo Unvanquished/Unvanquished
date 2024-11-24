@@ -873,6 +873,16 @@ static bool TargetInOffmeshAttackRange( gentity_t *self )
 	}
 }
 
+static void BotActivateJetpack( gentity_t *self )
+{
+	if ( BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats )
+		 && self->client->ps.stats[ STAT_FUEL ] > JETPACK_FUEL_MAX / 4
+		 )
+	{
+		self->botMind->cmdBuffer.upmove = 127;
+	}
+}
+
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
@@ -1032,6 +1042,14 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	// We are human and we either are at fire range, or have
 	// a direct path to goal
+
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	glm::vec3 targetPos = mind->goal.getPos();
+	if ( ownPos.z < targetPos.z + 400 )
+	{
+		// activate the jetpack if we have it, but do not fly too high above the enemy
+		BotActivateJetpack( self );
+	}
 
 	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
 	        && ( goalDist > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
