@@ -274,7 +274,7 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
     //the 90 gets it back to the Y axis (we want the view to point up)
     //and the orientation change gives the -
     transformAngle = cg_minimapRotate.Get() ? - cg.refdefViewAngles[1] : 0.f;
-    angle = DEG2RAD(transformAngle + 90.0);
+    angle = Math::DegToRad(transformAngle + 90.0);
 
     //Try to show the same region of the map for everyone
     transformScale = (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
