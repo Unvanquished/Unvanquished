@@ -1118,7 +1118,7 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = sinf( deltaTime * M_PI * 2 );
+			phase = sinf( deltaTime * Math::mul2_pi_f );
 			VectorMA( tr->trBase, phase, tr->trDelta, result );
 			break;
 
@@ -1180,8 +1180,8 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = cosf( deltaTime * M_PI * 2 );  // derivative of sin = cos
-			phase *= 2 * M_PI * 1000 / tr->trDuration;
+			phase = cosf( deltaTime * Math::mul2_pi_f );  // derivative of sin = cos
+			phase *= Math::mul2_pi_f * 1000 / tr->trDuration;
 			VectorScale( tr->trDelta, phase, result );
 			break;
 
