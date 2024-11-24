@@ -850,7 +850,7 @@ static bool PM_CheckPounce()
 	{
 		case WP_ALEVEL1:
 			// wallwalking (ground surface normal is off more than 45° from Z direction)
-			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acosf( pml.groundTrace.plane.normal[ 2 ] ) > M_PI_4 )
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acosf( pml.groundTrace.plane.normal[ 2 ] ) > Math::divpi_4_f )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
@@ -913,9 +913,9 @@ static bool PM_CheckPounce()
 						{
 							Log::Notice( "[PM_CheckPounce] Found trajectory angles: "
 							            "%.1f° ( %.2f, %.2f, %.2f ), %.1f° ( %.2f, %.2f, %.2f )\n",
-							            180.0f / M_PI * trajAngles[ 0 ],
+							            Math::div180_pi_f * trajAngles[ 0 ],
 							            trajDir1[ 0 ], trajDir1[ 1 ], trajDir1[ 2 ],
-							            180.0f / M_PI * trajAngles[ 1 ],
+							            Math::div180_pi_f * trajAngles[ 1 ],
 							            trajDir2[ 0 ], trajDir2[ 1 ], trajDir2[ 2 ] );
 						}
 
@@ -987,18 +987,18 @@ static bool PM_CheckPounce()
 				jumpDirection[ 2 ] = fabsf( jumpDirection[ 2 ] );
 
 				// get pitch towards ground surface
-				pitchToGround = M_PI_2 - acosf( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
+				pitchToGround = Math::divpi_2_f - acosf( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
 
 				// get pitch towards XY reference plane
-				pitchToRef = M_PI_2 - acosf( DotProduct( up, jumpDirection ) );
+				pitchToRef = Math::divpi_2_f - acosf( DotProduct( up, jumpDirection ) );
 
 				// use the advantageous pitch; allows using an upwards gradiant as a ramp
 				pitch = std::min( pitchToGround, pitchToRef );
 
 				// pitches above 45° or below LEVEL1_POUNCE_MINPITCH will result in less than the maximum jump length
-				if ( pitch > M_PI_4 )
+				if ( pitch > Math::divpi_4_f )
 				{
-					pitch = M_PI_4;
+					pitch = Math::divpi_4_f;
 				}
 				else if ( pitch < LEVEL1_POUNCE_MINPITCH )
 				{
@@ -1487,7 +1487,7 @@ static void PM_LandJetpack( bool force )
 	// allow the player to jump instead of land for some impacts
 	if ( !force )
 	{
-		if ( angle > 0.0f && angle < M_PI_4 ) // 45°
+		if ( angle > 0.0f && angle < Math::divpi_4_f ) // 45°
 		{
 			if ( pm->debugLevel > 0 )
 			{
