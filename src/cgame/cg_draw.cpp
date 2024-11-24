@@ -283,7 +283,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       b->size * 1.5f, b->size * 1.5f,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
-		                       270.0f - ( angle = atan2f( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
+		                       270.0f - ( angle = atan2f( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 * Math::inv_pi_f );
 
 	if( b->type == BCT_TIMER )
 	{
