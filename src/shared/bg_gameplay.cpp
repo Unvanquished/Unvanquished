@@ -136,7 +136,7 @@ const int   ALIEN_MAX_CREDITS = 2000;
 const int   ALIEN_TK_SUICIDE_PENALTY = 150;
 
 const int   LEVEL1_POUNCE_DISTANCE = 300;
-const float LEVEL1_POUNCE_MINPITCH = M_PI / 12.0f;
+const float LEVEL1_POUNCE_MINPITCH = Math::divpi_4_f / 3.0f; // π ÷ 12
 const int   LEVEL1_POUNCE_COOLDOWN = 2000;
 const int   LEVEL1_WALLPOUNCE_MAGNITUDE = 600;
 const int   LEVEL1_WALLPOUNCE_COOLDOWN = 1200;
