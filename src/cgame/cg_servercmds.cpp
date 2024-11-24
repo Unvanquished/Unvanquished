@@ -42,15 +42,12 @@ static void CG_ParseScores()
 {
 	int i;
 
-	cg.numScores = ( trap_Argc() - 3 ) / 6;
+	cg.numScores = ( trap_Argc() - 1 ) / 6;
 
 	if ( cg.numScores > MAX_CLIENTS )
 	{
 		cg.numScores = MAX_CLIENTS;
 	}
-
-	cg.teamScores[ 0 ] = atoi( CG_Argv( 1 ) );
-	cg.teamScores[ 1 ] = atoi( CG_Argv( 2 ) );
 
 	memset( cg.scores, 0, sizeof( cg.scores ) );
 	memset( cg.teamPlayerCount, 0, sizeof( cg.teamPlayerCount ) );
@@ -58,12 +55,12 @@ static void CG_ParseScores()
 	for ( i = 0; i < cg.numScores; i++ )
 	{
 		//
-		cg.scores[ i ].client = atoi( CG_Argv( i * 6 + 3 ) );
-		cg.scores[ i ].score = atoi( CG_Argv( i * 6 + 4 ) );
-		cg.scores[ i ].ping = atoi( CG_Argv( i * 6 + 5 ) );
-		cg.scores[ i ].time = atoi( CG_Argv( i * 6 + 6 ) );
-		cg.scores[ i ].weapon = (weapon_t) atoi( CG_Argv( i * 6 + 7 ) );
-		cg.scores[ i ].upgrade = (upgrade_t) atoi( CG_Argv( i * 6 + 8 ) );
+		cg.scores[ i ].client = atoi( CG_Argv( i * 6 + 1 ) );
+		cg.scores[ i ].score = atoi( CG_Argv( i * 6 + 2 ) );
+		cg.scores[ i ].ping = atoi( CG_Argv( i * 6 + 3 ) );
+		cg.scores[ i ].time = atoi( CG_Argv( i * 6 + 4 ) );
+		cg.scores[ i ].weapon = (weapon_t) atoi( CG_Argv( i * 6 + 5 ) );
+		cg.scores[ i ].upgrade = (upgrade_t) atoi( CG_Argv( i * 6 + 6 ) );
 
 		if ( cg.scores[ i ].client < 0 || cg.scores[ i ].client >= MAX_CLIENTS )
 		{
