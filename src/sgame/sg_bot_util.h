@@ -129,7 +129,7 @@ void     BotAlternateStrafe( gentity_t *self );
 void     BotMoveInDir( gentity_t *self, uint32_t moveDir );
 void     BotStandStill( gentity_t *self );
 bool BotWalkIfStaminaLow( gentity_t *self );
-bool BotTraceForFloor( gentity_t *self, uint32_t dir );
+bool BotTraceForFloor( gentity_t *self, botMoveDir_t dir );
 
 // navigation queries
 bool  GoalInRange( const gentity_t *self, float r );

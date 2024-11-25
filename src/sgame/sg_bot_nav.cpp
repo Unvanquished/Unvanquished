@@ -368,14 +368,14 @@ Local Bot Navigation
 ========================
 */
 
-bool BotTraceForFloor( gentity_t *self, uint32_t dir )
+bool BotTraceForFloor( gentity_t *self, botMoveDir_t dir )
 {
 	// this is using a daemon trace to a solid surface
 	// another feasible method might be to do a recast navmesh trace
 	trace_t trace;
 	glm::vec3 dirVec;
 	glm::vec3 viewangles = VEC2GLM( self->client->ps.viewangles );
-	viewangles.x = 0;
+	viewangles[ PITCH ] = 0.f;
 	AngleVectors( viewangles, &dirVec, nullptr, nullptr );
 	// we only handle a subset of the possible values of the bitfield `dir`
 	if ( dir == MOVE_BACKWARD )
@@ -397,7 +397,7 @@ bool BotTraceForFloor( gentity_t *self, uint32_t dir )
 	{
 		return false;
 	}
-	dirVec.z = 0.f;
+	// dirVec.z is 0
 	glm::normalize( dirVec );
 	glm::vec3 playerMins, playerMaxs;
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
