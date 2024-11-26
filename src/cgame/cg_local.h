@@ -1092,11 +1092,12 @@ struct cg_t
 
 	int      clientNum;
 
+	userCmds_t userCmds;
+	int currentCmd;
+
 	bool demoPlayback;
 	bool loading; // don't defer players at initial startup
 	bool intermissionStarted;
-
-	int currentCmdNumber; // usercmd_t number for this frame
 
 	// there are only one or two snapshot_t that are relevent at a time
 	int        latestSnapshotNum; // the number of snapshots the client system has received

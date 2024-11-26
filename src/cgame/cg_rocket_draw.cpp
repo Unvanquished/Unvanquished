@@ -1465,12 +1465,11 @@ Should we draw something different for long lag vs no packets?
 static void CG_Rocket_DrawDisconnect()
 {
 	float      x, y;
-	int        cmdNum;
-	usercmd_t  cmd;
 
 	// draw the phone jack if we are completely past our buffers
-	cmdNum = cg.currentCmdNumber - CMD_BACKUP + 1;
-	trap_GetUserCmd( cmdNum, &cmd );
+	userCmds_t userCmds;
+	trap_BatchGetUserCmds( userCmds );
+	usercmd_t cmd = userCmds[ CMD_OLDEST ];
 
 	// special check for map_restart
 	if ( cmd.serverTime <= cg.snap->ps.commandTime || cmd.serverTime > cg.time )
