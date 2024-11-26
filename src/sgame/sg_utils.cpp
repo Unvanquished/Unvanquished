@@ -487,7 +487,11 @@ bool G_ClientIsLagging( gclient_t *client )
 {
 	if ( client )
 	{
-		if ( client->ps.ping >= 999 || client->ps.ping == 0 )
+		ASSERT_NQ( client->pers.connected, CON_DISCONNECTED );
+
+		int ping = trap_GetPings()[ client->num() ];
+
+		if ( ping >= 999 || ping == 0 )
 		{
 			return true;
 		}
