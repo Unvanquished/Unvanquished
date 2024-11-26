@@ -1053,7 +1053,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
 	        && ( goalDist > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
-	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
+	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER
+	        && BotTraceForFloor( self, MOVE_BACKWARD ) )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );
 	}
