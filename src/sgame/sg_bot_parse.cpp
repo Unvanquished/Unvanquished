@@ -1169,7 +1169,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	BotInitNode( ACTION_NODE, action->run, &node );
 
 	// allow dropping of parenthesis if we don't require any parameters
-	if ( action->minparams == 0 && parenBegin->token.string[0] != '(' )
+	if ( action->minparams == 0 && parenBegin != nullptr && parenBegin->token.string[0] != '(' )
 	{
 		ret = allocNode( AIActionNode_t );
 		*ret = node;
@@ -1350,6 +1350,11 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		return nullptr;
 	}
 
+	if ( current == nullptr )
+	{
+		return nullptr;
+	}
+
 	list = allocNode( AINodeList_t );
 
 	while ( Q_stricmp( current->token.string, "}" ) )
@@ -1377,6 +1382,7 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 			return nullptr;
 		}
 
+		// TODO: this does not seem right, we are still waiting for a "}" token
 		if ( !current )
 		{
 			*tokenlist = current;
@@ -1632,6 +1638,11 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 
 	tokenlist = CreateTokenList( handle );
+	if ( tokenlist == nullptr )
+	{
+		return nullptr;
+	}
+
 	Parse_FreeSourceHandle( handle );
 
 	auto *tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
