@@ -1,0 +1,30 @@
+sequence
+{
+	condition !teamateHasWeapon( WP_HBUILD )
+	condition buildingIsDamaged
+	condition percentHealth( E_DAMAGEDBUILDING ) < 0.7
+	condition distanceTo( E_DAMAGEDBUILDING ) < 1000
+	condition distanceTo( E_H_ARMOURY ) < 1000
+	decorator timer( 50000 )
+	{
+		selector
+		{
+			condition !haveWeapon( WP_HBUILD )
+			{
+				sequence
+				{
+					decorator return( STATUS_SUCCESS )
+					{
+						action equip
+					}
+					action buyPrimary( WP_HBUILD )
+				}
+			}
+
+			condition haveWeapon( WP_HBUILD )
+			{
+				action repair
+			}
+		}
+	}
+}

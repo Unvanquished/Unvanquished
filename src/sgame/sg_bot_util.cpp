@@ -203,6 +203,7 @@ equipment_t<upgrade_t> armors[] =
 equipment_t<upgrade_t> others[] =
 {
 	{ g_bot_radar   , UP_RADAR },
+	{ g_bot_jetpack , UP_JETPACK },
 	{ g_bot_grenade , UP_GRENADE },
 	{ g_bot_firebomb, UP_FIREBOMB },
 };
@@ -297,7 +298,11 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 					}
 				}
 
-				if( canUseBackpack && g_bot_radar.Get() && BG_UpgradeUnlocked( UP_RADAR ) )
+				if( canUseBackpack && g_bot_jetpack.Get() && BG_UpgradeUnlocked( UP_JETPACK ) )
+				{
+					max_item_val += BG_Upgrade( UP_JETPACK )->price;
+				}
+				else if( canUseBackpack && g_bot_radar.Get() && BG_UpgradeUnlocked( UP_RADAR ) )
 				{
 					max_item_val += BG_Upgrade( UP_RADAR )->price;
 				}
@@ -720,6 +725,17 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		upgrades[numUpgrades] = others[0].item;
 		usableCapital -= others[0].price();
 		usedSlots |= others[0].slots();
+		numUpgrades ++;
+	}
+	else if ( numUpgrades > 0
+			  && others[1].canBuyNow() && usableCapital >= others[1].price()
+			  && ( usedSlots & others[1].slots() ) == 0
+			  && numUpgrades < upgradesSize
+			  && usableCapital >= 600 )
+	{
+		upgrades[numUpgrades] = others[1].item;
+		usableCapital -= others[1].price();
+		usedSlots |= others[1].slots();
 		numUpgrades ++;
 	}
 	};

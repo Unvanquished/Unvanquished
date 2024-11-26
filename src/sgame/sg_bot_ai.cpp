@@ -264,6 +264,8 @@ A sequence will succeed if all of its child nodes succeed
 A concurrent node will always evaluate all of its child nodes unless one fails
 if one fails, the concurrent node will stop executing nodes and return failure
 A concurrent node succeeds if none of its child nodes fail
+Beware: children of concurrent will not work correctly if more than one returns STATUS_RUNNING as
+BT state only tracks a single running node.
 ======================
 */
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
@@ -348,9 +350,9 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *con = ( AINodeList_t * ) node;
-	int i = 0;
+	AINodeStatus_t result = STATUS_SUCCESS;
 
-	for ( ; i < con->numNodes; i++ )
+	for ( int i = 0; i < con->numNodes; i++ )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, con->list[ i ] );
 
@@ -358,8 +360,13 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		else if ( status == STATUS_RUNNING )
+		{
+			result = STATUS_RUNNING;
+		}
 	}
-	return STATUS_SUCCESS;
+
+	return result;
 }
 
 /*
@@ -866,6 +873,16 @@ static bool TargetInOffmeshAttackRange( gentity_t *self )
 	}
 }
 
+static void BotActivateJetpack( gentity_t *self )
+{
+	if ( BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats )
+		 && self->client->ps.stats[ STAT_FUEL ] > JETPACK_FUEL_MAX / 4
+		 )
+	{
+		self->botMind->cmdBuffer.upmove = 127;
+	}
+}
+
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
@@ -1025,6 +1042,14 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	// We are human and we either are at fire range, or have
 	// a direct path to goal
+
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	glm::vec3 targetPos = mind->goal.getPos();
+	if ( ownPos.z < targetPos.z + 400 )
+	{
+		// activate the jetpack if we have it, but do not fly too high above the enemy
+		BotActivateJetpack( self );
+	}
 
 	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
 	        && ( goalDist > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
@@ -1829,6 +1854,65 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 			}
 		}
 
+		return STATUS_SUCCESS;
+	}
+
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionBuyPrimary( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *buy = ( AIActionNode_t * ) node;
+	weapon_t weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
+
+	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
+	{
+		Log::Warn("parameter 1 to action buyPrimary out of range" );
+		return STATUS_FAILURE;
+	}
+
+	if ( !g_bot_buy.Get() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( G_Team( self ) != TEAM_HUMANS )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( self->botMind->currentNode != node )
+	{
+		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_ARMOURY ].ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( !self->botMind->goal.targetsValidEntity() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !self->botMind->goal.getTargetedEntity()->powered )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( GoalInRange( self, ENTITY_USE_RANGE ) )
+	{
+		BotSellWeapons( self );
+		if ( !BotBuyWeapon( self, weapon ) )
+		{
+			return STATUS_FAILURE;
+		}
 		return STATUS_SUCCESS;
 	}
 
