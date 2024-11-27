@@ -421,6 +421,27 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 	return status;
 }
 
+AINodeStatus_t BotDecoratorMapStatus( gentity_t *self, AIGenericNode_t *node )
+{
+	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
+
+	AINodeStatus_t result;
+	switch ( BotEvaluateNode( self, dec->child ) )
+	{
+	case STATUS_RUNNING:
+		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
+		break;
+	case STATUS_SUCCESS:
+		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 1 ] );
+		break;
+	case STATUS_FAILURE:
+		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 2 ] );
+		break;
+	}
+
+	return result;
+}
+
 static bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
 static double EvalFunc( gentity_t *self, AIExpType_t *exp )

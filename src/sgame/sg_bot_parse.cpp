@@ -988,6 +988,7 @@ static const struct AIDecoratorMap_s
 } AIDecorators[] =
 {
 	{ "invert", BotDecoratorInvert, 0, 0 },
+	{ "mapStatus", BotDecoratorMapStatus, 3, 3},
 	{ "return", BotDecoratorReturn, 1, 1 },
 	{ "timer", BotDecoratorTimer, 1, 1 }
 };
