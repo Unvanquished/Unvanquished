@@ -692,6 +692,54 @@ static void Svcmd_DumpUser_f()
 	}
 }
 
+static void Svcmd_ShowBehavior_f()
+{
+	char name[ MAX_STRING_CHARS ];
+	char arg[ MAX_STRING_CHARS ];
+	gclient_t  *cl;
+	int numArgs = trap_Argc();
+
+	if ( numArgs < 2 || numArgs > 3 )
+	{
+		Log::Notice( "usage: showBehavior <bot> [expand]" );
+		return;
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+	trap_Argv( 2, arg, sizeof( arg ) );
+
+	cl = ClientForString( name );
+
+	if ( !cl )
+	{
+		Log::Notice( "showBehavior: no such client" );
+		return;
+	}
+
+	gentity_t *ent = cl->ent();
+	if ( !( ( ent->r.svFlags & SVF_BOT ) && ent->botMind ) )
+	{
+		Log::Notice( "showBehavior: not a bot" );
+		return;
+	}
+
+	bool expand = false;
+	if ( numArgs == 3 )
+	{
+		if ( strcmp( arg, "expand" ) == 0 )
+		{
+			expand = true;
+		}
+		else
+		{
+			Log::Notice( "showBehavior: syntax error" );
+			return;
+		}
+	}
+
+	Log::Notice( G_BotBehaviorToString( ent, expand ) );
+}
+
 static void Svcmd_Pr_f()
 {
 	char targ[ 4 ];
@@ -809,6 +857,7 @@ static const struct svcmd
 	{ "printqueue",         false, Svcmd_PrintQueue_f           },
 	{ "say",                true,  Svcmd_MessageWrapper         },
 	{ "say_team",           true,  Svcmd_TeamMessage_f          },
+	{ "showBehavior",       false, Svcmd_ShowBehavior_f         },
 	{ "stopMapRotation",    false, G_StopMapRotation            },
 };
 
