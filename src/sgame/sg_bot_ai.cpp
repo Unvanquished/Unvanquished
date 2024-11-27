@@ -175,7 +175,7 @@ void AIDestroyValue( AIValue_t v )
 static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 {
 	botEntityAndDistance_t result;
-	result.distance = HUGE_QFLT;
+	result.distance = HUGE_DISTANCE;
 	result.ent = nullptr;
 	ForEntities<BuildableComponent>([&](Entity& e, BuildableComponent&) {
 		if (!e.Get<HealthComponent>()->Alive() ||
@@ -193,7 +193,7 @@ static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
+	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_DISTANCE };
 	botEntityAndDistance_t              ret = nullEntity;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
