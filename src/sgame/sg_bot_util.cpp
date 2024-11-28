@@ -1901,7 +1901,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 {
 	botMemory_t *mind = self->botMind;
 	usercmd_t *botCmdBuffer = &mind->cmdBuffer;
-	bool botIsSmall = false;
+	bool shouldStrafe = false;
 	bool botIsJumper = false;
 
 	// If we are targetting a buildable or we are targetting a human who
@@ -1909,20 +1909,20 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 	// as fast as we can.
 	// Making special tricks for buildables is still useful because turrets
 	// are slow to aim and defenders do more team-damage this way.
-	bool shouldStrafe = true;
+	bool enemyLookingAtUs = true;
 	if ( mind->goal.getTargetType() == entityType_t::ET_PLAYER )
 	{
 		glm::vec3 forward1, forward2;
 		AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward1, nullptr, nullptr );
 		AngleVectors( VEC2GLM( mind->goal.getTargetedEntity()->client->ps.viewangles ), &forward2, nullptr, nullptr );
 		// strafe only if it is looking at us (opposite view vectors, so alignment ≃ -1)
-		shouldStrafe = Alignment2D( forward1, forward2 ) < -0.5f;
+		enemyLookingAtUs = Alignment2D( forward1, forward2 ) < -0.5f;
 	}
 
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
-			botIsSmall = true;
+			shouldStrafe = true;
 			botIsJumper = self->botMind->skillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL1:
@@ -1930,7 +1930,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			{
 				return;
 			}
-			botIsSmall = true;
+			shouldStrafe = true;
 			botIsJumper = self->botMind->skillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL2:
@@ -1939,7 +1939,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			{
 				return;
 			}
-			botIsSmall = true;
+			shouldStrafe = true;
 			botIsJumper = self->botMind->skillSet[BOT_A_MARA_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL3:
@@ -1947,9 +1947,9 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			{
 				return;
 			}
-			else
+			else if ( self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME * 3 / 4 )
 			{
-				BotStrafeDodge( self );
+				shouldStrafe = true;
 			}
 			break;
 		case PCL_ALIEN_LEVEL3_UPG:
@@ -1962,27 +1962,23 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			{
 				return;
 			}
-			else
+			else if ( self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG * 3 / 4 )
 			{
-				BotStrafeDodge( self );
+				shouldStrafe = true;
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
+			shouldStrafe = true;
 			// Use rush to approach faster
 			if ( self->botMind->skillSet[BOT_A_TYRANT_CHARGE_ON_ATTACK] && !inAttackRange )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
-			else if ( !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) )
-			{
-				BotStrafeDodge( self );
-			}
-			break;
 		default:
 			break;
 	}
 
-	if ( shouldStrafe && botIsSmall && self->botMind->skillSet[BOT_A_STRAFE_ON_ATTACK] )
+	if ( enemyLookingAtUs && shouldStrafe && self->botMind->skillSet[BOT_A_STRAFE_ON_ATTACK] )
 	{
 		BotStrafeDodge( self );
 	}
