@@ -1535,7 +1535,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 	// the first allocated reverb is special in that it may be global
 	i = 0;
 
-	if ( cgs.gameReverbEffects[0][0] && cgs.gameGradingModels[0] == -1 )
+	if ( cgs.gameReverbEffects[0][0] && cgs.gameReverbModels[0] == -1 )
 	{
 		selectedIdx[0] = 0;
 		selectedWeight[0] = 2.0f; // won't be sorted down
