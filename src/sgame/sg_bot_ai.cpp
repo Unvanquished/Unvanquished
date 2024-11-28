@@ -428,13 +428,13 @@ AINodeStatus_t BotDecoratorMapStatus( gentity_t *self, AIGenericNode_t *node )
 	AINodeStatus_t result;
 	switch ( BotEvaluateNode( self, dec->child ) )
 	{
-	case STATUS_RUNNING:
+	case STATUS_FAILURE:
 		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
 		break;
 	case STATUS_SUCCESS:
 		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 1 ] );
 		break;
-	case STATUS_FAILURE:
+	case STATUS_RUNNING:
 		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 2 ] );
 		break;
 	}
