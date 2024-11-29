@@ -1892,7 +1892,7 @@ void FreeBehaviorTree( AIBehaviorTree_t *tree )
 }
 
 
-// inverse operation of parsing: convert a behavior tree to a file
+// inverse operation of parsing: convert a behavior tree to text
 // this is only used for debug commands
 
 static void BotValueToString( AIValue_t *val, std::ostringstream &out )
