@@ -1985,28 +1985,28 @@ static void BotBinaryOpToString( AIBinaryOp_t *exp, std::ostringstream &out )
 	};
 	switch ( exp->opType )
 	{
-	case OP_LESSTHAN:
+	case AIOpType_t::OP_LESSTHAN:
 		recurse( "<" );
 		break;
-	case OP_LESSTHANEQUAL:
+	case AIOpType_t::OP_LESSTHANEQUAL:
 		recurse( "<=" );
 		break;
-	case OP_GREATERTHAN:
+	case AIOpType_t::OP_GREATERTHAN:
 		recurse( ">" );
 		break;
-	case OP_GREATERTHANEQUAL:
+	case AIOpType_t::OP_GREATERTHANEQUAL:
 		recurse( ">=" );
 		break;
-	case OP_EQUAL:
+	case AIOpType_t::OP_EQUAL:
 		recurse( "==" );
 		break;
-	case OP_NEQUAL:
+	case AIOpType_t::OP_NEQUAL:
 		recurse( "!=" );
 		break;
-	case OP_AND:
+	case AIOpType_t::OP_AND:
 		recurse( "&&" );
 		break;
-	case OP_OR:
+	case AIOpType_t::OP_OR:
 		recurse( "||" );
 		break;
 	default:
