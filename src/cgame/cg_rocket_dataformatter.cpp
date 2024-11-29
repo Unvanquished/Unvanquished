@@ -108,118 +108,6 @@ static void CG_Rocket_DFPlayerName( int handle, const char *data )
 	Rocket_DataFormatterFormattedData( handle, va("<span class=\"playername\">%s</span>", CG_Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) ) , false );
 }
 
-static void CG_Rocket_DFUpgradeName( int handle, const char *data )
-{
-	Rocket_DataFormatterFormattedData( handle, BG_Upgrade( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, true );
-}
-
-static void CG_Rocket_DFVotePlayer( int handle, const char *data )
-{
-	Rocket_DataFormatterFormattedData( handle, va("<button onClick=\"Events.pushevent('exec set ui_dialogCvar1 %s;exec rocket ui/dialogs/editplayer.rml load; exec rocket editplayer show', event)\">vote/moderate</button>", cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) , false );
-}
-
-static void CG_Rocket_DFVoteMap( int handle, const char *data )
-{
-	size_t mapIndex = atoi( Info_ValueForKey( data, "1" ) );
-	if ( mapIndex < rocketInfo.data.mapList.size() )
-	{
-		Rocket_DataFormatterFormattedData(
-			handle,
-			va( "<button onClick=\"Events.pushevent('exec set ui_dialogCvar1 %s;hide maps;"
-			    "exec rocket ui/dialogs/mapdialog.rml load; exec rocket mapdialog show', event)\" class=\"maps\">"
-			    "<div class=\"levelname\">%s</div> <img class=\"levelshot\"src='/meta/%s/%s'/><div class=\"hovertext\">Start Vote</div> </button>",
-			    rocketInfo.data.mapList[ mapIndex ].mapLoadName.c_str(),
-			    CG_Rocket_QuakeToRML( rocketInfo.data.mapList[ mapIndex ].mapLoadName.c_str() ),
-			    rocketInfo.data.mapList[ mapIndex ].mapLoadName.c_str(),
-			    rocketInfo.data.mapList[ mapIndex ].mapLoadName.c_str() ),
-			false );
-	}
-}
-
-static void CG_Rocket_DFWeaponName( int handle, const char *data )
-{
-	Rocket_DataFormatterFormattedData( handle, BG_Weapon( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, true );
-}
-
-static void CG_Rocket_DFClassName( int handle, const char *data )
-{
-	Rocket_DataFormatterFormattedData( handle, BG_Class( atoi( Info_ValueForKey( data, "1" ) ) )->name, true );
-}
-
-static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
-{
-	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
-	int      width = 0;
-
-	switch( weapon )
-	{
-		case WP_HBUILD: width = 0; break;
-		case WP_MACHINEGUN: width = 10; break;
-		case WP_PAIN_SAW: width = 90; break;
-		case WP_SHOTGUN: width = 40; break;
-		case WP_LAS_GUN: width = 30; break;
-		case WP_MASS_DRIVER: width = 50; break;
-		case WP_CHAINGUN: width = 60; break;
-		case WP_FLAMER: width = 70; break;
-		case WP_PULSE_RIFLE: width = 70; break;
-		case WP_LUCIFER_CANNON: width = 100; break;
-		default: width = 0; break;
-	}
-
-	Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), false );
-}
-
-static void CG_Rocket_DFGWeaponRateOfFire( int handle, const char *data )
-{
-	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
-	int      width = 0;
-
-	switch( weapon )
-	{
-		case WP_HBUILD: width = 0; break;
-		case WP_MACHINEGUN: width = 70; break;
-		case WP_PAIN_SAW: width = 100; break;
-		case WP_SHOTGUN: width = 100; break;
-		case WP_LAS_GUN: width = 40; break;
-		case WP_MASS_DRIVER: width = 20; break;
-		case WP_CHAINGUN: width = 80; break;
-		case WP_FLAMER: width = 70; break;
-		case WP_PULSE_RIFLE: width = 70; break;
-		case WP_LUCIFER_CANNON: width = 10; break;
-		default: width = 0; break;
-	}
-
-	Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), false );
-}
-
-static void CG_Rocket_DFGWeaponRange( int handle, const char *data )
-{
-	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
-	int      width = 0;
-
-	switch( weapon )
-	{
-		case WP_HBUILD: width = 0; break;
-		case WP_MACHINEGUN: width = 75; break;
-		case WP_PAIN_SAW: width = 10; break;
-		case WP_SHOTGUN: width = 30; break;
-		case WP_LAS_GUN: width = 100; break;
-		case WP_MASS_DRIVER: width = 100; break;
-		case WP_CHAINGUN: width = 50; break;
-		case WP_FLAMER: width = 25; break;
-		case WP_PULSE_RIFLE: width = 80; break;
-		case WP_LUCIFER_CANNON: width = 75; break;
-		default: width = 0; break;
-	}
-
-	Rocket_DataFormatterFormattedData( handle, va( "<div class=\"barValue\" style=\"width:%d%%;\"></div>", width ), false );
-}
-
-static void CG_Rocket_DFLevelShot( int handle, const char *data )
-{
-	Rocket_DataFormatterFormattedData( handle, va( "<img class=\"levelshot\" src=\"/levelshots/%s\"/>", Info_ValueForKey( data, "1" ) ), false );
-}
-
 static score_t *ScoreFromClientNum( int clientNum )
 {
 	int i = 0;
@@ -276,20 +164,11 @@ struct dataFormatterCmd_t
 
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
-	{ "ClassName", &CG_Rocket_DFClassName },
 	{ "GearOrReady", &CG_Rocket_DFGearOrReady },
-	{ "GWeaponDamage", &CG_Rocket_DFGWeaponDamage },
-	{ "GWeaponRange", &CG_Rocket_DFGWeaponRange },
-	{ "GWeaponRateOfFire", &CG_Rocket_DFGWeaponRateOfFire },
-	{ "LevelShot", &CG_Rocket_DFLevelShot },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerPing", &CG_Rocket_DFServerPing },
 	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
-	{ "UpgradeName", &CG_Rocket_DFUpgradeName },
-	{ "VoteMap", &CG_Rocket_DFVoteMap },
-	{ "VotePlayer", &CG_Rocket_DFVotePlayer },
-	{ "WeaponName", &CG_Rocket_DFWeaponName },
 };
 
 static const size_t dataFormatterCmdListCount = ARRAY_LEN( dataFormatterCmdList );
