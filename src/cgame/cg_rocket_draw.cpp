@@ -1911,9 +1911,11 @@ public:
 			mapIndex_ = rocketInfo.data.mapIndex;
 			std::error_code ignored;
 			const std::string& mapName = rocketInfo.data.mapList[ mapIndex_ ].mapLoadName;
-			FS::PakPath::LoadPakPrefix(
-				*FS::FindPak( "map-" + mapName ), Str::Format( "meta/%s/", mapName ), ignored );
-			SetInnerRML( Str::Format( "<img class='levelshot' src='/meta/%s/%s' />", mapName, mapName ) );
+			const FS::PakInfo &pak = *FS::FindPak( "map-" + mapName );
+			FS::PakPath::LoadPakPrefix( pak, Str::Format( "meta/%s/", mapName ), ignored );
+			// Unfortunately this spams the console with a 2nd "Loading pak" message
+			FS::PakPath::LoadPakPrefix( pak, Str::Format( "levelshots/", mapName ), ignored );
+			SetInnerRML( Str::Format( "<img class='levelshot' src='/$levelshot/%s' />", mapName ) );
 		}
 	}
 
@@ -1948,7 +1950,7 @@ public:
 		if ( map_ != newMap )
 		{
 			map_ = newMap;
-			SetInnerRML( Str::Format( "<img src='/meta/%s/%s' />", newMap, newMap ) );
+			SetInnerRML( Str::Format( "<img src='/$levelshot/%s' />", newMap ) );
 		}
 	}
 
