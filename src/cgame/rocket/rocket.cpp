@@ -236,7 +236,7 @@ public:
 
 	bool LoadTexture( Rml::TextureHandle& textureHandle, Rml::Vector2i& textureDimensions, const Rml::String& source ) override
 	{
-		qhandle_t shaderHandle = trap_R_RegisterShader( source.c_str(), RSF_2D | RSF_FITSCREEN );
+		qhandle_t shaderHandle = GetShaderHandle( source );
 
 		if ( shaderHandle <= 0 )
 		{
@@ -282,6 +282,31 @@ public:
 		else
 		{
 			trap_R_ResetMatrixTransform();
+		}
+	}
+
+private:
+	qhandle_t GetShaderHandle( const Rml::String& source )
+	{
+		constexpr int flags = RSF_2D | RSF_FITSCREEN;
+
+		if ( Str::IsPrefix( "$levelshot/", source ) )
+		{
+			const char *map = source.c_str() + 11;
+			qhandle_t h = trap_R_RegisterShader(
+				Str::Format( "meta/%s/%s", map, map ).c_str(), flags );
+
+			if ( !h )
+			{
+				h = trap_R_RegisterShader(
+					Str::Format( "levelshots/%s", map ).c_str(), flags );
+			}
+
+			return h;
+		}
+		else
+		{
+			return trap_R_RegisterShader( source.c_str(), flags );
 		}
 	}
 };
