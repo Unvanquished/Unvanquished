@@ -4487,6 +4487,7 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 	if (target == -1 || !g_entities[target].client)
 	{
 		ADMP( "\"" N_("No one to reply to.") "\"" );
+		ADMP( va( "%s %s", QQ(N_("You would have replied to $1$")), g_entities[target].client->pers.netname));
 		return;
 	}
 
