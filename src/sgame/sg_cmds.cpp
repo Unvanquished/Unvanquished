@@ -4495,7 +4495,7 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 
 	if (G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
 	{
-		ADMP(va("%s %s", QQ(N_("Private message: ^7$1$")), Quote(msg)));
+		ADMP( va( "%s %s %s", QQ(N_("You have responded to $1$^* : ^2$2$ ")), g_entities[target].client->pers.netname, Quote(msg)));
 		G_LogPrintf("PrivMsg: %d \"%s^*\" \"%s\": %s",
 			ent->num(), ent->client->pers.netname,
 			g_entities[target].client->pers.netname, msg);
