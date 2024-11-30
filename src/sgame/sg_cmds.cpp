@@ -4414,7 +4414,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 			count++;
 			Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
 			          level.clients[ pids[ i ] ].pers.netname ) );
-			int playerNum = ent - g_entities;
+			int playerNum = ent->num();
 			if ( level.clients[ pids[ i ] ].pers.lastPrivateMessageSender != playerNum )
 			{
 				level.clients[ pids[ i ] ].pers.lastPrivateMessageSenderTime = level.time;
