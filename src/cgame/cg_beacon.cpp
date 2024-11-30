@@ -39,6 +39,18 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_etime time2
 #define bc_mtime apos.trTime
 
+static team_t TargetTeam( const cbeacon_t *beacon )
+{
+	if ( beacon->type != BCT_TAG && beacon->type != BCT_BASE )
+		return TEAM_NONE;
+
+	if ( ( beacon->ownerTeam == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
+	     ( beacon->ownerTeam == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
+		return TEAM_HUMANS;
+	else
+		return TEAM_ALIENS;
+}
+
 void CG_LoadBeaconsConfig()
 {
 	beaconsConfig_t  *bc = &cgs.bc;
@@ -149,6 +161,29 @@ else if( !Q_stricmp( token.string, #x ) ) \
 }
 
 /**
+ * @brief Sets location from the position of target player entity known exactly.
+ * @note That position is shifted a bit upwards for beacons of human players entities.
+ */
+static void SetClientBeaconPosition(centity_t *ent, cbeacon_t *beacon)
+{
+	vec3_t mins, maxs, center;
+	int pClass = ( ( ent->currentState.misc >> 8 ) & 0xFF ); // TODO: Write function for this.
+
+	VectorCopy( ent->lerpOrigin, center );
+	BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
+	BG_MoveOriginToBBOXCenter( center, mins, maxs );
+
+	if( TargetTeam( beacon ) == TEAM_HUMANS )
+	{
+		// Nudge the center a bit upwards for human players, so we don't look at their butt too much
+		float height = maxs[2] - mins[2];
+		center[2] += 0.3f * height;
+	}
+
+	VectorCopy( center, beacon->origin );
+}
+
+/**
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
  * @return Whether all beacons found space in cg.beacons.
  */
@@ -193,15 +228,8 @@ static bool LoadExplicitBeacons()
 		if ( beacon->target && ( targetCent = &cg_entities[ beacon->target ] )->valid &&
 		     ( targetES = &targetCent->currentState )->eType == entityType_t::ET_PLAYER )
 		{
-			vec3_t mins, maxs, center;
-			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
-
-			VectorCopy( targetCent->lerpOrigin, center );
-			BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
-			BG_MoveOriginToBBOXCenter( center, mins, maxs );
-
 			// TODO: Interpolate when target entity pops in.
-			VectorCopy( center, beacon->origin );
+			SetClientBeaconPosition( targetCent, beacon );
 		}
 		else
 		{
@@ -229,34 +257,21 @@ static bool LoadImplicitBeacons()
 	{
 		for ( int clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
 		{
-			centity_t     *ent;
-			entityState_t *es;
-			clientInfo_t  *client;
+			centity_t     *ent = &cg_entities[ clientNum ];
+			entityState_t *es = &ent->currentState;
+			clientInfo_t  *client = &cgs.clientinfo[ clientNum ];
 
 			// Can only track valid targets.
 			// TODO: Make beacons expire properly anyway.
-			if ( !( ent = &cg_entities[ clientNum ] )->valid )            continue;
+			if ( !ent->valid )                 continue;
 
 			// Only tag enemies like this, teammates have an explicit beacon.
-			if ( !( client = &cgs.clientinfo[ clientNum ] )->infoValid ) continue;
-			if ( client->team != TEAM_HUMANS )                           continue;
-
-			//ent = &cg_entities[ clientNum ];
-			es = &ent->currentState;
+			if ( !client->infoValid )          continue;
+			if ( client->team != TEAM_HUMANS ) continue;
 
 			cbeacon_t *beacon = &ent->beacon;
 
-			// Set location on exact center of target player entity.
-			{
-				vec3_t mins, maxs, center;
-				int pClass = ( ( es->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
-
-				VectorCopy( ent->lerpOrigin, center );
-				BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
-				BG_MoveOriginToBBOXCenter( center, mins, maxs );
-
-				VectorCopy( center, beacon->origin );
-			}
+			SetClientBeaconPosition( ent, beacon );
 
 			// Add alpha fade at the borders of the sense range.
 			beacon->alphaMod = Math::Clamp(
@@ -386,18 +401,6 @@ static void SetHighlightedBeacon()
 static inline bool IsHighlighted( const cbeacon_t *b )
 {
 	return cg.highlightedBeacon == b;
-}
-
-static team_t TargetTeam( const cbeacon_t *beacon )
-{
-	if ( beacon->type != BCT_TAG && beacon->type != BCT_BASE )
-		return TEAM_NONE;
-
-	if ( ( beacon->ownerTeam == TEAM_ALIENS && beacon->flags & EF_BC_ENEMY ) ||
-	     ( beacon->ownerTeam == TEAM_HUMANS && !( beacon->flags & EF_BC_ENEMY ) ) )
-		return TEAM_HUMANS;
-	else
-		return TEAM_ALIENS;
 }
 
 /**

@@ -404,7 +404,9 @@ static void ShowRunningNode( gentity_t *self, AINodeStatus_t status )
 	case STATUS_RUNNING:
 		ASSERT( !self->botMind->runningNodes.empty() );
 		ASSERT_EQ( self->botMind->runningNodes[ 0 ]->type, AINode_t::ACTION_NODE );
-		int line = reinterpret_cast<AIActionNode_t *>( self->botMind->runningNodes[ 0 ] )->lineNum;
+		AIActionNode_t *actionNode = reinterpret_cast<AIActionNode_t *>( self->botMind->runningNodes[ 0 ] );
+		int line = actionNode->lineNum;
+		const char *actionName = actionNode->name;
 		const char *tree = "<unknown>";
 		for ( const AIGenericNode_t *node : self->botMind->runningNodes )
 		{
@@ -414,7 +416,7 @@ static void ShowRunningNode( gentity_t *self, AINodeStatus_t status )
 				break;
 			}
 		}
-		Log::defaultLogger.WithoutSuppression().Notice( "%s^* running at %s.bt:%d", name, tree, line );
+		Log::defaultLogger.WithoutSuppression().Notice( "%s^* running at %s.bt:%d, action %s", name, tree, line, actionName );
 		break;
 	}
 }
@@ -499,9 +501,21 @@ void G_BotThink( gentity_t *self )
 	self->botMind->willSprint( false ); //let the BT decide that
 	AINodeStatus_t status =
 		self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
+	self->botMind->lastThink = level.time;
+
 	if ( traceClient.Get() == self->num() )
 	{
 		ShowRunningNode( self, status );
+	}
+
+	// if we have a jetpack and are falling too fast: fire it
+	if ( G_Team( self ) == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
+	{
+		glm::vec3 ownVelocity = VEC2GLM( self->client->ps.velocity );
+		if ( ownVelocity.z < -300 )
+		{
+			self->botMind->cmdBuffer.upmove = 127;
+		}
 	}
 
 	// if we were nudged...

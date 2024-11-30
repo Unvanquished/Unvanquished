@@ -988,6 +988,7 @@ static const struct AIDecoratorMap_s
 } AIDecorators[] =
 {
 	{ "invert", BotDecoratorInvert, 0, 0 },
+	{ "mapStatus", BotDecoratorMapStatus, 3, 3},
 	{ "return", BotDecoratorReturn, 1, 1 },
 	{ "timer", BotDecoratorTimer, 1, 1 }
 };
@@ -1086,6 +1087,7 @@ static const struct AIActionMap_s
 	{ "blackboardNoteTransient", BotActionBlackboardNoteTransient, 1, 1 },
 	{ "buildNowChosenBuildable", BotActionBuildNowChosenBuildable, 0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
+	{ "buyPrimary",        BotActionBuyPrimary,        1, 1 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
 	{ "classDodge",        BotActionClassDodge,        0, 0 },
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
@@ -1103,6 +1105,7 @@ static const struct AIActionMap_s
 	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
+	{ "reload",            BotActionReload,            0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
 	{ "resetMyTimer",      BotActionResetMyTimer,      0, 0 },
 	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
@@ -1159,6 +1162,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 		*tokenlist = current;
 		return nullptr;
 	}
+	node.name = action->name;
 
 	parenBegin = current->next;
 
@@ -1166,7 +1170,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	BotInitNode( ACTION_NODE, action->run, &node );
 
 	// allow dropping of parenthesis if we don't require any parameters
-	if ( action->minparams == 0 && parenBegin->token.string[0] != '(' )
+	if ( action->minparams == 0 && parenBegin != nullptr && parenBegin->token.string[0] != '(' )
 	{
 		ret = allocNode( AIActionNode_t );
 		*ret = node;
@@ -1347,6 +1351,11 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		return nullptr;
 	}
 
+	if ( current == nullptr )
+	{
+		return nullptr;
+	}
+
 	list = allocNode( AINodeList_t );
 
 	while ( Q_stricmp( current->token.string, "}" ) )
@@ -1374,6 +1383,7 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 			return nullptr;
 		}
 
+		// TODO: this does not seem right, we are still waiting for a "}" token
 		if ( !current )
 		{
 			*tokenlist = current;
@@ -1629,6 +1639,11 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 
 	tokenlist = CreateTokenList( handle );
+	if ( tokenlist == nullptr )
+	{
+		return nullptr;
+	}
+
 	Parse_FreeSourceHandle( handle );
 
 	auto *tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );

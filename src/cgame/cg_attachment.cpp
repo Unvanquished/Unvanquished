@@ -65,8 +65,7 @@ bool CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			}
 
 			AxisCopy( axisDefault, a->re.axis );
-			CG_PositionRotatedEntityOnTag( &a->re, &a->parent,
-			                               a->model, a->tagName );
+			CG_PositionRotatedEntityOnTag( &a->re, &a->parent, a->tagName );
 			VectorCopy( a->re.origin, v );
 			break;
 

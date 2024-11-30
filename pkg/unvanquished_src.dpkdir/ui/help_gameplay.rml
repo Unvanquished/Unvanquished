@@ -114,7 +114,7 @@
 				<translate>Healing</translate>
 			</tab>
 			<panel>
-				<translate>Dying feeds the ennemy, you may want to save your life!</translate>
+				<translate>Dying feeds the enemy, you may want to save your life!</translate>
 				<br />
 				<br />
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/dretch" />

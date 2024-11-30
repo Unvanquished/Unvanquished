@@ -296,17 +296,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 	char filename[ MAX_QPATH ], newModelName[ MAX_QPATH ];
 	int  frameRate;
 
-	// special handling for human_(naked|light|medium)
-	if ( !Q_stricmp( modelName, "human_naked"   ) ||
-	     !Q_stricmp( modelName, "human_light"   ) ||
-	     !Q_stricmp( modelName, "human_medium" ) )
-	{
-		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
-	}
-	else
-	{
-		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
-	}
+	Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
 
 	if ( ci->iqm )
 	{
@@ -2399,7 +2389,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		AxisCopy( axisDefault, jetpack.axis );
 
 		// FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_gear" );
+		CG_PositionRotatedEntityOnTag( &jetpack, torso, "tag_gear" );
 
 		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
 		jetpack.skeleton = jetpackSkeleton;
@@ -2496,7 +2486,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		AxisCopy( axisDefault, radar.axis );
 
 		//FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &radar, torso, torso->hModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &radar, torso, "tag_head" );
 
 		trap_R_AddRefEntityToScene( &radar );
 	}
@@ -2518,8 +2508,9 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 		if ( size > 0.0f )
 		{
-			CG_ImpactMark( cgs.media.creepShader, origin, up,
-			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, size, true );
+			CG_RegisterMark( cgs.media.creepShader, origin, up,
+				0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+				false, size, true );
 		}
 	}
 }
@@ -2643,9 +2634,9 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
-	               cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha, false,
-	               24.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
+	CG_RegisterMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
+		cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha,
+		false, 24.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
 
 	return true;
 }
@@ -2715,9 +2706,9 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 		return;
 	}
 
-	CG_ImpactMark( cgs.media.wakeMarkShader, trace.endpos, trace.plane.normal,
-	               cent->pe.legs.yawAngle, 1.0f, 1.0f, 1.0f, 1.0f, false,
-	               32.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
+	CG_RegisterMark( cgs.media.wakeMarkShader, trace.endpos, trace.plane.normal,
+		cent->pe.legs.yawAngle, 1.0f, 1.0f, 1.0f, 1.0f,
+		false, 32.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
 }
 
 #define TRACE_DEPTH    32.0f
@@ -2735,7 +2726,7 @@ void CG_Player( centity_t *cent )
 	int           renderfx;
 	entityState_t *es = &cent->currentState;
 	class_t       class_ = (class_t) ( ( es->misc >> 8 ) & 0xFF );
-	float         scale;
+	const classModelConfig_t *cmc = BG_ClassModelConfig( class_ );
 	vec3_t        tempAxis[ 3 ], tempAxis2[ 3 ];
 	vec3_t        angles;
 	int           held = es->modelindex;
@@ -2941,7 +2932,35 @@ void CG_Player( centity_t *cent )
 			legs.origin[ 0 ] -= ci->headOffset[ 0 ];
 			legs.origin[ 1 ] -= ci->headOffset[ 1 ];
 			legs.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
-			VectorMA( legs.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, legs.origin );
+
+			// Apply rotation from config.
+			{
+				matrix_t axisMat;
+				quat_t axisQuat, rotQuat;
+
+				QuatFromAngles( rotQuat,
+					cmc->modelRotation[ PITCH ],
+					cmc->modelRotation[ YAW ],
+					cmc->modelRotation[ ROLL ] );
+
+				MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+				QuatFromMatrix( axisQuat, axisMat );
+				QuatMultiply2( axisQuat, rotQuat );
+				MatrixFromQuat( axisMat, axisQuat );
+				MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+			}
+
+			// Apply scale from config.
+			if ( cmc->modelScale != 1.0f )
+			{
+				VectorScale( legs.axis[ 0 ], cmc->modelScale, legs.axis[ 0 ] );
+				VectorScale( legs.axis[ 1 ], cmc->modelScale, legs.axis[ 1 ] );
+				VectorScale( legs.axis[ 2 ], cmc->modelScale, legs.axis[ 2 ] );
+
+				legs.nonNormalizedAxes = true;
+			}
+
+			VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
 		}
 
 		VectorCopy( legs.origin, legs.lightingOrigin );
@@ -3104,20 +3123,35 @@ void CG_Player( centity_t *cent )
 		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 	}
 
-	//rescale the model
-	scale = BG_ClassModelConfig( class_ )->modelScale;
-
-	if ( scale != 1.0f )
+	// Apply rotation from config.
 	{
-		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
-		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
-		VectorScale( legs.axis[ 2 ], scale, legs.axis[ 2 ] );
+		matrix_t axisMat;
+		quat_t axisQuat, rotQuat;
+
+		QuatFromAngles( rotQuat,
+			cmc->modelRotation[ PITCH ],
+			cmc->modelRotation[ YAW ],
+			cmc->modelRotation[ ROLL ] );
+
+		MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+		QuatFromMatrix( axisQuat, axisMat );
+		QuatMultiply2( axisQuat, rotQuat );
+		MatrixFromQuat( axisMat, axisQuat );
+		MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+	}
+
+	// Apply scale from config.
+	if ( cmc->modelScale != 1.0f )
+	{
+		VectorScale( legs.axis[ 0 ], cmc->modelScale, legs.axis[ 0 ] );
+		VectorScale( legs.axis[ 1 ], cmc->modelScale, legs.axis[ 1 ] );
+		VectorScale( legs.axis[ 2 ], cmc->modelScale, legs.axis[ 2 ] );
 
 		legs.nonNormalizedAxes = true;
 	}
 
 	//offset on the Z axis if required
-	VectorMA( legs.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, legs.origin );
+	VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
 	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3155,7 +3189,7 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso" );
+		CG_PositionRotatedEntityOnTag( &torso, &legs, "tag_torso" );
 
 		torso.renderfx = renderfx;
 
@@ -3176,7 +3210,7 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( cent->lerpOrigin, head.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &head, &torso, "tag_head" );
 
 		head.renderfx = renderfx;
 
@@ -3236,7 +3270,7 @@ void CG_Corpse( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	int           renderfx;
 	vec3_t        origin, liveZ, deadZ, deadMax;
-	float         scale;
+	const classModelConfig_t *cmc = BG_ClassModelConfig( es->clientNum );
 
 	ci = GetCorpseInfo( (class_t) es->clientNum );
 
@@ -3351,14 +3385,30 @@ void CG_Corpse( centity_t *cent )
 	legs.origin[ 2 ] += BG_ClassModelConfig( es->clientNum )->zOffset;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
-	//rescale the model
-	scale = BG_ClassModelConfig( es->clientNum )->modelScale;
-
-	if ( scale != 1.0f && !ci->skeletal )
+	// Apply rotation from config.
+	if ( !ci->skeletal )
 	{
-		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
-		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
-		VectorScale( legs.axis[ 2 ], scale, legs.axis[ 2 ] );
+		matrix_t axisMat;
+		quat_t axisQuat, rotQuat;
+
+		QuatFromAngles( rotQuat,
+			cmc->modelRotation[ PITCH ],
+			cmc->modelRotation[ YAW ],
+			cmc->modelRotation[ ROLL ] );
+
+		MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+		QuatFromMatrix( axisQuat, axisMat );
+		QuatMultiply2( axisQuat, rotQuat );
+		MatrixFromQuat( axisMat, axisQuat );
+		MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+	}
+
+	// Apply scale from config.
+	if ( !ci->skeletal && cmc->modelScale != 1.0f )
+	{
+		VectorScale( legs.axis[ 0 ], cmc->modelScale, legs.axis[ 0 ] );
+		VectorScale( legs.axis[ 1 ], cmc->modelScale, legs.axis[ 1 ] );
+		VectorScale( legs.axis[ 2 ], cmc->modelScale, legs.axis[ 2 ] );
 
 		legs.nonNormalizedAxes = true;
 	}
@@ -3390,7 +3440,7 @@ void CG_Corpse( centity_t *cent )
 
 		VectorCopy( origin, torso.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso" );
+		CG_PositionRotatedEntityOnTag( &torso, &legs, "tag_torso" );
 
 		torso.renderfx = renderfx;
 
@@ -3412,7 +3462,7 @@ void CG_Corpse( centity_t *cent )
 
 		VectorCopy( origin, head.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &head, &torso, "tag_head" );
 
 		head.renderfx = renderfx;
 
@@ -3488,12 +3538,10 @@ void CG_PlayerDisconnect( vec3_t org )
 	}
 }
 
-centity_t *CG_GetLocation( vec3_t origin )
+centity_t *CG_GetPlayerLocation()
 {
-	float     bestlen, len;
-
-	centity_t *best = nullptr;
-	bestlen = 3.0f * 8192.0f * 8192.0f;
+	std::vector<int> validEntities;
+	std::vector<std::array<float, 3>> posEntities;
 
 	for ( int num = MAX_CLIENTS; num <= cg_highestActiveEntity; num++ )
 	{
@@ -3504,14 +3552,32 @@ centity_t *CG_GetLocation( vec3_t origin )
 			continue;
 		}
 
-		len = DistanceSquared( origin, eloc->lerpOrigin );
+		std::array<float, 3> posEntity;
+		VectorCopy( eloc->lerpOrigin, posEntity );
+		posEntities.push_back( posEntity );
+		validEntities.push_back( num );
+	}
+
+	const vec3_t& origin = cg.predictedPlayerState.origin;
+
+	std::vector<bool> inPVS = trap_R_BatchInPVS( origin, posEntities );
+
+	centity_t *best = nullptr;
+	float bestlen = 3.0f * 8192.0f * 8192.0f;
+
+	for ( size_t v = 0; v < posEntities.size(); v++ )
+	{
+		int num = validEntities[ v ];
+		centity_t *eloc = &cg_entities[ num ];
+
+		float len = DistanceSquared( origin, eloc->lerpOrigin );
 
 		if ( len > bestlen )
 		{
 			continue;
 		}
 
-		if ( !trap_R_inPVS( origin, eloc->lerpOrigin ) )
+		if ( !inPVS[ v ] )
 		{
 			continue;
 		}
@@ -3521,14 +3587,6 @@ centity_t *CG_GetLocation( vec3_t origin )
 	}
 
 	return best;
-}
-
-centity_t *CG_GetPlayerLocation()
-{
-	vec3_t    origin;
-
-	VectorCopy( cg.predictedPlayerState.origin, origin );
-	return CG_GetLocation( origin );
 }
 
 void CG_InitClasses()

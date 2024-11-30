@@ -31,5 +31,10 @@
 			<input cvar="cl_freelook" type="checkbox" />
 			<p><translate>Turn off only if you are a Quake junkie.</translate></p>
 		</row>
+		<row>
+			<h3><translate>Circle menu mouse capture</translate></h3>
+			<input cvar="cg_circleMenusCaptureMouse" type="checkbox" />
+			<p><translate>Circle menus (excluding Armoury menu) take mouse inputs</translate></p>
+		</row>
 	</body>
 </rml>

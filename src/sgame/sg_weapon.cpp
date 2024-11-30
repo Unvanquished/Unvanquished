@@ -349,7 +349,12 @@ static void G_WideTrace(
 	// Line trace against the world, so we never hit through obstacles.
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
-	float scale = glm::distance( muzzle, VEC2GLM( tr->endpos ) ) + halfDiagonal;
+	glm::vec3 absDir = glm::max( glm::vec3( 1.0e-9f ), glm::abs( forward ) );
+	glm::vec3 elementwiseDistToSide = maxs / absDir;
+	// distToSide is the distance from the center of the trace box to the intersection of the trace line
+	// and a side of the box. Should be between min(width, height) and halfDiagonal
+	float distToSide = std::min({elementwiseDistToSide.x, elementwiseDistToSide.y, elementwiseDistToSide.z});
+	float scale = tr->fraction * range + distToSide;
 	VectorMA( muzzle, scale, forward, end );
 	trap_Trace( tr, muzzle, {}, {}, end, ent->s.number, CONTENTS_SOLID, 0 );
 
@@ -456,19 +461,24 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	G_WideTrace( &tr, self, muzzle, forward, range, width, height, &traceEnt );
 
-	if ( not TakesDamages( traceEnt ) )
+	if ( traceEnt == nullptr )
 	{
 		return nullptr;
 	}
 
-	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), forward, 0, mod );
+	bool sendDamage = TakesDamages( traceEnt );
+
+	if ( sendDamage )
+	{
+		traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), forward, 0, mod );
+	}
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
 	if ( falseRanged )
 	{
 		SendRangedHitEvent( self, muzzle, traceEnt, &tr );
 	}
-	else
+	else if ( sendDamage )
 	{
 		SendMeleeHitEvent( self, traceEnt, &tr );
 	}

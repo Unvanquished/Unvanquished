@@ -101,7 +101,6 @@
 				font-size: 1.5em;
 			}
 		</style>
-		<title><translate>Loading</translate></title>
 	</head>
 	<body id="loading" nohide>
 		<div class="levelshot">

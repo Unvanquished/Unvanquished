@@ -39,36 +39,89 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <RmlUi/Core.h>
 
+// input capturing is based on this
+enum class VisibleMenusState
+{
+	// menus ignore all input
+	NONE,
+	// menus capture mouse (if cg_circleMenusCaptureMouse set), and any keystrokes consumed
+	// by the menu, while other keystrokes are passed through to binds
+	ONLY_PASSTHROUGH,
+	// menus capture everything
+	NON_PASSTHROUGH,
+};
+
 class RocketFocusManager : public Rml::EventListener
 {
+	VisibleMenusState state_ = VisibleMenusState::NON_PASSTHROUGH;
+
 public:
 	RocketFocusManager() { }
-	void ProcessEvent( Rml::Event &evt )
-	{
-		bool anyVisible = false;
-		Rml::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
 
-		if ( context )
+	VisibleMenusState GetState() { return state_; }
+
+	void ProcessEvent( Rml::Event& )
+	{
+		VisibleMenusState catchLevel;
+
+		if ( rocketInfo.cstate.connState < connstate_t::CA_PRIMED )
 		{
-			for ( int i = 0; i < context->GetNumDocuments(); ++i )
+			catchLevel = VisibleMenusState::NON_PASSTHROUGH;
+		}
+		else
+		{
+			catchLevel = VisibleMenusState::NONE;
+
+			for ( const rocketMenu_t &menu : rocketInfo.menu )
 			{
-				if ( context->GetDocument( i )->IsVisible() )
+				if ( !menu.id )
 				{
-					anyVisible = true;
-					break;
+					continue;
+				}
+
+				auto *document = menuContext->GetDocument( menu.id );
+				if ( document && document->IsVisible() )
+				{
+					if ( !menu.passthrough )
+					{
+						catchLevel = VisibleMenusState::NON_PASSTHROUGH;
+						break;
+					}
+					else
+					{
+						catchLevel = VisibleMenusState::ONLY_PASSTHROUGH;
+					}
 				}
 			}
 		}
 
-		if ( anyVisible && ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
+		state_ = catchLevel;
+
+		if ( catchLevel == VisibleMenusState::ONLY_PASSTHROUGH && !cg_circleMenusCaptureMouse.Get() )
 		{
-			trap_Key_ClearCmdButtons();
-			trap_Key_ClearStates();
-			CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
+			catchLevel = VisibleMenusState::NONE;
 		}
-		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= connstate_t::CA_PRIMED )
+
+		switch ( catchLevel )
 		{
-			CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI );
+		case VisibleMenusState::NONE:
+			CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI_MOUSE & ~KEYCATCH_UI_KEY );
+			break;
+
+		case VisibleMenusState::ONLY_PASSTHROUGH:
+			CG_SetKeyCatcher( ( rocketInfo.keyCatcher | KEYCATCH_UI_MOUSE ) & ~KEYCATCH_UI_KEY );
+			break;
+
+		case VisibleMenusState::NON_PASSTHROUGH:
+			if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_KEY ) )
+			{
+				trap_Key_ClearCmdButtons();
+				trap_Key_ClearStates();
+			}
+
+			CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI_MOUSE | KEYCATCH_UI_KEY );
+			break;
+
 		}
 	}
 

@@ -1487,7 +1487,7 @@ static void CG_Rocket_DrawDisconnect()
 	x = 640 - 48;
 	y = 480 - 48;
 
-	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader( "gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_NOMIP ) ) );
+	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader( "gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) ) );
 }
 
 #define MAX_LAGOMETER_PING  900

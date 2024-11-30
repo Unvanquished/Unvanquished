@@ -43,8 +43,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Symbols required by the shared VMMain code
 
-int VM::VM_API_VERSION = CGAME_API_VERSION;
-
 void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     int major = id >> 16;
     int minor = id & 0xffff;
@@ -92,9 +90,16 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 });
                 break;
 
-            case CG_KEY_EVENT:
-                IPC::HandleMsg<CGameKeyEventMsg>(VM::rootChannel, std::move(reader), [] (Keyboard::Key key, bool down) {
-                    CG_KeyEvent(key, down);
+            case CG_KEY_DOWN_EVENT:
+                IPC::HandleMsg<CGameKeyDownEventMsg>(VM::rootChannel, std::move(reader), [] (Keyboard::Key key, bool /*repeat*/, bool& consumed) {
+                    consumed = CG_KeyEvent(key, true);
+                    cmdBuffer.TryFlush();
+                });
+                break;
+
+            case CG_KEY_UP_EVENT:
+                IPC::HandleMsg<CGameKeyUpEventMsg>(VM::rootChannel, std::move(reader), [] (Keyboard::Key key) {
+                    CG_KeyEvent(key, false);
                     cmdBuffer.TryFlush();
                 });
                 break;

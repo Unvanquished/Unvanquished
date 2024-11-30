@@ -834,7 +834,7 @@ struct markPoly_t
 	markPoly_t *prevMark, *nextMark;
 
 	int               time;
-	qhandle_t         markShader;
+	qhandle_t shader;
 	bool          alphaFade; // fade alpha instead of rgb
 	float             color[ 4 ];
 	poly_t            poly;
@@ -1166,7 +1166,6 @@ struct cg_t
 	// scoreboard
 	int      scoresRequestTime;
 	int      numScores;
-	int      teamScores[ 2 ];
 	int teamPlayerCount[ NUM_TEAMS ];
 	score_t  scores[ MAX_CLIENTS ];
 	bool showScores;
@@ -1343,6 +1342,7 @@ struct rocketMenu_t
 {
 	const char *path;
 	const char *id;
+	bool passthrough; // whether binds can be used while the menu is open
 };
 
 #define MAX_SERVERS 2048
@@ -1773,6 +1773,9 @@ enum altShader_t
 extern  cgs_t               cgs;
 extern  cg_t                cg;
 extern  centity_t           cg_entities[ MAX_GENTITIES ];
+
+/* entityState_t.number is int and is checked to not be
+negative in daemon/src/engine/qcommon/msg.cpp */
 extern int cg_highestActiveEntity;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
@@ -1906,6 +1909,7 @@ extern Cvar::Cvar<bool> cg_spawnEffects;
 extern Cvar::Cvar<std::string> cg_sayCommand;
 
 extern Cvar::Cvar<bool> cg_lazyLoadModels;
+extern Cvar::Cvar<bool> cg_lowQualityModels;
 
 //
 // cg_main.c
@@ -1921,7 +1925,7 @@ void       CG_UpdateCvars();
 void CG_SetPVars();
 
 int        CG_CrosshairPlayer();
-void       CG_KeyEvent( Keyboard::Key key, bool down );
+bool       CG_KeyEvent( Keyboard::Key key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
 void       CG_FocusEvent( bool focus );
@@ -2011,7 +2015,6 @@ void        CG_NewClientInfo( int clientNum );
 void        CG_PrecacheClientInfo( class_t class_, const char *model, const char *skin );
 sfxHandle_t CG_CustomSound( int clientNum, const char *soundName );
 void        CG_PlayerDisconnect( vec3_t org );
-centity_t   *CG_GetLocation( vec3_t );
 centity_t   *CG_GetPlayerLocation();
 
 void        CG_InitClasses();
@@ -2077,9 +2080,9 @@ void CG_AddPacketEntities();
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                             qhandle_t parentModel, const char *tagName );
+                             const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                                    qhandle_t parentModel, const char *tagName );
+                                    const char *tagName );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 
 team_t CG_Team(const entityState_t &es);
@@ -2152,13 +2155,16 @@ void CG_DrawMinimap( const rectDef_t *rect, const Color::Color& color );
 // cg_marks.c
 //
 void CG_InitMarkPolys();
-void CG_AddMarks();
-void CG_ImpactMark( qhandle_t markShader,
+void CG_AddMarkPolys();
+void CG_RegisterMark( qhandle_t shader,
                     const vec3_t origin, const vec3_t dir,
                     float orientation,
                     float r, float g, float b, float a,
                     bool alphaFade,
                     float radius, bool temporary );
+
+void CG_ResetMarks();
+void CG_ProcessMarks();
 
 //
 // cg_snapshot.c
@@ -2402,7 +2408,7 @@ void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
 void Rocket_ClearHud( unsigned weapon );
 void Rocket_InitKeys();
-void Rocket_ProcessKeyInput( Keyboard::Key key, bool down );
+bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down );
 void Rocket_ProcessTextInput( int c );
 void Rocket_MouseMove( int x, int y );
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );

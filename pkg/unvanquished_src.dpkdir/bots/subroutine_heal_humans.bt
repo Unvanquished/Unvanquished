@@ -1,0 +1,12 @@
+selector
+{
+	decorator return( STATUS_FAILURE )
+	{
+		action activateUpgrade( UP_MEDKIT )
+	}
+	decorator timer( 3000 )
+	{
+		action heal
+	}
+	action roamInRadius( E_H_MEDISTAT, 250 )
+}

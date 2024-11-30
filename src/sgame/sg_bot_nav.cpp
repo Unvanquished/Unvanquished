@@ -368,6 +368,55 @@ Local Bot Navigation
 ========================
 */
 
+bool BotTraceForFloor( gentity_t *self, botMoveDir_t dir )
+{
+	// this is using a daemon trace to a solid surface
+	// another feasible method might be to do a recast navmesh trace
+	trace_t trace;
+	glm::vec3 dirVec;
+	glm::vec3 viewangles = VEC2GLM( self->client->ps.viewangles );
+	viewangles[ PITCH ] = 0.f;
+	AngleVectors( viewangles, &dirVec, nullptr, nullptr );
+	// we only handle a subset of the possible values of the bitfield `dir`
+	if ( dir == MOVE_BACKWARD )
+	{
+		dirVec.x = -dirVec.x;
+		dirVec.y = -dirVec.y;
+	}
+	else if ( dir == MOVE_LEFT )
+	{
+		std::swap( dirVec.x, dirVec.y );
+		dirVec.x = -dirVec.x;
+	}
+	else if ( dir == MOVE_RIGHT )
+	{
+		std::swap( dirVec.x, dirVec.y );
+		dirVec.y = -dirVec.y;
+	}
+	else
+	{
+		return false;
+	}
+	// dirVec.z is 0
+	glm::normalize( dirVec );
+	glm::vec3 playerMins, playerMaxs;
+	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
+	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+	float width = playerMaxs.x - playerMins.x;
+	float height = playerMaxs.z - playerMins.z;
+	// a horizontal square with side length `width` that does not overlap with
+	// the player's bbox in a diagonal direction has to have a distance of
+	// at least sqrt(2) * width.
+	// even though we are doing a raytrace and are not tracing the path of a square
+	// area, this distance works well in experiments.
+	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( static_cast<float>( M_SQRT2 ) * width );
+	start.z += playerMaxs.z;
+	glm::vec3 end = start;
+	end.z -= height * 2.f;
+	trap_Trace( &trace, start, {}, {}, end, self->num(), MASK_SOLID | CONTENTS_PLAYERCLIP, 0 );
+	return trace.fraction < 1.f;
+}
+
 static signed char BotGetMaxMoveSpeed( gentity_t *self )
 {
 	if ( usercmdButtonPressed( self->botMind->cmdBuffer.buttons, BTN_WALKING ) )
@@ -382,19 +431,28 @@ void BotStrafeDodge( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	signed char speed = BotGetMaxMoveSpeed( self );
+	bool floorRight = BotTraceForFloor( self, MOVE_RIGHT );
+	bool floorLeft = BotTraceForFloor( self, MOVE_LEFT );
 
-	if ( self->client->time1000 >= 500 )
+	if ( self->client->time1000 >= 500 && floorRight )
 	{
 		botCmdBuffer->rightmove = speed;
 	}
-	else
+	else if ( floorLeft )
 	{
 		botCmdBuffer->rightmove = -speed;
+	}
+	else if ( floorRight )
+	{
+		botCmdBuffer->rightmove = speed;
 	}
 
 	if ( ( self->client->time10000 % 2000 ) < 1000 )
 	{
-		botCmdBuffer->rightmove *= -1;
+		if ( ( botCmdBuffer->rightmove < 0.f && floorRight ) || ( botCmdBuffer->rightmove > 0.f && floorLeft ) )
+		{
+			botCmdBuffer->rightmove *= -1;
+		}
 	}
 
 	if ( ( self->client->time1000 % 300 ) >= 100 && ( self->client->time10000 % 3000 ) > 2000 )
@@ -431,14 +489,20 @@ void BotAlternateStrafe( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	signed char speed = BotGetMaxMoveSpeed( self );
+	bool floorRight = BotTraceForFloor( self, MOVE_RIGHT );
+	bool floorLeft = BotTraceForFloor( self, MOVE_LEFT );
 
-	if ( level.time % 8000 < 4000 )
+	if ( level.time % 8000 < 4000 && floorRight )
 	{
 		botCmdBuffer->rightmove = speed;
 	}
-	else
+	else if ( floorLeft )
 	{
 		botCmdBuffer->rightmove = -speed;
+	}
+	else if ( floorRight )
+	{
+		botCmdBuffer->rightmove = speed;
 	}
 }
 
@@ -951,7 +1015,8 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 		{
 			self->botMind->cmdBuffer.forwardmove = 127;
 			self->botMind->cmdBuffer.rightmove = 0;
-			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( -60.f );
+			float pitch = AngleSubtract( -60.f, SHORT2ANGLE( self->client->ps.delta_angles[ PITCH ] ) );
+			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( pitch );
 			BotJump( self );
 			break;
 		}
@@ -975,7 +1040,13 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	if ( wpm != WPM_NONE )
 	{
 		usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
-		botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, nextCorner, magnitude ) - g_bot_upwardLeapAngleCorr.Get() );
+
+		float pitch = Math::Clamp(
+			-CalcAimPitch( self, nextCorner, magnitude ) - g_bot_upwardLeapAngleCorr.Get(),
+			-90.f, 90.f );
+		pitch = AngleSubtract( pitch, SHORT2ANGLE( self->client->ps.delta_angles[ PITCH ] ) );
+		self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( pitch );
+
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
 }
@@ -1181,7 +1252,9 @@ bool BotMoveToGoal( gentity_t *self )
 		if ( magnitude )
 		{
 			glm::vec3 target = self->botMind->nav().tpos;
-			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, target, magnitude ) / 3 );
+			float pitch = -CalcAimPitch( self, target, magnitude ) / 3;
+			pitch = AngleSubtract( pitch, SHORT2ANGLE( self->client->ps.delta_angles[ PITCH ] ) );
+			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( pitch );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}

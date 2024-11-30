@@ -469,30 +469,6 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	// give credits for killing this player
 	G_RewardAttackers( self );
 
-	ScoreboardMessage( self );  // show scores
-
-	// send updated scores to any clients that are following this one,
-	// or they would get stale scoreboards
-	for ( int i = 0; i < level.maxclients; i++ )
-	{
-		gclient_t *client = &level.clients[ i ];
-
-		if ( client->pers.connected != CON_CONNECTED )
-		{
-			continue;
-		}
-
-		if ( client->sess.spectatorState == SPECTATOR_NOT )
-		{
-			continue;
-		}
-
-		if ( client->sess.spectatorClient == self->num() )
-		{
-			ScoreboardMessage( g_entities + i );
-		}
-	}
-
 	VectorCopy( self->s.origin, self->client->pers.lastDeathLocation );
 
 	self->s.weapon = WP_NONE;

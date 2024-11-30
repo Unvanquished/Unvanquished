@@ -525,8 +525,7 @@ static void SelectCurrentResolution()
 	int width = cgs.glconfig.vidWidth;
 	int height = cgs.glconfig.vidHeight;
 
-	// TODO(0.55): verify that current size equals display size
-	if ( mode == -2 /* && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight */ )
+	if ( mode == -2 && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight )
 	{
 		width = height = 0; // see resolution_t comment
 	}
@@ -580,148 +579,12 @@ static void CG_Rocket_BuildResolutionList( const char* )
 
 static int CG_Rocket_GetResolutionListIndex( const char* )
 {
-	if ( rocketInfo.data.resolutions.empty() )
-	{
-		CG_Rocket_BuildResolutionList( nullptr );
-	}
 	return rocketInfo.data.resolutionIndex;
 }
 
 static void CG_Rocket_CleanUpResolutionList( const char* )
 {
 	rocketInfo.data.resolutions.clear();
-}
-
-static void AddToLanguageList( char *name, char *lang )
-{
-	language_t *node;
-
-	if ( rocketInfo.data.languageCount == MAX_LANGUAGES )
-	{
-		return;
-	}
-
-	node = &rocketInfo.data.languages[ rocketInfo.data.languageCount ];
-
-	node->name = name;
-	node->lang = lang;
-	rocketInfo.data.languageCount++;
-}
-
-static void CG_Rocket_SetLanguageListLanguage( const char*, int index )
-{
-	if ( index > 0 && index < rocketInfo.data.languageCount )
-	{
-		rocketInfo.data.languageIndex = index;
-		trap_Cvar_Set( "language", rocketInfo.data.languages[ index ].lang );
-	}
-}
-
-// FIXME: use COM_Parse or something instead of this way
-static void CG_Rocket_BuildLanguageList( const char* )
-{
-	char        buf[ MAX_STRING_CHARS ], temp[ MAX_TOKEN_CHARS ], language[ 32 ];
-	int         index = 0, lang = 0;
-	bool    quoted = false;
-	char        *p;
-
-	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
-	trap_Cvar_VariableStringBuffer( "language", language, sizeof( language ) );
-
-	p = buf;
-	memset( &temp, 0, sizeof( temp ) );
-
-	while ( p && *p )
-	{
-		if ( *p == '"' && quoted )
-		{
-			temp[ index ] = '\0';
-			AddToLanguageList( BG_strdup( temp ), nullptr );
-			quoted = false;
-			index = 0;
-		}
-
-		else if ( *p == '"' || quoted )
-		{
-			if ( !quoted )
-			{
-				p++;
-			}
-
-			quoted = true;
-			temp[ index++ ] = *p;
-		}
-
-		p++;
-	}
-
-	trap_Cvar_VariableStringBuffer( "trans_encodings", buf, sizeof( buf ) );
-	p = buf;
-	memset( &temp, 0, sizeof( temp ) );
-
-	while ( p && *p )
-	{
-		if ( *p == '"' && quoted )
-		{
-			temp[ index ] = '\0';
-
-			// Set the current language index
-			if( !Q_stricmp( temp, language ) )
-			{
-				rocketInfo.data.languageIndex = lang;
-			}
-
-			rocketInfo.data.languages[ lang++ ].lang = BG_strdup( temp );
-			quoted = false;
-			index = 0;
-		}
-
-		else if ( *p == '"' || quoted )
-		{
-			if ( !quoted )
-			{
-				p++;
-			}
-
-			quoted = true;
-			temp[ index++ ] = *p;
-		}
-
-		p++;
-	}
-
-	buf[ 0 ] = '\0';
-
-	for ( index = 0; index < rocketInfo.data.languageCount; ++index )
-	{
-		Info_SetValueForKey( buf, "name", rocketInfo.data.languages[ index ].name, false );
-		Info_SetValueForKey( buf, "lang", rocketInfo.data.languages[ index ].lang, false );
-
-		Rocket_DSAddRow( "languages", "default", buf );
-	}
-}
-
-static int CG_Rocket_GetLanguageListIndex( const char* )
-{
-	if ( !rocketInfo.data.languageCount )
-	{
-		CG_Rocket_BuildLanguageList( nullptr );
-	}
-
-	return rocketInfo.data.languageIndex;
-}
-
-static void CG_Rocket_CleanUpLanguageList( const char* )
-{
-	int i;
-
-	for ( i = 0; i < rocketInfo.data.languageCount; ++i )
-	{
-		BG_Free( rocketInfo.data.languages[ i ].lang );
-		BG_Free( rocketInfo.data.languages[ i ].name );
-	}
-
-	rocketInfo.data.languageCount = 0;
 }
 
 static void AddToAlOutputs( char *name )
@@ -756,6 +619,7 @@ static void CG_Rocket_BuildAlOutputs( const char* )
 	trap_Cvar_VariableStringBuffer( "audio.al.device", currentDevice, sizeof( currentDevice ) );
 	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
+	rocketInfo.data.alOutputIndex = -1;
 
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
@@ -779,6 +643,11 @@ static void CG_Rocket_BuildAlOutputs( const char* )
 
 		Rocket_DSAddRow( "alOutputs", "default", buf );
 	}
+}
+
+static int CG_Rocket_GetAlOutputIndex( const char* )
+{
+	return rocketInfo.data.alOutputIndex;
 }
 
 static void CG_Rocket_CleanUpAlOutputs( const char* )
@@ -1122,6 +991,7 @@ static void CG_Rocket_BuildMapList( const char* )
 		Rocket_DSAddRow( "mapList", "default", buf );
 	}
 
+	rocketInfo.data.mapIndex = -1;
 }
 
 static void CG_Rocket_CleanUpMapList( const char* )
@@ -1617,12 +1487,11 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetAlOutputIndex },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetLanguageListIndex },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },

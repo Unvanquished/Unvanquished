@@ -217,6 +217,7 @@ struct AIActionNode_t
 	AIValue_t    *params;
 	int          nparams;
 	int lineNum; // for debugging/tracing
+	const char *name; // for debugging/tracing
 };
 
 bool isBinaryOp( AIOpType_t op );
@@ -247,6 +248,7 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorInvert( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotDecoratorMapStatus( gentity_t *self, AIGenericNode_t *node );
 
 // included behavior trees
 AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node );
@@ -267,10 +269,12 @@ AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionBuyPrimary( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionReload( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );

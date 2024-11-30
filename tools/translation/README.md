@@ -17,9 +17,10 @@ the translated strings. The `update_po.sh` only updates existing `.po` file,
 adding a new `.po` file for a new language must be done separately, the Weblate
 tool does it automatically when adding a language in Weblate.
 
-The `generate.sh` script always run the `update_po.sh` script after running
-the `generate_pot.sh` script as there have been doubt Weblate only merged
-the updated strings from `.pot` files even if such updated strings existed
-in `.po` files. In case it's not needed anymore it can't do harm anyway, and
-it makes the `.po` files ready to use outside of Weblate.
+It then runs the `ignore_incomplete.sh` script to update urcheon action file
+to prevent the packaging of translation files that at not complete enough.
 
+The `generate.sh` script always run the `update_po.sh` script after running
+the `generate_pot.sh` script as it has been noticed Weblate doesn't merge the
+updated strings from `.pot` files. It also makes the `.po` files ready to use
+outside of Weblate.

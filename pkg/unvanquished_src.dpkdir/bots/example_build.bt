@@ -19,15 +19,15 @@ selector
 	{
 		selector
 		{
-			behavior unstick
-			behavior use_medkit
+			behavior subroutine_unstick
+			behavior subroutine_use_medkit
 
 			sequence
 			{
 				condition !haveWeapon( WP_HBUILD )
 				selector
 				{
-					action buy( WP_HBUILD )
+					action buyPrimary( WP_HBUILD )
 					action suicide
 				}
 			}
@@ -46,7 +46,7 @@ selector
 	{
 		selector
 		{
-			behavior unstick
+			behavior subroutine_unstick
 
 			sequence
 			{

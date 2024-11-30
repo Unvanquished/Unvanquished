@@ -21,13 +21,13 @@ selector
 		action resetMyTimer
 	}
 
-	behavior unstick
+	behavior subroutine_unstick
 
 	condition team == TEAM_HUMANS
 	{
 		selector
 		{
-			behavior use_medkit
+			behavior subroutine_use_medkit
 
 			sequence
 			{
@@ -36,23 +36,13 @@ selector
 				{
 					selector
 					{
-						sequence
-						{
-							//if goal is a close enough enemy building or if we're gonna die
-							condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
-							condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
-							selector
-							{
-								// no need to check the upgrade is in inventory, since action would fail
-								action activateUpgrade( UP_FIREBOMB )
-								action activateUpgrade( UP_GRENADE )
-							}
-						}
+						behavior subroutine_throw_grenade
 						action fight
 					}
 				}
 			}
 
+			behavior subroutine_reload
 			sequence
 			{
 				// the bot is required to attack, only visit an armoury
@@ -90,10 +80,7 @@ selector
 	{
 		selector
 		{
-			condition ( aliveTime > 1500 && healScore < 0.5 )
-			{
-				action evolve
-			}
+			behavior subroutine_evolve
 
 			sequence
 			{

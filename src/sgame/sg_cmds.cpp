@@ -436,8 +436,7 @@ void ScoreboardMessage( gentity_t *ent )
 		stringlength += j;
 	}
 
-	trap_SendServerCommand( ent->num(), va( "scores %i %i%s",
-	                        level.team[ TEAM_ALIENS ].kills, level.team[ TEAM_HUMANS ].kills, string ) );
+	trap_SendServerCommand( ent->num(), va( "scores%s", string ) );
 }
 
 /*
