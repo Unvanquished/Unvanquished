@@ -4463,7 +4463,6 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 {
 	char *msg;
 	int target;
-	bool teamonly = false;
 
 	if (!g_privateMessages.Get() && ent)
 	{
@@ -4480,19 +4479,18 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 	if ( level.time - ent->client->pers.lastPrivateMessageSenderTime < 3000 )
 	{
 		ADMP( "\"" N_("More than one possible recipient, refusing to send.") "\"" );
+		ADMP( va( "%s %s", QQ(N_("You would have replied to $1$")), g_entities[target].client->pers.netname));
         return;
 	}
 
-	target = ent->client->pers.lastPrivateMessageSender;
-	if (target == -1 || !G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
-	{
-		ADMP( "\"" N_("No one to reply to.") "\"" );
-		return;
-	}
-
 	msg = ConcatArgs(1);
-
-	if (G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
+	target = ent->client->pers.lastPrivateMessageSender;
+	if (target == -1 || !G_SayTo(ent, &g_entities[target], SAY_PRIVMSG, msg))
+    {
+        ADMP("\"" N_("No one to reply to.") "\"");
+        return;
+    }
+	if (G_SayTo(ent, &g_entities[target], SAY_PRIVMSG, msg))
 	{
 		ADMP( va( "%s %s %s", QQ(N_("You have responded to $1$^* : ^2$2$ ")), g_entities[target].client->pers.netname, Quote(msg)));
 		G_LogPrintf("PrivMsg: %d \"%s^*\" \"%s\": %s",
