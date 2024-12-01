@@ -2165,9 +2165,13 @@ static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &o
 	}
 }
 
-std::string G_BotBehaviorToString( gentity_t *ent )
+std::string G_BotBehaviorToString( Str::StringRef behavior )
 {
-	AIBehaviorTree_t *tree = ent->botMind->behaviorTree;
+	AIBehaviorTree_t *tree = BotBehaviorTree( behavior );
+	if ( tree == nullptr )
+	{
+		return "";
+	}
 	std::ostringstream out;
 	if ( tree->classSelectionTree != nullptr )
 	{

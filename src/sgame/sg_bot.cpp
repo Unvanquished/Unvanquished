@@ -39,6 +39,18 @@ static Cvar::Cvar<int> traceClient(
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
 
+AIBehaviorTree_t *BotBehaviorTree( Str::StringRef behavior )
+{
+	for ( AIBehaviorTree_t *tree : treeList )
+	{
+		if ( Q_stricmp( tree->name, behavior.c_str() ) == 0 )
+		{
+			return tree;
+		}
+	}
+	return nullptr;
+}
+
 /*
 =======================
 Bot management functions

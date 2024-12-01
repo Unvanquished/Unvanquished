@@ -695,33 +695,25 @@ static void Svcmd_DumpUser_f()
 static void Svcmd_ShowBehavior_f()
 {
 	char name[ MAX_STRING_CHARS ];
-	gclient_t  *cl;
 	int numArgs = trap_Argc();
 
 	if ( numArgs != 2 )
 	{
-		Log::Notice( "usage: showBehavior <bot>" );
+		Log::Notice( "usage: showBehavior <behavior>" );
 		return;
 	}
 
 	trap_Argv( 1, name, sizeof( name ) );
 
-	cl = ClientForString( name );
-
-	if ( !cl )
+	std::string str = G_BotBehaviorToString( name );
+	if ( str.empty() )
 	{
-		Log::Notice( "showBehavior: no such client" );
-		return;
+		Log::Notice( "behavior `%s` does not exist (make a bot use it first)", name );
 	}
-
-	gentity_t *ent = cl->ent();
-	if ( !( ( ent->r.svFlags & SVF_BOT ) && ent->botMind ) )
+	else
 	{
-		Log::Notice( "showBehavior: not a bot" );
-		return;
+		Log::Notice( str );
 	}
-
-	Log::Notice( G_BotBehaviorToString( ent ) );
 }
 
 static void Svcmd_Pr_f()
