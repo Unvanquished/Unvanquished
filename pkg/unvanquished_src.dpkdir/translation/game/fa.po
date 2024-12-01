@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-30 04:59+0100\n"
-"PO-Revision-Date: 2024-10-14 23:11+0000\n"
-"Last-Translator: Farooq Karimi Zadeh <fkz@riseup.net>\n"
+"PO-Revision-Date: 2024-12-01 21:42+0000\n"
+"Last-Translator: AliIR <ali_nacoli@proton.me>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fa/>\n"
 "Language: fa\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -574,15 +574,15 @@ msgstr ""
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "راه اندازی کارساز"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr ""
+msgstr "توقف کارساز"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr ""
+msgstr "ایست کارساز"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
