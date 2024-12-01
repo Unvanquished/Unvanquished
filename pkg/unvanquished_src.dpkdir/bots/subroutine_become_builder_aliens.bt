@@ -1,0 +1,32 @@
+selector
+{
+	sequence
+	{
+		condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG
+		selector
+		{
+			condition myTimer >= 20000
+			{
+				action suicide
+			}
+			action evolveTo( PCL_ALIEN_BUILDER0_UPG )
+			action evolveTo( PCL_ALIEN_BUILDER0 )
+			action roamInRadius( E_A_OVERMIND, 500 )
+			condition alertedToEnemy
+			{
+				action fight
+			}
+			action rush
+			action roam
+		}
+	}
+
+	decorator return( STATUS_FAILURE )
+	{
+		condition class == PCL_ALIEN_BUILDER0
+		{
+			action evolveTo( PCL_ALIEN_BUILDER0_UPG )
+		}
+	}
+
+}
