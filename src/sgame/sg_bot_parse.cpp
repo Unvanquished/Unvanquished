@@ -2069,7 +2069,7 @@ static void BotExpressionToString( AIExpType_t *exp, std::ostringstream &out )
 	}
 }
 
-static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &out, int level, bool expand )
+static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &out, int level )
 {
 	std::string indent = "";
 	for ( int i = 0; i < level; i++ )
@@ -2093,7 +2093,7 @@ static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &o
 			if ( nd->child )
 			{
 				out << "\n" << indent << "{\n";
-				BotBehaviorToStringRec( nd->child, out, level + 1, expand );
+				BotBehaviorToStringRec( nd->child, out, level + 1 );
 				out << indent << "}";
 			}
 			out << "\n";
@@ -2117,21 +2117,14 @@ static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &o
 				out << " )";
 			}
 			out << "\n" << indent << "{\n";
-			BotBehaviorToStringRec( nd->child, out, level + 1, expand );
+			BotBehaviorToStringRec( nd->child, out, level + 1 );
 			out << indent << "}\n";
 		}
 		break;
 	case AINode_t::BEHAVIOR_NODE:
 		{
 			AIBehaviorTree_t *nd = reinterpret_cast<AIBehaviorTree_t *>( node );
-			if ( expand )
-			{
-				BotBehaviorToStringRec( nd->root, out, level, true );
-			}
-			else
-			{
-				out << indent << "behavior " << nd->name << "\n";
-			}
+			out << indent << "behavior " << nd->name << "\n";
 		}
 		break;
 	case AINode_t::ACTION_NODE:
@@ -2161,7 +2154,7 @@ static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &o
 			out << "\n" << indent << "{\n";
 			for ( int i = 0; i < nd->numNodes; i++ )
 			{
-				BotBehaviorToStringRec( nd->list[ i ], out, level + 1, expand );
+				BotBehaviorToStringRec( nd->list[ i ], out, level + 1 );
 			}
 			out << indent << "}\n";
 		}
@@ -2172,16 +2165,16 @@ static void BotBehaviorToStringRec( AIGenericNode_t *node, std::ostringstream &o
 	}
 }
 
-std::string G_BotBehaviorToString( gentity_t *ent, bool expand )
+std::string G_BotBehaviorToString( gentity_t *ent )
 {
 	AIBehaviorTree_t *tree = ent->botMind->behaviorTree;
 	std::ostringstream out;
 	if ( tree->classSelectionTree != nullptr )
 	{
 		out << "selectClass\n{\n";
-		BotBehaviorToStringRec( tree->classSelectionTree, out, 1, expand );
+		BotBehaviorToStringRec( tree->classSelectionTree, out, 1 );
 		out << "}\n";
 	}
-	BotBehaviorToStringRec( tree->root, out, 0, expand );
+	BotBehaviorToStringRec( tree->root, out, 0 );
 	return out.str();
 }
