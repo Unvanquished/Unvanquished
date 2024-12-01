@@ -4484,10 +4484,9 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 	}
 
 	target = ent->client->pers.lastPrivateMessageSender;
-	if (target == -1 || !g_entities[target].client)
+	if (target == -1 || !G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
 	{
 		ADMP( "\"" N_("No one to reply to.") "\"" );
-		ADMP( va( "%s %s", QQ(N_("You would have replied to $1$")), g_entities[target].client->pers.netname));
 		return;
 	}
 
