@@ -1,0 +1,25 @@
+sequence
+{
+	condition !haveWeapon( WP_HBUILD )
+	selector
+	{
+		condition myTimer >= 20000
+		{
+			action suicide
+		}
+		sequence
+		{
+			decorator return( STATUS_SUCCESS )
+			{
+				action equip
+			}
+			action buyPrimary( WP_HBUILD )
+		}
+		condition alertedToEnemy
+		{
+			action fight
+		}
+		action rush
+		action roam
+	}
+}

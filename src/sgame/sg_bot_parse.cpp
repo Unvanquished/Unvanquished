@@ -203,6 +203,17 @@ static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxFloat( ent.distance );
 }
 
+static AIValue_t distanceToSpecifiedPosition( gentity_t *self, const AIValue_t * )
+{
+	if ( !self->botMind->userSpecifiedPosition)
+	{
+		return AIBoxFloat( 1.7e19f );  // well, out of range
+	}
+	glm::vec3 pos = *self->botMind->userSpecifiedPosition;
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	return AIBoxFloat( glm::distance( ownPos, pos ) );
+}
+
 static AIValue_t baseRushScore( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxFloat( BotGetBaseRushScore( self ) );
@@ -488,6 +499,7 @@ static const struct AIConditionMap_s
 	{ "cvar",              cvar,              1 },
 	{ "directPathTo",      directPathTo,      1 },
 	{ "distanceTo",        distanceTo,        1 },
+	{ "distanceToSpecifiedPosition", distanceToSpecifiedPosition, 0 },
 	{ "goalBuildingType",  goalBuildingType,  0 },
 	{ "goalIsDead",        goalDead,          0 },
 	{ "goalTeam",          goalTeam,          0 },

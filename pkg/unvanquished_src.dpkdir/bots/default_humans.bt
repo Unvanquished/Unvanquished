@@ -22,35 +22,14 @@ selector
 				action blackboardNoteTransient( WANTS_TO_BUILD )
 			}
 
-			sequence
-			{
-				condition !haveWeapon( WP_HBUILD )
-				selector
-				{
-					condition myTimer >= 20000
-					{
-						action suicide
-					}
-					sequence
-					{
-						decorator return( STATUS_SUCCESS )
-						{
-							action equip
-						}
-						action buyPrimary( WP_HBUILD )
-					}
-					condition alertedToEnemy
-					{
-						action fight
-					}
-					action rush
-					action roam
-				}
-			}
+			behavior subroutine_become_builder_humans
 
-			decorator return( STATUS_FAILURE )
+			condition distanceTo( E_H_REACTOR ) <= 700
 			{
-				action buildNowChosenBuildable
+				decorator return( STATUS_FAILURE )
+				{
+					action buildNowChosenBuildable
+				}
 			}
 			action roamInRadius( E_H_REACTOR, 700 )
 			action roam
