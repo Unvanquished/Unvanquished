@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-30 04:59+0100\n"
-"PO-Revision-Date: 2024-12-01 21:42+0000\n"
+"PO-Revision-Date: 2024-12-03 04:32+0000\n"
 "Last-Translator: AliIR <ali_nacoli@proton.me>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fa/>\n"
@@ -34,7 +34,7 @@ msgstr "تکامل"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "امتیاز تکامل"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -42,41 +42,43 @@ msgstr "شکل آغازین خود را انتخاب کنید:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "دِرِچ"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "گرنجر"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"دِرِچ‌ها گونه‌ای هستند که حمله‌ای مخفیانه دارند، و گرنجر‌ ها گونه‌ای بیگانه که "
+"سازنده هستند."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "برگشت به انتخاب گروه"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "درخواست رأی برای مساوی"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "دلیل"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "درخواست رأی"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr ""
+msgstr "پر کردن با ربات‌ها"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "هر دو گروه"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
@@ -141,6 +143,8 @@ msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"در این بخش خلاصه اساس های بزرگ بازی که برای بازیکن موفق شدن نیاز دارید پیدا "
+"می‌کنید."
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
@@ -281,7 +285,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "آتش‌سوزی"
 
 #: ui/help_gameplay.rml:94
 msgid ""
@@ -321,7 +325,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr ""
+msgstr "شفادهنده"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
@@ -365,7 +369,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr ""
+msgstr "راه رفتن روی دیوار"
 
 #: ui/help_gameplay.rml:142
 msgid ""
@@ -433,19 +437,19 @@ msgstr ""
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr ""
+msgstr "بازی"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "زندگی"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr ""
+msgstr "تصویر بر ثانیه"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr ""
+msgstr "میلی‌ثانیه"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -453,23 +457,23 @@ msgstr ""
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "اعتبار"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "سلاح ها"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "گستره:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "آسیب:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
@@ -477,7 +481,7 @@ msgstr ""
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr ""
+msgstr "ارتقا دادن ها"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
@@ -485,7 +489,7 @@ msgstr ""
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "مسلسل"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
@@ -499,20 +503,20 @@ msgstr ""
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "فانوس‌ها"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "تماشا کنندگان"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "نقشه:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "زمان:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -544,7 +548,7 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr ""
+msgstr "تماشا کن"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -554,23 +558,24 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "مسابقه"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr ""
+msgstr "ترک کردن مسابقه"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
-msgstr ""
+msgstr "از سرگیری اقدام"
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr ""
+msgstr "دموکراسی"
 
 #: ui/menu_ingame.rml:38
+#, fuzzy
 msgid "Host menu"
-msgstr ""
+msgstr "منوی میزبان"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
@@ -586,7 +591,7 @@ msgstr "ایست کارساز"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "ربات‌ها"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
@@ -602,7 +607,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr ""
+msgstr "تنظیمات"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
@@ -614,7 +619,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr ""
+msgstr "آزمایشی"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
@@ -638,15 +643,15 @@ msgstr ""
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr ""
+msgstr "بله"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr ""
+msgstr "یا"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr ""
+msgstr "نه"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
@@ -686,7 +691,7 @@ msgstr ""
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "درجات"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -695,23 +700,23 @@ msgstr ""
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "بازنشانی"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
-msgstr ""
+msgstr "ملخ"
 
 #: ui/options_fov.rml:48
 msgid "Marauder"
-msgstr ""
+msgstr "غارتگر"
 
 #: ui/options_fov.rml:56
 msgid "Dragoon"
-msgstr ""
+msgstr "اژدها"
 
 #: ui/options_fov.rml:64
 msgid "Tyrant"
-msgstr ""
+msgstr "ستمگر"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
@@ -723,19 +728,19 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "غیرفعال"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "خفیف"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
-msgstr ""
+msgstr "پیش‌فرض"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "قوی"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
