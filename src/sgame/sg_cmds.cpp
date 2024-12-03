@@ -4193,8 +4193,6 @@ int G_FloodLimited( gentity_t *ent )
 	return ms;
 }
 
-void Cmd_ReplyPrivateMessage_f( gentity_t *ent );
-
 // commands must be in alphabetical order!
 // keep the list synchronized with the list in cg_consolecmds for completion.
 static const commands_t cmds[] =
