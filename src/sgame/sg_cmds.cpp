@@ -4369,6 +4369,15 @@ void G_UnEscapeString( const char *in, char *out, int len )
 	*out = '\0';
 }
 
+static void setLastPrivateMessageSenderAndTime( int selfNum, int lastSenderNum )
+{
+	if ( level.clients[ selfNum ].pers.lastPrivateMessageSender != lastSenderNum )
+	{
+		level.clients[ selfNum ].pers.lastPrivateMessageSenderTime = level.time;
+	}
+	level.clients[ selfNum ].pers.lastPrivateMessageSender = lastSenderNum;
+}
+
 void Cmd_PrivateMessage_f( gentity_t *ent )
 {
 	int      pids[ MAX_CLIENTS ];
@@ -4412,12 +4421,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 			count++;
 			Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
 			          level.clients[ pids[ i ] ].pers.netname ) );
-			int playerNum = ent->num();
-			if ( level.clients[ pids[ i ] ].pers.lastPrivateMessageSender != playerNum )
-			{
-				level.clients[ pids[ i ] ].pers.lastPrivateMessageSenderTime = level.time;
-			}
-			level.clients[ pids[ i ] ].pers.lastPrivateMessageSender = playerNum;
+			setLastPrivateMessageSenderAndTime( pids[ i ], ent->num() );
 		}
 	}
 
@@ -4488,6 +4492,7 @@ void Cmd_ReplyPrivateMessage_f( gentity_t *ent )
 		return;
 	}
 
+	setLastPrivateMessageSenderAndTime( target, ent->num() );
 	ADMP( va( "%s %s %s", QQ( N_("You have responded to $1$^* : ^2$2$ ") ), g_entities[ target ].client->pers.netname, Quote( msg ) ) );
 	G_LogPrintf( "PrivMsg: %d \"%s^*\" \"%s\": %s",
 		ent->num(), ent->client->pers.netname,
