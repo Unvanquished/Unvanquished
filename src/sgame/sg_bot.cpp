@@ -627,8 +627,6 @@ void G_BotSelectSpawnClass( gentity_t *self )
 	{
 		BotEvaluateNode( self, self->botMind->behaviorTree->classSelectionTree );
 	}
-
-	G_BotSetNavMesh( self->num(), self->client->pers.classSelection );
 }
 
 // Initialization happens whenever someone first tries to add a bot.

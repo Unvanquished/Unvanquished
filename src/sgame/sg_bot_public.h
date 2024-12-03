@@ -57,7 +57,7 @@ void G_BotSelectSpawnClass( gentity_t *self );
 void G_BotListNames( gentity_t *ent );
 bool G_BotClearNames();
 int  G_BotAddNames(team_t team, int arg, int last);
-
+void G_BotSetNavMesh( gentity_t *ent );
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum );
 void G_BotRemoveObstacle( int obstacleNum );
 void G_BotUpdateObstacles();

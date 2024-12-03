@@ -1768,6 +1768,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, true );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
+
+		if ( ent->r.svFlags & SVF_BOT )
+		{
+			G_BotSetNavMesh( ent );
+		}
 	}
 
 	// must do this here so the number of active clients is calculated

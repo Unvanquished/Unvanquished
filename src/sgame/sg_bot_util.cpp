@@ -2252,7 +2252,7 @@ static bool BotChangeHumanClass( gentity_t *self, class_t newClass )
 	VectorCopy( newOrigin, self->client->ps.origin );
 	self->client->ps.stats[ STAT_CLASS ] = newClass;
 	self->client->pers.classSelection = newClass;
-	G_BotSetNavMesh( self->num(), newClass);
+	G_BotSetNavMesh( self );
 	self->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	return true;
 }
@@ -2279,7 +2279,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 	if ( G_AlienEvolve( ent, newClass, false, false ) )
 	{
-		G_BotSetNavMesh( ent->num(), newClass);
+		G_BotSetNavMesh( ent );
 		return true;
 	}
 
@@ -2500,20 +2500,12 @@ void BotSellUpgrades( gentity_t *self )
 			BG_Upgrade( ( upgrade_t )i )->purchasable )
 		{
 
-			// shouldn't really need to test for this, but just to be safe
 			if ( i == UP_LIGHTARMOUR || i == UP_MEDIUMARMOUR || i == UP_BATTLESUIT )
 			{
-				glm::vec3 newOrigin = {};
-
-				if ( !G_RoomForClassChange( self, PCL_HUMAN_NAKED, GLM4RW( newOrigin ) ) )
+				if ( !BotChangeHumanClass( self, PCL_HUMAN_NAKED ) )
 				{
 					continue;
 				}
-				VectorCopy( newOrigin, self->client->ps.origin );
-				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
-				self->client->pers.classSelection = PCL_HUMAN_NAKED;
-				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-				G_BotSetNavMesh( self->num(), PCL_HUMAN_NAKED);
 			}
 
 			//remove from inventory
