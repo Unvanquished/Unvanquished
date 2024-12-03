@@ -4457,18 +4457,18 @@ Reply by private message to the last private message sender
 =================
 */
 
-void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
+void Cmd_ReplyPrivateMessage_f( gentity_t *ent )
 {
 	char *msg;
 	int target;
 
-	if (!g_privateMessages.Get() && ent)
+	if ( !g_privateMessages.Get() && ent )
 	{
 		ADMP( "\"" N_("Sorry, but private messages have been disabled") "\"" );
 		return;
 	}
 
-	if (trap_Argc() < 2)
+	if ( trap_Argc() < 2 )
 	{
 		ADMP( QQ( N_("usage: /r [message]") ) );
 		return;
@@ -4480,16 +4480,16 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 		return;
 	}
 
-	msg = ConcatArgs(1);
+	msg = ConcatArgs( 1 );
 	target = ent->client->pers.lastPrivateMessageSender;
-	if (target == -1 || !G_SayTo(ent, &g_entities[target], SAY_PRIVMSG, msg))
+	if ( target == -1 || !G_SayTo( ent, &g_entities[ target ], SAY_PRIVMSG, msg ) )
 	{
-		ADMP("\"" N_("No one to reply to.") "\"");
+		ADMP( "\"" N_("No one to reply to.") "\"" );
 		return;
 	}
 
-	ADMP( va( "%s %s %s", QQ(N_("You have responded to $1$^* : ^2$2$ ")), g_entities[target].client->pers.netname, Quote(msg)));
-	G_LogPrintf("PrivMsg: %d \"%s^*\" \"%s\": %s",
+	ADMP( va( "%s %s %s", QQ( N_("You have responded to $1$^* : ^2$2$ ") ), g_entities[ target ].client->pers.netname, Quote( msg ) ) );
+	G_LogPrintf( "PrivMsg: %d \"%s^*\" \"%s\": %s",
 		ent->num(), ent->client->pers.netname,
 		g_entities[target].client->pers.netname, msg);
 }
