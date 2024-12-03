@@ -46,6 +46,7 @@ All vectors used as inputs and outputs to functions here use the engine's coordi
 ====================
 */
 
+#if 0
 static void BotSetPolyFlags(
 	const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs, unsigned short flags )
 {
@@ -85,16 +86,7 @@ static void BotSetPolyFlags(
 		}
 	}
 }
-
-void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
-{
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
-}
-
-void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
-{
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
-}
+#endif
 
 void G_BotSetNavMesh( int botClientNum, class_t newClass )
 {
