@@ -63,6 +63,7 @@ static void BotSetPolyFlags(
 	rVec extents(qExtents);
 
 	// setup a filter so our queries include disabled polygons
+	// FIXME: that doesn't make sense! POLYFLAGS_DISABLED is 0
 	dtQueryFilter filter;
 	filter.setIncludeFlags( POLYFLAGS_WALK | POLYFLAGS_DISABLED );
 	filter.setExcludeFlags( 0 );
