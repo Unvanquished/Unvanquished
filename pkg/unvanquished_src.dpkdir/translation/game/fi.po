@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-04 07:50+0100\n"
-"PO-Revision-Date: 2024-10-18 16:07+0000\n"
+"PO-Revision-Date: 2024-12-05 04:53+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -4560,7 +4560,7 @@ msgstr "%sYksityisviesti pelaajalta ^7%s"
 #: src/cgame/cg_servercmds.cpp:917
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
-msgstr ""
+msgstr ">> vastaa sanomalla: '/m %d [viestisi]' tai '/r [viestisi]' <<"
 
 #: src/cgame/cg_servercmds.cpp:1405
 #, c-format
