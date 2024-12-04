@@ -914,7 +914,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 					clientNum = cg.clientNum;
 				}
 
-				chatLog.Notice(_( ">> to reply, say: /m %d [your message] <<"), clientNum );
+				chatLog.Notice(_( ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"), clientNum );
 			}
 
 			break;
