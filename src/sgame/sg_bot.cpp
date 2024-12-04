@@ -407,7 +407,7 @@ static void ShowRunningNode( gentity_t *self, AINodeStatus_t status )
 		AIActionNode_t *actionNode = reinterpret_cast<AIActionNode_t *>( self->botMind->runningNodes[ 0 ] );
 		int line = actionNode->lineNum;
 		const char *actionName = actionNode->name;
-		const char *tree = "<unknown>";
+		const char *tree = self->botMind->behaviorTree->name;
 		for ( const AIGenericNode_t *node : self->botMind->runningNodes )
 		{
 			if ( node->type == AINode_t::BEHAVIOR_NODE )
