@@ -1913,11 +1913,11 @@ static void BotValueToString( AIValue_t *val, std::ostringstream &out )
 
 static const char *SearchActionName( AIActionNode_t * node )
 {
-	for ( size_t i = 0; i < sizeof( AIActions ) / sizeof( AIActions[0] ); i++ )
+	for ( auto &action : AIActions )
 	{
-		if ( node->run == AIActions[ i ].run )
+		if ( node->run == action.run )
 		{
-			return AIActions[ i ].name;
+			return action.name;
 		}
 	}
 	return "<unknown>";
@@ -1925,11 +1925,11 @@ static const char *SearchActionName( AIActionNode_t * node )
 
 static const char *SearchDecoratorName( AIDecoratorNode_t * node )
 {
-	for ( size_t i = 0; i < sizeof( AIDecorators ) / sizeof( AIDecorators[0] ); i++ )
+	for ( auto &decorator : AIDecorators )
 	{
-		if ( node->run == AIDecorators[ i ].run )
+		if ( node->run == decorator.run )
 		{
-			return AIDecorators[ i ].name;
+			return decorator.name;
 		}
 	}
 	return "<unknown>";
@@ -1937,11 +1937,11 @@ static const char *SearchDecoratorName( AIDecoratorNode_t * node )
 
 static const char *SearchFuncName( AIValueFunc_t *exp )
 {
-	for ( size_t i = 0; i < sizeof( conditionFuncs ) / sizeof( conditionFuncs[0] ); i++ )
+	for ( auto &conditionFunc : conditionFuncs )
 	{
-		if ( exp->func == conditionFuncs[ i ].func )
+		if ( exp->func == conditionFunc.func )
 		{
-			return conditionFuncs[ i ].name;
+			return conditionFunc.name;
 		}
 	}
 	return "<unknown>";
