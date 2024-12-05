@@ -81,6 +81,31 @@ public:
 };
 static TraceCmd traceRegistration;
 
+class ShowBehaviorCmd : public Cmd::StaticCmd
+{
+public:
+	ShowBehaviorCmd() : StaticCmd( "showBehavior", 0, "print the textual representation of a bot behavior tree" ) {}
+	void Run( const Cmd::Args& args ) const override
+	{
+		if ( args.Argc() != 2 )
+		{
+			Log::Notice( "usage: showBehavior <behavior>" );
+			return;
+		}
+
+		std::string str = G_BotBehaviorToString( args.Argv( 1 ) );
+		if ( str.empty() )
+		{
+			Log::Notice( "behavior `%s` does not exist (make a bot use it first)", args.Argv( 1 ) );
+		}
+		else
+		{
+			Log::Notice( str );
+		}
+	}
+};
+static ShowBehaviorCmd showBehaviorRegistration;
+
 static void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];
@@ -692,30 +717,6 @@ static void Svcmd_DumpUser_f()
 	}
 }
 
-static void Svcmd_ShowBehavior_f()
-{
-	char name[ MAX_STRING_CHARS ];
-	int numArgs = trap_Argc();
-
-	if ( numArgs != 2 )
-	{
-		Log::Notice( "usage: showBehavior <behavior>" );
-		return;
-	}
-
-	trap_Argv( 1, name, sizeof( name ) );
-
-	std::string str = G_BotBehaviorToString( name );
-	if ( str.empty() )
-	{
-		Log::Notice( "behavior `%s` does not exist (make a bot use it first)", name );
-	}
-	else
-	{
-		Log::Notice( str );
-	}
-}
-
 static void Svcmd_Pr_f()
 {
 	char targ[ 4 ];
@@ -833,7 +834,6 @@ static const struct svcmd
 	{ "printqueue",         false, Svcmd_PrintQueue_f           },
 	{ "say",                true,  Svcmd_MessageWrapper         },
 	{ "say_team",           true,  Svcmd_TeamMessage_f          },
-	{ "showBehavior",       false, Svcmd_ShowBehavior_f         },
 	{ "stopMapRotation",    false, G_StopMapRotation            },
 };
 
