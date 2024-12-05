@@ -1975,44 +1975,19 @@ static void BotExpressionToString( AIExpType_t *exp, std::ostringstream &out );
 
 static void BotBinaryOpToString( AIBinaryOp_t *exp, std::ostringstream &out )
 {
-	auto recurse = [&] (std::string opText)
+	for ( auto &conditionOp : conditionOps )
 	{
-		out << "( ";
-		BotExpressionToString( exp->exp1, out );
-		out << " " << opText << " ";
-		BotExpressionToString( exp->exp2, out );
-		out << " )";
-	};
-	switch ( exp->opType )
-	{
-	case AIOpType_t::OP_LESSTHAN:
-		recurse( "<" );
-		break;
-	case AIOpType_t::OP_LESSTHANEQUAL:
-		recurse( "<=" );
-		break;
-	case AIOpType_t::OP_GREATERTHAN:
-		recurse( ">" );
-		break;
-	case AIOpType_t::OP_GREATERTHANEQUAL:
-		recurse( ">=" );
-		break;
-	case AIOpType_t::OP_EQUAL:
-		recurse( "==" );
-		break;
-	case AIOpType_t::OP_NEQUAL:
-		recurse( "!=" );
-		break;
-	case AIOpType_t::OP_AND:
-		recurse( "&&" );
-		break;
-	case AIOpType_t::OP_OR:
-		recurse( "||" );
-		break;
-	default:
-		out << "<unknown>";
-		break;
+		if ( exp->opType == conditionOp.opType )
+		{
+			out << "( ";
+			BotExpressionToString( exp->exp1, out );
+			out << " " << conditionOp.str << " ";
+			BotExpressionToString( exp->exp2, out );
+			out << " )";
+			return;
+		}
 	}
+	out << "<unknown>";
 }
 
 static void BotUnaryOpToString( AIUnaryOp_t *exp, std::ostringstream &out )
