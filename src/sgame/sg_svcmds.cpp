@@ -96,7 +96,7 @@ public:
 		std::string str = G_BotBehaviorToString( args.Argv( 1 ) );
 		if ( str.empty() )
 		{
-			Log::Notice( "behavior `%s` does not exist (make a bot use it first)", args.Argv( 1 ) );
+			Log::Notice( "behavior `%s` does not exist", args.Argv( 1 ) );
 		}
 		else
 		{

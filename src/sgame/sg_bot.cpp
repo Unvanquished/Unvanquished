@@ -41,14 +41,7 @@ static AITreeList_t treeList;
 
 AIBehaviorTree_t *BotBehaviorTree( Str::StringRef behavior )
 {
-	for ( AIBehaviorTree_t *tree : treeList )
-	{
-		if ( Q_stricmp( tree->name, behavior.c_str() ) == 0 )
-		{
-			return tree;
-		}
-	}
-	return nullptr;
+	return ReadBehaviorTree( behavior.c_str(), &treeList );
 }
 
 /*
