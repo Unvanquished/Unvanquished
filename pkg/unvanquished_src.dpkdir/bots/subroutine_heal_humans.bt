@@ -1,12 +1,19 @@
-selector
+// only do this when not in a fight (not being damaged by enemies for a few seconds)
+// check this condition at every execution, to abort the long running actions below
+// notice that `action heal` and `action roamInRadius` can make a bot run
+// all the way back to the base
+condition timeSinceLastCombat > 2000
 {
-	decorator return( STATUS_FAILURE )
+	selector
 	{
-		action activateUpgrade( UP_MEDKIT )
+		decorator return( STATUS_FAILURE )
+		{
+			action activateUpgrade( UP_MEDKIT )
+		}
+		decorator timer( 3000 )
+		{
+			action heal
+		}
+		action roamInRadius( E_H_MEDISTAT, 250 )
 	}
-	decorator timer( 3000 )
-	{
-		action heal
-	}
-	action roamInRadius( E_H_MEDISTAT, 250 )
 }
