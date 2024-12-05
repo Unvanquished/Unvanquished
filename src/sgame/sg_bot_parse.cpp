@@ -2039,7 +2039,7 @@ static void BotExpressionToString( AIExpType_t *exp, std::ostringstream &out )
 		}
 		break;
 	default:
-		out << "<unknown";
+		out << "<unknown>";
 		break;
 	}
 }
