@@ -1586,8 +1586,8 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 	for ( other = self->mapEntity.groupChain; other; other = other->mapEntity.groupChain )
 	{
-		AddPointToBounds( other->r.absmin, &mins[0], &maxs[0] );
-		AddPointToBounds( other->r.absmax, &mins[0], &maxs[0] );
+		AddPointToBounds( other->r.absmin, GLM4RW(mins), GLM4RW(maxs) );
+		AddPointToBounds( other->r.absmax, GLM4RW(mins), GLM4RW(maxs) );
 	}
 
 	// find the thinnest axis, which will be the one we expand
