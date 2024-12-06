@@ -78,7 +78,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 	if (ma.pointAgainstWorld)
 	{
 		ASSERT(ent->clipmask & CONTENTS_BODY);
-		trace2_t trWorld = G_Trace2(ent->r.currentOrigin, nullptr, nullptr, &origin[0],
+		trace2_t trWorld = G_Trace2(ent->r.currentOrigin, nullptr, nullptr, GLM4READ(origin),
 			passent, ent->clipmask & ~CONTENTS_BODY, 0);
 
 		if (trWorld.startsolid)
@@ -93,7 +93,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 	}
 	else
 	{
-		result = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, &origin[0],
+		result = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, GLM4READ(origin),
 			passent, ent->clipmask, 0);
 	}
 
