@@ -39,6 +39,7 @@ glm::vec3 SafeNormalize( glm::vec3 const& o )
 	return glm::length2( o ) != 0.f ? glm::normalize( o ) : o;
 }
 
+// FIXME: Move those functions to a better place than a file file named “math”.
 glm::vec3 BG_EvaluateTrajectory( const trajectory_t *tr, int atTime )
 {
 	float deltaTime;
