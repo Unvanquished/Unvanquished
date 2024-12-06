@@ -10,14 +10,14 @@ glm::vec3 SafeNormalize( glm::vec3 const& o );
 #define xstr(s) str(s)
 #define str(s) #s
 
-#define normalize_warn( v )                  \
-	do                                         \
-	{                                          \
-		if ( glm::length2( ( v ) ) == 0.f )      \
-		{                                        \
+#define normalize_warn( v ) \
+	do \
+	{ \
+		if ( glm::length2( ( v ) ) == 0.f ) \
+		{ \
 			char const norm_warn_str[] = "length of 0 in " __FILE__ ": %s at " str( __LINE__ ) ", please report the bug"; \
-			Log::Warn( norm_warn_str,  __func__ ); \
-		}                                        \
+			Log::Warn( norm_warn_str, __func__ ); \
+		} \
 	} while(0)
 
 struct trajectory_t;

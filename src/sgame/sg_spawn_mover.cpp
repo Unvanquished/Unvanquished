@@ -300,11 +300,11 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 	// mins/maxs are the bounds at the destination
 	// totalMins / totalMaxs are the bounds for the entire move
 	if ( pusher->r.currentAngles[ 0 ]
-			|| pusher->r.currentAngles[ 1 ]
-			|| pusher->r.currentAngles[ 2 ]
-			|| amove[ 0 ]
-			|| amove[ 1 ]
-			|| amove[ 2 ] )
+		|| pusher->r.currentAngles[ 1 ]
+		|| pusher->r.currentAngles[ 2 ]
+		|| amove[ 0 ]
+		|| amove[ 1 ]
+		|| amove[ 2 ] )
 	{
 		float radius = RadiusFromBounds( pusher->r.mins, pusher->r.maxs );
 

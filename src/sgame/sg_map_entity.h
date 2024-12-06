@@ -276,7 +276,7 @@ struct mapEntity_t
 
 	int customNumber;
 
-	glm::vec3       movedir;
+	glm::vec3 movedir;
 
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );

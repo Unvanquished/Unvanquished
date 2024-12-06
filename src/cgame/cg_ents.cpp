@@ -921,7 +921,7 @@ static void CG_InterpolateEntityPosition( centity_t *cent )
 		Sys::Drop( "CG_InterpolateEntityPosition: cg.nextSnap == NULL" );
 	}
 
-	float  f = cg.frameInterpolation;
+	float f = cg.frameInterpolation;
 
 	// this will linearize a sine or parabolic curve, but it is important
 	// to not extrapolate player positions if more recent data is available
