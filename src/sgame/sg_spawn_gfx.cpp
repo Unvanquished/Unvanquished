@@ -223,7 +223,6 @@ static void gfx_portal_locateCamera( gentity_t *self )
 	// see if the portal_camera has a target
 	target = G_PickRandomTargetFor( owner );
 
-	glm::vec3 dir;
 	if ( target )
 	{
 		axis_t cameraAxis;
