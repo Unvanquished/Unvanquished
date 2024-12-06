@@ -258,7 +258,7 @@ inline class_t NavmeshForClass( class_t species, bool reduceTypes )
 	// Naked, Light, and Medium human forms are truly identical.
 	// Battlesuit is taller, but otherwise the same.
 	case PCL_HUMAN_NAKED:
-	case PCL_HUMAN_LIGHT:
+	//case PCL_HUMAN_LIGHT:
 	case PCL_HUMAN_MEDIUM:
 		return reduceTypes ? PCL_HUMAN_BSUIT : PCL_HUMAN_NAKED;
 
