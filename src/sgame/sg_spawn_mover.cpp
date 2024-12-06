@@ -118,7 +118,7 @@ G_CreateRotationMatrix
 */
 static void G_CreateRotationMatrix( glm::vec3 const& angles, vec3_t matrix[ 3 ] )
 {
-	AngleVectors( &angles[0], matrix[ 0 ], matrix[ 1 ], matrix[ 2 ] );
+	AngleVectors( GLM4READ(angles), matrix[ 0 ], matrix[ 1 ], matrix[ 2 ] );
 	VectorInverse( matrix[ 1 ] );
 }
 
@@ -2502,13 +2502,13 @@ static void func_train_blocked( gentity_t *self, gentity_t *other )
 				{
 					glm::vec3 dir = VEC2GLM( other->s.origin2 );
 					gentity_t *tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_ALIEN_BUILDABLE_EXPLOSION );
-					tent->s.eventParm = DirToByte( &dir[0] );
+					tent->s.eventParm = DirToByte( GLM4READ(dir) );
 				}
 				else if ( other->buildableTeam == TEAM_HUMANS )
 				{
 					glm::vec3 dir( 0.f, 0.f, 1.f );
 					gentity_t *tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_HUMAN_BUILDABLE_EXPLOSION );
-					tent->s.eventParm = DirToByte( &dir[0] );
+					tent->s.eventParm = DirToByte( GLM4READ(dir) );
 				}
 			}
 
@@ -2874,7 +2874,7 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 	G_BotRemoveObstacle( self->num() );
 	trap_UnlinkEntity( self );
 
-	G_RadiusDamage( &self->mapEntity.restingPosition[0], attacker, self->splashDamage, self->splashRadius, self,
+	G_RadiusDamage( GLM4READ(self->mapEntity.restingPosition), attacker, self->splashDamage, self->splashRadius, self,
 	                DAMAGE_KNOCKBACK, MOD_TRIGGER_HURT );
 }
 
