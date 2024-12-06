@@ -372,7 +372,7 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
 			hitEnt->Damage(ma->damage * MissileTimeDmgMod(ent), attacker,
-			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
+			                       VEC2GLM( trace->endpos ), dir, dflags,
 			                       ma->meansOfDeath);
 		}
 
