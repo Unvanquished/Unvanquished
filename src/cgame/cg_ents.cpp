@@ -416,7 +416,7 @@ static void CG_Missile( centity_t *cent )
 	{
 		glm::vec3 velocity = BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time );
 
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, &velocity[0], ma->sound );
+		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, GLM4READ(velocity), ma->sound );
 	}
 
 	// create the render entity
@@ -449,7 +449,7 @@ static void CG_Missile( centity_t *cent )
 		}
 
 		// convert direction of travel into axis
-		if ( VectorNormalize2( &velocity[0], ent.axis[ 0 ] ) == 0 )
+		if ( VectorNormalize2( GLM4READ(velocity), ent.axis[ 0 ] ) == 0 )
 		{
 			ent.axis[ 0 ][ 2 ] = 1.0f;
 		}
@@ -997,7 +997,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 		glm::vec3 lastOrigin = BG_EvaluateTrajectory( &cent->currentState.pos, cg.time );
 
 		trace_t tr;
-		CG_Trace( &tr, &lastOrigin[0], vec3_origin, vec3_origin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT, 0 );
+		CG_Trace( &tr, GLM4READ(lastOrigin), vec3_origin, vec3_origin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT, 0 );
 
 		// don't let the projectile go through the floor
 		if ( tr.fraction < 1.0f )
