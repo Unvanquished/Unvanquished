@@ -167,7 +167,7 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxc
 
 int trap_EntitiesInBox( const glm::vec3& mins, const glm::vec3& maxs, int *list, int maxcount )
 {
-	return G_CM_AreaEntities(&mins[0], &maxs[0], list, maxcount);
+	return G_CM_AreaEntities(GLM4READ(mins), GLM4READ(maxs), list, maxcount);
 }
 
 bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
