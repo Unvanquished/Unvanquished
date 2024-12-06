@@ -54,7 +54,7 @@ void SpikerComponent::SetGravityCompensation() {
 	glm::vec3 upwards = { 0.0f, 0.0f, 1.0f };
 	float uprightness = glm::dot( dorsal, upwards );
 	// A negative value means the Spiker's radius of damage increases.
-	gravityCompensation = -uprightness * sinf(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
+	gravityCompensation = -uprightness * sinf(Math::DegToRad(0.5f * GRAVITY_COMPENSATION_ANGLE));
 }
 
 void SpikerComponent::Think(int /*timeDelta*/) {
@@ -94,10 +94,10 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 		float spikeDamage  = ma->damage;
 		float distance     = glm::length( toTarget );
 		float bboxDiameter = glm::length( otherMins ) + glm::length( otherMaxs );
-		float bboxEdge     = (1.0f / M_ROOT3) * bboxDiameter; // Assumes a cube.
-		float hitEdge      = bboxEdge + ((1.0f / M_ROOT3) * ma->size); // Add half missile edge.
+		float bboxEdge     = Math::inv_sqrt3_f * bboxDiameter; // Assumes a cube.
+		float hitEdge      = bboxEdge + (Math::inv_sqrt3_f * ma->size); // Add half missile edge.
 		float hitArea      = hitEdge * hitEdge; // Approximate area resulting in a hit.
-		float effectArea   = 2.0f * M_PI * distance * distance; // Area of a half sphere.
+		float effectArea   = Math::mul2_pi_f * distance * distance; // Area of a half sphere.
 		float damage       = (hitArea / effectArea) * (float)MISSILES * spikeDamage;
 
 		// Sum up expected damage for all targets, regardless of whether they are in sense range.
@@ -201,8 +201,8 @@ bool SpikerComponent::Fire() {
 	// the row (at most halfway to the base altitude of a neighbouring row).
 	float totalPerimeter = 0.0f;
 	for (int row = 0; row < MISSILEROWS; row++) {
-		float rowAltitude = (((float)row + 0.5f) * M_PI_2) / (float)MISSILEROWS;
-		float rowPerimeter = 2.0f * M_PI * cosf(rowAltitude);
+		float rowAltitude = (((float)row + 0.5f) * Math::divpi_2_f) / (float)MISSILEROWS;
+		float rowPerimeter = Math::mul2_pi_f * cosf(rowAltitude);
 		totalPerimeter += rowPerimeter;
 	}
 
@@ -216,22 +216,22 @@ bool SpikerComponent::Fire() {
 	// Distribute and launch missiles.
 	for (int row = 0; row < MISSILEROWS; row++) {
 		// Set the base altitude and get the perimeter for the current row.
-		float rowAltitude = (((float)row + 0.5f) * M_PI_2) / (float)MISSILEROWS;
-		float rowPerimeter = 2.0f * M_PI * cosf(rowAltitude);
+		float rowAltitude = (((float)row + 0.5f) * Math::divpi_2_f) / (float)MISSILEROWS;
+		float rowPerimeter = Math::mul2_pi_f * cosf(rowAltitude);
 
 		// Attempt to distribute spikes with equal expected angular distance on all rows.
 		int spikes = (int)round(((float)MISSILES * rowPerimeter) / totalPerimeter);
 
 		// Launch missiles in the current row.
 		for (int spike = 0; spike < spikes; spike++) {
-			float spikeAltitude = rowAltitude + (0.5f * crandom() * M_PI_2 / (float)MISSILEROWS);
-			float spikeAzimuth = 2.0f * M_PI * (((float)spike + 0.5f * crandom()) / (float)spikes);
+			float spikeAltitude = rowAltitude + (0.5f * crandom() * Math::divpi_2_f / (float)MISSILEROWS);
+			float spikeAzimuth = Math::mul2_pi_f * (((float)spike + 0.5f * crandom()) / (float)spikes);
 
 			// Set launch direction altitude.
-			RotatePointAroundVector(dir, rotAxis, zenith, RAD2DEG(M_PI_2 - spikeAltitude));
+			RotatePointAroundVector(dir, rotAxis, zenith, Math::RadToDeg(Math::divpi_2_f - spikeAltitude));
 
 			// Set launch direction azimuth.
-			RotatePointAroundVector(dir, zenith, dir, RAD2DEG(spikeAzimuth));
+			RotatePointAroundVector(dir, zenith, dir, Math::RadToDeg(spikeAzimuth));
 
 			// Trace in the shooting direction and do not shoot spikes that are likely to harm
 			// friendly entities.
@@ -240,7 +240,7 @@ bool SpikerComponent::Fire() {
 			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
 				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->num(),
 				fire ? "fires" : "skips", row + 1, MISSILEROWS, spike + 1, spikes,
-				RAD2DEG(spikeAltitude), RAD2DEG(spikeAzimuth), dir[0], dir[1], dir[2]);
+				Math::RadToDeg(spikeAltitude), Math::RadToDeg(spikeAzimuth), dir[0], dir[1], dir[2]);
 
 			if (!fire) {
 				continue;
