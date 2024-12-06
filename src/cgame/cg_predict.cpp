@@ -182,7 +182,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		{
 		case traceType_t::TT_CAPSULE:
 		case traceType_t::TT_AABB:
-			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, &origin[0], angles, collisionType );
+			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, GLM4READ(origin), angles, collisionType );
 			break;
 
 		default: // Shouldn't Happen
