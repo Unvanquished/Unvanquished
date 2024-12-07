@@ -1682,12 +1682,18 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 		node = ReadNode( &current );
 	}
 
-	if ( node )
+	if ( node && current == nullptr )
 	{
 		tree->root = node;
 	}
 	else
 	{
+		if ( node )
+		{
+			ASSERT( current != nullptr );
+			Log::Warn( "expected end of file, but found `%s` in line %d", current->token.string, current->token.line );
+			FreeNode( node );
+		}
 		auto it = std::find( list->begin(), list->end(), tree );
 		ASSERT_NQ( it, list->end() );
 		list->erase( it );
