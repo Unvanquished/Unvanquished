@@ -295,4 +295,6 @@ AINodeStatus_t BotSpawnNode( gentity_t *self, AIGenericNode_t *node );
 
 buildable_t BotChooseBuildableToBuild( gentity_t *self );
 
+AIBehaviorTree_t *BotBehaviorTree( Str::StringRef behavior );
+
 #endif
