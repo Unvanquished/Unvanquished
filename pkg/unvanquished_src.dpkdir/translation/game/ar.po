@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-04 07:50+0100\n"
-"PO-Revision-Date: 2024-12-05 10:48+0000\n"
+"PO-Revision-Date: 2024-12-08 11:14+0000\n"
 "Last-Translator: lee-00 <xfz-op@outlook.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ar/>\n"
@@ -35,7 +35,7 @@ msgstr "تطور"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "نقط التحول"
+msgstr "نقاط التحول"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -249,7 +249,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
-msgstr ""
+msgstr "هياكل التعدين"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -468,7 +468,7 @@ msgstr ""
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "نقاط البناء"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -476,7 +476,7 @@ msgstr ""
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "الأسلحة"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
@@ -484,11 +484,11 @@ msgstr ""
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "المدى:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "الضرر:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
@@ -531,7 +531,7 @@ msgstr "الخريطة:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "الوقت:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -593,11 +593,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "إعداد الخادم"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr ""
+msgstr "إيقاف الخادم"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
@@ -605,7 +605,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "روبوتات"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
@@ -641,15 +641,15 @@ msgstr ""
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr ""
+msgstr "أضف روبوت فضائي"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr ""
+msgstr "أضف روبوت بشري"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr ""
+msgstr "إزالة جميع الروبوتات"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
@@ -673,7 +673,7 @@ msgstr ""
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr ""
+msgstr "طرد الروبوتات"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
@@ -685,7 +685,7 @@ msgstr ""
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr ""
+msgstr "اعترف بالهزيمة"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -742,7 +742,7 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "معطل"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -770,7 +770,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr ""
+msgstr "الروسومات"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
@@ -884,15 +884,15 @@ msgstr "تقريب سريع مضاد للتعرج (FXAA)"
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "التطبيق الأن"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "الإضاءة"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr ""
+msgstr "الأضواء"
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
@@ -968,7 +968,7 @@ msgstr "منخفض"
 #: ui/options_graphics.rml:130 ui/options_graphics.rml:351
 #: ui/options_ui.rml:177
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
@@ -984,7 +984,7 @@ msgstr "عام"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "بلا حدود"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
@@ -1212,7 +1212,7 @@ msgstr ""
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "التأثيرات"
 
 #: ui/options_graphics.rml:289
 msgid "Bloom"
@@ -1306,39 +1306,39 @@ msgstr "معطل"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
-msgstr ""
+msgstr "جميع الهياكل"
 
 #: ui/options_graphics.rml:353
 msgid "Support structures"
-msgstr ""
+msgstr "هياكل الدعم"
 
 #: ui/options_graphics.rml:354
 msgid "Offensive structures"
-msgstr ""
+msgstr "الهياكل الهجومية"
 
 #: ui/options_graphics.rml:355
 msgid "Alien structures"
-msgstr ""
+msgstr "الهياكل الفضائية"
 
 #: ui/options_graphics.rml:356
 msgid "Human structures"
-msgstr ""
+msgstr "الهياكل البشرية"
 
 #: ui/options_graphics.rml:357
 msgid "Alien support structures"
-msgstr ""
+msgstr "هياكل الدعم الفضائية"
 
 #: ui/options_graphics.rml:358
 msgid "Human support structures"
-msgstr ""
+msgstr "هياكل الدعم البشرية"
 
 #: ui/options_graphics.rml:359
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "الهياكل الهجومية الفضائية"
 
 #: ui/options_graphics.rml:360
 msgid "Offensive human structures"
-msgstr ""
+msgstr "الهياكل الهجومية البشرية"
 
 #: ui/options_graphics.rml:362
 msgid "Building ranges"
@@ -1465,15 +1465,15 @@ msgstr ""
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "إستخدم الهيكل:"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "تحول:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "دردشة/تصويت"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
@@ -1493,11 +1493,11 @@ msgstr ""
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "صوت نعم:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "صوت لا:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
@@ -1547,11 +1547,11 @@ msgstr ""
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "أنظر للأعلى:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "أنظر للأسفل:"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
@@ -1623,7 +1623,7 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
-msgstr ""
+msgstr "الحركة"
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
@@ -1661,15 +1661,15 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "عطّل"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
-msgstr ""
+msgstr "البشر فقط"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr ""
+msgstr "البشر و الفضائيين"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
@@ -1697,7 +1697,7 @@ msgstr ""
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "إعدادات اللاعب"
 
 #: ui/options_player.rml:20
 msgid "Personal"
@@ -1749,7 +1749,7 @@ msgstr ""
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "الأخرين"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
@@ -1769,11 +1769,11 @@ msgstr ""
 
 #: ui/options.rml:11
 msgid "Player"
-msgstr ""
+msgstr "اللاعب"
 
 #: ui/options.rml:21 ui/options_sound.rml:7
 msgid "Sound"
-msgstr ""
+msgstr "الصوت"
 
 #: ui/options.rml:23
 msgid "User interface and HUD"
@@ -1785,7 +1785,7 @@ msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "الموسيقى"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1821,7 +1821,7 @@ msgstr ""
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "اللغة"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -1829,7 +1829,7 @@ msgstr ""
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "تغيير اللغة"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
@@ -1837,11 +1837,11 @@ msgstr ""
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr ""
+msgstr "12 ساعة"
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr ""
+msgstr "24 ساعة"
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
@@ -1961,7 +1961,7 @@ msgstr ""
 
 #: ui/options_ui.rml:131
 msgid "Always"
-msgstr ""
+msgstr "دائماً"
 
 #: ui/options_ui.rml:136
 msgid "Crosshair size"
