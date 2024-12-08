@@ -52,26 +52,13 @@ enum navPolyFlags
 {
 	POLYFLAGS_DISABLED = 0,
 	POLYFLAGS_WALK     = 1 << 0,
-	POLYFLAGS_JUMP     = 1 << 1,
-	POLYFLAGS_POUNCE   = 1 << 2,
-	POLYFLAGS_WALLWALK = 1 << 3,
-	POLYFLAGS_LADDER   = 1 << 4,
-	POLYFLAGS_DROPDOWN = 1 << 5,
-	POLYFLAGS_DOOR     = 1 << 6,
-	POLYFLAGS_TELEPORT = 1 << 7,
-	POLYFLAGS_CROUCH   = 1 << 8,
-	POLYFLAGS_SWIM     = 1 << 9,
+	POLYFLAGS_JETPACK  = 1 << 1,
 	POLYFLAGS_ALL      = 0xffff, // All abilities.
 };
 
 enum navPolyAreas
 {
 	POLYAREA_GROUND     = 1 << 0,
-	POLYAREA_LADDER     = 1 << 1,
-	POLYAREA_WATER      = 1 << 2,
-	POLYAREA_DOOR       = 1 << 3,
-	POLYAREA_JUMPPAD    = 1 << 4,
-	POLYAREA_TELEPORTER = 1 << 5,
 };
 
 // Part of header which must contain 4-byte members only
@@ -194,7 +181,7 @@ struct BasicMeshProcess : public dtTileCacheMeshProcess
 {
 	void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags ) override
 	{
-		// Update poly flags from areas.
+		// wtf is a poly area?
 		for ( int i = 0; i < params->polyCount; ++i )
 		{
 			if ( polyAreas[ i ] == DT_TILECACHE_WALKABLE_AREA )
@@ -202,13 +189,9 @@ struct BasicMeshProcess : public dtTileCacheMeshProcess
 				polyAreas[ i ] = navPolyAreas::POLYAREA_GROUND;
 				polyFlags[ i ] = navPolyFlags::POLYFLAGS_WALK;
 			}
-			else if ( polyAreas[ i ] == navPolyAreas::POLYAREA_WATER )
+			else
 			{
-				polyFlags[ i ] = navPolyFlags::POLYFLAGS_SWIM;
-			}
-			else if ( polyAreas[ i ] == navPolyAreas::POLYAREA_DOOR )
-			{
-				polyFlags[ i ] = navPolyFlags::POLYFLAGS_WALK | navPolyFlags::POLYFLAGS_DOOR;
+				Log::Warn("unknown polyArea");
 			}
 		}
 	}

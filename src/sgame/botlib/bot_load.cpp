@@ -496,8 +496,6 @@ navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, class_t species )
 		return navMeshStatus_t::LOAD_FAILED;
 	}
 
-	nav->filter.setIncludeFlags( POLYFLAGS_WALK );
-	nav->filter.setExcludeFlags( POLYFLAGS_DISABLED );
 	numNavData++;
 	return navMeshStatus_t::LOADED;
 }
