@@ -1990,6 +1990,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
+			break;
 		default:
 			break;
 	}
