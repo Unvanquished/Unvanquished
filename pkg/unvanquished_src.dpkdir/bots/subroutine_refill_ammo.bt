@@ -1,0 +1,18 @@
+condition percentAmmoClip == 0 && percentClips == 0
+{
+	// refill at a suitable building
+	// TODO: reload energy weapons at reactor etc
+	selector
+	{
+		// game logic does not refill ammo when the
+		// player has the blaster in hands
+		decorator return( STATUS_FAILURE )
+		{
+			condition distanceTo( E_H_ARMOURY ) < 200
+			{
+				action changeToPrimaryWeapon
+			}
+		}
+		action moveTo( E_H_ARMOURY )
+	}
+}

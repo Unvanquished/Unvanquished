@@ -1592,6 +1592,15 @@ AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
 
+AINodeStatus_t BotActionChangeToPrimaryWeapon( gentity_t *self, AIGenericNode_t* )
+{
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_BLASTER )
+	{
+		G_ForceWeaponChange( self, WP_NONE );
+	}
+	return AINodeStatus_t::STATUS_SUCCESS;
+}
+
 /*
 	alien specific actions
 */

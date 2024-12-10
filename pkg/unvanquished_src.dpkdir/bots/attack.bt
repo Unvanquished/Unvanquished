@@ -51,15 +51,7 @@ selector
 				action equip
 			}
 
-			selector
-			{
-				condition percentAmmoClip == 0 && percentClips == 0
-				{
-					// refill at a suitable building
-					// TODO: reload energy weapons at reactor etc
-					action moveTo( E_H_ARMOURY )
-				}
-			}
+			behavior subroutine_refill_ammo
 
 			sequence
 			{
