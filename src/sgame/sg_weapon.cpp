@@ -128,8 +128,7 @@ static bool CanUseAmmoRefill( gentity_t *self )
 	}
 
 	ps = &self->client->ps;
-	// This is the *currently equipped* weapon, so you don't get refill while wielding blaster
-	wa = BG_Weapon( ps->weapon );
+	wa = BG_Weapon( BG_PrimaryWeapon( ps->stats ) );
 
 	if ( wa->infiniteAmmo )
 	{
