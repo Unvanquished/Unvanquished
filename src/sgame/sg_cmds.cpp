@@ -4241,6 +4241,7 @@ static void Cmd_ReplyPrivateMessage_f( gentity_t *ent )
 		return;
 	}
 
+	// ent cannot be the server console, as players cannot send private messages to it
 	setLastPrivateMessageSenderAndTime( target, ent->num() );
 	ADMP( va( "%s %s %s", QQ( N_("You have responded to $1$^* : ^2$2$ ") ), g_entities[ target ].client->pers.netname, Quote( msg ) ) );
 	G_LogPrintf( "PrivMsg: %d \"%s^*\" \"%s\": %s",
@@ -4467,7 +4468,11 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 			count++;
 			Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
 			          level.clients[ pids[ i ] ].pers.netname ) );
-			setLastPrivateMessageSenderAndTime( pids[ i ], ent->num() );
+			// exclude the server console
+			if ( ent != nullptr )
+			{
+				setLastPrivateMessageSenderAndTime( pids[ i ], ent->num() );
+			}
 		}
 	}
 
