@@ -1101,6 +1101,7 @@ static const struct AIActionMap_s
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "buyPrimary",        BotActionBuyPrimary,        1, 1 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
+	{ "changeToPrimaryWeapon", BotActionChangeToPrimaryWeapon, 0, 0},
 	{ "classDodge",        BotActionClassDodge,        0, 0 },
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
 	{ "equip",             BotActionBuy,               0, 0 },
