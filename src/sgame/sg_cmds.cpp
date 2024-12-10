@@ -4242,7 +4242,11 @@ static void Cmd_ReplyPrivateMessage_f( gentity_t *ent )
 	}
 
 	// ent cannot be the server console, as players cannot send private messages to it
-	setLastPrivateMessageSenderAndTime( target, ent->num() );
+	// but it cannot hurt to exclude that case
+	if ( ent != nullptr )
+	{
+		setLastPrivateMessageSenderAndTime( target, ent->num() );
+	}
 	ADMP( va( "%s %s %s", QQ( N_("You have responded to $1$^* : ^2$2$ ") ), g_entities[ target ].client->pers.netname, Quote( msg ) ) );
 	G_LogPrintf( "PrivMsg: %d \"%s^*\" \"%s\": %s",
 		ent->num(), ent->client->pers.netname,
