@@ -218,6 +218,8 @@
 		<row>
 			<input cvar="cg_teamChatsOnly" type="checkbox" />
 			<h3><translate>Show only team chat</translate></h3>
+		</row>
+		<row>
 			<input cvar="cg_showObituaries" type="checkbox" />
 			<h3><translate>Show obituaries</translate></h3>
 		</row>

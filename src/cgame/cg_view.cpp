@@ -1330,94 +1330,66 @@ Sets cg.refdef.gradingWeights
 */
 static void CG_CalcColorGradingForPoint( vec3_t loc )
 {
-	int   i, j;
-	float dist, weight;
-	int   selectedIdx[3] = { 0, 0, 0 };
-	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
-	float totalWeight = 0.0f;
-	int freeSlot = -1;
-	bool haveGlobal = false;
+	// search 3 greatest weights
+	int selectedTex[ 4 ]{};
+	float selectedWeight[ 4 ]{};
 
-	// the first allocated grading is special in that it may be global
-	i = 0;
-
-	if ( cgs.gameGradingTextures[0] && cgs.gameGradingModels[0] == -1 )
+	for( int i = 0; i < MAX_GRADING_TEXTURES; i++ )
 	{
-		selectedIdx[0] = 0; // shouldn't be needed
-		selectedWeight[0] = 2.0f; // won't be sorted down
-		haveGlobal = true;
-		i = 1;
-	}
-
-	for(; i < MAX_GRADING_TEXTURES; i++ )
-	{
-		if( !cgs.gameGradingTextures[i] )
+		if ( !cgs.gameGradingTextures[i] || cgs.gameGradingModels[i] < 0 )
 		{
 			continue;
 		}
 
-		dist = CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
-		weight = 1.0f - dist / cgs.gameGradingDistances[i];
-		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+		float dist = CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
+		float weight = 1.0f - dist / std::max( 0.01f, cgs.gameGradingDistances[i] );
 
-		// search 3 greatest weights
-		if( weight <= selectedWeight[2] )
+		for ( int j = 1; j < 4 && weight > selectedWeight[ j ]; j++ )
 		{
-			continue;
+			selectedTex[ j - 1 ] = selectedTex[ j ];
+			selectedWeight[ j - 1 ] = selectedWeight[ j ];
+			selectedTex[ j ] = cgs.gameGradingTextures[ i ];
+			selectedWeight[ j ] = weight;
 		}
-
-		for( j = 1; j >= 0; j-- )
-		{
-			if( weight <= selectedWeight[j] )
-			{
-				break;
-			}
-
-			selectedIdx[j+1] = selectedIdx[j];
-			selectedWeight[j+1] = selectedWeight[j];
-		}
-
-		selectedIdx[j+1] = i;
-		selectedWeight[j+1] = weight;
 	}
 
-	i = 0;
-
-	if( haveGlobal )
+	float totalWeight = 0;
+	for( int i = 1; i < 4; i++ )
 	{
-		trap_SetColorGrading( 1, cgs.gameGradingTextures[0] );
-		i = 1;
+		totalWeight += selectedWeight[ i ];
 	}
 
-	for(; i < 3; i++ )
+	// fill in with either the map's global cgrade or the neutral cgrade
+	if ( totalWeight < 1.0f )
 	{
-		if( selectedWeight[i] > 0.0f )
+		// evict lowest-weight one
+
+		selectedWeight[ 1 ] += 1.0f - totalWeight;
+		totalWeight = 1.0f;
+
+		if ( cgs.gameGradingTextures[ 0 ] && cgs.gameGradingModels[ 0 ] == -1 )
 		{
-			trap_SetColorGrading( i + 1, cgs.gameGradingTextures[selectedIdx[i]] );
-			totalWeight += selectedWeight[i];
+			// have global cgrade
+			selectedTex[ 1 ] = cgs.gameGradingTextures[ 0 ];
 		}
 		else
 		{
-			freeSlot = i;
+			selectedTex[ 1 ] = cgs.media.neutralCgrade;
 		}
 	}
 
-	if( !haveGlobal && totalWeight < 1.0f )
+	// reserved for extra effects
+	cg.refdef.gradingWeights[ 0 ] = 0.0f;
+
+	for ( int i = 1; i < 4; i++ )
 	{
-		if(freeSlot >= 0)
+		if ( selectedTex[ i ] )
 		{
-			//If there is a free slot, use it with the neutral cgrade
-			//to make sure that using only the 3 map grade will always be ok
-			trap_SetColorGrading( freeSlot + 1, cgs.media.neutralCgrade);
-			selectedWeight[freeSlot] = 1.0f - totalWeight;
-			totalWeight = 1.0f;
+			trap_SetColorGrading( i, selectedTex[ i ] );
 		}
-	}
 
-	cg.refdef.gradingWeights[0] = 0.0f;
-	cg.refdef.gradingWeights[1] = haveGlobal ? ( 1.0f - totalWeight ) : ( selectedWeight[0] / totalWeight );
-	cg.refdef.gradingWeights[2] = totalWeight == 0.0f ? 0.0f : selectedWeight[1] / totalWeight;
-	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
+		cg.refdef.gradingWeights[ i ] = selectedWeight[ i ] / totalWeight;
+	}
 }
 
 static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade, float* fadeRate )
@@ -1535,7 +1507,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 	// the first allocated reverb is special in that it may be global
 	i = 0;
 
-	if ( cgs.gameReverbEffects[0][0] && cgs.gameGradingModels[0] == -1 )
+	if ( cgs.gameReverbEffects[0][0] && cgs.gameReverbModels[0] == -1 )
 	{
 		selectedIdx[0] = 0;
 		selectedWeight[0] = 2.0f; // won't be sorted down
@@ -1551,8 +1523,8 @@ static void CG_AddReverbEffects( vec3_t loc )
 		}
 
 		dist = CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
-		weight = 1.0f - dist / cgs.gameReverbDistances[i];
-		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+
+		weight = 1.0f - dist / std::max( 0.01f, cgs.gameReverbDistances[i] );
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )

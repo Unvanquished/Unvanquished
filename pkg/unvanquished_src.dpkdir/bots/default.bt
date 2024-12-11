@@ -1,3 +1,26 @@
+#define WANTS_TO_BUILD 1
+
+#define aliensNeedBuilder (\
+	levelTime >= 60000 \
+	&& ( numUsersInTeam == 0 \
+	     || ( numOurBuildings( E_A_SPAWN ) < 2 \
+	          && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) ) \
+	&& cvar( "g_bot_buildAliens" ) \
+	&& usableBuildPoints >= chosenBuildableCost \
+	&& !teamateHasWeapon( WP_ABUILD ) \
+	&& !teamateHasWeapon( WP_ABUILD2 ) \
+	)
+
+#define humansNeedBuilder (\
+	levelTime >= 60000 \
+	&& ( numUsersInTeam == 0 \
+	     || ( numOurBuildings( E_H_SPAWN ) < 2 \
+	          && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) ) \
+	&& cvar( "g_bot_buildHumans" ) \
+	&& usableBuildPoints >= chosenBuildableCost \
+	&& !teamateHasWeapon( WP_HBUILD ) \
+	)
+
 selectClass
 {
 	selector
@@ -6,14 +29,7 @@ selectClass
 		{
 			selector
 			{
-				condition levelTime >= 60000
-					&& ( numUsersInTeam == 0
-						 || ( numOurBuildings( E_A_SPAWN ) < 2
-							  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
-					&& cvar( "g_bot_buildAliens" )
-					&& usableBuildPoints >= chosenBuildableCost
-					&& !teamateHasWeapon( WP_ABUILD )
-					&& !teamateHasWeapon( WP_ABUILD2 )
+				condition aliensNeedBuilder
 				{
 					selector
 					{
@@ -28,13 +44,7 @@ selectClass
 		{
 			selector
 			{
-				condition levelTime >= 60000
-					&& ( numUsersInTeam == 0
-						 || ( numOurBuildings( E_H_SPAWN ) < 2
-							  && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) )
-					&& cvar( "g_bot_buildHumans" )
-					&& usableBuildPoints >= chosenBuildableCost
-					&& !teamateHasWeapon( WP_HBUILD )
+				condition humansNeedBuilder
 				{
 					spawnAs WP_HBUILD
 				}
@@ -50,11 +60,112 @@ selector
 
 	condition ( team == TEAM_ALIENS )
 	{
-		behavior default_aliens
+		selector
+		{
+			sequence
+			{
+				condition aliensNeedBuilder && blackboardNumTransient( WANTS_TO_BUILD ) < 1
+				selector
+				{
+					decorator return ( STATUS_FAILURE )
+					{
+						// this will be reset to 0 before the next execution
+						action blackboardNoteTransient( WANTS_TO_BUILD )
+					}
+
+					behavior subroutine_become_builder_aliens
+
+					condition distanceTo( E_A_OVERMIND ) <= 700
+					{
+						decorator return( STATUS_FAILURE )
+						{
+							action buildNowChosenBuildable
+						}
+					}
+					action roamInRadius( E_A_OVERMIND, 700 )
+					action roam
+				}
+			}
+
+			decorator return ( STATUS_FAILURE )
+			{
+				action resetMyTimer
+			}
+
+			behavior subroutine_extinguish_fire
+			behavior subroutine_evolve
+			behavior subroutine_fight_or_flight_aliens
+
+			condition baseRushScore > 0.5
+			{
+				action rush
+			}
+
+			action roam
+		}
 	}
 
 	condition ( team == TEAM_HUMANS )
 	{
-		behavior default_humans
+		selector
+		{
+			behavior subroutine_use_medkit
+
+			sequence
+			{
+				condition humansNeedBuilder	&& blackboardNumTransient( WANTS_TO_BUILD ) < 1
+				selector
+				{
+					decorator return ( STATUS_FAILURE )
+					{
+						// this will be reset to 0 before the next execution
+						action blackboardNoteTransient( WANTS_TO_BUILD )
+					}
+
+					behavior subroutine_become_builder_humans
+
+					condition distanceTo( E_H_REACTOR ) <= 700
+					{
+						decorator return( STATUS_FAILURE )
+						{
+							action buildNowChosenBuildable
+						}
+					}
+					action roamInRadius( E_H_REACTOR, 700 )
+					action roam
+				}
+			}
+
+			decorator return ( STATUS_FAILURE )
+			{
+				action resetMyTimer
+			}
+
+			behavior subroutine_fight_or_flight_humans
+			behavior subroutine_repair
+			behavior subroutine_reload
+			action equip
+
+			condition percentAmmoClip == 0 && percentClips == 0
+			{
+				// refill at a suitable building
+				// TODO: reload energy weapons at reactor etc
+				action moveTo( E_H_ARMOURY )
+			}
+
+			sequence
+			{
+				// the bot cannot refill or equip, it must fight with the blaster
+				condition alertedToEnemy
+				action fight
+			}
+
+			condition baseRushScore > 0.5
+			{
+				action rush
+			}
+
+			action roam
+		}
 	}
 }

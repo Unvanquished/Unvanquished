@@ -248,6 +248,7 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorInvert( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotDecoratorMapStatus( gentity_t *self, AIGenericNode_t *node );
 
 // included behavior trees
 AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node );

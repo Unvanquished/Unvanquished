@@ -175,7 +175,7 @@ void AIDestroyValue( AIValue_t v )
 static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 {
 	botEntityAndDistance_t result;
-	result.distance = HUGE_QFLT;
+	result.distance = HUGE_DISTANCE;
 	result.ent = nullptr;
 	ForEntities<BuildableComponent>([&](Entity& e, BuildableComponent&) {
 		if (!e.Get<HealthComponent>()->Alive() ||
@@ -193,7 +193,7 @@ static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
+	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_DISTANCE };
 	botEntityAndDistance_t              ret = nullEntity;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
@@ -419,6 +419,30 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 
 	BotEvaluateNode( self, dec->child );
 	return status;
+}
+
+AINodeStatus_t BotDecoratorMapStatus( gentity_t *self, AIGenericNode_t *node )
+{
+	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
+
+	AINodeStatus_t result = BotEvaluateNode( self, dec->child );
+	switch ( result )
+	{
+	case STATUS_FAILURE:
+		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
+		break;
+	case STATUS_SUCCESS:
+		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 1 ] );
+		break;
+	case STATUS_RUNNING:
+		result = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 2 ] );
+		break;
+	default:
+		// the child node's result is none of the three, return it unchanged
+		break;
+	}
+
+	return result;
 }
 
 static bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
@@ -1053,7 +1077,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
 	        && ( goalDist > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
-	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
+	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER
+	        && BotTraceForFloor( self, MOVE_BACKWARD ) )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );
 	}

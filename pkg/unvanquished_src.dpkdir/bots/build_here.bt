@@ -1,0 +1,118 @@
+selectClass
+{
+	selector
+	{
+		condition team == TEAM_ALIENS
+		{
+			spawnAs PCL_ALIEN_BUILDER0
+		}
+		condition team == TEAM_HUMANS
+		{
+			spawnAs WP_HBUILD
+		}
+	}
+}
+
+selector
+{
+	condition team == TEAM_HUMANS
+	{
+		selector
+		{
+			behavior subroutine_use_medkit
+
+			sequence
+			{
+				condition cvar( "g_bot_buildHumans" )
+					&& usableBuildPoints >= chosenBuildableCost
+				selector
+				{
+					behavior subroutine_become_builder_humans
+
+					condition distanceToSpecifiedPosition <= 700
+					{
+						decorator return( STATUS_FAILURE )
+						{
+							action buildNowChosenBuildable
+						}
+					}
+					action stayHere( 700 )
+					action roam
+				}
+			}
+
+			decorator return ( STATUS_FAILURE )
+			{
+				action resetMyTimer
+			}
+
+			behavior subroutine_fight_or_flight_humans
+			behavior subroutine_repair
+			behavior subroutine_reload
+			action equip
+
+			condition percentAmmoClip == 0 && percentClips == 0
+			{
+				// refill at a suitable building
+				// TODO: reload energy weapons at reactor etc
+				action moveTo( E_H_ARMOURY )
+			}
+
+			sequence
+			{
+				// the bot cannot refill or equip, it must fight with the blaster
+				condition alertedToEnemy
+				action fight
+			}
+
+			condition baseRushScore > 0.5
+			{
+				action rush
+			}
+
+			action roam
+		}
+	}
+
+	condition team == TEAM_ALIENS
+	{
+		selector
+		{
+			sequence
+			{
+				condition cvar( "g_bot_buildAliens" )
+					&& usableBuildPoints >= chosenBuildableCost
+				selector
+				{
+					behavior subroutine_become_builder_aliens
+
+					condition distanceToSpecifiedPosition <= 700
+					{
+						decorator return( STATUS_FAILURE )
+						{
+							action buildNowChosenBuildable
+						}
+					}
+					action stayHere( 700 )
+					action roam
+				}
+			}
+
+			decorator return ( STATUS_FAILURE )
+			{
+				action resetMyTimer
+			}
+
+			behavior subroutine_extinguish_fire
+			behavior subroutine_evolve
+			behavior subroutine_fight_or_flight_aliens
+
+			condition baseRushScore > 0.5
+			{
+				action rush
+			}
+
+			action roam
+		}
+	}
+}
