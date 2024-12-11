@@ -6,7 +6,7 @@
 	<body id="callvote_fillbots" template="window" style="width: 35em; margin: 1em;">
 		<h1><translate>Fill with bots</translate></h1>
 		<br />
-		<p>How many players (users and bots) should teams have?</p>
+		<p><translate>How many players (users and bots) should teams have?</translate></p>
 		<form onsubmit='Events.pushevent("execForm \"callvote $action$ $amount$\"; hide", event)'>
 			<row>
 				<select name="action">
