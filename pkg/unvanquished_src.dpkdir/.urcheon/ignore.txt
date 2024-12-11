@@ -1,1 +1,2 @@
 ar.po
+fa.po
