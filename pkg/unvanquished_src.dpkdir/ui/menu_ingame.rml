@@ -19,7 +19,7 @@
 			<window id="innersidebar" class="innersidebar" >
 
 				<sidesection  id="sidebar_ingame">
-					<h1> <translate>Match</translate> </h1>
+					<h1><translate>Match</translate></h1>
 					<div style="display:flex;align-items: stretch;">
 						<!--Don't put  ' class="rightfloat ' on the first button because this is allready defined in the "button-menu"-->
 						<button-menu style="width:39%;" onclick='Cmd.exec("disconnect")'><translate>Leave match</translate></button-menu>
