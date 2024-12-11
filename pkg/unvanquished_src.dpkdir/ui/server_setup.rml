@@ -250,7 +250,7 @@
 		</panel>
 
 		<!-- HUMANS BOT CONFIG -->
-		<tab><translate>Bots: Humans</translate></tab> <panel>
+		<tab><translate>Bots: Humans</translate></tab><panel>
 			<h2><translate>Overall</translate></h2>
 			<row>
 				<input cvar="g_bot_buy" type="checkbox" />
