@@ -375,7 +375,7 @@ public:
 				if ( args.Argc() >= 4 )
 				{
 					int val = 0;
-					if ( !Str::ParseInt( val, args.Argv( 3 ).c_str() ) || val < 10 )
+					if ( !Str::ParseInt( val, args.Argv( 3 ) ) || val < 10 )
 					{
 						Print( "Invalid argument for radius, must be 10 or more" );
 						return;
