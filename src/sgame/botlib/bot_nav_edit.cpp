@@ -324,7 +324,7 @@ public:
 
 	void Run( const Cmd::Args &args ) const override
 	{
-		const char usage[] = "Usage: addcon start <dir> (radius)\n"
+		const char usage[] = "Usage: addcon start <dir> (<radius> (jetpack))\n"
 		                     " addcon end";
 		const char *arg = nullptr;
 
@@ -370,14 +370,30 @@ public:
 				cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
 				cmd.pc.flag = POLYFLAGS_WALK;
 				cmd.pc.userid = 0;
+				cmd.pc.radius = DEFAULT_CONNECTION_SIZE;
 
-				if ( args.Argc() == 4 )
+				if ( args.Argc() >= 4 )
 				{
-					cmd.pc.radius = std::max( atoi( args.Argv( 3 ).c_str() ), 10 );
+					int val = 0;
+					if ( !Str::ParseInt( val, args.Argv( 3 ).c_str() ) || val < 10 )
+					{
+						Print( "Invalid argument for radius, must be 10 or more" );
+						return;
+					}
+					cmd.pc.radius = val;
 				}
-				else
+				if ( args.Argc() == 5 )
 				{
-					cmd.pc.radius = DEFAULT_CONNECTION_SIZE;
+					// TODO: only allow this for the human_naked class
+					const std::string &arg = args.Argv( 4 );
+					if ( arg == "jetpack" )
+					{
+						cmd.pc.flag = POLYFLAGS_JETPACK;
+					}
+					else
+					{
+						Print( "Invalid argument for flags, must be jetpack if specified" );
+					}
 				}
 				cmd.offBegin = true;
 			}
