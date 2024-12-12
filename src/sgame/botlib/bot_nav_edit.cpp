@@ -393,6 +393,7 @@ public:
 					else
 					{
 						Print( "Invalid argument for flags, must be jetpack if specified" );
+						return;
 					}
 				}
 				cmd.offBegin = true;
