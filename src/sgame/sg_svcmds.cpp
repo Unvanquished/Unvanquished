@@ -89,18 +89,18 @@ public:
 	{
 		if ( args.Argc() != 2 )
 		{
-			Log::Notice( "usage: showBehavior <behavior>" );
+			PrintUsage( args, "<behavior>" );
 			return;
 		}
 
 		std::string str = G_BotBehaviorToString( args.Argv( 1 ) );
 		if ( str.empty() )
 		{
-			Log::Notice( "behavior `%s` does not exist", args.Argv( 1 ) );
+			Print( "behavior `%s` does not exist", args.Argv( 1 ) );
 		}
 		else
 		{
-			Log::Notice( str );
+			Print( str );
 		}
 	}
 };
