@@ -24,7 +24,7 @@
 
 				<sidesection style="font-size: 1.1em;">
 					<indent>
-						<h1> <translate>Main menu</translate></h1>
+						<h1><translate>Main menu</translate></h1>
 						<button-menu style="width:87%" onclick='Events.pushcmd("show serverbrowser")'><translate>Server listings</translate></button-menu>
 
 						<button-menu style="width:87%" onclick='Events.pushcmd("show createserver")'><translate>Start local/LAN game</translate></button-menu>

@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-04 07:50+0100\n"
-"PO-Revision-Date: 2024-11-04 21:00+0000\n"
+"POT-Creation-Date: 2024-12-13 13:26+0100\n"
+"PO-Revision-Date: 2024-12-10 07:27+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -75,6 +75,10 @@ msgstr "Начать голосование"
 msgid "Fill with bots"
 msgstr "Заполнить ботами"
 
+#: ui/callvote_fillbots.rml:9
+msgid "How many players (users and bots) should teams have?"
+msgstr ""
+
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
 msgstr "Обе команды"
@@ -132,6 +136,10 @@ msgstr "Ошибка!"
 #: ui/error.rml:11
 msgid "Ok"
 msgstr "Ок"
+
+#: ui/help_gameplay.rml:12
+msgid "Gameplay Guide"
+msgstr ""
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -591,7 +599,7 @@ msgstr "Обновления"
 msgid "Choose your starting equipment:"
 msgstr "Выберите вашу стартовую экипировку:"
 
-#: ui/human_spawn.rml:45
+#: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
 msgstr "Пистолет-пулемёт"
 
@@ -816,19 +824,19 @@ msgstr "градусов"
 msgid "reset"
 msgstr "сбросить"
 
-#: ui/options_fov.rml:40
+#: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
 msgstr "Богомол"
 
-#: ui/options_fov.rml:48
+#: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
 msgstr "Мародёр"
 
-#: ui/options_fov.rml:56
+#: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
 msgstr "Драгун"
 
-#: ui/options_fov.rml:64
+#: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
 msgstr "Тиран"
 
@@ -1649,7 +1657,7 @@ msgstr "Голосование в группе Да:"
 msgid "Team vote No:"
 msgstr "Голосовать в группе Нет:"
 
-#: ui/options_keys.rml:142
+#: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
 msgstr "Разное"
 
@@ -2075,19 +2083,19 @@ msgstr "Винтовка"
 msgid "Pain Saw"
 msgstr "Энергетическая пила"
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr "Дробовик"
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr "Лазерная пушка"
 
-#: ui/options_ui.rml:112
+#: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr "Ускоритель частиц"
 
-#: ui/options_ui.rml:113
+#: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr "Цепной пистолет"
 
@@ -2095,11 +2103,11 @@ msgstr "Цепной пистолет"
 msgid "Flamer"
 msgstr "Огнемет"
 
-#: ui/options_ui.rml:115
+#: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr "Импульсная винтовка"
 
-#: ui/options_ui.rml:116
+#: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr "Пушка Люцифера"
 
@@ -2340,6 +2348,10 @@ msgstr "Блокировка анти-спауна"
 msgid "Push slow people away from spawns."
 msgstr "Выталкивает медленных людей подальше от мест появления."
 
+#: ui/server_setup.rml:93
+msgid "Momentum"
+msgstr ""
+
 #: ui/server_setup.rml:96
 msgid "Half life time"
 msgstr "Время полураспада"
@@ -2401,6 +2413,10 @@ msgstr "Множитель награды за уничтожение здани
 msgid "Momentum reward multiplier for killing buildables"
 msgstr "Множитель получаемого Моментума за уничтожение построек"
 
+#: ui/server_setup.rml:153
+msgid "Build system"
+msgstr ""
+
 #: ui/server_setup.rml:156
 msgid "Starting value"
 msgstr "Начальное значение"
@@ -2436,6 +2452,10 @@ msgstr ""
 "Длительность, за которую очки строительства начнут восстанавливаться в два "
 "раза медленнее"
 
+#: ui/server_setup.rml:189
+msgid "Bots: General"
+msgstr ""
+
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
 msgstr "Минимальное кол-во ботов на команду"
@@ -2455,6 +2475,126 @@ msgstr "Стандартный уровень скилла"
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
 msgstr "Работает только для новых ботов."
+
+#: ui/server_setup.rml:206
+msgid "Humanity"
+msgstr ""
+
+#: ui/server_setup.rml:209
+msgid "Field of view"
+msgstr ""
+
+#: ui/server_setup.rml:217
+msgid "Reaction time"
+msgstr ""
+
+#: ui/server_setup.rml:224
+msgid "Behaviour"
+msgstr ""
+
+#: ui/server_setup.rml:227
+msgid "Attack structures"
+msgstr ""
+
+#: ui/server_setup.rml:229
+msgid "Cheating"
+msgstr ""
+
+#: ui/server_setup.rml:232
+msgid "Infinite funds"
+msgstr ""
+
+#: ui/server_setup.rml:236
+msgid "Ignore momentum"
+msgstr ""
+
+#: ui/server_setup.rml:238
+msgid "Navmesh generation"
+msgstr ""
+
+#: ui/server_setup.rml:241
+msgid "Generate navmeshes at load time"
+msgstr ""
+
+#: ui/server_setup.rml:245
+msgid "Number of worker threads"
+msgstr ""
+
+#: ui/server_setup.rml:253
+msgid "Bots: Humans"
+msgstr ""
+
+#: ui/server_setup.rml:254 ui/server_setup.rml:339
+msgid "Overall"
+msgstr ""
+
+#: ui/server_setup.rml:257
+msgid "Human bots purchase equipment"
+msgstr ""
+
+#: ui/server_setup.rml:261 ui/server_setup.rml:346
+msgid "Aim speed modifier (higher is slower)"
+msgstr ""
+
+#: ui/server_setup.rml:267 ui/server_setup.rml:353
+msgid "Individually"
+msgstr ""
+
+#: ui/server_setup.rml:268
+msgid "Primary Weapons"
+msgstr ""
+
+#: ui/server_setup.rml:271
+msgid "Construction Kit (repairs)"
+msgstr ""
+
+#: ui/server_setup.rml:279
+msgid "Painsaw"
+msgstr ""
+
+#: ui/server_setup.rml:299
+msgid "Flamethrower"
+msgstr ""
+
+#: ui/server_setup.rml:309
+msgid "Armors"
+msgstr ""
+
+#: ui/server_setup.rml:312
+msgid "whether bots buy Light Armour"
+msgstr ""
+
+#: ui/server_setup.rml:316
+msgid "whether bots buy Medium Armour"
+msgstr ""
+
+#: ui/server_setup.rml:320
+msgid "whether bots buy the Battlesuit"
+msgstr ""
+
+#: ui/server_setup.rml:325
+msgid "Firebomb"
+msgstr ""
+
+#: ui/server_setup.rml:329
+msgid "Grenade"
+msgstr ""
+
+#: ui/server_setup.rml:333
+msgid "Radar"
+msgstr ""
+
+#: ui/server_setup.rml:342
+msgid "Alien bots morph"
+msgstr ""
+
+#: ui/server_setup.rml:364
+msgid "Advanced Marauder"
+msgstr ""
+
+#: ui/server_setup.rml:372
+msgid "Advanced Dragoon"
+msgstr ""
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
@@ -2477,7 +2617,7 @@ msgstr "Скорость загрузки:"
 msgid "Size:"
 msgstr "Размер:"
 
-#: ui/welcome.rml:19
+#: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
 msgstr "Добро пожаловать в Unvanquished"
 
@@ -4569,6 +4709,7 @@ msgstr "%sЛичное сообщение от: ^7%s"
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
+">> для ответа напишите: «/m %d [ваше сообщение]» или «/r [ваше сообщение]» <<"
 
 #: src/cgame/cg_servercmds.cpp:1405
 #, c-format
@@ -4916,15 +5057,15 @@ msgstr "Десять секунд до того, как вы станете на
 msgid "Ten seconds until inactivity drop!"
 msgstr "Десять секунд до того, как вас выкинет за неактивность!"
 
-#: src/sgame/sg_bot.cpp:71
+#: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
 msgstr "^3Имена ботов инопланетян:"
 
-#: src/sgame/sg_bot.cpp:72
+#: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
 msgstr "^3Имена ботов людей:"
 
-#: src/sgame/sg_bot.cpp:363
+#: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
 msgstr "$1$^* отсоединился"
 
@@ -5013,19 +5154,19 @@ msgstr "Чужие победили"
 msgid "Empty teams skip map time exceeded."
 msgstr "Превышено время пропуска карты пустыми командами."
 
-#: src/sgame/sg_main.cpp:2202
+#: src/sgame/sg_main.cpp:2204
 msgid "The game has been paused. Please wait."
 msgstr "Игра была приостановлена. Пожалуйста, подождите."
 
-#: src/sgame/sg_main.cpp:2206
+#: src/sgame/sg_main.cpp:2208
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Сервер: Игра будет автоматически снята с паузы через $1$ секунд"
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2227
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Сервер: Игра была автоматически снята с паузы (максимум $1$ минут(а))"
 
-#: src/sgame/sg_main.cpp:2228
+#: src/sgame/sg_main.cpp:2230
 msgid "The game has been unpaused!"
 msgstr "Игра снята с паузы!"
 
@@ -5033,15 +5174,15 @@ msgstr "Игра снята с паузы!"
 msgid "^1This door is locked!"
 msgstr "^1Эта дверь заперта!"
 
-#: src/sgame/sg_svcmds.cpp:502
+#: src/sgame/sg_svcmds.cpp:527
 msgid "Alien team has admitted defeat"
 msgstr "Команда Чужих признала поражение"
 
-#: src/sgame/sg_svcmds.cpp:507
+#: src/sgame/sg_svcmds.cpp:532
 msgid "Human team has admitted defeat"
 msgstr "Команда Людей признала поражение"
 
-#: src/sgame/sg_svcmds.cpp:540
+#: src/sgame/sg_svcmds.cpp:565
 msgid "Evacuation ordered"
 msgstr "Приказано эвакуироваться"
 

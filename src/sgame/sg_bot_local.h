@@ -128,6 +128,14 @@ enum bot_skill
 
 using skillSet_t = std::bitset<BOT_NUM_SKILLS>;
 
+enum botJetpackState_t
+{
+	BOT_JETPACK_NONE,
+	BOT_JETPACK_NAVCON_WAITING,
+	BOT_JETPACK_NAVCON_FLYING,
+	BOT_JETPACK_NAVCON_LANDING,
+};
+
 #define MAX_NODE_DEPTH 20
 struct AIBehaviorTree_t;
 struct AIGenericNode_t;
@@ -187,6 +195,8 @@ public:
 		botEntityAndDistance_t bestEnemy;
 		botEntityAndDistance_t closestDamagedBuilding; // friendly only
 
+	botJetpackState_t jetpackState;
+
 		// For allied buildable types: closest alive and active buildable
 		// For enemy buildable types: closest alive buildable with a tag beacon
 		botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
@@ -217,7 +227,6 @@ void G_Bot_ResetBehaviorState( botMemory_t &memory );
 struct NavgenConfig;
 navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, class_t species );
 void G_BotShutdownNav();
-void G_BotSetNavMesh( int botClientNum, class_t newClass );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result );
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );

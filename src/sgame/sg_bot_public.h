@@ -57,14 +57,7 @@ void G_BotSelectSpawnClass( gentity_t *self );
 void G_BotListNames( gentity_t *ent );
 bool G_BotClearNames();
 int  G_BotAddNames(team_t team, int arg, int last);
-
-//TODO Area enabling API is very likely untested, plus, it only enables WALK or disable all
-//     so my advice here is: DO NOT USE THAT until a better one is provided.
-// those two function give incorrect behavior if an area is disabled more than once: a node disabled twice will be enabled back on the first try
-// TODO: decide if we want to use G_BotAddObstacle instead
-void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
-void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
-
+void G_BotSetNavMesh( gentity_t *ent );
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum );
 void G_BotRemoveObstacle( int obstacleNum );
 void G_BotUpdateObstacles();
@@ -75,6 +68,7 @@ void G_BotFill( bool immediately );
 void G_BotRemoveObstacle( qhandle_t handle );
 void G_BotUpdateObstacles();
 std::string G_BotToString( gentity_t *bot );
+std::string G_BotBehaviorToString( Str::StringRef behavior );
 
 const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";

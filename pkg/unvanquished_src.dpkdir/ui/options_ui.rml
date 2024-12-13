@@ -21,8 +21,8 @@
 			<panel class="main">
 				<row>
 					<!-- Keep in sync with language menu in options_welcome.rml -->
-					<h3><translate>Language</translate> </h3>
-					<p> <translate>Some languages are not fully translated.</translate> </p>
+					<h3><translate>Language</translate></h3>
+					<p><translate>Some languages are not fully translated.</translate></p>
 
 					<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
 					<select cvar="language">

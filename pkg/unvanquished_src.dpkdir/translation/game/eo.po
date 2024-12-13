@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-04 07:50+0100\n"
+"POT-Creation-Date: 2024-12-13 13:26+0100\n"
 "PO-Revision-Date: 2023-05-31 09:42+0000\n"
 "Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/unvanquished/"
@@ -74,6 +74,10 @@ msgstr ""
 msgid "Fill with bots"
 msgstr ""
 
+#: ui/callvote_fillbots.rml:9
+msgid "How many players (users and bots) should teams have?"
+msgstr ""
+
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
 msgstr ""
@@ -130,6 +134,10 @@ msgstr ""
 
 #: ui/error.rml:11
 msgid "Ok"
+msgstr ""
+
+#: ui/help_gameplay.rml:12
+msgid "Gameplay Guide"
 msgstr ""
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
@@ -483,7 +491,7 @@ msgstr ""
 msgid "Choose your starting equipment:"
 msgstr ""
 
-#: ui/human_spawn.rml:45
+#: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
 msgstr ""
 
@@ -697,19 +705,19 @@ msgstr ""
 msgid "reset"
 msgstr ""
 
-#: ui/options_fov.rml:40
+#: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
 msgstr ""
 
-#: ui/options_fov.rml:48
+#: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
 msgstr ""
 
-#: ui/options_fov.rml:56
+#: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
 msgstr ""
 
-#: ui/options_fov.rml:64
+#: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
 msgstr ""
 
@@ -1488,7 +1496,7 @@ msgstr ""
 msgid "Team vote No:"
 msgstr ""
 
-#: ui/options_keys.rml:142
+#: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
 msgstr ""
 
@@ -1904,19 +1912,19 @@ msgstr ""
 msgid "Pain Saw"
 msgstr ""
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr ""
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr ""
 
-#: ui/options_ui.rml:112
+#: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr ""
 
-#: ui/options_ui.rml:113
+#: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr ""
 
@@ -1924,11 +1932,11 @@ msgstr ""
 msgid "Flamer"
 msgstr ""
 
-#: ui/options_ui.rml:115
+#: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr ""
 
-#: ui/options_ui.rml:116
+#: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr ""
 
@@ -2168,6 +2176,10 @@ msgstr ""
 msgid "Push slow people away from spawns."
 msgstr ""
 
+#: ui/server_setup.rml:93
+msgid "Momentum"
+msgstr ""
+
 #: ui/server_setup.rml:96
 msgid "Half life time"
 msgstr ""
@@ -2228,6 +2240,10 @@ msgstr ""
 msgid "Momentum reward multiplier for killing buildables"
 msgstr ""
 
+#: ui/server_setup.rml:153
+msgid "Build system"
+msgstr ""
+
 #: ui/server_setup.rml:156
 msgid "Starting value"
 msgstr ""
@@ -2260,6 +2276,10 @@ msgstr ""
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
 
+#: ui/server_setup.rml:189
+msgid "Bots: General"
+msgstr ""
+
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
 msgstr ""
@@ -2278,6 +2298,126 @@ msgstr ""
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
+msgstr ""
+
+#: ui/server_setup.rml:206
+msgid "Humanity"
+msgstr ""
+
+#: ui/server_setup.rml:209
+msgid "Field of view"
+msgstr ""
+
+#: ui/server_setup.rml:217
+msgid "Reaction time"
+msgstr ""
+
+#: ui/server_setup.rml:224
+msgid "Behaviour"
+msgstr ""
+
+#: ui/server_setup.rml:227
+msgid "Attack structures"
+msgstr ""
+
+#: ui/server_setup.rml:229
+msgid "Cheating"
+msgstr ""
+
+#: ui/server_setup.rml:232
+msgid "Infinite funds"
+msgstr ""
+
+#: ui/server_setup.rml:236
+msgid "Ignore momentum"
+msgstr ""
+
+#: ui/server_setup.rml:238
+msgid "Navmesh generation"
+msgstr ""
+
+#: ui/server_setup.rml:241
+msgid "Generate navmeshes at load time"
+msgstr ""
+
+#: ui/server_setup.rml:245
+msgid "Number of worker threads"
+msgstr ""
+
+#: ui/server_setup.rml:253
+msgid "Bots: Humans"
+msgstr ""
+
+#: ui/server_setup.rml:254 ui/server_setup.rml:339
+msgid "Overall"
+msgstr ""
+
+#: ui/server_setup.rml:257
+msgid "Human bots purchase equipment"
+msgstr ""
+
+#: ui/server_setup.rml:261 ui/server_setup.rml:346
+msgid "Aim speed modifier (higher is slower)"
+msgstr ""
+
+#: ui/server_setup.rml:267 ui/server_setup.rml:353
+msgid "Individually"
+msgstr ""
+
+#: ui/server_setup.rml:268
+msgid "Primary Weapons"
+msgstr ""
+
+#: ui/server_setup.rml:271
+msgid "Construction Kit (repairs)"
+msgstr ""
+
+#: ui/server_setup.rml:279
+msgid "Painsaw"
+msgstr ""
+
+#: ui/server_setup.rml:299
+msgid "Flamethrower"
+msgstr ""
+
+#: ui/server_setup.rml:309
+msgid "Armors"
+msgstr ""
+
+#: ui/server_setup.rml:312
+msgid "whether bots buy Light Armour"
+msgstr ""
+
+#: ui/server_setup.rml:316
+msgid "whether bots buy Medium Armour"
+msgstr ""
+
+#: ui/server_setup.rml:320
+msgid "whether bots buy the Battlesuit"
+msgstr ""
+
+#: ui/server_setup.rml:325
+msgid "Firebomb"
+msgstr ""
+
+#: ui/server_setup.rml:329
+msgid "Grenade"
+msgstr ""
+
+#: ui/server_setup.rml:333
+msgid "Radar"
+msgstr ""
+
+#: ui/server_setup.rml:342
+msgid "Alien bots morph"
+msgstr ""
+
+#: ui/server_setup.rml:364
+msgid "Advanced Marauder"
+msgstr ""
+
+#: ui/server_setup.rml:372
+msgid "Advanced Dragoon"
 msgstr ""
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
@@ -2300,7 +2440,7 @@ msgstr ""
 msgid "Size:"
 msgstr ""
 
-#: ui/welcome.rml:19
+#: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
 msgstr ""
 
@@ -4682,15 +4822,15 @@ msgstr ""
 msgid "Ten seconds until inactivity drop!"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:71
+#: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:72
+#: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:363
+#: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
 msgstr ""
 
@@ -4778,19 +4918,19 @@ msgstr ""
 msgid "Empty teams skip map time exceeded."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2202
+#: src/sgame/sg_main.cpp:2204
 msgid "The game has been paused. Please wait."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2206
+#: src/sgame/sg_main.cpp:2208
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2227
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2228
+#: src/sgame/sg_main.cpp:2230
 msgid "The game has been unpaused!"
 msgstr ""
 
@@ -4798,15 +4938,15 @@ msgstr ""
 msgid "^1This door is locked!"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:502
+#: src/sgame/sg_svcmds.cpp:527
 msgid "Alien team has admitted defeat"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:507
+#: src/sgame/sg_svcmds.cpp:532
 msgid "Human team has admitted defeat"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:540
+#: src/sgame/sg_svcmds.cpp:565
 msgid "Evacuation ordered"
 msgstr ""
 

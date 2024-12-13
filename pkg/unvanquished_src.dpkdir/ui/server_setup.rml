@@ -90,7 +90,7 @@
 		</panel>
 
 		<!-- MOMENTUM CONFIG -->
-		<tab> Momentum </tab><panel>
+		<tab><translate>Momentum</translate></tab><panel>
 			<row>
 				<parent>
 					<h3><translate>Half life time</translate></h3>
@@ -150,7 +150,7 @@
 		</panel>
 
 		<!-- BUILDPOINTS CONFIG -->
-		<tab> Build system </tab><panel>
+		<tab><translate>Build system</translate></tab><panel>
 			<row>
 				<parent>
 					<h3><translate>Starting value</translate></h3>
@@ -186,7 +186,7 @@
 		</panel>
 
 		<!-- GENERAL BOT CONFIG -->
-		<tab>Bots: General</tab><panel>
+		<tab><translate>Bots: General</translate></tab><panel>
 			<row>
 				<parent>
 					<h3><translate>Minimum bots per team</translate></h3>
@@ -203,10 +203,10 @@
 				<input type="range" min="1" max="9" step="1" cvar="g_bot_defaultSkill"/>
 				<p><inlinecvar cvar="g_bot_defaultSkill" type="number" format="%g"/>&nbsp;<ilink onclick='Cmd.exec("reset g_bot_defaultSkill")'> (reset) </ilink></p>
 			</row>
-			<h2> Humanity </h2>
+			<h2><translate>Humanity</translate></h2>
 			<row>
 				<input type="range" min="45" max="360" step="1" cvar="g_bot_fov"/>
-				<h3> Field of view </h3>
+				<h3><translate>Field of view</translate></h3>
 				<p class="inline">
 					Current: <inlinecvar cvar="g_bot_fov" type="number" format="%.0f"/> degrees
 					<ilink onclick='Cmd.exec("reset g_bot_fov")'> (reset) </ilink>
@@ -214,35 +214,35 @@
 			</row>
 			<row>
 				<input type="range" min="0" max="2000" step="10" cvar="g_bot_reactiontime"/>
-				<h3> Reaction time </h3>
+				<h3><translate>Reaction time</translate></h3>
 				<p class="inline">
 					Current: <inlinecvar cvar="g_bot_reactiontime" type="number" format="%.0f"/> msecs
 					<ilink onclick='Cmd.exec("reset g_bot_reactiontime")'> (reset) </ilink>
 				</p>
 			</row>
 
-			<h2> Behaviour </h2>
+			<h2><translate>Behaviour</translate></h2>
 			<row>
 				<input cvar="g_bot_attackStruct" type="checkbox" />
-				<h3> Attack structures </h3>
+				<h3><translate>Attack structures</translate></h3>
 			</row>
-			<h2>Cheating</h2>
+			<h2><translate>Cheating</translate></h2>
 			<row>
 				<input cvar="g_bot_infiniteFunds" type="checkbox" />
-				<h3> Infinite funds </h3>
+				<h3><translate>Infinite funds</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_infiniteMomentum" type="checkbox" />
-				<h3> Ignore momentum </h3>
+				<h3><translate>Ignore momentum</translate></h3>
 			</row>
-			<h2>Navmesh generation</h2>
+			<h2><translate>Navmesh generation</translate></h2>
 			<row>
 				<input cvar="cg_navgenOnLoad" type="checkbox" />
-				<h3>Generate navmeshes at load time</h3>
+				<h3><translate>Generate navmeshes at load time</translate></h3>
 			</row>
 			<row>
 				<input type="range" min="1" max="16" step="1" cvar="cg_navgenMaxThreads"/>
-				<h3>Number of worker threads</h3>
+				<h3><translate>Number of worker threads</translate></h3>
 				<p class="inline">
 					Current: <inlinecvar cvar="cg_navgenMaxThreads" type="number" format="%.0f"/>
 				</p>
@@ -250,130 +250,130 @@
 		</panel>
 
 		<!-- HUMANS BOT CONFIG -->
-		<tab>Bots: Humans </tab> <panel>
-			<h2> Overall </h2>
+		<tab><translate>Bots: Humans</translate></tab><panel>
+			<h2><translate>Overall</translate></h2>
 			<row>
 				<input cvar="g_bot_buy" type="checkbox" />
-				<h3> Human bots purchase equipment </h3>
+				<h3><translate>Human bots purchase equipment</translate></h3>
 			</row>
 			<row>
 				<input type="range" min="0" max="2000" step="10" cvar="g_bot_humanAimDelay"/>
-				<h3> Aim speed modifier (higher is slower)</h3>
+				<h3><translate>Aim speed modifier (higher is slower)</translate></h3>
 				<p class="inline">
 					Current: <inlinecvar cvar="g_bot_humanAimDelay" type="number" format="%.0f"/> msecs
 					<ilink onclick='Cmd.exec("reset g_bot_humanAimDelay")'> (reset) </ilink>
 				</p>
 			</row>
-			<h2> Individually </h2>
-			<h3> Primary Weapons </h3>
+			<h2><translate>Individually</translate></h2>
+			<h3><translate>Primary Weapons</translate></h3>
 			<row>
 				<input cvar="g_bot_ckit" type="checkbox" />
-				<h3> Construction Kit (repairs) </h3>
+				<h3><translate>Construction Kit (repairs)</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_rifle" type="checkbox" />
-				<h3> SMG </h3>
+				<h3><translate>SMG</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_painsaw" type="checkbox" />
-				<h3> Painsaw </h3>
+				<h3><translate>Painsaw</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_shotgun" type="checkbox" />
-				<h3> Shotgun </h3>
+				<h3><translate>Shotgun</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_lasgun" type="checkbox" />
-				<h3> Lasgun </h3>
+				<h3><translate>Lasgun</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_mdriver" type="checkbox" />
-				<h3> Mass Driver </h3>
+				<h3><translate>Mass Driver</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_chain" type="checkbox" />
-				<h3> Chaingun </h3>
+				<h3><translate>Chaingun</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_flamer" type="checkbox" />
-				<h3> Flamethrower </h3>
+				<h3><translate>Flamethrower</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_prifle" type="checkbox" />
-				<h3> Pulse Rifle </h3>
+				<h3><translate>Pulse Rifle</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_lcannon" type="checkbox" />
-				<h3> Lucifer Cannon </h3>
+				<h3><translate>Lucifer Cannon</translate></h3>
 			</row>
-			<h3> Armors </h3>
+			<h3><translate>Armors</translate></h3>
 			<row>
 				<input cvar="g_bot_lightarmour" type="checkbox" />
-				<h3> whether bots buy Light Armour </h3>
+				<h3><translate>whether bots buy Light Armour</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_mediumarmour" type="checkbox" />
-				<h3> whether bots buy Medium Armour </h3>
+				<h3><translate>whether bots buy Medium Armour</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_battlesuit" type="checkbox" />
-				<h3> whether bots buy the Battlesuit </h3>
+				<h3><translate>whether bots buy the Battlesuit</translate></h3>
 			</row>
-			<h3> Misc </h3>
+			<h3><translate>Misc</translate></h3>
 			<row>
 				<input cvar="g_bot_firebomb" type="checkbox" />
-				<h3> Firebomb </h3>
+				<h3><translate>Firebomb</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_grenade" type="checkbox" />
-				<h3> Grenade </h3>
+				<h3><translate>Grenade</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_radar" type="checkbox" />
-				<h3> Radar </h3>
+				<h3><translate>Radar</translate></h3>
 			</row>
 		</panel>
 
 		<!-- ALIENS BOT CONFIG -->
 		<tab>Bots: Aliens </tab> <panel>
-			<h2> Overall </h2>
+			<h2><translate>Overall</translate></h2>
 			<row>
 				<input cvar="g_bot_evolve" type="checkbox" />
-				<h3> Alien bots morph </h3>
+				<h3><translate>Alien bots morph</translate></h3>
 			</row>
 			<row>
 				<input type="range" min="0" max="2000" step="10" cvar="g_bot_alienAimDelay"/>
-				<h3> Aim speed modifier (higher is slower)</h3>
+				<h3><translate>Aim speed modifier (higher is slower)</translate></h3>
 				<p class="inline">
 					Current: <inlinecvar cvar="g_bot_alienAimDelay" type="number" format="%.0f"/> msecs
 					<ilink onclick='Cmd.exec("reset g_bot_alienAimDelay")'> (reset) </ilink>
 				</p>
 			</row>
 
-			<h2> Individually </h2>
+			<h2><translate>Individually</translate></h2>
 			<row>
 				<input cvar="g_bot_level1" type="checkbox" />
-				<h3> Mantis </h3>
+				<h3><translate>Mantis</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_level2" type="checkbox" />
-				<h3> Marauder </h3>
+				<h3><translate>Marauder</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_level2upg" type="checkbox" />
-				<h3> Advanced Marauder </h3>
+				<h3><translate>Advanced Marauder</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_level3" type="checkbox" />
-				<h3> Dragoon </h3>
+				<h3><translate>Dragoon</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_level3upg" type="checkbox" />
-				<h3> Advanced Dragoon </h3>
+				<h3><translate>Advanced Dragoon</translate></h3>
 			</row>
 			<row>
 				<input cvar="g_bot_level4" type="checkbox" />
-				<h3> Tyrant </h3>
+				<h3><translate>Tyrant</translate></h3>
 			</row>
 		</panel>
 

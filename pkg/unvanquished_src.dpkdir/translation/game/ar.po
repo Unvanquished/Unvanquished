@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-04 07:50+0100\n"
-"PO-Revision-Date: 2024-08-17 09:20+0000\n"
-"Last-Translator: saif hseen <saifhseen6@gmail.com>\n"
+"POT-Creation-Date: 2024-12-13 13:26+0100\n"
+"PO-Revision-Date: 2024-12-08 11:14+0000\n"
+"Last-Translator: lee-00 <xfz-op@outlook.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -35,7 +35,7 @@ msgstr "تطور"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "نقط التحول"
+msgstr "نقاط التحول"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -75,6 +75,10 @@ msgstr "ضع تصويت"
 msgid "Fill with bots"
 msgstr "املأ بلاعبين روبوتات"
 
+#: ui/callvote_fillbots.rml:9
+msgid "How many players (users and bots) should teams have?"
+msgstr ""
+
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
 msgstr "الفريقين"
@@ -87,7 +91,7 @@ msgstr "الفضائين"
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr "الناس"
+msgstr "البشر"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
@@ -99,19 +103,19 @@ msgstr "كمية"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr "تغيير الملعب"
+msgstr "تغيير الخريطة"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "صوت: تغيير الملعب التالي"
+msgstr "صوت: تغيير الخريطة التالية"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "صوت: حدد الملعب الحالي"
+msgstr "صوت: حدد الخريطة الحالية"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "حدد الملعب الحالي (المضيف)"
+msgstr "حدد الخريطة الحالية (المضيف)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
@@ -133,6 +137,10 @@ msgstr "خطأ!"
 msgid "Ok"
 msgstr "حسنا"
 
+#: ui/help_gameplay.rml:12
+msgid "Gameplay Guide"
+msgstr ""
+
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "مرحبا"
@@ -147,7 +155,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr "يمكن العثور على المزيد في موقعنا و مواقع المجنمع الأخرى!"
+msgstr "يمكن العثور على المزيد في موقعنا و مواقع المجتمع الأخرى!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
@@ -249,7 +257,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
-msgstr ""
+msgstr "هياكل التعدين"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -300,7 +308,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "حريق"
 
 #: ui/help_gameplay.rml:94
 msgid ""
@@ -340,7 +348,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr ""
+msgstr "علاج"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
@@ -384,7 +392,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr ""
+msgstr "المشي على الحائط"
 
 #: ui/help_gameplay.rml:142
 msgid ""
@@ -456,7 +464,7 @@ msgstr ""
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "الحياة"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
@@ -468,7 +476,7 @@ msgstr ""
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "نقاط البناء"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -476,7 +484,7 @@ msgstr ""
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "الأسلحة"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
@@ -484,11 +492,11 @@ msgstr ""
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "المدى:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "الضرر:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
@@ -500,9 +508,9 @@ msgstr ""
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "اختار تجهيزات البداية:"
 
-#: ui/human_spawn.rml:45
+#: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
 msgstr ""
 
@@ -527,11 +535,11 @@ msgstr ""
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "الخريطة:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "الوقت:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -573,11 +581,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "مباراة"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr ""
+msgstr "غادر المباراة"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
@@ -593,11 +601,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "إعداد الخادم"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr ""
+msgstr "إيقاف الخادم"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
@@ -605,11 +613,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "روبوتات"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr ""
+msgstr "القائمة الرئيسية"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
@@ -621,7 +629,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr ""
+msgstr "الإعدادات"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
@@ -641,15 +649,15 @@ msgstr ""
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr ""
+msgstr "أضف روبوت فضائي"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr ""
+msgstr "أضف روبوت بشري"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr ""
+msgstr "إزالة جميع الروبوتات"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
@@ -657,15 +665,15 @@ msgstr ""
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr ""
+msgstr "نعم"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr ""
+msgstr "أو"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr ""
+msgstr "لا"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
@@ -673,7 +681,7 @@ msgstr ""
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr ""
+msgstr "طرد الروبوتات"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
@@ -685,7 +693,7 @@ msgstr ""
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr ""
+msgstr "اعترف بالهزيمة"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -716,19 +724,19 @@ msgstr ""
 msgid "reset"
 msgstr ""
 
-#: ui/options_fov.rml:40
+#: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
 msgstr ""
 
-#: ui/options_fov.rml:48
+#: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
 msgstr ""
 
-#: ui/options_fov.rml:56
+#: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
 msgstr ""
 
-#: ui/options_fov.rml:64
+#: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
 msgstr ""
 
@@ -742,7 +750,7 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "معطل"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -754,7 +762,7 @@ msgstr ""
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "قوي"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
@@ -770,7 +778,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr ""
+msgstr "الروسومات"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
@@ -778,7 +786,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "الحد الادنى"
 
 #: ui/options_graphics.rml:28
 msgid ""
@@ -789,7 +797,7 @@ msgstr ""
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
 msgid "Low"
-msgstr ""
+msgstr "منخفض"
 
 #: ui/options_graphics.rml:32
 msgid ""
@@ -799,7 +807,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr ""
+msgstr "متوسط"
 
 #: ui/options_graphics.rml:36
 msgid ""
@@ -810,7 +818,7 @@ msgstr ""
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:255
 #: ui/options_graphics.rml:367 ui/options_graphics.rml:375
 msgid "High"
-msgstr ""
+msgstr "عالي"
 
 #: ui/options_graphics.rml:40
 msgid ""
@@ -820,7 +828,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "الحد الاقصى"
 
 #: ui/options_graphics.rml:44
 msgid ""
@@ -830,7 +838,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "فيديو"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
@@ -850,11 +858,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "الشاشة كاملة"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr ""
+msgstr "إيقاف"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
@@ -877,22 +885,22 @@ msgstr ""
 
 #: ui/options_graphics.rml:84
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "تقريب سريع مضاد للتعرج (FXAA)"
 
 #: ui/options_graphics.rml:88 ui/options_graphics.rml:135
 #: ui/options_graphics.rml:199 ui/options_graphics.rml:238
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "التطبيق الأن"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "الإضاءة"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr ""
+msgstr "الأضواء"
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
@@ -900,7 +908,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:97
 msgid "normal"
-msgstr ""
+msgstr "عادي"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
@@ -963,16 +971,16 @@ msgstr ""
 
 #: ui/options_graphics.rml:129
 msgid "low"
-msgstr ""
+msgstr "منخفض"
 
 #: ui/options_graphics.rml:130 ui/options_graphics.rml:351
 #: ui/options_ui.rml:177
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
-msgstr ""
+msgstr "الظلال"
 
 #: ui/options_graphics.rml:139
 msgid "Textures"
@@ -980,31 +988,31 @@ msgstr ""
 
 #: ui/options_graphics.rml:141 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "عام"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "بلا حدود"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr ""
+msgstr "(الحد الاقصى)"
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
-msgstr ""
+msgstr "(عالي)"
 
 #: ui/options_graphics.rml:147
 msgid "(medium)"
-msgstr ""
+msgstr "(متوسط)"
 
 #: ui/options_graphics.rml:148
 msgid "(low)"
-msgstr ""
+msgstr "(منخفض)"
 
 #: ui/options_graphics.rml:149
 msgid "(lowest)"
-msgstr ""
+msgstr "(الحد الادنى)"
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
@@ -1016,11 +1024,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
-msgstr ""
+msgstr "ليس أصغر من الشاشة"
 
 #: ui/options_graphics.rml:159
 msgid "No larger than screen"
-msgstr ""
+msgstr "ليس أكبر من الشاشة"
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
@@ -1052,7 +1060,7 @@ msgstr ""
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:329
 #: ui/options_graphics.rml:334 ui/options_graphics.rml:339
 msgid "Experimental."
-msgstr ""
+msgstr "تجريبي."
 
 #: ui/options_graphics.rml:177
 msgid "Mip-mapping"
@@ -1066,7 +1074,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
 msgid "No"
-msgstr ""
+msgstr "لا"
 
 #: ui/options_graphics.rml:187
 msgid "Anisotropic mip-mapping"
@@ -1082,7 +1090,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:192
 msgid "better"
-msgstr ""
+msgstr "أفضل"
 
 #: ui/options_graphics.rml:193
 msgid "Bilinear"
@@ -1098,7 +1106,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "السماء"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
@@ -1160,19 +1168,19 @@ msgstr ""
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "منخفض جدا"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
-msgstr ""
+msgstr "متوسط"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "عالي جدا"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "الجودة"
 
 #: ui/options_graphics.rml:259
 msgid ""
@@ -1187,11 +1195,11 @@ msgstr ""
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "الحالي:"
 
 #: ui/options_graphics.rml:272 ui/options_ui.rml:129
 msgid "Never"
-msgstr ""
+msgstr "أبداً"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
@@ -1212,7 +1220,7 @@ msgstr ""
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "التأثيرات"
 
 #: ui/options_graphics.rml:289
 msgid "Bloom"
@@ -1302,43 +1310,43 @@ msgstr ""
 
 #: ui/options_graphics.rml:351
 msgid "disabled"
-msgstr ""
+msgstr "معطل"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
-msgstr ""
+msgstr "جميع الهياكل"
 
 #: ui/options_graphics.rml:353
 msgid "Support structures"
-msgstr ""
+msgstr "هياكل الدعم"
 
 #: ui/options_graphics.rml:354
 msgid "Offensive structures"
-msgstr ""
+msgstr "الهياكل الهجومية"
 
 #: ui/options_graphics.rml:355
 msgid "Alien structures"
-msgstr ""
+msgstr "الهياكل الفضائية"
 
 #: ui/options_graphics.rml:356
 msgid "Human structures"
-msgstr ""
+msgstr "الهياكل البشرية"
 
 #: ui/options_graphics.rml:357
 msgid "Alien support structures"
-msgstr ""
+msgstr "هياكل الدعم الفضائية"
 
 #: ui/options_graphics.rml:358
 msgid "Human support structures"
-msgstr ""
+msgstr "هياكل الدعم البشرية"
 
 #: ui/options_graphics.rml:359
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "الهياكل الهجومية الفضائية"
 
 #: ui/options_graphics.rml:360
 msgid "Offensive human structures"
-msgstr ""
+msgstr "الهياكل الهجومية البشرية"
 
 #: ui/options_graphics.rml:362
 msgid "Building ranges"
@@ -1397,55 +1405,55 @@ msgstr ""
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr ""
+msgstr "تحرك"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr ""
+msgstr "اجري / امشي:"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "جري سريع:"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "الى الامام:"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr ""
+msgstr "الى الخلف:"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "تحرك الى اليسار:"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "تحرك الى اليمين:"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr ""
+msgstr "إقفز:"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr ""
+msgstr "انحناء:"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr ""
+msgstr "المشي على الحائط:"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "القدرات"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "الهجوم الرئيسي:"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "الهجوم الثانوي:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
@@ -1453,11 +1461,11 @@ msgstr ""
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr ""
+msgstr "إرمي القنبلة اليدوية:"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr ""
+msgstr "إعادة التعبئة:"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
@@ -1465,15 +1473,15 @@ msgstr ""
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "إستخدم الهيكل:"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "تحول:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "دردشة/تصويت"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
@@ -1493,11 +1501,11 @@ msgstr ""
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "صوت نعم:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "صوت لا:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
@@ -1507,7 +1515,7 @@ msgstr ""
 msgid "Team vote No:"
 msgstr ""
 
-#: ui/options_keys.rml:142
+#: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
 msgstr ""
 
@@ -1547,11 +1555,11 @@ msgstr ""
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "أنظر للأعلى:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "أنظر للأسفل:"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
@@ -1623,7 +1631,7 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
-msgstr ""
+msgstr "الحركة"
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
@@ -1661,15 +1669,15 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "عطّل"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
-msgstr ""
+msgstr "البشر فقط"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr ""
+msgstr "البشر و الفضائيين"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
@@ -1697,7 +1705,7 @@ msgstr ""
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "إعدادات اللاعب"
 
 #: ui/options_player.rml:20
 msgid "Personal"
@@ -1749,7 +1757,7 @@ msgstr ""
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "الأخرين"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
@@ -1769,11 +1777,11 @@ msgstr ""
 
 #: ui/options.rml:11
 msgid "Player"
-msgstr ""
+msgstr "اللاعب"
 
 #: ui/options.rml:21 ui/options_sound.rml:7
 msgid "Sound"
-msgstr ""
+msgstr "الصوت"
 
 #: ui/options.rml:23
 msgid "User interface and HUD"
@@ -1785,7 +1793,7 @@ msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "الموسيقى"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1821,7 +1829,7 @@ msgstr ""
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "اللغة"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -1829,7 +1837,7 @@ msgstr ""
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "تغيير اللغة"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
@@ -1837,11 +1845,11 @@ msgstr ""
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr ""
+msgstr "12 ساعة"
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr ""
+msgstr "24 ساعة"
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
@@ -1923,19 +1931,19 @@ msgstr ""
 msgid "Pain Saw"
 msgstr ""
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr ""
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr ""
 
-#: ui/options_ui.rml:112
+#: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr ""
 
-#: ui/options_ui.rml:113
+#: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr ""
 
@@ -1943,11 +1951,11 @@ msgstr ""
 msgid "Flamer"
 msgstr ""
 
-#: ui/options_ui.rml:115
+#: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr ""
 
-#: ui/options_ui.rml:116
+#: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr ""
 
@@ -1961,7 +1969,7 @@ msgstr ""
 
 #: ui/options_ui.rml:131
 msgid "Always"
-msgstr ""
+msgstr "دائماً"
 
 #: ui/options_ui.rml:136
 msgid "Crosshair size"
@@ -2187,6 +2195,10 @@ msgstr ""
 msgid "Push slow people away from spawns."
 msgstr ""
 
+#: ui/server_setup.rml:93
+msgid "Momentum"
+msgstr ""
+
 #: ui/server_setup.rml:96
 msgid "Half life time"
 msgstr ""
@@ -2247,6 +2259,10 @@ msgstr ""
 msgid "Momentum reward multiplier for killing buildables"
 msgstr ""
 
+#: ui/server_setup.rml:153
+msgid "Build system"
+msgstr ""
+
 #: ui/server_setup.rml:156
 msgid "Starting value"
 msgstr ""
@@ -2279,6 +2295,10 @@ msgstr ""
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
 
+#: ui/server_setup.rml:189
+msgid "Bots: General"
+msgstr ""
+
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
 msgstr ""
@@ -2297,6 +2317,126 @@ msgstr ""
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
+msgstr ""
+
+#: ui/server_setup.rml:206
+msgid "Humanity"
+msgstr ""
+
+#: ui/server_setup.rml:209
+msgid "Field of view"
+msgstr ""
+
+#: ui/server_setup.rml:217
+msgid "Reaction time"
+msgstr ""
+
+#: ui/server_setup.rml:224
+msgid "Behaviour"
+msgstr ""
+
+#: ui/server_setup.rml:227
+msgid "Attack structures"
+msgstr ""
+
+#: ui/server_setup.rml:229
+msgid "Cheating"
+msgstr ""
+
+#: ui/server_setup.rml:232
+msgid "Infinite funds"
+msgstr ""
+
+#: ui/server_setup.rml:236
+msgid "Ignore momentum"
+msgstr ""
+
+#: ui/server_setup.rml:238
+msgid "Navmesh generation"
+msgstr ""
+
+#: ui/server_setup.rml:241
+msgid "Generate navmeshes at load time"
+msgstr ""
+
+#: ui/server_setup.rml:245
+msgid "Number of worker threads"
+msgstr ""
+
+#: ui/server_setup.rml:253
+msgid "Bots: Humans"
+msgstr ""
+
+#: ui/server_setup.rml:254 ui/server_setup.rml:339
+msgid "Overall"
+msgstr ""
+
+#: ui/server_setup.rml:257
+msgid "Human bots purchase equipment"
+msgstr ""
+
+#: ui/server_setup.rml:261 ui/server_setup.rml:346
+msgid "Aim speed modifier (higher is slower)"
+msgstr ""
+
+#: ui/server_setup.rml:267 ui/server_setup.rml:353
+msgid "Individually"
+msgstr ""
+
+#: ui/server_setup.rml:268
+msgid "Primary Weapons"
+msgstr ""
+
+#: ui/server_setup.rml:271
+msgid "Construction Kit (repairs)"
+msgstr ""
+
+#: ui/server_setup.rml:279
+msgid "Painsaw"
+msgstr ""
+
+#: ui/server_setup.rml:299
+msgid "Flamethrower"
+msgstr ""
+
+#: ui/server_setup.rml:309
+msgid "Armors"
+msgstr ""
+
+#: ui/server_setup.rml:312
+msgid "whether bots buy Light Armour"
+msgstr ""
+
+#: ui/server_setup.rml:316
+msgid "whether bots buy Medium Armour"
+msgstr ""
+
+#: ui/server_setup.rml:320
+msgid "whether bots buy the Battlesuit"
+msgstr ""
+
+#: ui/server_setup.rml:325
+msgid "Firebomb"
+msgstr ""
+
+#: ui/server_setup.rml:329
+msgid "Grenade"
+msgstr ""
+
+#: ui/server_setup.rml:333
+msgid "Radar"
+msgstr ""
+
+#: ui/server_setup.rml:342
+msgid "Alien bots morph"
+msgstr ""
+
+#: ui/server_setup.rml:364
+msgid "Advanced Marauder"
+msgstr ""
+
+#: ui/server_setup.rml:372
+msgid "Advanced Dragoon"
 msgstr ""
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
@@ -2319,7 +2459,7 @@ msgstr ""
 msgid "Size:"
 msgstr ""
 
-#: ui/welcome.rml:19
+#: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
 msgstr ""
 
@@ -4701,15 +4841,15 @@ msgstr ""
 msgid "Ten seconds until inactivity drop!"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:71
+#: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:72
+#: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:363
+#: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
 msgstr ""
 
@@ -4797,19 +4937,19 @@ msgstr ""
 msgid "Empty teams skip map time exceeded."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2202
+#: src/sgame/sg_main.cpp:2204
 msgid "The game has been paused. Please wait."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2206
+#: src/sgame/sg_main.cpp:2208
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2227
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2228
+#: src/sgame/sg_main.cpp:2230
 msgid "The game has been unpaused!"
 msgstr ""
 
@@ -4817,15 +4957,15 @@ msgstr ""
 msgid "^1This door is locked!"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:502
+#: src/sgame/sg_svcmds.cpp:527
 msgid "Alien team has admitted defeat"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:507
+#: src/sgame/sg_svcmds.cpp:532
 msgid "Human team has admitted defeat"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:540
+#: src/sgame/sg_svcmds.cpp:565
 msgid "Evacuation ordered"
 msgstr ""
 

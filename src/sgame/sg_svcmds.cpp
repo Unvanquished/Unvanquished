@@ -81,6 +81,31 @@ public:
 };
 static TraceCmd traceRegistration;
 
+class ShowBehaviorCmd : public Cmd::StaticCmd
+{
+public:
+	ShowBehaviorCmd() : StaticCmd( "showBehavior", 0, "print the textual representation of a bot behavior tree" ) {}
+	void Run( const Cmd::Args& args ) const override
+	{
+		if ( args.Argc() != 2 )
+		{
+			PrintUsage( args, "<behavior>" );
+			return;
+		}
+
+		std::string str = G_BotBehaviorToString( args.Argv( 1 ) );
+		if ( str.empty() )
+		{
+			Print( "behavior `%s` does not exist", args.Argv( 1 ) );
+		}
+		else
+		{
+			Print( str );
+		}
+	}
+};
+static ShowBehaviorCmd showBehaviorRegistration;
+
 static void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];

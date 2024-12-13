@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-04 07:50+0100\n"
+"POT-Creation-Date: 2024-12-13 13:26+0100\n"
 "PO-Revision-Date: 2024-10-14 17:46+0000\n"
 "Last-Translator: Marco Ciampa <ciampix@posteo.net>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
@@ -75,6 +75,10 @@ msgstr "Crea una votazione"
 msgid "Fill with bots"
 msgstr "Riempi con dei bot"
 
+#: ui/callvote_fillbots.rml:9
+msgid "How many players (users and bots) should teams have?"
+msgstr ""
+
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
 msgstr "Entrambe le squadre"
@@ -132,6 +136,10 @@ msgstr "Errore!"
 #: ui/error.rml:11
 msgid "Ok"
 msgstr "Va bene"
+
+#: ui/help_gameplay.rml:12
+msgid "Gameplay Guide"
+msgstr ""
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -596,7 +604,7 @@ msgstr "Potenziamenti"
 msgid "Choose your starting equipment:"
 msgstr "Scegli il tuo equipaggiamento di partenza:"
 
-#: ui/human_spawn.rml:45
+#: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
 msgstr "SMG"
 
@@ -823,19 +831,19 @@ msgstr "gradi"
 msgid "reset"
 msgstr "resetta"
 
-#: ui/options_fov.rml:40
+#: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
 msgstr "Mantide"
 
-#: ui/options_fov.rml:48
+#: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
 msgstr "Marauder"
 
-#: ui/options_fov.rml:56
+#: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
 msgstr "Dragoon"
 
-#: ui/options_fov.rml:64
+#: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
 msgstr "Tyrant"
 
@@ -1635,7 +1643,7 @@ msgstr "Voto di squadra Si:"
 msgid "Team vote No:"
 msgstr "Voto di squadra No:"
 
-#: ui/options_keys.rml:142
+#: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
 msgstr "Altro"
 
@@ -2061,19 +2069,19 @@ msgstr "Fucile"
 msgid "Pain Saw"
 msgstr "Sega del dolore"
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr "Doppietta"
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr "Fucile laser"
 
-#: ui/options_ui.rml:112
+#: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr "Sposta massa"
 
-#: ui/options_ui.rml:113
+#: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr "Mitragliatrice"
 
@@ -2081,11 +2089,11 @@ msgstr "Mitragliatrice"
 msgid "Flamer"
 msgstr "Lanciafiamme"
 
-#: ui/options_ui.rml:115
+#: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr "Fucile a impulsi"
 
-#: ui/options_ui.rml:116
+#: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr "Cannone Lucifer"
 
@@ -2329,6 +2337,10 @@ msgstr "Sistema di antiblocco spawn"
 msgid "Push slow people away from spawns."
 msgstr "Spingi persone lente via dagli spawn."
 
+#: ui/server_setup.rml:93
+msgid "Momentum"
+msgstr ""
+
 #: ui/server_setup.rml:96
 msgid "Half life time"
 msgstr "Tempo di metà vita"
@@ -2390,6 +2402,10 @@ msgstr "Moltiplicatore compenso per distruzione struttura"
 msgid "Momentum reward multiplier for killing buildables"
 msgstr "Moltiplicatore ricompensa momento per la distruzione di costruzioni"
 
+#: ui/server_setup.rml:153
+msgid "Build system"
+msgstr ""
+
 #: ui/server_setup.rml:156
 msgid "Starting value"
 msgstr "Valore iniziale"
@@ -2425,6 +2441,10 @@ msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
 "Durata di tempo prima che il ripristino di punti diventi due volte più lento"
 
+#: ui/server_setup.rml:189
+msgid "Bots: General"
+msgstr ""
+
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
 msgstr "Numero minimo di bot per squadra"
@@ -2444,6 +2464,126 @@ msgstr "Livello di abilità predefinito"
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
 msgstr "Funziona solo per i bot nuovi."
+
+#: ui/server_setup.rml:206
+msgid "Humanity"
+msgstr ""
+
+#: ui/server_setup.rml:209
+msgid "Field of view"
+msgstr ""
+
+#: ui/server_setup.rml:217
+msgid "Reaction time"
+msgstr ""
+
+#: ui/server_setup.rml:224
+msgid "Behaviour"
+msgstr ""
+
+#: ui/server_setup.rml:227
+msgid "Attack structures"
+msgstr ""
+
+#: ui/server_setup.rml:229
+msgid "Cheating"
+msgstr ""
+
+#: ui/server_setup.rml:232
+msgid "Infinite funds"
+msgstr ""
+
+#: ui/server_setup.rml:236
+msgid "Ignore momentum"
+msgstr ""
+
+#: ui/server_setup.rml:238
+msgid "Navmesh generation"
+msgstr ""
+
+#: ui/server_setup.rml:241
+msgid "Generate navmeshes at load time"
+msgstr ""
+
+#: ui/server_setup.rml:245
+msgid "Number of worker threads"
+msgstr ""
+
+#: ui/server_setup.rml:253
+msgid "Bots: Humans"
+msgstr ""
+
+#: ui/server_setup.rml:254 ui/server_setup.rml:339
+msgid "Overall"
+msgstr ""
+
+#: ui/server_setup.rml:257
+msgid "Human bots purchase equipment"
+msgstr ""
+
+#: ui/server_setup.rml:261 ui/server_setup.rml:346
+msgid "Aim speed modifier (higher is slower)"
+msgstr ""
+
+#: ui/server_setup.rml:267 ui/server_setup.rml:353
+msgid "Individually"
+msgstr ""
+
+#: ui/server_setup.rml:268
+msgid "Primary Weapons"
+msgstr ""
+
+#: ui/server_setup.rml:271
+msgid "Construction Kit (repairs)"
+msgstr ""
+
+#: ui/server_setup.rml:279
+msgid "Painsaw"
+msgstr ""
+
+#: ui/server_setup.rml:299
+msgid "Flamethrower"
+msgstr ""
+
+#: ui/server_setup.rml:309
+msgid "Armors"
+msgstr ""
+
+#: ui/server_setup.rml:312
+msgid "whether bots buy Light Armour"
+msgstr ""
+
+#: ui/server_setup.rml:316
+msgid "whether bots buy Medium Armour"
+msgstr ""
+
+#: ui/server_setup.rml:320
+msgid "whether bots buy the Battlesuit"
+msgstr ""
+
+#: ui/server_setup.rml:325
+msgid "Firebomb"
+msgstr ""
+
+#: ui/server_setup.rml:329
+msgid "Grenade"
+msgstr ""
+
+#: ui/server_setup.rml:333
+msgid "Radar"
+msgstr ""
+
+#: ui/server_setup.rml:342
+msgid "Alien bots morph"
+msgstr ""
+
+#: ui/server_setup.rml:364
+msgid "Advanced Marauder"
+msgstr ""
+
+#: ui/server_setup.rml:372
+msgid "Advanced Dragoon"
+msgstr ""
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
@@ -2466,7 +2606,7 @@ msgstr "Velocità scaricamento:"
 msgid "Size:"
 msgstr "Dimensione:"
 
-#: ui/welcome.rml:19
+#: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
 msgstr "Benvenuti in Unvanquished"
 
@@ -4958,15 +5098,15 @@ msgstr ""
 msgid "Ten seconds until inactivity drop!"
 msgstr "10 secondi se inattivi!"
 
-#: src/sgame/sg_bot.cpp:71
+#: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
 msgstr "^3Nomi dei bot alieni:"
 
-#: src/sgame/sg_bot.cpp:72
+#: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
 msgstr "^3Nomi dei bot umani:"
 
-#: src/sgame/sg_bot.cpp:363
+#: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
 msgstr "$1$^* si è disconnesso"
 
@@ -5054,19 +5194,19 @@ msgstr "Vincono gli Alieni"
 msgid "Empty teams skip map time exceeded."
 msgstr "Mappa saltata, tempo massimo scaduto con le squadre senza giocatori."
 
-#: src/sgame/sg_main.cpp:2202
+#: src/sgame/sg_main.cpp:2204
 msgid "The game has been paused. Please wait."
 msgstr "Il gioco è stato messo in pausa. Per favore attendi."
 
-#: src/sgame/sg_main.cpp:2206
+#: src/sgame/sg_main.cpp:2208
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Server: Il gioco riprenderà tra $1$ secondi"
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2227
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Server: il gioco è ripartito automaticamente ($1$ minutes max)"
 
-#: src/sgame/sg_main.cpp:2228
+#: src/sgame/sg_main.cpp:2230
 msgid "The game has been unpaused!"
 msgstr "Il gioco è ripartito!"
 
@@ -5074,15 +5214,15 @@ msgstr "Il gioco è ripartito!"
 msgid "^1This door is locked!"
 msgstr "^1Questa porta è chiusa!"
 
-#: src/sgame/sg_svcmds.cpp:502
+#: src/sgame/sg_svcmds.cpp:527
 msgid "Alien team has admitted defeat"
 msgstr "Gli Alieni hanno ammesso la sconfitta"
 
-#: src/sgame/sg_svcmds.cpp:507
+#: src/sgame/sg_svcmds.cpp:532
 msgid "Human team has admitted defeat"
 msgstr "Gli Umani hanno ammesso la sconfitta"
 
-#: src/sgame/sg_svcmds.cpp:540
+#: src/sgame/sg_svcmds.cpp:565
 msgid "Evacuation ordered"
 msgstr "Ordine di evacuazione"
 

@@ -46,6 +46,7 @@ All vectors used as inputs and outputs to functions here use the engine's coordi
 ====================
 */
 
+#if 0
 static void BotSetPolyFlags(
 	const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs, unsigned short flags )
 {
@@ -63,6 +64,7 @@ static void BotSetPolyFlags(
 	rVec extents(qExtents);
 
 	// setup a filter so our queries include disabled polygons
+	// FIXME: that doesn't make sense! POLYFLAGS_DISABLED is 0
 	dtQueryFilter filter;
 	filter.setIncludeFlags( POLYFLAGS_WALK | POLYFLAGS_DISABLED );
 	filter.setExcludeFlags( 0 );
@@ -84,20 +86,14 @@ static void BotSetPolyFlags(
 		}
 	}
 }
+#endif
 
-void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
+// must be called on class or upgrade change
+// sets navmesh and polyflag filter
+void G_BotSetNavMesh( gentity_t *ent )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
-}
-
-void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
-{
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
-}
-
-void G_BotSetNavMesh( int botClientNum, class_t newClass )
-{
-	newClass = NavmeshForClass( newClass, g_bot_navmeshReduceTypes.Get() );
+	class_t newClass = NavmeshForClass( static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] ),
+	                                    g_bot_navmeshReduceTypes.Get() );
 
 	NavData_t *nav = nullptr;
 
@@ -110,7 +106,7 @@ void G_BotSetNavMesh( int botClientNum, class_t newClass )
 		}
 	}
 
-	Bot_t &bot = agents[ botClientNum ];
+	Bot_t &bot = agents[ ent->num() ];
 
 	if ( !nav )
 	{
@@ -134,10 +130,17 @@ void G_BotSetNavMesh( int botClientNum, class_t newClass )
 		}
 	}
 
+	int polyflags = POLYFLAGS_WALK;
+	if ( BG_InventoryContainsUpgrade( UP_JETPACK, ent->client->ps.stats ) )
+	{
+		polyflags |= POLYFLAGS_JETPACK;
+	}
+	nav->filter.setIncludeFlags( polyflags );
+
 	bot.nav = nav;
 	float clearVec[3]{};
 	bot.corridor.reset( 0, clearVec );
-	bot.clientNum = botClientNum;
+	bot.clientNum = ent->num();
 	bot.needReplan = true;
 	bot.offMesh = false;
 	bot.numCorners = 0;

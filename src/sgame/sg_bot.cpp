@@ -39,6 +39,11 @@ static Cvar::Cvar<int> traceClient(
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
 
+AIBehaviorTree_t *BotBehaviorTree( Str::StringRef behavior )
+{
+	return ReadBehaviorTree( behavior.c_str(), &treeList );
+}
+
 /*
 =======================
 Bot management functions
@@ -427,6 +432,8 @@ Bot Thinks
 =======================
 */
 
+static Cvar::Cvar<float> g_bot_jetpackTimeout("g_bot_jetpackTimeout", "time in milliseconds until a jetpack flight is aborted", Cvar::NONE, 10000);
+
 void G_BotThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
@@ -515,6 +522,20 @@ void G_BotThink( gentity_t *self )
 		if ( ownVelocity.z < -300 )
 		{
 			self->botMind->cmdBuffer.upmove = 127;
+		}
+		// clear jetpack state after some time
+		switch ( self->botMind->jetpackState )
+		{
+		case BOT_JETPACK_NAVCON_WAITING:
+		case BOT_JETPACK_NAVCON_FLYING:
+		case BOT_JETPACK_NAVCON_LANDING:
+			if ( level.time > self->botMind->lastNavconTime + g_bot_jetpackTimeout.Get() )
+			{
+				self->botMind->jetpackState = BOT_JETPACK_NONE;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -627,8 +648,6 @@ void G_BotSelectSpawnClass( gentity_t *self )
 	{
 		BotEvaluateNode( self, self->botMind->behaviorTree->classSelectionTree );
 	}
-
-	G_BotSetNavMesh( self->num(), self->client->pers.classSelection );
 }
 
 // Initialization happens whenever someone first tries to add a bot.
