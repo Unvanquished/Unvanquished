@@ -101,9 +101,9 @@ struct OffMeshConnections
 			return;
 		}
 
-		for ( int i = index * 6; i < offMeshConCount * 6 - 1; i++ )
+		for ( int i = index * 6; i < ( offMeshConCount - 1 ) * 6; i++ )
 		{
-			verts[ i ] = verts[ i + 1 ];
+			verts[ i ] = verts[ i + 6 ];
 		}
 
 		for ( int i = index; i < offMeshConCount - 1; i++ )
