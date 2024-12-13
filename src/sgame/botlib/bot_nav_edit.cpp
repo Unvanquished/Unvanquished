@@ -428,7 +428,8 @@ public:
 };
 
 // return the navcon number and true if the targetPoint is at the navcon start,
-// false otherwise
+// false if it is at the end
+// return -1 and an unspecified boolean value if the targetPoint is at neither of them
 static std::tuple< int, bool > findClosestNavcon( OffMeshConnections &cons, rVec &targetPoint )
 {
 	int resultIndex = -1;
