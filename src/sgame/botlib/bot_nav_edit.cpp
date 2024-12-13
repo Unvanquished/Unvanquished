@@ -385,8 +385,8 @@ public:
 				if ( args.Argc() == 5 )
 				{
 					// TODO: only allow this for the human_naked class
-					const std::string &arg = args.Argv( 4 );
-					if ( arg == "jetpack" )
+					const std::string &subArg = args.Argv( 4 );
+					if ( Q_stricmp( subArg.c_str(), "jetpack" ) == 0 )
 					{
 						cmd.pc.flag = POLYFLAGS_JETPACK;
 					}
