@@ -487,12 +487,12 @@ public:
 				return;
 			}
 			int n = i * 6;
-			Print( "from ( %.0f, %.0f, %.0f ) to ( %.0f, %.0f, %.0f ), %s, radius: %.0f%s",
+			Print( "navcon %s^*, from ( %.0f, %.0f, %.0f ) to ( %.0f, %.0f, %.0f ), %s, radius %.0f%s",
+			       isStart ? "^2start" : "^3end",
 			       cons.verts[ n ], cons.verts[ n + 2 ], cons.verts[ n + 1 ],
 			       cons.verts[ n + 3 ], cons.verts[ n + 5 ], cons.verts[ n + 4 ],
 			       cons.dirs[ i ] == 0 ? "oneway" : "twoway", cons.rad[ i ],
 			       cons.flags[ i ] == POLYFLAGS_JETPACK ? ", jetpack" : "");
-			Print( "this is the %s", isStart ? "start" : "end" );
 		}
 	}
 };
