@@ -374,8 +374,8 @@ public:
 
 				if ( args.Argc() >= 4 )
 				{
-					int val = 0;
-					if ( !Str::ParseInt( val, args.Argv( 3 ) ) || val < 10 )
+					float val = 0.f;
+					if ( !Str::ToFloat( args.Argv( 3 ), val ) || val < 10.f )
 					{
 						Print( "Invalid argument for radius, must be 10 or more" );
 						return;
