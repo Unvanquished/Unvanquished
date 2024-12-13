@@ -427,6 +427,132 @@ public:
 	}
 };
 
+static int findClosestNavcon( OffMeshConnections &cons, rVec &targetPoint )
+{
+	int resultIndex = -1;
+	float resultDistance = std::numeric_limits<float>::max();
+	for ( int i = 0; i < cons.offMeshConCount; i++ )
+	{
+		int n = i * 6;
+		// look at start and end points
+		for ( int count = 0; count < 2; count++ )
+		{
+			float distanceX = targetPoint[ 0 ] - cons.verts[ n + count * 3 ];
+			float distanceZ = targetPoint[ 1 ] - cons.verts[ n + count * 3 + 1 ];
+			float distanceY = targetPoint[ 2 ] - cons.verts[ n + count * 3 + 2 ];
+			float distance = sqrt( Square( distanceX ) + Square( distanceY ) + Square( distanceZ ) );
+			if ( distance <= cons.rad[ i ] && distance < resultDistance )
+			{
+				resultIndex = i;
+				resultDistance = distance;
+			}
+		}
+	}
+	return resultIndex;
+}
+
+class ViewconCmd: public Cmd::StaticCmd
+{
+public:
+	ViewconCmd() : StaticCmd( "viewcon", "display information about a navcon connection (during navedit)" ) {}
+
+	void Run( const Cmd::Args &args ) const override
+	{
+		if ( args.Argc() != 1 )
+		{
+			PrintUsage( args, "" );
+			return;
+		}
+
+		if ( !cmd.enabled )
+		{
+			return;
+		}
+
+		OffMeshConnections &cons = cmd.nav->process.con;
+		rVec targetPoint;
+		if ( GetPointPointedTo( cmd.nav, targetPoint ) )
+		{
+			int i = findClosestNavcon( cons, targetPoint );
+			if ( i < 0 )
+			{
+				Print( "no navcon here" );
+				return;
+			}
+			int n = i * 6;
+			Print( "from ( %.0f, %.0f, %.0f ) to ( %.0f, %.0f, %.0f ), %s, radius: %.0f%s",
+			       cons.verts[ n ], cons.verts[ n + 2 ], cons.verts[ n + 1 ],
+			       cons.verts[ n + 3 ], cons.verts[ n + 5 ], cons.verts[ n + 4 ],
+			       cons.dirs[ i ] == 0 ? "oneway" : "twoway", cons.rad[ i ],
+			       cons.flags[ i ] == POLYFLAGS_JETPACK ? ", jetpack" : "");
+		}
+	}
+};
+
+class DelconCmd: public Cmd::StaticCmd
+{
+public:
+	DelconCmd() : StaticCmd( "delcon", "delete a navcon connection (during navedit)" ) {}
+
+	void Run( const Cmd::Args &args ) const override
+	{
+		if ( args.Argc() != 1 )
+		{
+			PrintUsage( args, "" );
+			return;
+		}
+
+		if ( !cmd.enabled )
+		{
+			return;
+		}
+
+		OffMeshConnections &cons = cmd.nav->process.con;
+		rVec targetPoint;
+		if ( GetPointPointedTo( cmd.nav, targetPoint ) )
+		{
+			int i = findClosestNavcon( cons, targetPoint );
+			
+			if ( i < 0 )
+			{
+				Print( "no navcon here" );
+				return;
+			}
+
+			rVec start;
+			rVec end;
+			int n = i * 6;
+			start[ 0 ] = cons.verts[ n ];
+			start[ 1 ] = cons.verts[ n + 1 ];
+			start[ 2 ] = cons.verts[ n + 2 ];
+			end[ 0 ] = cons.verts[ n + 3 ];
+			end[ 1 ] = cons.verts[ n + 4 ];
+			end[ 2 ] = cons.verts[ n + 5 ];
+
+			cons.delConnection( i );
+
+			rVec boxMins, boxMaxs;
+			for ( int i = 0; i < 3; i++ )
+			{
+				std::tie( boxMins[ i ], boxMaxs[ i ] ) = std::minmax( start[ i ], end[ i ] );
+			}
+
+			boxMins[ 1 ] -= 10;
+			boxMaxs[ 1 ] += 10;
+
+			// rebuild affected tiles
+			dtCompressedTileRef refs[ 32 ];
+			int tc = 0;
+			cmd.nav->cache->queryTiles( boxMins, boxMaxs, refs, &tc, 32 );
+
+			for ( int k = 0; k < tc; k++ )
+			{
+				cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
+			}
+		}
+	}
+};
+
 class NavtestCmd : public Cmd::StaticCmd
 {
 public:
@@ -510,6 +636,8 @@ void BotRegisterNavEdit()
 		static struct {
 			NaveditCmd navedit;
 			AddconCmd addcon;
+			ViewconCmd viewcon;
+			DelconCmd delcon;
 			NavtestCmd navtest;
 		} commandRegistration;
 	}
