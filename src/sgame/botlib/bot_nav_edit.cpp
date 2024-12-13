@@ -427,10 +427,13 @@ public:
 	}
 };
 
-static int findClosestNavcon( OffMeshConnections &cons, rVec &targetPoint )
+// return the navcon number and true if the targetPoint is at the navcon start,
+// false otherwise
+static std::tuple< int, bool > findClosestNavcon( OffMeshConnections &cons, rVec &targetPoint )
 {
 	int resultIndex = -1;
 	float resultDistance = std::numeric_limits<float>::max();
+	bool resultIsStart = true;
 	for ( int i = 0; i < cons.offMeshConCount; i++ )
 	{
 		int n = i * 6;
@@ -445,10 +448,11 @@ static int findClosestNavcon( OffMeshConnections &cons, rVec &targetPoint )
 			{
 				resultIndex = i;
 				resultDistance = distance;
+				resultIsStart = count == 0;
 			}
 		}
 	}
-	return resultIndex;
+	return std::tie( resultIndex, resultIsStart );
 }
 
 class ViewconCmd: public Cmd::StaticCmd
@@ -473,7 +477,9 @@ public:
 		rVec targetPoint;
 		if ( GetPointPointedTo( cmd.nav, targetPoint ) )
 		{
-			int i = findClosestNavcon( cons, targetPoint );
+			int i;
+			bool isStart;
+			std::tie( i, isStart ) = findClosestNavcon( cons, targetPoint );
 			if ( i < 0 )
 			{
 				Print( "no navcon here" );
@@ -485,6 +491,7 @@ public:
 			       cons.verts[ n + 3 ], cons.verts[ n + 5 ], cons.verts[ n + 4 ],
 			       cons.dirs[ i ] == 0 ? "oneway" : "twoway", cons.rad[ i ],
 			       cons.flags[ i ] == POLYFLAGS_JETPACK ? ", jetpack" : "");
+			Print( "this is the %s", isStart ? "start" : "end" );
 		}
 	}
 };
@@ -511,7 +518,9 @@ public:
 		rVec targetPoint;
 		if ( GetPointPointedTo( cmd.nav, targetPoint ) )
 		{
-			int i = findClosestNavcon( cons, targetPoint );
+			int i;
+			bool unused;
+			std::tie( i, unused ) = findClosestNavcon( cons, targetPoint );
 			
 			if ( i < 0 )
 			{
