@@ -433,7 +433,7 @@ public:
 static std::tuple< int, bool > findClosestNavcon( OffMeshConnections &cons, rVec &targetPoint )
 {
 	int resultIndex = -1;
-	float resultDistance = std::numeric_limits<float>::max();
+	float resultDistanceSquare = std::numeric_limits<float>::max();
 	bool resultIsStart = true;
 	for ( int i = 0; i < cons.offMeshConCount; i++ )
 	{
@@ -441,14 +441,12 @@ static std::tuple< int, bool > findClosestNavcon( OffMeshConnections &cons, rVec
 		// look at start and end points
 		for ( int count = 0; count < 2; count++ )
 		{
-			float distanceX = targetPoint[ 0 ] - cons.verts[ n + count * 3 ];
-			float distanceZ = targetPoint[ 1 ] - cons.verts[ n + count * 3 + 1 ];
-			float distanceY = targetPoint[ 2 ] - cons.verts[ n + count * 3 + 2 ];
-			float distance = sqrt( Square( distanceX ) + Square( distanceY ) + Square( distanceZ ) );
-			if ( distance <= cons.rad[ i ] && distance < resultDistance )
+			rVec navconVertex = rVec::Load( &cons.verts[ n + count * 3 ] );
+			float distanceSquare = DistanceSquared( targetPoint, navconVertex );
+			if ( distanceSquare <= Square( cons.rad[ i ] ) && distanceSquare < resultDistanceSquare )
 			{
 				resultIndex = i;
-				resultDistance = distance;
+				resultDistanceSquare = distanceSquare;
 				resultIsStart = count == 0;
 			}
 		}
@@ -529,15 +527,9 @@ public:
 				return;
 			}
 
-			rVec start;
-			rVec end;
 			int n = i * 6;
-			start[ 0 ] = cons.verts[ n ];
-			start[ 1 ] = cons.verts[ n + 1 ];
-			start[ 2 ] = cons.verts[ n + 2 ];
-			end[ 0 ] = cons.verts[ n + 3 ];
-			end[ 1 ] = cons.verts[ n + 4 ];
-			end[ 2 ] = cons.verts[ n + 5 ];
+			rVec start = rVec::Load( &cons.verts[ n ] );
+			rVec end = rVec::Load( &cons.verts[ n + 3 ] );
 
 			cons.delConnection( i );
 
