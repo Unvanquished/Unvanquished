@@ -534,9 +534,9 @@ public:
 			cons.delConnection( i );
 
 			rVec boxMins, boxMaxs;
-			for ( int i = 0; i < 3; i++ )
+			for ( int k = 0; k < 3; k++ )
 			{
-				std::tie( boxMins[ i ], boxMaxs[ i ] ) = std::minmax( start[ i ], end[ i ] );
+				std::tie( boxMins[ k ], boxMaxs[ k ] ) = std::minmax( start[ k ], end[ k ] );
 			}
 
 			boxMins[ 1 ] -= 10;
