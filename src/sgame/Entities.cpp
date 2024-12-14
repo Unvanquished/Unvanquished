@@ -143,6 +143,7 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 	// TODO: Allow ForEntities to iterate over all entities.
 	// NOTE: This will hurt entities with FL_NOTARGET enabled since it isn't really aiming at them.
 	ForEntities<HealthComponent>([&] (Entity& other, HealthComponent&) {
+		if ( other.oldEnt == entity.oldEnt ) return;
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - distance / range);
