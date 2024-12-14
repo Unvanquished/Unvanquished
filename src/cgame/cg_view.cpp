@@ -1618,7 +1618,7 @@ void CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs ) {
 
 	trap_R_AddLightToScene( lightPos, 2.0f * Distance( lightPos, origin ),
 				3.0f, directedLight[0], directedLight[1],
-				directedLight[2], 0,
+				directedLight[2],
 				REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
 }
 /*
@@ -1630,9 +1630,7 @@ following models.
 ===============
 */
 void CG_EndShadowCaster() {
-	trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
-				0.0f, 0.0f, 0.0f,
-				0, 0 );
+	trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0 );
 }
 
 /*
