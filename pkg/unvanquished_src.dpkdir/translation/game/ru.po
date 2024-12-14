@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-13 13:26+0100\n"
-"PO-Revision-Date: 2024-12-10 07:27+0000\n"
+"PO-Revision-Date: 2024-12-15 08:00+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.9-rc\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -77,7 +77,7 @@ msgstr "Заполнить ботами"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Сколько игроков (пользователей и ботов) должно быть в командах?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -139,7 +139,7 @@ msgstr "Ок"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Руководство по игре"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -2350,7 +2350,7 @@ msgstr "Выталкивает медленных людей подальше о
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Моментум"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
@@ -2415,7 +2415,7 @@ msgstr "Множитель получаемого Моментума за уни
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Построить систему"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2454,7 +2454,7 @@ msgstr ""
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Боты: общие"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
@@ -2478,123 +2478,123 @@ msgstr "Работает только для новых ботов."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Человечество"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Угол обзора"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Время реакции"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Поведение"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Атакующие структуры"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Читерство"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Бесконечные средства"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Игнорировать моментум"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Создание навигационной сетки"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Создавать навигационные сетки во время загрузки"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Число рабочих потоков"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Боты: люди"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
-msgstr ""
+msgstr "Всего"
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Человеческие боты покупают оборудование"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Модификатор скорости прицеливания (больше — медленнее)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Индивидуально"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Основное оружие"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Строительный комплект (ремонты)"
 
 #: ui/server_setup.rml:279
 msgid "Painsaw"
-msgstr ""
+msgstr "Бензопила"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Огнемёт"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "Броня"
 
 #: ui/server_setup.rml:312
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "покупать ли ботам лёгкую броню"
 
 #: ui/server_setup.rml:316
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "покупать ли ботам среднюю броню"
 
 #: ui/server_setup.rml:320
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "покупать ли ботам боевой костюм"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "Зажигательная бомба"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
-msgstr ""
+msgstr "Граната"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Радар"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Боты-инопланетяне трансформируются"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Продвинутый мародер"
 
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Продвинутый драгун"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
