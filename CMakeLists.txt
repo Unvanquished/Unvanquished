@@ -231,6 +231,8 @@ if (BUILD_SGAME)
     )
 
     if (BUILD_GAME_NACL AND NOT (FORK EQUAL 2))
+        add_dependencies(nacl-vms src-sgame-entities.yaml)
+
         include(ExternalProject)
         foreach(NACL_VMS_PROJECT ${NACL_VMS_PROJECTS})
             ExternalProject_Add_Step(${NACL_VMS_PROJECT} cbse-trigger
