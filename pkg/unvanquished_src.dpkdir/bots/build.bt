@@ -29,7 +29,7 @@ selector
 				{
 					behavior subroutine_become_builder_humans
 
-					condition distanceTo( E_H_REACTOR ) <= 700
+					condition distanceTo( E_H_REACTOR ) <= 700 || distanceTo( E_H_REACTOR ) > 999999
 					{
 						decorator return( STATUS_FAILURE )
 						{
@@ -86,7 +86,7 @@ selector
 				{
 					behavior subroutine_become_builder_aliens
 
-					condition distanceTo( E_A_OVERMIND) <= 700
+					condition distanceTo( E_A_OVERMIND) <= 700 || distanceTo( E_A_OVERMIND ) > 999999
 					{
 						decorator return( STATUS_FAILURE )
 						{
