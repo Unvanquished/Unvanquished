@@ -15,14 +15,6 @@ selector
 						action buyPrimary( WP_PULSE_RIFLE )
 					}
 				}
-				condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
-				{
-					selector
-					{
-						action equip
-						action flee
-					}
-				}
 
 				decorator timer( 1000 )
 				{
