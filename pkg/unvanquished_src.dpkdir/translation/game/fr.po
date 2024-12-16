@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-13 13:26+0100\n"
-"PO-Revision-Date: 2024-11-03 05:41+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2024-12-16 20:43+0000\n"
+"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8.2\n"
+"X-Generator: Weblate 5.9\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -78,6 +78,8 @@ msgstr "Remplir avec des bots"
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
 msgstr ""
+"Combien de joueurs (utilisateurs et robots) les équipes devraient-elles "
+"avoir ?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -139,7 +141,7 @@ msgstr "Ok"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Guide de Gameplay"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -2376,7 +2378,7 @@ msgstr "Éloigne les personnes lentes des points d'apparition."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Momentum"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
@@ -2440,7 +2442,7 @@ msgstr "Multiplicateur de bonus du momentum pour la destruction de structures"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Système de construction"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2478,7 +2480,7 @@ msgstr ""
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Robots : Général"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
@@ -2502,103 +2504,107 @@ msgstr "Ne fonctionne que pour les nouveaux bots."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Humanité"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Champ de vison"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Temps de réaction"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Comportement"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Attaquer les structures"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Tricherie"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Fonds infini"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Ignorer le momentum"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Génération du Navmesh"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Génère les navmeshes pendant le chargement"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Nombre de threads de travail"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Robots : Humains"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
-msgstr ""
+msgstr "Dans l'ensemble"
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Les robots humains achètent du matériel"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Modificateur de vitesse de visée (plus grand est moins rapide)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Individuellement"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Armes Primaires"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Kit de construction (réparations)"
 
 #: ui/server_setup.rml:279
+#, fuzzy
 msgid "Painsaw"
-msgstr ""
+msgstr "Tronçonneuse"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Lance flamme"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "Armures"
 
 #: ui/server_setup.rml:312
+#, fuzzy
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "Si les robots achètent des Armures Légères"
 
 #: ui/server_setup.rml:316
+#, fuzzy
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "Si les robots achètent des Armures Moyenne"
 
 #: ui/server_setup.rml:320
+#, fuzzy
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "Si les robots achètent une combinaison de combat"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "Grenade incendière"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
@@ -2606,19 +2612,21 @@ msgstr "Grenade"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Radar"
 
 #: ui/server_setup.rml:342
+#, fuzzy
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Les robots aliens se transforment"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Maraudeur Avancé"
 
 #: ui/server_setup.rml:372
+#, fuzzy
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Dragon Avancé"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
@@ -4785,6 +4793,7 @@ msgstr "%sMessage privé de : ^7%s"
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
+">> pour répondre, disez '/m %d [votre message] ' ou '/r [votre message]' <<"
 
 #: src/cgame/cg_servercmds.cpp:1405
 #, c-format
