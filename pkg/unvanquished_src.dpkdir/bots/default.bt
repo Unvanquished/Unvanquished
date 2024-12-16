@@ -75,6 +75,7 @@ selector
 
 					behavior subroutine_become_builder_aliens
 
+					// if overmind is close or does not exist
 					condition distanceTo( E_A_OVERMIND ) <= 700 || distanceTo( E_A_OVERMIND ) > 999999
 					{
 						decorator return( STATUS_FAILURE )
@@ -124,6 +125,7 @@ selector
 
 					behavior subroutine_become_builder_humans
 
+					// if reactor is close or does not exist
 					condition distanceTo( E_H_REACTOR ) <= 700 || distanceTo( E_H_REACTOR ) > 999999
 					{
 						decorator return( STATUS_FAILURE )
