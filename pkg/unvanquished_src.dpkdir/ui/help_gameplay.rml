@@ -11,7 +11,7 @@
 	<body template="window" id="help_gameplay" style="width:45em; margin: 15em auto auto auto;">
 		<h1><translate>Gameplay Guide</translate></h1>
 		<tabset>
-			<!-- the "margin-right" is used to put a scace wetween the emoticon and the text-->
+			<!-- the "margin-right" is used to put a space between the emoticon and the text-->
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/official" />
 				<translate>Welcome</translate>
@@ -118,7 +118,7 @@
 				<br />
 				<br />
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/dretch" />
-				<translate>Aliens heal slowly wherever they are, but they heal faster in groups and near alien buildables. Building forward ones can be decisive! Healing in any manner will also contribute to restoring the [advdragoon] advanced dragoon projectiles.</translate>
+				<translate emoticons>Aliens heal slowly wherever they are, but they heal faster in groups and near alien buildables. Building forward ones can be decisive! Healing in any manner will also contribute to restoring the [advdragoon] advanced dragoon projectiles.</translate>
 				<br/>
 				<br/>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/booster" />
