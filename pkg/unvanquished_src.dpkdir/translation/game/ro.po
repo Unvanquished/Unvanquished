@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-13 13:26+0100\n"
-"PO-Revision-Date: 2024-09-26 10:59+0000\n"
-"Last-Translator: Dominic Iastrebschi <domjotebit@gmail.com>\n"
+"PO-Revision-Date: 2024-12-19 10:00+0000\n"
+"Last-Translator: Bogdan Mințoi <mintoi.bogdan@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ro/>\n"
 "Language: ro\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.9.2-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -79,7 +79,7 @@ msgstr "Umple cu bot-uri"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Câți jucători (utilizatori și roboți) ar trebui să aibă echipele?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -141,7 +141,7 @@ msgstr "Bine"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Ghid de desfășurare al jocului"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -310,19 +310,23 @@ msgstr ""
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "Incendiu"
 
 #: ui/help_gameplay.rml:94
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"Construcțiile extraterestre pot lua foc dacă este utilizat un aruncător de "
+"flăcări [flamer] sau o bombă incendiară [firebomb]."
 
 #: ui/help_gameplay.rml:97
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Dacă structurile sunt construite prea apropiate, focul poate trece la "
+"vecinii ghinioniști din apropiere."
 
 #: ui/help_gameplay.rml:100
 msgid ""
@@ -350,7 +354,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr ""
+msgstr "Vindecare"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
@@ -391,6 +395,9 @@ msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
+"Oamenii au în dotare o trusă medicală, cu ajutorul căreia se pot vindeca o "
+"singură dată, după care trebuie să se întoarcă la stația medicală [medstat] "
+"pentru a se vindeca și a-și reface trusa medicală."
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
@@ -418,11 +425,11 @@ msgstr ""
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
-msgstr ""
+msgstr "De la Tremulous"
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr ""
+msgstr "De la Tremulous, anduranța a fost crescută."
 
 #: ui/help_gameplay.rml:161
 msgid ""
@@ -466,39 +473,39 @@ msgstr ""
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "Viață"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "puncte de construcție"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "Credite"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "Arme"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "Rază:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "Pagube:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
@@ -506,19 +513,19 @@ msgstr ""
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr ""
+msgstr "Actualizări"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Alege echipamentul de start:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr ""
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "Set de construcție"
 
 #: ui/human_spawn.rml:48
 msgid ""
@@ -532,20 +539,20 @@ msgstr ""
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "Spectatori"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Hartă:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "Durată:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Selectează automat o echipă"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
@@ -561,19 +568,19 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr ""
+msgstr "Alătură-te extratereștrilor"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
-msgstr ""
+msgstr "Alătură-te oamenilor"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Alternativ, poți urmări jocul fără să participi."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr ""
+msgstr "Urmărește ca spectator"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -583,11 +590,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "Partidă"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr ""
+msgstr "Părăsește partida"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
@@ -595,31 +602,31 @@ msgstr ""
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr ""
+msgstr "Democrație"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr ""
+msgstr "Meniu gazdă"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "Setare server"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr ""
+msgstr "Oprește serverul"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr ""
+msgstr "Pune serverul pe pauză"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "Roboți"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr ""
+msgstr "Meniu principal"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
@@ -627,11 +634,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Pornește o partidă locală/LAN"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr ""
+msgstr "Opțiuni"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
@@ -639,11 +646,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
-msgstr ""
+msgstr "Ieși din joc"
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr ""
+msgstr "Beta"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
@@ -651,35 +658,35 @@ msgstr ""
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Adaugă un robot extraterestru"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr ""
+msgstr "Adaugă un robot uman"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr ""
+msgstr "Elimină toți roboții"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
-msgstr ""
+msgstr "Vot global:"
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr ""
+msgstr "da"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr ""
+msgstr "sau"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr ""
+msgstr "nu"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
-msgstr ""
+msgstr "Vot echipă:"
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
@@ -691,15 +698,15 @@ msgstr ""
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
-msgstr ""
+msgstr "Solicită remiză"
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr ""
+msgstr "Acceptă înfrângerea"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "Unghiuri de vizualizare"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
@@ -715,7 +722,7 @@ msgstr ""
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "grade"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -724,23 +731,23 @@ msgstr ""
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "reset"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr ""
+msgstr "Călugăriță"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr ""
+msgstr "Jefuitor"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
-msgstr ""
+msgstr "Dragon"
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
-msgstr ""
+msgstr "Tiran"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
@@ -752,23 +759,23 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Dezactivat"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Ușor"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
-msgstr ""
+msgstr "Implicit"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Intens"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Mișcări sus-jos"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
@@ -780,11 +787,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr ""
+msgstr "Grafică"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Prestabilite"
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
@@ -809,7 +816,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr ""
+msgstr "Mediu"
 
 #: ui/options_graphics.rml:36
 msgid ""
@@ -820,7 +827,7 @@ msgstr ""
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:255
 #: ui/options_graphics.rml:367 ui/options_graphics.rml:375
 msgid "High"
-msgstr ""
+msgstr "Înalt"
 
 #: ui/options_graphics.rml:40
 msgid ""
@@ -830,7 +837,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:44
 msgid ""
@@ -840,43 +847,43 @@ msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr ""
+msgstr "Luminozitate"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
-msgstr ""
+msgstr "Gama:"
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Rezoluție ecran"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
-msgstr ""
+msgstr "Fereastră fără margini"
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "Ecran complet"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr ""
+msgstr "Dezactivat"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Sincronizare verticală flexibilă"
 
 #: ui/options_graphics.rml:76
 msgid "Full Vsync"
-msgstr ""
+msgstr "Sincronizare verticală completă"
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr ""
+msgstr "Sincronizare verticală"
 
 #: ui/options_graphics.rml:79
 msgid ""
@@ -894,15 +901,15 @@ msgstr ""
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "Aplică acum"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "Luminozitate"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr ""
+msgstr "Lumini"
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
@@ -910,7 +917,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:97
 msgid "normal"
-msgstr ""
+msgstr "normal"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
@@ -922,7 +929,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:100
 msgid "Lighting system"
-msgstr ""
+msgstr "Sistem de iluminare"
 
 #: ui/options_graphics.rml:103
 msgid "Brightness clamping"
@@ -936,7 +943,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:108
 msgid "Light styles"
-msgstr ""
+msgstr "Stiluri luminoase"
 
 #: ui/options_graphics.rml:110
 msgid "Precomputed dynamic lights emitted by static map objects."
@@ -944,7 +951,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:113
 msgid "Dynamic lights"
-msgstr ""
+msgstr "Lumini dinamice"
 
 #: ui/options_graphics.rml:115
 msgid ""
@@ -982,23 +989,23 @@ msgstr ""
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
-msgstr ""
+msgstr "Umbre"
 
 #: ui/options_graphics.rml:139
 msgid "Textures"
-msgstr ""
+msgstr "Texturi"
 
 #: ui/options_graphics.rml:141 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "Fără limită"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr ""
+msgstr "(ultra)"
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
@@ -1062,7 +1069,7 @@ msgstr ""
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:329
 #: ui/options_graphics.rml:334 ui/options_graphics.rml:339
 msgid "Experimental."
-msgstr ""
+msgstr "Experimental."
 
 #: ui/options_graphics.rml:177
 msgid "Mip-mapping"
@@ -1076,7 +1083,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
 msgid "No"
-msgstr ""
+msgstr "Nu"
 
 #: ui/options_graphics.rml:187
 msgid "Anisotropic mip-mapping"
@@ -1088,31 +1095,31 @@ msgstr ""
 
 #: ui/options_graphics.rml:192
 msgid "Trilinear"
-msgstr ""
+msgstr "Triliniar"
 
 #: ui/options_graphics.rml:192
 msgid "better"
-msgstr ""
+msgstr "mai bun"
 
 #: ui/options_graphics.rml:193
 msgid "Bilinear"
-msgstr ""
+msgstr "Biliniar"
 
 #: ui/options_graphics.rml:195
 msgid "Texture scaling filter"
-msgstr ""
+msgstr "Filtru de scalare a texturilor"
 
 #: ui/options_graphics.rml:203 ui/options_graphics.rml:205
 msgid "Materials"
-msgstr ""
+msgstr "Materiale"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "Cer"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "Desenează cerul."
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
@@ -1156,11 +1163,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "Reflexii"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr ""
+msgstr "Reflexii statice"
 
 #: ui/options_graphics.rml:248
 msgid ""
@@ -1182,7 +1189,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "Calitate"
 
 #: ui/options_graphics.rml:259
 msgid ""
@@ -1201,7 +1208,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:272 ui/options_ui.rml:129
 msgid "Never"
-msgstr ""
+msgstr "Niciodată"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
@@ -1209,7 +1216,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:274
 msgid "Always rebuild"
-msgstr ""
+msgstr "Reconstruiește întotdeauna"
 
 #: ui/options_graphics.rml:276
 msgid "Static reflection cubemaps autobuild"
@@ -1222,7 +1229,7 @@ msgstr ""
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "Efecte"
 
 #: ui/options_graphics.rml:289
 msgid "Bloom"
@@ -1230,7 +1237,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:291
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "Face să strălucească zonele luminoase de pe ecran."
 
 #: ui/options_graphics.rml:294
 msgid "Color grading"
@@ -1238,7 +1245,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:296
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Alterează culorile pentru a crea ambianțe specifice."
 
 #: ui/options_graphics.rml:299
 msgid "Heat-haze"
@@ -1254,11 +1261,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:306
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "Simulează colțuri întunecate."
 
 #: ui/options_graphics.rml:309
 msgid "Marks"
-msgstr ""
+msgstr "Semne"
 
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
@@ -1278,7 +1285,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
-msgstr ""
+msgstr "Sistem de materiale"
 
 #: ui/options_graphics.rml:329
 msgid ""
@@ -1304,7 +1311,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
-msgstr ""
+msgstr "Desfășurare joc"
 
 #: ui/options_graphics.rml:348
 msgid "Building markers"
@@ -1312,43 +1319,43 @@ msgstr ""
 
 #: ui/options_graphics.rml:351
 msgid "disabled"
-msgstr ""
+msgstr "dezactivat"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
-msgstr ""
+msgstr "Toate structurile"
 
 #: ui/options_graphics.rml:353
 msgid "Support structures"
-msgstr ""
+msgstr "Structuri de suport"
 
 #: ui/options_graphics.rml:354
 msgid "Offensive structures"
-msgstr ""
+msgstr "Structuri ofensive"
 
 #: ui/options_graphics.rml:355
 msgid "Alien structures"
-msgstr ""
+msgstr "Structuri extraterestre"
 
 #: ui/options_graphics.rml:356
 msgid "Human structures"
-msgstr ""
+msgstr "Structuri omenești"
 
 #: ui/options_graphics.rml:357
 msgid "Alien support structures"
-msgstr ""
+msgstr "Structuri extraterestre de suport"
 
 #: ui/options_graphics.rml:358
 msgid "Human support structures"
-msgstr ""
+msgstr "Structuri omenești de suport"
 
 #: ui/options_graphics.rml:359
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "Structuri extraterestre ofensive"
 
 #: ui/options_graphics.rml:360
 msgid "Offensive human structures"
-msgstr ""
+msgstr "Structuri omenești ofensive"
 
 #: ui/options_graphics.rml:362
 msgid "Building ranges"
@@ -1356,7 +1363,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr ""
+msgstr "Modele"
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
@@ -1364,7 +1371,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:380
 msgid "Intensity"
-msgstr ""
+msgstr "Intensitate"
 
 #: ui/options_graphics.rml:381
 msgid "Level of motion-blur."
@@ -1376,11 +1383,11 @@ msgstr ""
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
-msgstr ""
+msgstr "Secvențe de taste"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "Apasă tasta Escape pentru a anula o secvență de taste."
 
 #: ui/options_keys.rml:16
 msgid ""
@@ -1407,19 +1414,19 @@ msgstr ""
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr ""
+msgstr "Mișcare"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr ""
+msgstr "Aleargă / Mergi:"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "Sprint:"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "Înainte:"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
@@ -1427,35 +1434,35 @@ msgstr ""
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "La stânga:"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "La dreapta:"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr ""
+msgstr "Sari:"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr ""
+msgstr "Târăște-te:"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr ""
+msgstr "Mers pe zid:"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "Abilități"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "Atac principal:"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "Atac secundar:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
@@ -1463,51 +1470,51 @@ msgstr ""
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr ""
+msgstr "Aruncă o grenadă:"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr ""
+msgstr "Reîncarcă:"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "Utilizează trusă de prim-ajutor:"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "Utilizează o structură:"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "Evoluează:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "Discuție/Vot"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr ""
+msgstr "Gest:"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr ""
+msgstr "Discuție generală:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr ""
+msgstr "Discuție în echipă:"
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr ""
+msgstr "Discuție cu administrator:"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "Votează DA:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "Votează NU:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
