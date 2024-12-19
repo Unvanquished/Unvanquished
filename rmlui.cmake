@@ -1,5 +1,8 @@
 # Create libRocket.
 
+option(RMLUI_UNITY_BUILD "Merge RmlUi compilation units for faster build" 1)
+mark_as_advanced(RMLUI_UNITY_BUILD)
+
 set(RMLUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/RmlUi)
 
 set(Core_HDR_FILES
@@ -559,6 +562,10 @@ set(Lua_SRC_FILES
     ${RMLUI_DIR}/Source/Lua/Vector2i.cpp
 )
 
+set_source_files_properties(
+    ${RMLUI_DIR}/Source/Core/SystemInterface.cpp # includes windows.h
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION 1)
+
 if (NOT FREETYPE_INCLUDE_DIRS)
     find_package(Freetype REQUIRED)
 endif()
@@ -586,3 +593,15 @@ set_property(TARGET RMLUI_LIB PROPERTY
 set_target_properties(RMLUI_LIB PROPERTIES
     POSITION_INDEPENDENT_CODE ${GAME_PIE}
 )
+
+if (RMLUI_UNITY_BUILD)
+    set_target_properties(RMLUI_LIB PROPERTIES
+        UNITY_BUILD 1
+        # Suppress Visual Studio's "warning MSB8027: Two or more files with the name of XXX.cpp will
+        # produce outputs to the same location. This can lead to an incorrect build result.  The
+        # files involved are C:\YYY\XXX.cpp, C:\ZZZ\XXX.cpp." which seems to be based on an
+        # incorrect heuristic that a .cpp file always has a corresponding object
+        # file with the same name
+        VS_GLOBAL_MSBuildWarningsAsMessages MSB8027
+    )
+endif()

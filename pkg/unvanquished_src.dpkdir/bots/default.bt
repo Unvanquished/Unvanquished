@@ -146,6 +146,16 @@ selector
 			behavior subroutine_reload
 			action equip
 
+			sequence
+			{
+				// the bot senses an enemy, but has a ckit, and one of these happens:
+				// - the build timer is running
+				// - the bot cannot reach an armoury
+				condition alertedToEnemy
+				condition haveWeapon( WP_HBUILD )
+				action flee
+			}
+
 			condition percentAmmoClip == 0 && percentClips == 0
 			{
 				// refill at a suitable building
