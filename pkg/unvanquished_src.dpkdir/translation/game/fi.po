@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-13 13:26+0100\n"
-"PO-Revision-Date: 2024-12-05 04:53+0000\n"
+"PO-Revision-Date: 2024-12-15 08:00+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.9-rc\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -78,7 +78,7 @@ msgstr "Täytä boteilla"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Kuinka monta pelaajaa (käyttäjiä ja botteja) tulisi joukkueilla olla?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -140,7 +140,7 @@ msgstr "Selvä"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Peliopas"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -2342,7 +2342,7 @@ msgstr "Työnnä hitaat pelaajat pois tukijoukkojen tieltä."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Vauhti"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
@@ -2406,7 +2406,7 @@ msgstr "Vauhtipalkkion kerroin rakennelmien tuhoamisesta"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Rakentelujärjestelmä"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2442,7 +2442,7 @@ msgstr "Aika RP:iden palautumisen muuttumiseen kaksi kertaa hitaammaksi"
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Botit: Yleinen"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
@@ -2466,123 +2466,123 @@ msgstr "Toimii vain uusille boteille."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Inhimillisyys"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Näkökenttä"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Reaktioaika"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Käyttäytyminen"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Hyökkää rakennelmiin"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Huijaaminen"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Loputtomat varat"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Ohita vauhti"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Kulkuverkon muodostus"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Luo kulkuverkot kenttää ladatessa"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Työsäikeiden määrä"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Botit: Ihmiset"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
-msgstr ""
+msgstr "Yleiset"
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Ihmisbotit ostavat varusteita"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Tähtäysnopeuden muunnin (suurempi on hitaampi)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Yksittäiset"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Pääaseet"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Rakennuspakki (korjaukset)"
 
 #: ui/server_setup.rml:279
 msgid "Painsaw"
-msgstr ""
+msgstr "Murjurisaha"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Liekinheitin"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "Panssarit"
 
 #: ui/server_setup.rml:312
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "botit ostaa Kevyen Panssarin"
 
 #: ui/server_setup.rml:316
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "botit ostaa Keskiraskaan Panssarin"
 
 #: ui/server_setup.rml:320
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "botit ostaa Taistelupuvun"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "Palopommi"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
-msgstr ""
+msgstr "Kranaatti"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Tutka"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Alienibotit muuttuvat"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Edistynyt Marauder"
 
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Edistynyt Dragoon"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
