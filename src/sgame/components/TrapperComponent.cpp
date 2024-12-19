@@ -50,7 +50,7 @@ void TrapperComponent::FireOnEnemy()
 		(LOCKBLOB_SPEED * LOCKBLOB_SPEED)) * 1000.0f);
 
 	VectorScale(target->acceleration, 1.0f / 2.0f, halfAcceleration);
-	VectorScale(target->jerk, 1.0f / 3.0f, thirdJerk);
+	VectorScale(target->jerk, Math::inv_3_f, thirdJerk);
 
 	// highMsec and lowMsec can only move toward
 	// one another, so the loop must terminate
