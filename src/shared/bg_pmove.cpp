@@ -1950,7 +1950,7 @@ static void PM_ClimbMove()
 	{
 		float waterScale;
 
-		waterScale = pm->waterlevel / 3.0;
+		waterScale = pm->waterlevel * Math::inv_3_f;
 		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
 
 		if ( wishspeed > pm->ps->speed * waterScale )
@@ -2055,7 +2055,7 @@ static void PM_WalkMove()
 	{
 		float waterScale;
 
-		waterScale = pm->waterlevel / 3.0;
+		waterScale = pm->waterlevel * Math::inv_3_f;
 		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
 
 		if ( wishspeed > pm->ps->speed * waterScale )
