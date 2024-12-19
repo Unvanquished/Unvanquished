@@ -1773,9 +1773,9 @@ static bool FindRoomForClassChangeLaterally(
 		vec3_t newOrigin)
 {
 	float max_x = fabs( (toMaxs[0]-toMins[0])
-	                  - (fromMaxs[0]-fromMins[0]) ) / 2.0f;
+	                  - (fromMaxs[0]-fromMins[0]) ) * 0.5f;
 	float max_y = fabs( (toMaxs[1]-toMins[1])
-	                  - (fromMaxs[1]-fromMins[1]) ) / 2.0f;
+	                  - (fromMaxs[1]-fromMins[1]) ) * 0.5f;
 	// this is an upper bound, hopefully as small as possible
 	// to avoid bugs like evolving on the other side of walls.
 	// ideally, it would be the correct minimal length for

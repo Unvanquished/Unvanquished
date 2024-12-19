@@ -1209,7 +1209,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		}
 		else
 		{
-			rotAngle = Math::RadToDeg( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = Math::RadToDeg( acosf( ( rotAngle - 1.0f ) * 0.5f ) );
 		}
 
 		CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
@@ -1236,7 +1236,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + smoothTime )
 		{
 			stLocal = 1.0f - ( ( ( cg.sList[ i ].time + smoothTime ) - cg.time ) / smoothTime );
-			sFraction = - ( cosf( stLocal * Math::pi_f ) + 1.0f ) / 2.0f;
+			sFraction = - ( cosf( stLocal * Math::pi_f ) + 1.0f ) * 0.5f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1295,7 +1295,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.Get() )
 		{
 			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.Get() ) - cg.time ) / cg_wwSmoothTime.Get();
-			sFraction = 1.0f - ( ( cosf( stLocal * Math::mul2_pi_f ) + 1.0f ) / 2.0f );
+			sFraction = 1.0f - ( ( cosf( stLocal * Math::mul2_pi_f ) + 1.0f ) * 0.5f );
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1585,7 +1585,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 	for (i = 0; i < 3; i++)
 	{
 		// The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
-		trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
+		trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] * 0.5f * cgs.gameReverbIntensities[selectedIdx[i]]);
 	}
 }
 

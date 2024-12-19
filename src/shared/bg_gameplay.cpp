@@ -234,7 +234,7 @@ const float FIRE_DAMAGE_RADIUS = 60.0f;
 // fall distance
 const float MIN_FALL_DISTANCE = 30.0f;
 const float MAX_FALL_DISTANCE = 120.0f;
-const int   AVG_FALL_DISTANCE = (MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f;
+const int AVG_FALL_DISTANCE = (MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) * 0.5f;
 
 // impact and weight damage
 const float IMPACTDMG_JOULE_TO_DAMAGE = 0.002f;

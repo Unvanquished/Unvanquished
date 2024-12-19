@@ -277,7 +277,7 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
     angle = Math::DegToRad(transformAngle + 90.0);
 
     //Try to show the same region of the map for everyone
-    transformScale = (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
+    transformScale = (rect->w + rect->h) * 0.5f / MINIMAP_DEFAULT_SIZE;
 
     scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
 
@@ -602,8 +602,8 @@ static void CG_MinimapDrawBeacons( const rectDef_t *rect )
   bounds[ 0 ][ 1 ] = rect->y + size * 0.25;
   bounds[ 1 ][ 0 ] = rect->x + rect->w - size * 1.25;
   bounds[ 1 ][ 1 ] = rect->y + rect->h - size * 1.25;
-  center[ 0 ] = rect->x + rect->w / 2.0f;
-  center[ 1 ] = rect->y + rect->h / 2.0f;
+  center[ 0 ] = rect->x + rect->w * 0.5f;
+  center[ 1 ] = rect->y + rect->h * 0.5f;
 
 	for ( i = 0; i < cg.beaconCount; i++ )
 		CG_MinimapDrawBeacon( cg.beacons[ i ], size, center, (const vec2_t*)bounds );
