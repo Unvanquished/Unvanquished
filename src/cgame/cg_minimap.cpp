@@ -274,10 +274,10 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
     //the 90 gets it back to the Y axis (we want the view to point up)
     //and the orientation change gives the -
     transformAngle = cg_minimapRotate.Get() ? - cg.refdefViewAngles[1] : 0.f;
-    angle = DEG2RAD(transformAngle + 90.0);
+    angle = Math::DegToRad(transformAngle + 90.0);
 
     //Try to show the same region of the map for everyone
-    transformScale = (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
+    transformScale = (rect->w + rect->h) * 0.5f / MINIMAP_DEFAULT_SIZE;
 
     scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
 
@@ -577,7 +577,7 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		                       size * 1.5, size * 1.5f,
 		                       0.0f, 0.0f, 1.0f, 1.0f,
 		                       cgs.media.beaconIconArrow,
-		                       270.0f - atan2f( dir[ 1 ], dir[ 0 ] ) * 180 / M_PI );
+		                       270.0f - atan2f( dir[ 1 ], dir[ 0 ] ) * Math::div180_pi_f );
 	}
 }
 
@@ -602,8 +602,8 @@ static void CG_MinimapDrawBeacons( const rectDef_t *rect )
   bounds[ 0 ][ 1 ] = rect->y + size * 0.25;
   bounds[ 1 ][ 0 ] = rect->x + rect->w - size * 1.25;
   bounds[ 1 ][ 1 ] = rect->y + rect->h - size * 1.25;
-  center[ 0 ] = rect->x + rect->w / 2.0f;
-  center[ 1 ] = rect->y + rect->h / 2.0f;
+  center[ 0 ] = rect->x + rect->w * 0.5f;
+  center[ 1 ] = rect->y + rect->h * 0.5f;
 
 	for ( i = 0; i < cg.beaconCount; i++ )
 		CG_MinimapDrawBeacon( cg.beacons[ i ], size, center, (const vec2_t*)bounds );
