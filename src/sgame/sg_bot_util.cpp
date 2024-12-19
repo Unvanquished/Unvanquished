@@ -1719,7 +1719,7 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 
 	float cosAngle = glm::dot( forward, aimVec );
-	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
+	cosAngle = ( cosAngle + 1.0f ) * 0.5f;
 	cosAngle = 1.0f - cosAngle;
 	cosAngle = Math::Clamp( cosAngle, 0.1f, 0.5f );
 	glm::vec3 skilledVec = glm::mix( forward, aimVec, slow * cosAngle );
