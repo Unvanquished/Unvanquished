@@ -5,6 +5,9 @@
 
 #include <glm/geometric.hpp>
 
+#include "../sg_cm_world.h"
+#include "shared/math.hpp"
+
 constexpr int   SHUTTER_OPEN_TIME    = 1000;
 constexpr int   TARGET_SEARCH_PERIOD = 500;
 constexpr int   LOCKON_TIME          = 500;
@@ -174,8 +177,13 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 	}
 
 	// Prefer the target that is currently safe to shoot at.
-	glm::vec3 directionToA = glm::normalize( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
-	glm::vec3 directionToB = glm::normalize( VEC2GLM( b.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
+	glm::vec3 aOrigin = VEC2GLM( a.oldEnt->s.origin );
+	glm::vec3 bOrigin = VEC2GLM( b.oldEnt->s.origin );
+	glm::vec3 trBase = VEC2GLM( entity.oldEnt->s.pos.trBase );
+	normalize_warn( aOrigin - trBase );
+	glm::vec3 directionToA = glm::normalize( aOrigin - trBase );
+	normalize_warn( bOrigin - trBase );
+	glm::vec3 directionToB = glm::normalize( bOrigin - trBase );
 
 	bool safeToShootAtA = SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToA );
 	bool safeToShootAtB = SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToB );
