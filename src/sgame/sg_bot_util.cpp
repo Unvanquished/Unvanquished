@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 4, 1, 9 );
+static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 3, 1, 9 );
 static Cvar::Cvar<int> g_bot_alienAimDelay = Cvar::Cvar<int>( "g_bot_alienAimDelay", "make bots of alien team slower to aim", Cvar::NONE, 150 );
 static Cvar::Cvar<int> g_bot_humanAimDelay = Cvar::Cvar<int>( "g_bot_humanAimDelay", "make bots of human team slower to aim", Cvar::NONE, 150 );
 
