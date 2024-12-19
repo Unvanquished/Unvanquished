@@ -3,6 +3,7 @@ selector
 	sequence
 	{
 		condition alertedToEnemy
+		condition !haveWeapon( WP_HBUILD )
 		condition percentAmmoClip > 0 || percentClips > 0
 		{
 			selector
@@ -12,14 +13,6 @@ selector
 					condition haveWeapon( WP_LUCIFER_CANNON ) && ( distanceTo( E_H_REACTOR ) <= 400 || distanceTo( E_H_ARMOURY ) <= 400 )
 					{
 						action buyPrimary( WP_PULSE_RIFLE )
-					}
-				}
-				condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
-				{
-					selector
-					{
-						action equip
-						action flee
 					}
 				}
 
