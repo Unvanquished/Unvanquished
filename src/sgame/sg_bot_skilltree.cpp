@@ -153,8 +153,8 @@ void G_InitSkilltreeCvars()
 		"g_bot_skillset_baseSkills",
 		"Preferred skills for bots depending on levels, this is a level:skillName key:value list, example: " QQ("6:mantis-attack-jump, 3:prefer-armor"),
 		Cvar::NONE,
-		"1:movement 1:fighting 1:feels-pain 1:buy-modern-armor 1:medkit "
-		"3:strafe-attack "
+		"1:movement 1:fighting 1:medkit "
+		"4:strafe-attack 4:buy-modern-armor 4:feels-pain "
 		"5:aim-barbs 5:mantis-attack-jump 5:small-attack-jump 5:mara-attack-jump 5:goon-attack-jump 5:tyrant-attack-run 5:a-fast-flee 5:h-fast-flee 5:prefer-armor 5:lcannon-tricks "
 		"7:aim-head 7:predict-aim 7:safe-barbs "
 		, // unused: fast-aim
