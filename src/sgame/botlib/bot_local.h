@@ -169,7 +169,6 @@ struct NavData_t
 	dtTileCache      *cache;
 	dtNavMesh        *mesh;
 	dtNavMeshQuery   *query;
-	dtQueryFilter    filter;
 	NavconMeshProcess process;
 	class_t species;
 };
@@ -177,6 +176,7 @@ struct NavData_t
 struct Bot_t
 {
 	NavData_t         *nav;
+	dtQueryFilter     filter;
 	dtPathCorridor    corridor;
 	int               clientNum;
 	bool              needReplan;
