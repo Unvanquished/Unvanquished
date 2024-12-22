@@ -49,7 +49,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 static const int DEFAULT_CONNECTION_SIZE = 50;
 
-static bool GetPointPointedTo( NavData_t *nav, rVec &p )
+static bool GetPointPointedTo( NavData_t *nav, dtQueryFilter &filter, rVec &p )
 {
 	rVec extents;
 	trace_t trace;
@@ -69,7 +69,7 @@ static bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, traceType_t::TT_AABB );
 
 	rVec pos(VEC2GLM( trace.endpos ));
-	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
+	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &filter, &nearRef, p ) ) )
 	{
 		return false;
 	}
@@ -87,13 +87,14 @@ static struct
 	rVec start;
 	bool validPathStart;
 	NavData_t *nav;
+	dtQueryFilter filter; // default include-all filter
 } cmd;
 
 static void BotDrawNavEdit( DebugDrawQuake *dd )
 {
 	rVec p;
 
-	if ( cmd.enabled && GetPointPointedTo( cmd.nav, p ) )
+	if ( cmd.enabled && GetPointPointedTo( cmd.nav, cmd.filter, p ) )
 	{
 		unsigned int col = duRGBA( 255, 255, 255, 220 );
 		dd->begin( DU_DRAW_LINES, 2.0f );
@@ -365,7 +366,7 @@ public:
 				return;
 			}
 
-			if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
+			if ( GetPointPointedTo( cmd.nav, cmd.filter, cmd.pc.start ) )
 			{
 				cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
 				cmd.pc.flag = POLYFLAGS_WALK;
@@ -411,7 +412,7 @@ public:
 				return;
 			}
 
-			if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
+			if ( GetPointPointedTo( cmd.nav, cmd.filter, cmd.pc.end ) )
 			{
 				cmd.nav->process.con.addConnection( cmd.pc );
 
@@ -491,7 +492,7 @@ public:
 
 		OffMeshConnections &cons = cmd.nav->process.con;
 		rVec targetPoint;
-		if ( GetPointPointedTo( cmd.nav, targetPoint ) )
+		if ( GetPointPointedTo( cmd.nav, cmd.filter, targetPoint ) )
 		{
 			int i;
 			bool isStart;
@@ -532,7 +533,7 @@ public:
 
 		OffMeshConnections &cons = cmd.nav->process.con;
 		rVec targetPoint;
-		if ( GetPointPointedTo( cmd.nav, targetPoint ) )
+		if ( GetPointPointedTo( cmd.nav, cmd.filter, targetPoint ) )
 		{
 			int i;
 			bool unused;
@@ -613,7 +614,7 @@ public:
 		}
 		else if ( !Q_stricmp( arg, "startpath" ) )
 		{
-			if ( GetPointPointedTo( cmd.nav, cmd.start ) )
+			if ( GetPointPointedTo( cmd.nav, cmd.filter, cmd.start ) )
 			{
 				cmd.validPathStart = true;
 			}
@@ -625,7 +626,7 @@ public:
 		else if ( !Q_stricmp( arg, "endpath" ) )
 		{
 			rVec end;
-			if ( GetPointPointedTo( cmd.nav, end ) && cmd.validPathStart )
+			if ( GetPointPointedTo( cmd.nav, cmd.filter, end ) && cmd.validPathStart )
 			{
 				dtPolyRef startRef;
 				dtPolyRef endRef;
@@ -635,10 +636,10 @@ public:
 				rVec nearPoint;
 				rVec extents( 300, 300, 300 );
 
-				cmd.nav->query->findNearestPoly( cmd.start, extents, &cmd.nav->filter, &startRef, nearPoint );
-				cmd.nav->query->findNearestPoly( end, extents, &cmd.nav->filter, &endRef, nearPoint );
+				cmd.nav->query->findNearestPoly( cmd.start, extents, &cmd.filter, &startRef, nearPoint );
+				cmd.nav->query->findNearestPoly( end, extents, &cmd.filter, &endRef, nearPoint );
 
-				cmd.nav->query->findPath( startRef, endRef, cmd.start, end, &cmd.nav->filter, path, &npath, maxPath );
+				cmd.nav->query->findPath( startRef, endRef, cmd.start, end, &cmd.filter, path, &npath, maxPath );
 			}
 		}
 		else

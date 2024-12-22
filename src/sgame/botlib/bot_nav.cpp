@@ -135,7 +135,7 @@ void G_BotSetNavMesh( gentity_t *ent )
 	{
 		polyflags |= POLYFLAGS_JETPACK;
 	}
-	nav->filter.setIncludeFlags( polyflags );
+	bot.filter.setIncludeFlags( polyflags );
 
 	bot.nav = nav;
 	float clearVec[3]{};
@@ -204,16 +204,16 @@ bool G_IsBotOverNavcon( int botClientNum )
 
 static void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 {
-	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
+	bot->corridor.movePosition( spos, bot->nav->query, &bot->filter );
 
 	if ( target.type == botRouteTargetType_t::BOT_TARGET_DYNAMIC )
 	{
-		bot->corridor.moveTargetPosition( target.pos, bot->nav->query, &bot->nav->filter );
+		bot->corridor.moveTargetPosition( target.pos, bot->nav->query, &bot->filter );
 	}
 
-	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->nav->filter ) )
+	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->filter ) )
 	{
-		bot->corridor.trimInvalidPath( bot->corridor.getFirstPoly(), spos, bot->nav->query, &bot->nav->filter );
+		bot->corridor.trimInvalidPath( bot->corridor.getFirstPoly(), spos, bot->nav->query, &bot->filter );
 		bot->needReplan = true;
 	}
 
@@ -389,7 +389,7 @@ bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm:
 	}
 
 	dtPolyRef randRef;
-	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, nearPoint );
+	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->filter, frand, &randRef, nearPoint );
 
 	if ( dtStatusFailed( status ) )
 	{
@@ -412,12 +412,12 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start,
 
 	Bot_t *bot = &agents[ botClientNum ];
 
-	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nullptr );
+	status = bot->nav->query->findNearestPoly( spos, extents, &bot->filter, &startRef, nullptr );
 	if ( dtStatusFailed( status ) || startRef == 0 )
 	{
 		//try larger extents
 		extents[ 1 ] += 500;
-		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nullptr );
+		status = bot->nav->query->findNearestPoly( spos, extents, &bot->filter, &startRef, nullptr );
 		if ( dtStatusFailed( status ) || startRef == 0 )
 		{
 			return false;
@@ -425,7 +425,7 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start,
 	}
 
 	rVec unusedNormal;
-	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, unusedNormal, nullptr, nullptr, 0 );
+	status = bot->nav->query->raycast( startRef, spos, epos, &bot->filter, &trace->frac, unusedNormal, nullptr, nullptr, 0 );
 	return !dtStatusFailed( status );
 }
 
