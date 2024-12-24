@@ -2647,9 +2647,10 @@ bool G_admin_slap( gentity_t *ent )
 		return false;
 	}
 
-	if ( trap_Argc() < 2 )
+	int argc = trap_Argc();
+	if ( argc != 2 && argc != 3 && argc != 4 && argc != 6 )
 	{
-		ADMP( QQ( N_( "^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7) (^3acceleration^7)" ) ) );
+		ADMP( QQ( N_( "^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7) (^3acceleration scalar or vector^7)" ) ) );
 		return false; // todo: G_admin_helptext( "slap" ) instead of this copypasta
 	}
 
@@ -2680,7 +2681,7 @@ bool G_admin_slap( gentity_t *ent )
 	}
 
 	int accel = 1000;  // default acceleration
-	if ( trap_Argc() > 3 )
+	if ( argc == 4 )
 	{
 		char accel_str[ 12 ]; // 11 is max strlen() for 32-bit (signed) int
 		char *end;
@@ -2693,17 +2694,34 @@ bool G_admin_slap( gentity_t *ent )
 		}
 	}
 
-	dir[0] = crandom();
-	dir[1] = crandom();
-	dir[2] = random();
+	vec3_t kvel;
+	if ( argc == 6 )
+	{
+		for ( int component = 0; component < 3; component++ )
+		{
+			int val = 0;
+			char str[ 12 ];
+			trap_Argv( 3 + component, str, sizeof( str ) );
+			if ( !Str::ParseInt( val, str ) )
+			{
+				ADMP( QQ( N_( "invalid acceleration vector" ) ) );
+				return false;
+			}
+			kvel[ component ] = val;
+		}
+	}
+	else
+	{
+		dir[0] = crandom();
+		dir[1] = crandom();
+		dir[2] = random();
+		VectorScale( dir, static_cast<float> (accel), kvel );
+	}
 
 	// from G_Knockback ...
 	// this code is duplicated from KnockbackComponent because
 	// using knockback in ent->Damage() won't throw the victim
 	// about if the damage caused to them is 0.
-	vec3_t kvel;
-
-	VectorScale( dir, static_cast<float> (accel), kvel );
 	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
 
 	// set the timer so that the other client can't cancel
