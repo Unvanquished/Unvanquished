@@ -1458,23 +1458,24 @@ static void CG_Rocket_BuildBotCommandList( const char *table )
 	{
 		Rocket_DSClearTable( "botCommandList", "default" );
 
-		auto setCommand = [&]( std::string num, std::string name, std::string desc, std::string icon )
+		auto setCommand = [&]( std::string num, std::string name, std::string title, std::string desc, std::string icon )
 		{
 			buf[ 0 ] = '\0';
 
 			Info_SetValueForKey( buf, "num", num.c_str(), false );
 			Info_SetValueForKey( buf, "name", name.c_str(), false );
+			Info_SetValueForKey( buf, "title", title.c_str(), false );
 			Info_SetValueForKey( buf, "desc", desc.c_str(), false );
 			Info_SetValueForKey( buf, "icon", icon.c_str(), false );
 
 			Rocket_DSAddRow( "botCommandList", "default", buf );
 		};
 
-		setCommand( "0", "default", "The default behavior. This is what bots do when the game starts.", "gfx/feedback/botcommands/default" );
-		setCommand( "1", "defend", "The bots stay in their base.", "gfx/feedback/botcommands/defend" );
-		setCommand( "2", "attack", "The bots attack the enemy base.", "gfx/feedback/botcommands/attack" );
-		setCommand( "3", "stay_here", "The bots stay where you are currently.", "gfx/feedback/botcommands/stay_here" );
-		setCommand( "4", "follow", "The bots follow you wherever you go.", "gfx/feedback/botcommands/follow" );
+		setCommand( "0", "default", "Default", "The default behavior. This is what bots do when the game starts.", "gfx/feedback/botcommands/default" );
+		setCommand( "1", "defend", "Defend", "The bots stay in their base.", "gfx/feedback/botcommands/defend" );
+		setCommand( "2", "attack", "Attack", "The bots attack the enemy base.", "gfx/feedback/botcommands/attack" );
+		setCommand( "3", "stay_here", "Stay Here", "The bots stay where you are currently.", "gfx/feedback/botcommands/stay_here" );
+		setCommand( "4", "follow", "Follow", "The bots follow you wherever you go.", "gfx/feedback/botcommands/follow" );
 	}
 }
 

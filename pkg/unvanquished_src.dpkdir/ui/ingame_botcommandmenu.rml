@@ -49,8 +49,8 @@
 			function BotCommandHover(document, idx)
 				ClearBotCommandInfo(document)
 				local botCommand = botCommands[idx]
-				document:GetElementById("botCommandName"):AppendChild(document:CreateTextNode(botCommand[2]))
-				document:GetElementById("botCommandDesc"):AppendChild(document:CreateTextNode(botCommand[3]))
+				document:GetElementById("botCommandName"):AppendChild(document:CreateTextNode(botCommand[3]))
+				document:GetElementById("botCommandDesc"):AppendChild(document:CreateTextNode(botCommand[4]))
 			end
 			function ClearBotCommandInfo(document)
 				document:GetElementById("botCommandName").inner_rml = ""
@@ -60,7 +60,7 @@
 				ClearBotCommandInfo(document)
 				if botCommands == nil then
 					CDataSource.Build("botCommandList", "default")
-					botCommands = CDataSource.Read("botCommandList", "default", "icon,name,desc")
+					botCommands = CDataSource.Read("botCommandList", "default", "icon,name,title,desc")
 				end
 				local circlemenu = document:GetElementById("botCommandMenu")
 				circlemenu.inner_rml = CirclemenuSkeleton(#botCommands)
