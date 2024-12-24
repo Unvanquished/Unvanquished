@@ -1471,11 +1471,11 @@ static void CG_Rocket_BuildBotCommandList( const char *table )
 			Rocket_DSAddRow( "botCommandList", "default", buf );
 		};
 
-		setCommand( "0", "default", "Default", "The default behavior. This is what bots do when the game starts.", "gfx/feedback/botcommands/default" );
-		setCommand( "1", "defend", "Defend", "The bots stay in their base.", "gfx/feedback/botcommands/defend" );
-		setCommand( "2", "attack", "Attack", "The bots attack the enemy base.", "gfx/feedback/botcommands/attack" );
-		setCommand( "3", "stay_here", "Stay Here", "The bots stay where you are currently.", "gfx/feedback/botcommands/stay_here" );
-		setCommand( "4", "follow", "Follow", "The bots follow you wherever you go.", "gfx/feedback/botcommands/follow" );
+		setCommand( "0", "default", N_( "Default" ), N_( "The default behavior. This is what bots do when the game starts." ), "gfx/feedback/botcommands/default" );
+		setCommand( "1", "defend", N_( "Defend" ), N_( "The bots stay in the base." ), "gfx/feedback/botcommands/defend" );
+		setCommand( "2", "attack", N_( "Attack" ), N_( "The bots attack the enemy base." ), "gfx/feedback/botcommands/attack" );
+		setCommand( "3", "stay_here", N_( "Stay Here" ), N_( "The bots stay where you are currently." ), "gfx/feedback/botcommands/stay_here" );
+		setCommand( "4", "follow", N_( "Follow" ), N_( "The bots follow you wherever you go." ), "gfx/feedback/botcommands/follow" );
 	}
 }
 
