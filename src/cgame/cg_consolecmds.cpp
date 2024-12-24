@@ -437,7 +437,6 @@ static void CG_BotCommandMenu_f()
 	if ( !cg.snap
 		|| cg.clientNum != cg.snap->ps.clientNum /* following */
 		|| cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT /* spectating */ )
-
 	{
 		return;
 	}
