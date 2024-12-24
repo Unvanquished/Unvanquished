@@ -1024,16 +1024,17 @@ static void InitDisabledItemCvars()
 	G_SpawnStringIntoCVar( "disabledBuildables", g_disabledBuildables );
 }
 
+static std::string defaultTacticBehaviors = "default, defend, attack, stay_here, follow";
 static void InitTacticBehaviorsCvar()
 {
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_tacticBehaviors(
 	   "g_tacticBehaviors",
 		"Allowed behaviors for the tactic command, example: " QQ("default, camper, reckless"),
 		Cvar::NONE,
-		"", // overwritten below
+		defaultTacticBehaviors.c_str(),
 		BG_SetTacticBehaviors
 		);
-	BG_SetTacticBehaviors( "default, defend, attack, stay_here, follow" );
+	BG_SetTacticBehaviors( defaultTacticBehaviors.c_str() );
 }
 
 /**
