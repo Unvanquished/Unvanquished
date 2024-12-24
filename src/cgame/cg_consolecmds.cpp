@@ -432,6 +432,18 @@ static void CG_BeaconMenu_f()
 	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
+static void CG_BotCommandMenu_f()
+{
+	if ( !cg.snap
+		|| cg.clientNum != cg.snap->ps.clientNum /* following */
+		|| cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT /* spectating */ )
+
+	{
+		return;
+	}
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BOTCOMMANDS ].id, "show" );
+}
+
 static const struct cg_cmd_t
 {
 	const char *cmd;
@@ -459,6 +471,7 @@ static const struct cg_cmd_t
 	{ "asay",             0,                       0                },
 	{ "beacon",           0,                       CG_CompleteBeacon },
 	{ "beaconMenu",       CG_BeaconMenu_f,         0                },
+	{ "botCommandMenu",   CG_BotCommandMenu_f,     0                },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },

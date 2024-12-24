@@ -31,6 +31,7 @@
 		ui/ingame_beaconmenu.rml ingame_beaconmenu passthrough // ROCKETMENU_BEACONS
 		ui/error.rml error                                     // ROCKETMENU_ERROR
 		ui/welcome.rml welcome                                 // ROCKETMENU_WELCOME
+		ui/ingame_botcommandmenu.rml ingame_botcommandmenu passthrough  // ROCKETMENU_BOTCOMMANDS
 	}
 	misc
 	{
