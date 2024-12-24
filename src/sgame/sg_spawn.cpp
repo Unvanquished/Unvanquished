@@ -1030,9 +1030,10 @@ static void InitTacticBehaviorsCvar()
 	   "g_tacticBehaviors",
 		"Allowed behaviors for the tactic command, example: " QQ("default, camper, reckless"),
 		Cvar::NONE,
-		"",
+		"", // overwritten below
 		BG_SetTacticBehaviors
 		);
+	BG_SetTacticBehaviors( "default, defend, attack, stay_here, follow" );
 }
 
 /**
