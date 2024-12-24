@@ -4,6 +4,8 @@
 #include "../CBSE.h"
 
 #include <glm/geometric.hpp>
+#include "shared/math.hpp"
+
 constexpr int   ATTACK_PERIOD = 3000;
 
 HiveComponent::HiveComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent)
@@ -107,6 +109,7 @@ void HiveComponent::Fire(Entity& target) {
 
 	glm::vec3 muzzle      = VEC2GLM( entity.oldEnt->s.pos.trBase );
 	glm::vec3 targetPoint = VEC2GLM( target.oldEnt->s.origin );
+	normalize_warn( targetPoint - muzzle );
 	glm::vec3 dirToTarget = glm::normalize( targetPoint - muzzle );
 	glm::vec3 origin = muzzle + entity.oldEnt->r.maxs[2] * VEC2GLM(entity.oldEnt->s.origin2);
 
