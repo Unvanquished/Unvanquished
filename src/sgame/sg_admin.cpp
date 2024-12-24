@@ -2704,7 +2704,7 @@ bool G_admin_slap( gentity_t *ent )
 			trap_Argv( 3 + component, str, sizeof( str ) );
 			if ( !Str::ParseInt( val, str ) )
 			{
-				ADMP( QQ( N_( "invalid acceleration component" ) ) );
+				ADMP( QQ( N_( "invalid acceleration vector" ) ) );
 				return false;
 			}
 			kvel[ component ] = val;
