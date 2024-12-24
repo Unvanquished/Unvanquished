@@ -104,7 +104,6 @@ struct playerState_t
 {
 	// the first group of fields must be identical to the ones in OpaquePlayerState
 	vec3_t origin;
-	int ping; // server to game info for scoreboard
 	int persistant[16];
 	int    viewheight;
 	int clientNum; // ranges from 0 to MAX_CLIENTS-1
