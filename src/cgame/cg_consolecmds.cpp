@@ -434,9 +434,9 @@ static void CG_BeaconMenu_f()
 
 static void CG_BotCommandMenu_f()
 {
-	if ( !cg.snap
-		|| cg.clientNum != cg.snap->ps.clientNum /* following */
-		|| cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT /* spectating */ )
+	clientInfo_t &ci = cgs.clientinfo[ cg.clientNum ];
+	if ( !ci.infoValid // not sure if this can happen, play it safe
+	     || ci.team == TEAM_NONE )
 	{
 		return;
 	}
