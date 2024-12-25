@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "common/Common.h"
 #include "sg_local.h"
+#include "shared/bg_mod.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -33,68 +34,6 @@ Cvar::Cvar<float> g_rewardDestruction( "g_rewardDestruction", "Reward players wh
 // damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
 int            g_numDamageRegions[ PCL_NUM_CLASSES ];
-
-// these are just for logging, the client prints its own messages
-// TODO: Centralize to keep in sync (e.g. bg_mod.c)
-static const char *const modNames[] =
-{
-	"MOD_UNKNOWN",
-	"MOD_SHOTGUN",
-	"MOD_BLASTER",
-	"MOD_PAINSAW",
-	"MOD_MACHINEGUN",
-	"MOD_CHAINGUN",
-	"MOD_PRIFLE",
-	"MOD_MDRIVER",
-	"MOD_LASGUN",
-	"MOD_LCANNON",
-	"MOD_LCANNON_SPLASH",
-	"MOD_FLAMER",
-	"MOD_FLAMER_SPLASH",
-	"MOD_BURN",
-	"MOD_GRENADE",
-	"MOD_FIREBOMB",
-	"MOD_WEIGHT_H",
-	"MOD_WATER",
-	"MOD_SLIME",
-	"MOD_LAVA",
-	"MOD_CRUSH",
-	"MOD_TELEFRAG",
-	"MOD_SLAP",
-	"MOD_FALLING",
-	"MOD_SUICIDE",
-	"MOD_TARGET_LASER",
-	"MOD_TRIGGER_HURT",
-
-	"MOD_ABUILDER_CLAW",
-	"MOD_LEVEL0_BITE",
-	"MOD_LEVEL1_CLAW",
-	"MOD_LEVEL3_CLAW",
-	"MOD_LEVEL3_POUNCE",
-	"MOD_LEVEL3_BOUNCEBALL",
-	"MOD_LEVEL2_CLAW",
-	"MOD_LEVEL2_ZAP",
-	"MOD_LEVEL4_CLAW",
-	"MOD_LEVEL4_TRAMPLE",
-	"MOD_WEIGHT_A",
-
-	"MOD_SLOWBLOB",
-	"MOD_POISON",
-	"MOD_SWARM",
-
-	"MOD_HSPAWN",
-	"MOD_ROCKETPOD",
-	"MOD_MGTURRET",
-	"MOD_REACTOR",
-
-	"MOD_ASPAWN",
-	"MOD_ATUBE",
-	"MOD_SPIKER",
-	"MOD_OVERMIND",
-	"MOD_DECONSTRUCT",
-	"MOD_REPLACE",
-	"MOD_BUILDLOG_REVERT",
-};
 
 /**
  * @brief Helper function for G_AddCreditsToScore and G_AddMomentumToScore.
@@ -554,14 +493,14 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= (int) ARRAY_LEN( modNames ) )
+	if ( meansOfDeath < 0 || meansOfDeath >= (int)bg_numMeansOfDeath )
 	{
 		// fall back on the number
 		obit = va( "%d", meansOfDeath );
 	}
 	else
 	{
-		obit = modNames[ meansOfDeath ];
+		obit = bg_meansOfDeathData[ meansOfDeath ].name;
 	}
 
 	if ( assistant != ENTITYNUM_NONE )
@@ -1202,7 +1141,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	             actor->num(),
 	             self->num(),
 	             BG_Buildable( self->s.modelindex )->name,
-	             modNames[ mod ],
+	             bg_meansOfDeathData[ mod ].name,
 	             BG_Buildable( self->s.modelindex )->humanName,
 	             mod == MOD_DECONSTRUCT ? "deconstructed" : "destroyed",
 	             actor->client ? actor->client->pers.netname : "<world>" );
