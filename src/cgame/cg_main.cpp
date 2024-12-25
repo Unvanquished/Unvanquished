@@ -867,11 +867,11 @@ static void CG_RegisterGraphics()
 
 	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	trap_R_RegisterShader( "gfx/feedback/botcommands/default", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
-	trap_R_RegisterShader( "gfx/feedback/botcommands/defend", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
-	trap_R_RegisterShader( "gfx/feedback/botcommands/attack", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
-	trap_R_RegisterShader( "gfx/feedback/botcommands/stay_here", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
-	trap_R_RegisterShader( "gfx/feedback/botcommands/follow", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/bottactic/default", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/bottactic/defend", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/bottactic/attack", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/bottactic/stay_here", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/bottactic/follow", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 	// register the inline models
 	cgs.numInlineModels = CM_NumInlineModels();

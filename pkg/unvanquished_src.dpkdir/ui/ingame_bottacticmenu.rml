@@ -1,0 +1,91 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+		<style>
+			body {
+				width: 100%;
+				height: 100%;
+				background: #00000066;
+				text-align: center;
+			}
+
+			.circlemenu icon {
+				display: inline-block;
+				position: absolute;
+				bottom: 0.3em;
+				right: 0.75em;
+				font-size: 1.7em;
+			}
+
+			.circlemenu button {
+				position: relative;
+			}
+
+			.circlemenu button.active {
+				decorator: image(/ui/assets/circle-hover);
+				image-color: rgb(100, 100, 100);
+			}
+			.circlemenu button.active:hover {
+				decorator: image(/ui/assets/circle-hover);
+				image-color: rgb(255, 255, 255);
+			}
+			.circlemenu button.active icon {
+				color: #9affbd;
+			}
+
+			.circlemenu button img {
+				color: rgb(230, 230, 230);
+			}
+		</style>
+		<script src="lua/util.lua" />
+		<script>
+			function BotTacticClick(idx, event)
+				if idx > #botTactics then return end
+				Cmd.exec("tactic " .. botTactics[idx][2])
+				Events.pushcmd("hide ingame_bottacticmenu")
+			end
+			function BotTacticHover(document, idx)
+				ClearBotTacticInfo(document)
+				local botTactic = botTactics[idx]
+				document:GetElementById("botTacticName"):AppendChild(document:CreateTextNode(botTactic[3]))
+				document:GetElementById("botTacticDesc"):AppendChild(document:CreateTextNode(botTactic[4]))
+			end
+			function ClearBotTacticInfo(document)
+				document:GetElementById("botTacticName").inner_rml = ""
+				document:GetElementById("botTacticDesc").inner_rml = ""
+			end
+			function BuildBotTacticMenu(document)
+				ClearBotTacticInfo(document)
+				if botTactics == nil then
+					CDataSource.Build("botTacticList", "default")
+					botTactics = CDataSource.Read("botTacticList", "default", "icon,name,title,desc")
+				end
+				local circlemenu = document:GetElementById("botTacticMenu")
+				circlemenu.inner_rml = CirclemenuSkeleton(#botTactics)
+				for i=1,#botTactics do
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
+						'<button onclick="BotTacticClick(%d, event)" onmouseover="BotTacticHover(document,%d)"><img src="/%s"/></button>',
+						i, i, botTactics[i][1])
+				end
+				document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#botTactics)
+			end
+		</script>
+	</head>
+	<body id="ingame_bottacticmenu" class="circlemenu" onkeydown="CirclemenuHandleKey(event, document, BotTacticClick)" onshow="CloseOtherCirclemenus(event) BuildBotTacticMenu(document)">
+		<tabset class="circlemenu">
+			<tab><translate>Bot Tactic</translate></tab>
+			<panel>
+				<div class="circlemenu-circle" id="keyboardHints"/>
+				<div class="circlemenu-circle" id="botTacticMenu"/>
+				<div style="position: absolute; left: 0; width: 40%;">
+					<div class="infobox">
+						<h2 id="botTacticName"></h2>
+						<p class="text" style="text-align: left;" id="botTacticDesc"></p>
+					</div>
+				</div>
+			</panel>
+		</tabset>
+	</body>
+</rml>

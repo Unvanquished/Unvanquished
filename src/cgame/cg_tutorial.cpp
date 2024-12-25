@@ -57,7 +57,7 @@ static bind_t bindings[] =
 	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ "message_public", N_( "Global chat" ),                           {} },
 	{ "message_team",   N_( "Team chat" ),                             {} },
-	{ "botCommandMenu", N_( "Tactic bot menu" ),                       {} },
+	{ "botTacticMenu",  N_( "Tactic bot menu" ),                       {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ OPEN_MENU_CMD,    N_( "Toggle Menu" ),                           {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
@@ -343,7 +343,7 @@ CG_HumanText
 */
 static void CG_HumanText( std::string& text, playerState_t *ps )
 {
-	text += va( _( "Press %s to show the tactic bot menu." ), CG_KeyNameForCommand( "botCommandMenu" ) );
+	text += va( _( "Press %s to show the tactic bot menu." ), CG_KeyNameForCommand( "botTacticMenu" ) );
 	text += '\n';
 	if ( !ps->ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
@@ -596,7 +596,7 @@ const std::string& CG_TutorialText()
 			{
 				text += va( _( "Press %s to evolve." ), CG_KeyNameForCommand( "+activate" ) );
 				text += '\n';
-				text += va( _( "Press %s to show the tactic bot menu." ), CG_KeyNameForCommand( "botCommandMenu" ) );
+				text += va( _( "Press %s to show the tactic bot menu." ), CG_KeyNameForCommand( "botTacticMenu" ) );
 				text += '\n';
 			}
 		}
