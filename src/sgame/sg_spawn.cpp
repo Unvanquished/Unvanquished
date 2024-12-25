@@ -1034,7 +1034,12 @@ static void InitTacticBehaviorsCvar()
 		defaultTacticBehaviors.c_str(),
 		BG_SetTacticBehaviors
 		);
-	BG_SetTacticBehaviors( defaultTacticBehaviors.c_str() );
+	static bool alreadyInitialized = false;
+	if ( !alreadyInitialized )
+	{
+		BG_SetTacticBehaviors( defaultTacticBehaviors.c_str() );
+		alreadyInitialized = true;
+	}
 }
 
 /**
