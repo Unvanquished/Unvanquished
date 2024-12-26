@@ -148,11 +148,6 @@ struct gentityConfig_t
 struct entityClass_t
 {
 	int instanceCounter;
-	/**
-	 * default config
-	 * entities might fallback to their classwide config if their individual is not set
-	 */
-	gentityConfig_t config;
 };
 
 enum gentityCallEvent_t
@@ -330,6 +325,6 @@ struct mapEntity_t
 
 };
 
-void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
+void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int fallback );
 
 #endif // SG_MAP_ENTITY_H

@@ -809,15 +809,11 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 /**
  * check delayed variable and either call an entity act() directly or delay its execution
  */
-static void G_ResetTimeField( variatingTime_t *result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
+static void G_ResetTimeField( variatingTime_t *result, variatingTime_t instanceField, variatingTime_t fallback )
 {
 	if( instanceField.time && instanceField.time > 0 )
 	{
 		*result = instanceField;
-	}
-	else if (classField.time && classField.time > 0 )
-	{
-		*result = classField;
 	}
 	else
 	{
@@ -851,7 +847,7 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 	ASSERT(call != nullptr);
 	entity->callIn = *call;
 
-	G_ResetTimeField(&delay, entity->mapEntity.config.delay, entity->mapEntity.eclass->config.delay, delay );
+	G_ResetTimeField(&delay, entity->mapEntity.config.delay, delay );
 
 	if(delay.time)
 	{
