@@ -200,7 +200,7 @@ static void target_hurt_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 void SP_target_hurt( gentity_t *self )
 {
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 5);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 5);
 	self->act = target_hurt_act;
 }
 

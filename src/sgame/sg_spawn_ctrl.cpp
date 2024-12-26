@@ -152,7 +152,7 @@ static void ctrl_limited_reset( gentity_t *self )
 {
 	self->enabled = !(self->mapEntity.spawnflags & SPF_SPAWN_DISABLED);
 
-	G_ResetIntField(&self->mapEntity.count, true, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, 1);
+	G_ResetIntField(&self->mapEntity.count, true, self->mapEntity.config.amount, 1);
 }
 
 void SP_ctrl_limited( gentity_t *self )

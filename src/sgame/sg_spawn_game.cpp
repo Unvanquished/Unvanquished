@@ -131,7 +131,7 @@ static void game_funds_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 static void game_funds_reset( gentity_t *self )
 {
-	G_ResetIntField( &self->mapEntity.amount, false, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, 0);
+	G_ResetIntField( &self->mapEntity.amount, false, self->mapEntity.config.amount, 0);
 }
 
 void SP_game_funds( gentity_t *self )
