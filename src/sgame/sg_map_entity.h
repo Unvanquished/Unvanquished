@@ -143,11 +143,6 @@ struct gentityConfig_t
 	int triggerRange;
 };
 
-struct entityClass_t
-{
-	int instanceCounter;
-};
-
 enum gentityCallEvent_t
 {
 	ON_DEFAULT = 0,
@@ -182,12 +177,6 @@ struct gentityCallDefinition_t
 
 struct mapEntity_t
 {
-	/*
-	 * the class of the entity
-	 * this is shared among all instances of this type
-	 */
-	entityClass_t *eclass;
-
 	int spawnflags;
 	char *names[ MAX_ENTITY_ALIASES + 1 ];
 
@@ -290,14 +279,6 @@ struct mapEntity_t
 	inline bool initialPosition() const
 	{
 		return moverState == MOVER_POS1 || moverState == ROTATOR_POS1;
-	}
-
-	inline void deinstantiate()
-	{
-		if ( eclass && eclass->instanceCounter > 0 )
-		{
-			eclass->instanceCounter--;
-		}
 	}
 
 	char const* nameList() const
