@@ -199,6 +199,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 }
 
 static Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", Cvar::NONE, false);
+static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer factor", Cvar::NONE, 1.f);
 
 void G_admin_print_raw( gentity_t *ent, Str::StringRef m );
 static void TransferBPToEnemyTeam( gentity_t *self )
@@ -211,7 +212,7 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	{
 		return;
 	}
-	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints;
+	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints * g_BPTransferFactor.Get();
 	if ( bpToTransfer == 0 )
 	{
 		return;
