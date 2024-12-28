@@ -229,7 +229,21 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	default:
 		return;
 	}
-	msg += " won ^3" + std::to_string( bpToTransfer ) + "^* build points, now Humans ^3" + std::to_string( g_BPInitialBudgetHumans.Get() ) + "^* : Aliens ^3" + std::to_string( g_BPInitialBudgetAliens.Get() ) + "^*\"";
+	auto bar = [&] ( int bpAmount )
+	{
+		std::string result;
+		int barStep = 20;
+		if ( bpAmount > 0 && bpAmount < barStep )
+		{
+			bpAmount = barStep;
+		}
+		for ( int i = 0; i < bpAmount / 20; i++ )
+		{
+			result += "█";
+		}
+		return result;
+	};
+	msg += " win ^3" + std::to_string( bpToTransfer ) + "^* build points, now ^3" + std::to_string( g_BPInitialBudgetHumans.Get() ) + " ^d" + bar( g_BPInitialBudgetHumans.Get() ) +  "^i" + bar( g_BPInitialBudgetAliens.Get() ) + " ^3" + std::to_string( g_BPInitialBudgetAliens.Get() ) + "\"";
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
