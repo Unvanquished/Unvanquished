@@ -207,6 +207,10 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	{
 		return;
 	}
+	if ( level.time - self->lastDamageTime > 6000 )
+	{
+		return;
+	}
 	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints;
 	if ( bpToTransfer == 0 )
 	{
@@ -292,8 +296,6 @@ void G_RewardAttackers( gentity_t *self )
 			value *= ( level.time - self->creationTime ) /
 			         ( float )BG_Buildable( self->s.modelindex )->buildTime;
 		}
-
-		TransferBPToEnemyTeam( self );
 	}
 	else
 	{
@@ -322,6 +324,7 @@ void G_RewardAttackers( gentity_t *self )
 		return;
 	}
 
+	bool enemyDamagedBuildable = false;
 	// Give individual rewards
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
@@ -357,6 +360,8 @@ void G_RewardAttackers( gentity_t *self )
 
 			// Add momentum
 			G_AddMomentumForDestroyingStep( self, player, reward );
+
+			enemyDamagedBuildable = true;
 		}
 		else
 		{
@@ -373,6 +378,11 @@ void G_RewardAttackers( gentity_t *self )
 
 	// Complete momentum modification
 	G_AddMomentumEnd();
+
+	if ( enemyDamagedBuildable )
+	{
+		TransferBPToEnemyTeam( self );
+	}
 }
 
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
