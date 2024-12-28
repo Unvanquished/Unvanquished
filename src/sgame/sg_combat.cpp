@@ -198,6 +198,44 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	return assistant;
 }
 
+static Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", Cvar::NONE, false);
+
+void G_admin_print_raw( gentity_t *ent, Str::StringRef m );
+static void TransferBPToEnemyTeam( gentity_t *self )
+{
+	if ( !g_BPTransfer.Get() )
+	{
+		return;
+	}
+	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints;
+	if ( bpToTransfer == 0 )
+	{
+		return;
+	}
+	team_t otherTeam = self->buildableTeam == TEAM_HUMANS ? TEAM_ALIENS : TEAM_HUMANS;
+	std::string msg;
+	switch ( otherTeam )
+	{
+	case TEAM_ALIENS:
+		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() - bpToTransfer );
+		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() + bpToTransfer );
+		msg = "\"^iAliens^*";
+		break;
+	case TEAM_HUMANS:
+		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() + bpToTransfer );
+		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() - bpToTransfer );
+		msg = "\"^dHumans^*";
+		break;
+	default:
+		return;
+	}
+	msg += " won ^3" + std::to_string( bpToTransfer ) + "^* build points, now Humans ^3" + std::to_string( g_BPInitialBudgetHumans.Get() ) + "^* : Aliens ^3" + std::to_string( g_BPInitialBudgetAliens.Get() ) + "^*\"";
+	for ( int i = 0; i < level.maxclients; i++ )
+	{
+		trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
+	}
+}
+
 /**
  * @brief Function to distribute rewards to entities that killed this one.
  * @param self
@@ -240,6 +278,8 @@ void G_RewardAttackers( gentity_t *self )
 			value *= ( level.time - self->creationTime ) /
 			         ( float )BG_Buildable( self->s.modelindex )->buildTime;
 		}
+
+		TransferBPToEnemyTeam( self );
 	}
 	else
 	{

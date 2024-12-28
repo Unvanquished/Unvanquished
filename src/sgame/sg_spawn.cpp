@@ -1109,6 +1109,9 @@ static void SP_worldspawn()
 	InitDisabledItemCvars();
 	InitTacticBehaviorsCvar();
 
+	g_BPInitialBudgetAliens.Set( g_buildPointInitialBudget.Get() );
+	g_BPInitialBudgetHumans.Set( g_buildPointInitialBudget.Get() );
+
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_WORLD ].classname = S_WORLDSPAWN;
