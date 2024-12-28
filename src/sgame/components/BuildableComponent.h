@@ -73,7 +73,7 @@ class BuildableComponent: public BuildableComponentBase {
 		 * @return Whether the buildable is or will be powered.
 		 * @todo Make entity.oldEnt->powered a component member.
 		 */
-		bool Powered() const { return true; }
+		bool Powered() const { return entity.oldEnt->powered; }
 
 		/**
 		 * @return Whether the buildable has completed construction and is alive and powered.

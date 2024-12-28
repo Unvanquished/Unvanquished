@@ -424,6 +424,11 @@ void G_UpdateBuildablePowerStates()
 				buildableComponent.SetPowerState(false);
 				return;
 			}
+			else
+			{
+				buildableComponent.SetPowerState(true);
+				return;
+			}
 
 			// In order to make good a deficit, don't shut down buildables that have no cost.
 			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
@@ -434,6 +439,8 @@ void G_UpdateBuildablePowerStates()
 				poweredBuildables.push_back(&entity);
 			}
 		});
+
+		continue;
 
 		// If there is no active main buildable, all buildables that can shut down already did so.
 		if (!activeMainBuildable) continue;
