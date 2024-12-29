@@ -2174,6 +2174,9 @@ void G_RunFrame( int levelTime )
 	int        msec;
 	static int ptime3000 = 0;
 
+	extern void G_ResetStolenBP();
+	G_ResetStolenBP();
+
 	// if we are waiting for the level to restart, do nothing
 	if ( level.restarted )
 	{
@@ -2360,6 +2363,9 @@ void G_RunFrame( int levelTime )
 
 	// Power down buildables if there is a budget deficit.
 	G_UpdateBuildablePowerStates();
+
+	extern void G_AnnounceStolenBP();
+	G_AnnounceStolenBP();
 
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
