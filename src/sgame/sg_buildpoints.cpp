@@ -73,11 +73,11 @@ void G_UpdateBuildPointBudgets() {
 	int abp = g_BPInitialBudgetAliens.Get();
 	int hbp = g_BPInitialBudgetHumans.Get();
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		if ( team == TEAM_ALIENS && abp >= 0 )
+		if ( team == TEAM_ALIENS && abp > -32768 )
 		{
 			level.team[team].totalBudget = abp;
 		}
-		else if ( team == TEAM_HUMANS && hbp >= 0 )
+		else if ( team == TEAM_HUMANS && hbp > -32768 )
 		{
 			level.team[team].totalBudget = hbp;
 		}
