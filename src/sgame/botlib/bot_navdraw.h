@@ -44,7 +44,7 @@ class DebugDrawQuake final : public duDebugDraw
 
 	// Machinery for converting quads to triangles
 	int quadCounter;
-	glm::vec3 quadFirstVertex;
+	std::array<float, 3> quadFirstVertex;
 	unsigned int quadFirstColor;
 
 public:
