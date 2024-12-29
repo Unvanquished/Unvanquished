@@ -90,7 +90,7 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 		return;
 	}
 
-	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
+	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->filter );
 }
 
 bool PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
@@ -131,7 +131,7 @@ bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &n
 	rVec extents( 640, 96, 640 );
 	dtStatus status;
 	dtNavMeshQuery* navQuery = bot->nav->query;
-	dtQueryFilter* navFilter = &bot->nav->filter;
+	dtQueryFilter* navFilter = &bot->filter;
 
 	status = navQuery->findNearestPoly( start, extents, navFilter, nearestPoly, nearPoint );
 	if ( dtStatusFailed( status ) || *nearestPoly == 0 )
@@ -164,13 +164,13 @@ static void InvalidateRouteResults( Bot_t *bot )
 			continue;
 		}
 
-		if ( !bot->nav->query->isValidPolyRef( res.startRef, &bot->nav->filter ) )
+		if ( !bot->nav->query->isValidPolyRef( res.startRef, &bot->filter ) )
 		{
 			res.invalid = true;
 			continue;
 		}
 
-		if ( !bot->nav->query->isValidPolyRef( res.endRef, &bot->nav->filter ) )
+		if ( !bot->nav->query->isValidPolyRef( res.endRef, &bot->filter ) )
 		{
 			res.invalid = true;
 			continue;
@@ -255,7 +255,7 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 	}
 
 	status = bot->nav->query->findNearestPoly( rtarget.pos, rtarget.polyExtents,
-	                                           &bot->nav->filter, &endRef, end );
+	                                           &bot->filter, &endRef, end );
 
 	if ( dtStatusFailed( status ) || !endRef )
 	{
@@ -278,7 +278,7 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 		}
 	}
 
-	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->nav->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
+	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
 
 	AddRouteResult( bot, startRef, endRef, status );
 
