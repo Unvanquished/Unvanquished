@@ -201,14 +201,55 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 static Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", Cvar::NONE, false);
 static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer factor", Cvar::NONE, 1.f);
 
-void G_admin_print_raw( gentity_t *ent, Str::StringRef m );
+static int bpStolenAtThisFrame[ NUM_TEAMS ];
+
+void G_ResetStolenBP()
+{
+	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
+	{
+		bpStolenAtThisFrame[ team ] = 0;
+	}
+}
+
+void G_AnnounceStolenBP()
+{
+	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
+	{
+		int bpToTransfer = bpStolenAtThisFrame[ team ];
+		if ( bpToTransfer <= 0 )
+		{
+			continue;
+		}
+		std::string msg = team == TEAM_HUMANS ? "\"^dHumans^*" : "\"^iAliens^*";
+		auto bar = [&] ( int bpAmount )
+		{
+			std::string result;
+			int limit = ( bpAmount + 10 ) / 20;
+			if ( bpAmount > 0 && limit == 0 )
+			{
+				limit = 1;
+			}
+			for ( int i = 0; i < limit; i++ )
+			{
+				result += "█";
+			}
+			return result;
+		};
+		msg += " win ^3" + std::to_string( bpToTransfer ) + "^* build points, now ^3" + std::to_string( g_BPInitialBudgetHumans.Get() ) + " ^d" + bar( g_BPInitialBudgetHumans.Get() ) +  "^i" + bar( g_BPInitialBudgetAliens.Get() ) + " ^3" + std::to_string( g_BPInitialBudgetAliens.Get() ) + "\"";
+		for ( int i = 0; i < level.maxclients; i++ )
+		{
+			trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
+		}
+	}
+}
+
 static void TransferBPToEnemyTeam( gentity_t *self )
 {
 	if ( !g_BPTransfer.Get() )
 	{
 		return;
 	}
-	if ( level.time - self->lastDamageTime > 6000 )
+	if ( level.time - self->lastDamageTime > 5000 )
 	{
 		return;
 	}
@@ -218,40 +259,20 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 		return;
 	}
 	team_t otherTeam = self->buildableTeam == TEAM_HUMANS ? TEAM_ALIENS : TEAM_HUMANS;
-	std::string msg;
 	switch ( otherTeam )
 	{
 	case TEAM_ALIENS:
 		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() - bpToTransfer );
 		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() + bpToTransfer );
-		msg = "\"^iAliens^*";
+		bpStolenAtThisFrame[ TEAM_ALIENS ] += bpToTransfer;
 		break;
 	case TEAM_HUMANS:
 		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() + bpToTransfer );
 		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() - bpToTransfer );
-		msg = "\"^dHumans^*";
+		bpStolenAtThisFrame[ TEAM_HUMANS ] += bpToTransfer;
 		break;
 	default:
 		return;
-	}
-	auto bar = [&] ( int bpAmount )
-	{
-		std::string result;
-		int barStep = 20;
-		if ( bpAmount > 0 && bpAmount < barStep )
-		{
-			bpAmount = barStep;
-		}
-		for ( int i = 0; i < bpAmount / 20; i++ )
-		{
-			result += "█";
-		}
-		return result;
-	};
-	msg += " win ^3" + std::to_string( bpToTransfer ) + "^* build points, now ^3" + std::to_string( g_BPInitialBudgetHumans.Get() ) + " ^d" + bar( g_BPInitialBudgetHumans.Get() ) +  "^i" + bar( g_BPInitialBudgetAliens.Get() ) + " ^3" + std::to_string( g_BPInitialBudgetAliens.Get() ) + "\"";
-	for ( int i = 0; i < level.maxclients; i++ )
-	{
-		trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
 	}
 }
 
