@@ -63,14 +63,6 @@ div.circlemenu-circle {
 	image-color: rgb(12, 12, 12);
 }
 
-.circlemenu icon {
-	display: inline-block;
-	font-family: "Font Awesome 6 Free";
-	font-style: normal;
-	font-weight: 900;
-	line-height: 1;
-}
-
 .circlemenu button.cancelButton {
 	position: absolute;
 	width: 9em;
