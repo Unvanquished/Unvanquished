@@ -65,9 +65,9 @@ div.circlemenu-circle {
 
 .circlemenu icon {
 	display: inline-block;
-	font-family: FontAwesome;
+	font-family: "Font Awesome 6 Free";
 	font-style: normal;
-	font-weight: normal;
+	font-weight: 900;
 	line-height: 1;
 }
 

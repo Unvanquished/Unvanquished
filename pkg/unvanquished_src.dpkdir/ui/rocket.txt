@@ -6,7 +6,7 @@
 		fonts/Roboto-BoldItalic.ttf
 		fonts/Roboto-Italic.ttf
 		fonts/Roboto-Regular.ttf
-		fonts/fontawesome-webfont.ttf
+		fonts/fontawesome-solid-900.ttf
 		fonts/DejaVuSansCondensed.ttf
 		fonts/MaterialIcons-Regular.ttf
 	}
