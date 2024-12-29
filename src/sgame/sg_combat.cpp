@@ -202,6 +202,7 @@ static Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", C
 static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer factor", Cvar::NONE, 1.f);
 
 static int bpStolenAtThisFrame[ NUM_TEAMS ];
+static int buildablesDestroyedAtThisFrame[ BA_NUM_BUILDABLES ];
 
 void G_ResetStolenBP()
 {
@@ -209,10 +210,74 @@ void G_ResetStolenBP()
 	{
 		bpStolenAtThisFrame[ team ] = 0;
 	}
+	for ( int buildable = BA_A_SPAWN; buildable < BA_NUM_BUILDABLES; buildable++ )
+	{
+		buildablesDestroyedAtThisFrame[ buildable ] = 0;
+	}
+}
+
+static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE };
+static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT };
+
+static std::string destroyedMessage( std::vector<buildable_t> &array )
+{
+	std::string result = "\"We destroyed";
+	bool needComma = false;
+	auto sep = [&] ()
+	{
+		result += ( needComma ? ", " : " " );
+		needComma = true;
+	};
+	for ( auto buildable : array )
+	{
+		int num = buildablesDestroyedAtThisFrame[ buildable ];
+		if ( num > 0 )
+		{
+			sep();
+			std::string humanName = BG_Buildable( buildable )->humanName;
+			if ( num > 1 )
+			{
+				if ( buildable == BA_H_ARMOURY )
+				{
+					humanName = "Armouries";
+				}
+				else
+				{
+					humanName += "s";
+				}
+			}
+			result += "^3" + std::to_string( num ) + "^* " + humanName;
+		}
+	}
+	result += "!\"";
+	return result;
+}
+
+void G_AnnounceDestructions()
+{
+	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
+	{
+		if ( bpStolenAtThisFrame[ team ] > 0 )
+		{
+			std::string msg = destroyedMessage( team == TEAM_HUMANS ? alienBuildables : humanBuildables );
+			for ( int i = 0; i < level.maxclients; i++ )
+			{
+				if ( G_Team( &g_entities[ i ] ) == team )
+				{
+					trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
+				}
+			}
+		}
+	}
 }
 
 void G_AnnounceStolenBP()
 {
+	if ( !g_BPTransfer.Get() )
+	{
+		return;
+	}
+	G_AnnounceDestructions();
 	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
 	{
 		int bpToTransfer = bpStolenAtThisFrame[ team ];
@@ -253,6 +318,7 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	{
 		return;
 	}
+	buildablesDestroyedAtThisFrame[ self->s.modelindex ]++;
 	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints * g_BPTransferFactor.Get();
 	if ( bpToTransfer == 0 )
 	{
