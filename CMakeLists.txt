@@ -125,8 +125,9 @@ endif()
 # Configuration for Recast
 set(RC_MAX_LAYERS 63 CACHE STRING "Must be 255 or smaller.")
 set(RC_MAX_NEIS 16 CACHE STRING "")
+
 # This does not set the cache variable but rather a normal variable that shadows it.
-set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_NEIS)
+set(VM_INHERITED_OPTIONS ${VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_NEIS)
 
 if (BUILDING_ANY_GAMELOGIC)
     # Fastlz
@@ -206,7 +207,7 @@ endif()
 if (BUILD_SGAME)
     include(tools/cbse/CBSE.cmake)
 
-    # Avoid generating CBSE in the NaCl subproject.
+    # Avoid generating CBSE in the subproject.
     if (FORK EQUAL 2)
         CBSEFileList("${GAMELOGIC_DIR}/sgame/" sgame_GENERATED_CBSE)
     else()
@@ -230,11 +231,11 @@ if (BUILD_SGAME)
             srclibs-fastlz
     )
 
-    if (BUILD_GAME_NACL AND NOT (FORK EQUAL 2))
+    if ((BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NACL) AND NOT (FORK EQUAL 2))
         include(ExternalProject)
-        foreach(NACL_VMS_PROJECT ${NACL_VMS_PROJECTS})
-            ExternalProject_Add_Step(${NACL_VMS_PROJECT} cbse-trigger
-                COMMENT "Finished CBSE generation, ready to build NaCl ${NACL_VMS_PROJECT}"
+        foreach(VMS_PROJECT ${VMS_PROJECTS})
+            ExternalProject_Add_Step(${VMS_PROJECT} cbse-trigger
+                COMMENT "Finished CBSE generation, ready to build ${VMS_PROJECT}"
                 DEPENDS ${sgame_GENERATED_CBSE}
                 DEPENDERS build)
         endforeach()
