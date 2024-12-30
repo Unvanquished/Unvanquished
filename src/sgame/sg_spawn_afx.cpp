@@ -282,6 +282,7 @@ SP_trigger_gravity
 void SP_env_afx_gravity( gentity_t *self )
 {
 	int* amount = &self->mapEntity.config.amount;
+	self->mapEntity.amount = *amount;
 	if ( !( G_SpawnInt( "amount", "0", amount ) || G_SpawnInt( "gravity", "0", amount ) ) )
 	{
 		//TODO: it is highly possible that other situations are broken.
