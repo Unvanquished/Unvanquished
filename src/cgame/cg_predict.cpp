@@ -103,18 +103,23 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	int           x, zd, zu;
 	trace_t       trace;
 	clipHandle_t  cmodel;
-	vec3_t        tmins, tmaxs;
-	vec3_t        bmins, bmaxs;
 	vec3_t        origin, angles;
 
 	// calculate bounding box of the trace
-	ClearBounds( tmins, tmaxs );
-	AddPointToBounds( start, tmins, tmaxs );
-	AddPointToBounds( end, tmins, tmaxs );
+	bounds_t t;
+	ClearBounds( t );
+	AddPointToBounds( start, t );
+	AddPointToBounds( end, t );
+
 	if( mins )
-		VectorAdd( mins, tmins, tmins );
+	{
+		VectorAdd( mins, t.mins, t.mins );
+	}
+
 	if( maxs )
-		VectorAdd( maxs, tmaxs, tmaxs );
+	{
+		VectorAdd( maxs, t.maxs, t.maxs );
+	}
 
 	for ( centity_t *cent : cg_solidEntities )
 	{
@@ -144,13 +149,15 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		}
 		else
 		{
+			bounds_t b;
+
 			if ( ent->eType == entityType_t::ET_BUILDABLE )
 			{
-				BG_BuildableBoundingBox( ent->modelindex, bmins, bmaxs );
+				BG_BuildableBoundingBox( ent->modelindex, b.mins, b.maxs );
 				if ( ent->modelindex == BA_A_BARRICADE && ( ent->torsoAnim != BANIM_IDLE1 || !( ent->eFlags & EF_B_SPAWNED ) ) )
 				// TODO: improve how barricade shrinkage is handled, this is a bit of a hack right now.
 				{
-					bmaxs[ 2 ] = static_cast<int>( bmaxs[ 2 ] * BARRICADE_SHRINKPROP );
+					b.maxs[ 2 ] = static_cast<int>( b.maxs[ 2 ] * BARRICADE_SHRINKPROP );
 				}
 			}
 			else
@@ -160,19 +167,19 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 				zd = ( ( ent->solid >> 8 ) & 255 );
 				zu = ( ( ent->solid >> 16 ) & 255 ) - 32;
 
-				bmins[ 0 ] = bmins[ 1 ] = -x;
-				bmaxs[ 0 ] = bmaxs[ 1 ] = x;
-				bmins[ 2 ] = -zd;
-				bmaxs[ 2 ] = zu;
+				b.mins[ 0 ] = b.mins[ 1 ] = -x;
+				b.maxs[ 0 ] = b.maxs[ 1 ] = x;
+				b.mins[ 2 ] = -zd;
+				b.maxs[ 2 ] = zu;
 			}
 
-			VectorAdd( cent->lerpOrigin, bmins, bmins );
-			VectorAdd( cent->lerpOrigin, bmaxs, bmaxs );
+			VectorAdd( cent->lerpOrigin, b.mins, b.mins );
+			VectorAdd( cent->lerpOrigin, b.maxs, b.maxs );
 
-			if( !BoundsIntersect( bmins, bmaxs, tmins, tmaxs ) )
+			if( !BoundsIntersect( b, t ) )
 				continue;
 
-			cmodel = CM_TempBoxModel( bmins, bmaxs, /* capsule = */ false );
+			cmodel = CM_TempBoxModel( b.mins, b.maxs, /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );
 			VectorCopy( vec3_origin, origin );
 		}
