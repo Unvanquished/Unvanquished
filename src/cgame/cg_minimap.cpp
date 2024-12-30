@@ -250,7 +250,10 @@ CG_IsInMinimapZone
 */
 static bool CG_IsInMinimapZone(const minimapZone_t* z)
 {
-    return BoundsIntersectPoint(cg.refdef.vieworg, z->boundsMin, z->boundsMax);
+	// TODO: Use bounds_t in minimapZone_t.
+	bounds_t bounds;
+	BoundsSet( bounds, z->boundsMin, z->boundsMax );
+	return BoundsIntersectPoint( bounds, cg.refdef.vieworg );
 }
 
 //The parameters for the current frame's minimap transform

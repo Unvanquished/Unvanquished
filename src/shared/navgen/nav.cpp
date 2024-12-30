@@ -436,18 +436,21 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 		const drawVert_t *curveVerts = &bspVerts[surface->firstVert];
 
 		// make sure the patch intersects the bounds of the brushes
-		vec3_t tmin, tmax;
-		ClearBounds( tmin, tmax );
+		bounds_t t;
+		ClearBounds( t );
 
 		for ( int x = 0; x < grid.width; x++ )
 		{
 			for ( int y = 0; y < grid.height; y++ )
 			{
-				AddPointToBounds( curveVerts[ y * grid.width + x ].xyz, tmin, tmax );
+				AddPointToBounds( curveVerts[ y * grid.width + x ].xyz, t );
 			}
 		}
 
-		if ( !BoundsIntersect( tmin, tmax, GLM4READ( mins ), GLM4READ( maxs ) ) ) {
+		bounds_t b;
+		BoundsSet( b, GLM4READ( mins ), GLM4READ( maxs ) );
+
+		if ( !BoundsIntersect( t, b ) ) {
 			// we can safely ignore this patch surface
 			continue;
 		}

@@ -2159,7 +2159,6 @@ void CG_Buildable( centity_t *cent )
 		{
 			quat_t   rotation;
 			matrix_t mat;
-			vec3_t   nBounds[ 2 ];
 			float    yaw, pitch, roll;
 
 			yaw   = es->angles2[ YAW ];
@@ -2189,9 +2188,10 @@ void CG_Buildable( centity_t *cent )
 			// TODO: Evaluate
 			MatrixFromAngles( mat, pitch, yaw, 0 );
 
-			MatrixTransformBounds(mat, ent.skeleton.bounds[0], ent.skeleton.bounds[1], nBounds[0], nBounds[1]);
+			bounds_t nBounds;
+			MatrixTransformBounds(mat, ent.skeleton.bounds, nBounds);
 
-			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
+			BoundsAdd( ent.skeleton.bounds, nBounds );
 		}
 
 #define OVERMIND_EYE_CLAMP    43.0f // 45° shows seams due to imperfections of the low poly version.
