@@ -303,7 +303,8 @@ void G_AnnounceStolenBP()
 		auto bar = [&] ( int bpAmount )
 		{
 			std::string result;
-			int limit = ( bpAmount + 10 ) / 20;
+			int step = ( g_BPInitialBudgetHumans.Get() + g_BPInitialBudgetAliens.Get() ) / 15;
+			int limit = ( bpAmount + step / 2 ) / step;
 			if ( bpAmount > 0 && limit == 0 )
 			{
 				limit = 1;
