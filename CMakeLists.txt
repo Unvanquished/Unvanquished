@@ -217,7 +217,7 @@ if (BUILD_SGAME)
             srclibs-fastlz
     )
 
-    if (BUILD_GAME_NACL AND NOT (FORK EQUAL 2))
+    if ((BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NACL) AND NOT (FORK EQUAL 2))
         include(ExternalProject)
         foreach(VMS_PROJECT ${VMS_PROJECTS})
             ExternalProject_Add_Step(${VMS_PROJECT} cbse-trigger
