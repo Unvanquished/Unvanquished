@@ -278,6 +278,20 @@ void G_AnnounceStolenBP()
 		return;
 	}
 	G_AnnounceDestructions();
+	if ( bpStolenAtThisFrame[ TEAM_HUMANS ] > 0 && bpStolenAtThisFrame[ TEAM_ALIENS ] > 0 )
+	{
+		if ( bpStolenAtThisFrame[ TEAM_HUMANS ] > bpStolenAtThisFrame[ TEAM_ALIENS ] )
+		{
+			bpStolenAtThisFrame[ TEAM_HUMANS ] -= bpStolenAtThisFrame[ TEAM_ALIENS ];
+			bpStolenAtThisFrame[ TEAM_ALIENS ] = 0;
+		}
+		else
+		{
+			// notice that this sets both to zero if they are equal
+			bpStolenAtThisFrame[ TEAM_ALIENS ] -= bpStolenAtThisFrame[ TEAM_HUMANS ];
+			bpStolenAtThisFrame[ TEAM_HUMANS ] = 0;
+		}
+	}
 	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
 	{
 		int bpToTransfer = bpStolenAtThisFrame[ team ];
