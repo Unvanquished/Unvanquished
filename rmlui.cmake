@@ -569,11 +569,16 @@ set_source_files_properties(
 if (NOT FREETYPE_INCLUDE_DIRS)
     find_package(Freetype REQUIRED)
 endif()
+
 include_directories(${FREETYPE_INCLUDE_DIRS})
 
 set(RMLUI_INCLUDE_DIRS ${RMLUI_DIR}/Include)
+
 include_directories(${RMLUI_INCLUDE_DIRS})
-add_library(RMLUI_LIB STATIC
+
+set(RMLUI_LIBRARY srclibs-rmlui)
+
+add_library(${RMLUI_LIBRARY} STATIC
     ${Core_HDR_FILES}
     ${MASTER_Core_PUB_HDR_FILES}
     ${Core_PUB_HDR_FILES}
@@ -587,15 +592,17 @@ add_library(RMLUI_LIB STATIC
     ${Lua_SRC_FILES}
 )
 
-set_property(TARGET RMLUI_LIB PROPERTY
+set_property(TARGET ${RMLUI_LIBRARY} PROPERTY
     COMPILE_DEFINITIONS RMLUI_STATIC_LIB LUA_COMPAT_APIINTCASTS
 )
-set_target_properties(RMLUI_LIB PROPERTIES
+
+set_target_properties(${RMLUI_LIBRARY} PROPERTIES
     POSITION_INDEPENDENT_CODE ${GAME_PIE}
+    FOLDER "libs"
 )
 
 if (RMLUI_UNITY_BUILD)
-    set_target_properties(RMLUI_LIB PROPERTIES
+    set_target_properties(${RMLUI_LIBRARY} PROPERTIES
         UNITY_BUILD 1
         # Suppress Visual Studio's "warning MSB8027: Two or more files with the name of XXX.cpp will
         # produce outputs to the same location. This can lead to an incorrect build result.  The
