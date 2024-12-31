@@ -1445,6 +1445,39 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 	}
 }
 
+static void CG_Rocket_BuildBotTacticList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
+	{
+		return;
+	}
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		Rocket_DSClearTable( "botTacticList", "default" );
+
+		auto setCommand = [&]( std::string num, std::string name, std::string title, std::string desc, std::string icon )
+		{
+			buf[ 0 ] = '\0';
+
+			Info_SetValueForKey( buf, "num", num.c_str(), false );
+			Info_SetValueForKey( buf, "name", name.c_str(), false );
+			Info_SetValueForKey( buf, "title", title.c_str(), false );
+			Info_SetValueForKey( buf, "desc", desc.c_str(), false );
+			Info_SetValueForKey( buf, "icon", icon.c_str(), false );
+
+			Rocket_DSAddRow( "botTacticList", "default", buf );
+		};
+
+		setCommand( "0", "default", N_( "Default" ), N_( "The default behavior. This is what bots do when the game starts." ), "gfx/feedback/bottactic/default" );
+		setCommand( "1", "defend", N_( "Defend" ), N_( "The bots stay in the base." ), "gfx/feedback/bottactic/defend" );
+		setCommand( "2", "attack", N_( "Attack" ), N_( "The bots attack the enemy base." ), "gfx/feedback/bottactic/attack" );
+		setCommand( "3", "stay_here", N_( "Stay Here" ), N_( "The bots stay where you are currently." ), "gfx/feedback/bottactic/stay_here" );
+		setCommand( "4", "follow", N_( "Follow" ), N_( "The bots follow you wherever you go." ), "gfx/feedback/bottactic/follow" );
+	}
+}
 
 static void nullSortFunc( const char*, const char* )
 {
@@ -1490,6 +1523,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetAlOutputIndex },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "botTacticList", &CG_Rocket_BuildBotTacticList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
