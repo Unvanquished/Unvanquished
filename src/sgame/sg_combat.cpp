@@ -199,6 +199,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 }
 
 static Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", Cvar::NONE, false);
+static Cvar::Cvar<bool> g_BPTransferNotify("g_BPTransferNotify", "BP transfer experiment notifications", Cvar::NONE, true);
 static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer factor", Cvar::NONE, 1.f);
 
 static int bpStolenAtThisFrame[ NUM_TEAMS ];
@@ -255,6 +256,10 @@ static std::string destroyedMessage( std::vector<buildable_t> &array )
 
 void G_AnnounceDestructions()
 {
+	if ( !g_BPTransferNotify.Get() )
+	{
+		return;
+	}
 	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
 	{
 		if ( bpStolenAtThisFrame[ team ] > 0 )
@@ -300,7 +305,7 @@ void G_AnnounceStolenBP()
 			continue;
 		}
 		std::string msg = team == TEAM_HUMANS ? "\"^dHumans^*" : "\"^iAliens^*";
-		auto bar = [&] ( int bpAmount )
+		/*auto bar = [&] ( int bpAmount )
 		{
 			std::string result;
 			int step = ( g_BPInitialBudgetHumans.Get() + g_BPInitialBudgetAliens.Get() ) / 15;
@@ -314,11 +319,18 @@ void G_AnnounceStolenBP()
 				result += "█";
 			}
 			return result;
-		};
-		msg += " win ^3" + std::to_string( bpToTransfer ) + "^* build points, now ^3" + std::to_string( g_BPInitialBudgetHumans.Get() ) + " ^d" + bar( g_BPInitialBudgetHumans.Get() ) +  "^i" + bar( g_BPInitialBudgetAliens.Get() ) + " ^3" + std::to_string( g_BPInitialBudgetAliens.Get() ) + "\"";
+		};*/
+		msg += " win ^3" + std::to_string( bpToTransfer ) + "^* build points, now ^d" + std::to_string( g_BPInitialBudgetHumans.Get() )
+		                                                  //+ " ^d" + bar( g_BPInitialBudgetHumans.Get() ) +  "^i" + bar( g_BPInitialBudgetAliens.Get() )
+		                                                  + " ^7| ^i" + std::to_string( g_BPInitialBudgetAliens.Get() )
+		                                                  + "\"";
 		for ( int i = 0; i < level.maxclients; i++ )
 		{
-			trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
+			if ( g_BPTransferNotify.Get() )
+			{
+				trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
+			}
+			trap_SendServerCommand( i, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
 		}
 	}
 }
