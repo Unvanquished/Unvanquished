@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
 #include "Entities.h"
+#include "CBSE.h"
 
 Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
 static Cvar::Range<Cvar::Cvar<int>> generateNeededMesh(
@@ -797,6 +798,32 @@ void G_BotFill(bool immediately)
 					return;
 				}
 				--missingFillers;
+			}
+		}
+	}
+
+	// help the human bots build telenodes, armoury or medistation by marking a turret or
+	// a rocket pod for them
+	if ( level.team[ TEAM_HUMANS ].numPlayers == 0 )
+	{
+		bool needMarking = false;
+		if ( level.numBuildablesEstimate[ BA_H_SPAWN ] < 3 && G_GetSpendableBudget( TEAM_HUMANS ) < 10 )
+		{
+			needMarking = true;
+		}
+		else if ( ( level.numBuildablesEstimate[ BA_H_ARMOURY ] == 0 || level.numBuildablesEstimate[ BA_H_MEDISTAT ] == 0 ) && G_GetSpendableBudget( TEAM_HUMANS ) < 8 )
+		{
+			needMarking = true;
+		}
+		if ( needMarking )
+		{
+			for ( int i = MAX_CLIENTS; i < level.num_entities; i++ )
+			{
+				if ( g_entities[ i ].s.eType == entityType_t::ET_BUILDABLE && ( g_entities[ i ].s.modelindex == BA_H_MGTURRET || g_entities[ i ].s.modelindex == BA_H_ROCKETPOD ) )
+				{
+					g_entities[ i ].entity->Get<BuildableComponent>()->SetDeconstructionMark();
+					break;
+				}
 			}
 		}
 	}
