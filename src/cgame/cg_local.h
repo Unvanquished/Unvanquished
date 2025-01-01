@@ -1174,6 +1174,13 @@ struct cg_t
 	int      spectatorTime; // next time to offset
 	bool scoreInvalidated; // needs update on next RocketUpdate
 
+	// bp vampire
+	int bpVampire[ NUM_TEAMS ];
+	int bpVampireOld[ NUM_TEAMS ];
+	int bpVampireTime;
+	std::string bpVampireBarH;
+	std::string bpVampireBarA;
+
 	// centerprinting
 	int  centerPrintTime;
 	float centerPrintSizeFactor;

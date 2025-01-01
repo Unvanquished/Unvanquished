@@ -2006,6 +2006,64 @@ private:
 	int showTime_ = -1;
 };
 
+class BPVampireElement : public HudElement
+{
+public:
+	BPVampireElement( const Rml::String& tag ) :
+			HudElement( tag, ELEMENT_GAME ) {}
+
+	void DoOnUpdate() override
+	{
+		if ( !cg.bpVampire[ TEAM_ALIENS ] || !cg.bpVampire[ TEAM_HUMANS ] )
+		{
+			return;
+		}
+
+		blink();
+
+		if ( cg.bpVampireTime + 3000 + flashDuration > cg.time )
+		{
+			SetInnerRML( Rocket_QuakeToRML( Str::Format( "^%s%s^%s%s",
+			                                             hCol, cg.bpVampireBarH,
+			                                             aCol, cg.bpVampireBarA ).c_str(), RP_EMOTICONS ) );
+		}
+	}
+
+private:
+	bool flashState = false;
+	int flashDuration = 250;
+	int lastFlashTime = cg.time;
+	std::string hCol = "d";
+	std::string aCol = "i";
+
+	void blink()
+	{
+		if ( ( cg.bpVampireTime + 3000 > cg.time )
+		  && ( lastFlashTime + flashDuration < cg.time ) )
+		{
+			if ( cg.bpVampireOld[ TEAM_HUMANS ] > cg.bpVampire[ TEAM_HUMANS ] )
+			{
+				flashState ? hCol = "d" : hCol = "3";
+			}
+
+			if ( cg.bpVampireOld[ TEAM_ALIENS ] > cg.bpVampire[ TEAM_ALIENS ] )
+			{
+				flashState ? aCol = "i" : aCol = "3";
+			}
+			flashState = !flashState;
+			lastFlashTime = cg.time;
+		}
+
+		if ( cg.bpVampireTime + 3000 < cg.time )
+		{
+			// reset the colours so the bar doesn't get stuck
+			hCol = "d";
+			aCol = "i";
+			flashState = false;
+		}
+	}
+};
+
 class BeaconAgeElement : public TextHudElement
 {
 public:
@@ -3847,4 +3905,5 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<SpawnQueueElement>( "spawnPos" );
 	RegisterElement<NumSpawnsElement>( "numSpawns" );
 	RegisterElement<PlayerCountElement>( "playerCount" );
+	RegisterElement<BPVampireElement>( "bpVampire" );
 }

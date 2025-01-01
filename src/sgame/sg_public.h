@@ -117,6 +117,7 @@ void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmou
 void              G_SpendBudget(team_t team, int amount);
 int               G_BuildableDeconValue(gentity_t *ent);
 void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
+void              G_UpdateBPVampire( int client );
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );

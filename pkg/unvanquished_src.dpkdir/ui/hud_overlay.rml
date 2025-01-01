@@ -18,9 +18,20 @@
 		warmup_time {
 			font-size: 6em;
 		}
+
+		.bpVampire {
+			text-align: center;
+			position: absolute;
+			font-size: 18dp;
+			top: 5%;
+			margin: 0 auto 0 auto;
+		}
 	</style>
 </head>
 <body id="hud_overlay">
+<div class="bpVampire">
+	<bpVampire/>
+</div>
 <div>
 	<warmup_time/>
 	<br/>
