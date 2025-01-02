@@ -3645,6 +3645,11 @@ static void PM_Weapon()
 	// Trample charge mechanics
 	if ( pm->ps->weapon == WP_ALEVEL4 )
 	{
+		// Cancel trample when using +attack
+		if ( attack1 ) {
+			pm->ps->weaponCharge = 0;
+		}
+
 		// Charging up
 		if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
 		{
