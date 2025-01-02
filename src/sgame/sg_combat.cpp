@@ -221,7 +221,7 @@ void G_ResetStolenBP()
 static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE };
 static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT };
 
-static std::string destroyedMessage( std::vector<buildable_t> &array )
+static std::string destroyedMessage( team_t team, std::vector<buildable_t> &array )
 {
 	std::string result = "\"We destroyed";
 	bool needComma = false;
@@ -251,7 +251,7 @@ static std::string destroyedMessage( std::vector<buildable_t> &array )
 			result += "^3" + std::to_string( num ) + "^* " + humanName;
 		}
 	}
-	result += "!\"";
+	result += "! ^3+" + std::to_string( bpStolenAtThisFrame[ team ] ) + " ^7Build Points\"";
 	return result;
 }
 
@@ -265,7 +265,7 @@ void G_AnnounceDestructions()
 	{
 		if ( bpStolenAtThisFrame[ team ] > 0 )
 		{
-			std::string msg = destroyedMessage( team == TEAM_HUMANS ? alienBuildables : humanBuildables );
+			std::string msg = destroyedMessage( team, team == TEAM_HUMANS ? alienBuildables : humanBuildables );
 			for ( int i = 0; i < level.maxclients; i++ )
 			{
 				if ( G_Team( &g_entities[ i ] ) == team )
