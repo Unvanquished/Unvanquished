@@ -2174,9 +2174,6 @@ void G_RunFrame( int levelTime )
 	int        msec;
 	static int ptime3000 = 0;
 
-	extern void G_ResetStolenBP();
-	G_ResetStolenBP();
-
 	// if we are waiting for the level to restart, do nothing
 	if ( level.restarted )
 	{
