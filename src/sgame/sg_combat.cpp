@@ -206,20 +206,19 @@ static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer f
 static int bpStolenAtThisFrame[ NUM_TEAMS ];
 static int buildablesDestroyedAtThisFrame[ BA_NUM_BUILDABLES ];
 
-void G_ResetStolenBP()
+static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE };
+static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT };
+
+static void resetDestroyedBuildables( team_t team )
 {
-	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
-	{
-		bpStolenAtThisFrame[ team ] = 0;
-	}
-	for ( int buildable = BA_A_SPAWN; buildable < BA_NUM_BUILDABLES; buildable++ )
+	bpStolenAtThisFrame[ team ] = 0;
+	std::vector<buildable_t> &enemyBuildables = team == TEAM_HUMANS ? alienBuildables : humanBuildables;
+	for ( buildable_t buildable : enemyBuildables )
 	{
 		buildablesDestroyedAtThisFrame[ buildable ] = 0;
 	}
 }
 
-static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE };
-static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT };
 
 static std::string destroyedMessage( team_t team, std::vector<buildable_t> &array )
 {
@@ -333,6 +332,9 @@ void G_AnnounceStolenBP()
 			}
 			trap_SendServerCommand( i, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
 		}
+
+		bpStolenAtThisFrame[ team ] = 0;
+		resetDestroyedBuildables( team );
 	}
 }
 
