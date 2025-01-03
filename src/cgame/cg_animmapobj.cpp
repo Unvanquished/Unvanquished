@@ -198,7 +198,7 @@ void CG_AnimMapObj( centity_t *cent )
 
 	cent->lerpFrame.animation = &anim;
 
-	if ( !anim.loopFrames )
+	if ( !anim.loopFrames && anim.numFrames > 1 )
 	{
 		// add one frame to allow the animation to play the last frame
 		// add another to get it to stop playing at the first frame
@@ -223,8 +223,16 @@ void CG_AnimMapObj( centity_t *cent )
 		cent->animLastState = !( cent->currentState.eFlags & EF_MOVER_STOP );
 	}
 
-	//run animation
-	CG_AMOAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+	if ( anim.numFrames > 1 )
+	{
+		//run animation
+		CG_AMOAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+	}
+	else
+	{
+		ent.frame = 0;
+		ent.oldframe = 0;
+	}
 
 	// add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
