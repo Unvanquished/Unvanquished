@@ -70,18 +70,14 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  * @brief Calculate the build point budgets for both teams.
  */
 
-void G_UpdateBPVampire( int client )
+void G_UpdateBPVampire( int client ) // -1 to update everyone
 {
-	if ( client > -1 )
+	if ( !g_BPTransfer.Get() )
 	{
-		trap_SendServerCommand( client, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
 		return;
 	}
 
-	for ( int i = 0; i < level.maxclients; i++ )
-	{
-		trap_SendServerCommand( i, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
-	}
+	trap_SendServerCommand( client, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
 }
 
 void G_UpdateBuildPointBudgets() {

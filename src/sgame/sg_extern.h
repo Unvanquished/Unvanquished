@@ -90,6 +90,7 @@ extern  Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetAliens;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
 extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
 extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
+extern  Cvar::Cvar<bool> g_BPTransfer;
 
 extern Cvar::Cvar<bool> g_BPTransfer;
 
