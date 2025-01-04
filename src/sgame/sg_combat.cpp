@@ -274,7 +274,7 @@ static void AnnounceDestructions( team_t team )
 	{
 		if ( G_Team( &g_entities[ i ] ) == team )
 		{
-			trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
+			trap_SendServerCommand( i, va( "print_bp_message %s ", msg.c_str() ) );
 		}
 	}
 }

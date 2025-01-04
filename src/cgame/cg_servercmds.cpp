@@ -115,6 +115,12 @@ static void CG_BPVampire()
 	cg.bpVampireBarA = bar( TEAM_ALIENS );
 }
 
+static void CG_PrintBPMessage_f()
+{
+	// cg.bpMessage = TranslateText_Internal( false, 1 ); // Fuck do you mean it's not found?
+	cg.bpMessage = CG_Argv( 1 );
+}
+
 /*
 =================
 CG_ParseTeamInfo
@@ -1402,6 +1408,7 @@ static const consoleCommand_t svcommands[] =
 	{ "map_restart",      CG_MapRestart           },
 	{ "pmove_params",     CG_PmoveParams_f        },
 	{ "print",            CG_Print_f              },
+	{ "print_bp_message", CG_PrintBPMessage_f     },
 	{ "print_tr",         CG_PrintTR_f            },
 	{ "print_tr_p",       CG_PrintTR_plural_f     },
 	{ "scores",           CG_ParseScores          },

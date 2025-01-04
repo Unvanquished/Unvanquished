@@ -2023,17 +2023,14 @@ public:
 
 		if ( cg.bpVampireTime + 3000 + flashDuration > cg.time )
 		{
-			auto rml = [] ( std::string s )
-			{
-				return Rocket_QuakeToRML( s.c_str(), RP_EMOTICONS );
-			};
-			std::string alienBPRML = rml( Str::Format( "^#999999%d", cg.bpVampire[ TEAM_ALIENS ] ) );
-			std::string humanBPRML = rml( Str::Format( "^#999999%d", cg.bpVampire[ TEAM_HUMANS ] ) );
-			std::string barRML = rml( Str::Format( "^%s%s^%s%s",
-			                                       aCol, cg.bpVampireBarA,
-			                                       hCol, cg.bpVampireBarH
-			                                       ) );
-			SetInnerRML( alienBPRML + "&nbsp;<span style=\"opacity: 0.5; font-effect: none;\">" + barRML + "</span>&nbsp;" + humanBPRML );
+
+			SetInnerRML(Rocket_QuakeToRML(Str::Format("^7%d ^%s%s^%s%s ^7%d\n%s",
+			                                             cg.bpVampire[ TEAM_ALIENS ],
+			                                             aCol, cg.bpVampireBarA,
+			                                             hCol, cg.bpVampireBarH,
+			                                             cg.bpVampire[ TEAM_HUMANS ],
+				                                         cg.bpMessage
+			                                             ).c_str(), RP_EMOTICONS ) );
 		}
 	}
 
@@ -2067,6 +2064,7 @@ private:
 			// reset the colours so the bar doesn't get stuck
 			hCol = "d";
 			aCol = "i";
+			cg.bpMessage = "";
 			flashState = false;
 		}
 	}
