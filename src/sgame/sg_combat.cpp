@@ -199,15 +199,14 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 }
 
 static Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", Cvar::NONE, false);
-static Cvar::Cvar<bool> g_BPTransferNotify("g_BPTransferNotify", "BP transfer experiment notifications", Cvar::NONE, true);
 static Cvar::Cvar<bool> g_BPTransferNotifyTeam("g_BPTransferNotifyTeam", "BP transfer experiment team notifications", Cvar::NONE, true);
 static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer factor", Cvar::NONE, 1.f);
 
 static int bpStolenAtThisFrame[ NUM_TEAMS ];
 static int buildablesDestroyedAtThisFrame[ BA_NUM_BUILDABLES ];
 
-static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE };
-static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT };
+static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE, BA_A_OVERMIND };
+static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT, BA_H_REACTOR };
 
 static void resetDestroyedBuildables( team_t team )
 {
@@ -247,31 +246,35 @@ static std::string destroyedMessage( team_t team, std::vector<buildable_t> &arra
 					humanName += "s";
 				}
 			}
-			result += "^3" + std::to_string( num ) + "^* " + humanName;
+			result += "^3" + std::to_string( num ) + "^* ";
+			if ( buildable == BA_H_REACTOR || buildable == BA_A_OVERMIND )
+			{
+				std::transform( humanName.begin(), humanName.end(), humanName.begin(), [] (unsigned char c) { return std::toupper(c); } );
+			}
+			result += humanName;
 		}
 	}
-	result += "! ^3+" + std::to_string( bpStolenAtThisFrame[ team ] ) + " ^7Build Points\"";
+	result += "!";
+	if ( bpStolenAtThisFrame[ team ] > 0 )
+	{
+		result += " ^3+" + std::to_string( bpStolenAtThisFrame[ team ] ) + " ^7Build Points\"";
+	}
+	result += "\"";
 	return result;
 }
 
-void G_AnnounceDestructions()
+static void AnnounceDestructions( team_t team )
 {
 	if ( !g_BPTransferNotifyTeam.Get() )
 	{
 		return;
 	}
-	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
+	std::string msg = destroyedMessage( team, team == TEAM_HUMANS ? alienBuildables : humanBuildables );
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		if ( bpStolenAtThisFrame[ team ] > 0 )
+		if ( G_Team( &g_entities[ i ] ) == team )
 		{
-			std::string msg = destroyedMessage( team, team == TEAM_HUMANS ? alienBuildables : humanBuildables );
-			for ( int i = 0; i < level.maxclients; i++ )
-			{
-				if ( G_Team( &g_entities[ i ] ) == team )
-				{
-					trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
-				}
-			}
+			trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
 		}
 	}
 }
@@ -282,7 +285,6 @@ void G_AnnounceStolenBP()
 	{
 		return;
 	}
-	G_AnnounceDestructions();
 	if ( bpStolenAtThisFrame[ TEAM_HUMANS ] > 0 && bpStolenAtThisFrame[ TEAM_ALIENS ] > 0 )
 	{
 		if ( bpStolenAtThisFrame[ TEAM_HUMANS ] > bpStolenAtThisFrame[ TEAM_ALIENS ] )
@@ -297,41 +299,23 @@ void G_AnnounceStolenBP()
 			bpStolenAtThisFrame[ TEAM_HUMANS ] = 0;
 		}
 	}
-	for ( team_t team : { TEAM_HUMANS, TEAM_ALIENS } )
+	for ( auto tup : { std::tuple< team_t, buildable_t >( TEAM_HUMANS, BA_A_OVERMIND ),
+	                   std::tuple< team_t, buildable_t >( TEAM_ALIENS, BA_H_REACTOR ) } )
 	{
+		team_t team;
+		buildable_t mainBuildable;
+		std::tie( team, mainBuildable ) = tup;
 		int bpToTransfer = bpStolenAtThisFrame[ team ];
-		if ( bpToTransfer <= 0 )
+		if ( bpToTransfer <= 0 && buildablesDestroyedAtThisFrame[ mainBuildable ] == 0 )
 		{
 			continue;
 		}
-		std::string msg = team == TEAM_HUMANS ? "\"^dHumans^*" : "\"^iAliens^*";
-		/*auto bar = [&] ( int bpAmount )
-		{
-			std::string result;
-			int step = ( g_BPInitialBudgetHumans.Get() + g_BPInitialBudgetAliens.Get() ) / 15;
-			int limit = ( bpAmount + step / 2 ) / step;
-			if ( bpAmount > 0 && limit == 0 )
-			{
-				limit = 1;
-			}
-			for ( int i = 0; i < limit; i++ )
-			{
-				result += "█";
-			}
-			return result;
-		};*/
-		msg += " win ^3" + std::to_string( bpToTransfer ) + "^* build points, now ^d" + std::to_string( g_BPInitialBudgetHumans.Get() )
-		                                                  //+ " ^d" + bar( g_BPInitialBudgetHumans.Get() ) +  "^i" + bar( g_BPInitialBudgetAliens.Get() )
-		                                                  + " ^7| ^i" + std::to_string( g_BPInitialBudgetAliens.Get() )
-		                                                  + "\"";
 		for ( int i = 0; i < level.maxclients; i++ )
 		{
-			if ( g_BPTransferNotify.Get() )
-			{
-				trap_SendServerCommand( i, va( "print_tr %s ", msg.c_str() ) );
-			}
 			trap_SendServerCommand( i, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
 		}
+
+		AnnounceDestructions( team );
 
 		bpStolenAtThisFrame[ team ] = 0;
 		resetDestroyedBuildables( team );
