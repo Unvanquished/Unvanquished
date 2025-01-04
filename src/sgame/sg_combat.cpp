@@ -310,10 +310,8 @@ void G_AnnounceStolenBP()
 		{
 			continue;
 		}
-		for ( int i = 0; i < level.maxclients; i++ )
-		{
-			trap_SendServerCommand( i, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
-		}
+		
+		G_UpdateBPVampire( -1 ); // update the BP bars for everyone
 
 		AnnounceDestructions( team );
 
