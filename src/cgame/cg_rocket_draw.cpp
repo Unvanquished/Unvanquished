@@ -2014,6 +2014,24 @@ public:
 
 	void DoOnUpdate() override
 	{
+		rectDef_t rect;
+		CG_GetRocketElementRect( &rect );
+
+		// FIXME: RMLUI part needs to be fixed for this to work
+		/* float x = rect.x;
+		float y = rect.y;
+		float w = rect.w;
+		float h = rect.h; */
+
+		float x = 240;
+		float y = 20;
+		float w = 160;
+		float h = 15;
+
+		const float percentage = ( float ) cg.bpVampire[TEAM_ALIENS] / ( cg.bpVampire[TEAM_HUMANS] + cg.bpVampire[TEAM_ALIENS] );
+		CG_FillRect( x, y, w * percentage, h, aBlink ? blinkBPColor : alienBPColor );
+		CG_FillRect( x + w * percentage, y, w * ( 1 - percentage ), h, hBlink ? blinkBPColor : humanBPColor );
+
 		if ( !cg.bpVampire[ TEAM_ALIENS ] || !cg.bpVampire[ TEAM_HUMANS ] )
 		{
 			return;
@@ -2024,13 +2042,26 @@ public:
 		if ( cg.bpVampireTime + 3000 + flashDuration > cg.time )
 		{
 
-			SetInnerRML(Rocket_QuakeToRML(Str::Format("^7%d ^%s%s^%s%s ^7%d\n%s",
+			/* SetInnerRML(Rocket_QuakeToRML(Str::Format("^7%d ^%s%s^%s%s ^7%d\n%s",
 			                                             cg.bpVampire[ TEAM_ALIENS ],
 			                                             aCol, cg.bpVampireBarA,
 			                                             hCol, cg.bpVampireBarH,
 			                                             cg.bpVampire[ TEAM_HUMANS ],
 				                                         cg.bpMessage
-			                                             ).c_str(), RP_EMOTICONS ) );
+			                                             ).c_str(), RP_EMOTICONS ) ); */
+
+			// HACK: use <span> and hard coded CSS attributes to put the numbers to the sides of the bar
+			auto rml = [] ( std::string s )
+			{
+				return Rocket_QuakeToRML( s.c_str(), RP_EMOTICONS );
+			};
+			std::string innerRML;
+			innerRML += "<span style=\"line-height: 1.3em;\">";
+			innerRML += rml( Str::Format( "^7%d", cg.bpVampire[TEAM_ALIENS] ) );
+			innerRML += "<span style=\"width: 20em; display: inline-block;\">&nbsp;</span>";
+			innerRML += rml( Str::Format( " ^7%d\n%s", cg.bpVampire[TEAM_HUMANS], cg.bpMessage ) );
+			innerRML += "</span>";
+			SetInnerRML( innerRML );
 		}
 	}
 
@@ -2040,6 +2071,12 @@ private:
 	int lastFlashTime = cg.time;
 	std::string hCol = "d";
 	std::string aCol = "i";
+	bool hBlink = false;
+	bool aBlink = false;
+
+	const Color::Color humanBPColor = Color::Color( 0.0f, 0.0f, 1.0f, 0.5f );
+	const Color::Color alienBPColor = Color::Color( 1.0f, 0.0f, 0.0f, 0.5f );
+	const Color::Color blinkBPColor = Color::Color( 1.0f, 1.0f, 0.0f, 0.5f );
 
 	void blink()
 	{
@@ -2049,11 +2086,13 @@ private:
 			if ( cg.bpVampireOld[ TEAM_HUMANS ] > cg.bpVampire[ TEAM_HUMANS ] )
 			{
 				flashState ? hCol = "d" : hCol = "3";
+				hBlink = !hBlink;
 			}
 
 			if ( cg.bpVampireOld[ TEAM_ALIENS ] > cg.bpVampire[ TEAM_ALIENS ] )
 			{
 				flashState ? aCol = "i" : aCol = "3";
+				aBlink = !aBlink;
 			}
 			flashState = !flashState;
 			lastFlashTime = cg.time;
@@ -2064,6 +2103,8 @@ private:
 			// reset the colours so the bar doesn't get stuck
 			hCol = "d";
 			aCol = "i";
+			hBlink = false;
+			aBlink = false;
 			cg.bpMessage = "";
 			flashState = false;
 		}
