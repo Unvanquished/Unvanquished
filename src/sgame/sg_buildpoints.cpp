@@ -179,8 +179,15 @@ void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 {
 	if ( G_IsPlayableTeam( team ) )
 	{
-		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
-		level.team[ team ].queuedBudget += queuedAmount;
+		if ( g_BPTransfer.Get() )
+		{
+			level.team[ team ].spentBudget -= immediateAmount;
+		}
+		else
+		{
+			level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
+			level.team[ team ].queuedBudget += queuedAmount;
+		}
 
 		// Note that there can be more build points in queue than total - spent.
 
@@ -201,6 +208,10 @@ void G_SpendBudget( team_t team, int amount )
 
 int G_BuildableDeconValue(gentity_t *ent)
 {
+	if ( g_BPTransfer.Get() ) {
+		return BG_Buildable( ent->s.modelindex )->buildPoints;
+	}
+
 	HealthComponent* healthComponent = ent->entity->Get<HealthComponent>();
 
 	if (!healthComponent->Alive()) {
