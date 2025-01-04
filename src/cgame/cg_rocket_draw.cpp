@@ -2024,10 +2024,10 @@ public:
 		if ( cg.bpVampireTime + 3000 + flashDuration > cg.time )
 		{
 			SetInnerRML( Rocket_QuakeToRML( Str::Format( "^7%d ^%s%s^%s%s ^7%d",
-			                                             cg.bpVampire[ TEAM_HUMANS ],
-			                                             hCol, cg.bpVampireBarH,
+			                                             cg.bpVampire[ TEAM_ALIENS ],
 			                                             aCol, cg.bpVampireBarA,
-			                                             cg.bpVampire[ TEAM_ALIENS ]
+			                                             hCol, cg.bpVampireBarH,
+			                                             cg.bpVampire[ TEAM_HUMANS ]
 			                                             ).c_str(), RP_EMOTICONS ) );
 		}
 	}
