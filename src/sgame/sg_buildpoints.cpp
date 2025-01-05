@@ -175,13 +175,9 @@ void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 {
 	if ( G_IsPlayableTeam( team ) )
 	{
-		if ( g_BPTransfer.Get() )
+		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
+		if ( !g_BPTransfer.Get() )
 		{
-			level.team[ team ].spentBudget -= immediateAmount;
-		}
-		else
-		{
-			level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
 			level.team[ team ].queuedBudget += queuedAmount;
 		}
 
