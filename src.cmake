@@ -182,6 +182,9 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.cpp
 
+    ${GAMELOGIC_DIR}/cgame/rocket/emojis/emojimap.h
+    ${GAMELOGIC_DIR}/cgame/rocket/emojis/emojimap.cpp
+
     ${ENGINE_DIR}/client/cg_api.h
     ${ENGINE_DIR}/client/cg_msgdef.h
 

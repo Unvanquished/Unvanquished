@@ -63,6 +63,7 @@ Maryland 20850 USA.
 #include "shared/lua/register_lua_extensions.h"
 #include "../cg_local.h"
 #include "shared/bg_lua.h"
+#include "emojis/emojimap.h"
 
 class DaemonFileInterface : public Rml::FileInterface
 {
@@ -379,6 +380,7 @@ void Rocket_Init()
 		.GetId();
 
 	// Set backup font
+	Rml::GetFontEngineInterface()->LoadFontFace( "fonts/NotoColorEmoji.ttf", /*fallback_face=*/true, Rml::Style::FontWeight::Normal );
 	Rml::GetFontEngineInterface()->LoadFontFace( "fonts/unifont.ttf", /*fallback_face=*/true, Rml::Style::FontWeight::Normal );
 
 	// Initialize keymap
@@ -538,6 +540,23 @@ std::string CG_EscapeHTMLText( Str::StringRef text )
 	return out;
 }
 
+static Str::StringRef EmojiAt( Str::StringRef s )
+{
+	if ( s.empty() || s[0] != '[' )
+	{
+		return "";
+	}
+
+	auto pos = s.find( ']', 1 );
+	if ( pos == Str::StringRef::npos )
+	{
+		return "";
+	}
+
+	auto e = FindEmoji( s.substr( 1, pos - 1 ) );
+	return e;
+}
+
 // TODO: Make this take Rml::String as an input.
 // FIXME: This always parses colors even when RP_QUAKE is not specified. Many callers rely on this behavior.
 Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
@@ -581,6 +600,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			Str::StringView text = token.PlainText();
 			char c = text[ 0 ];
 			const emoticonData_t *emoticon;
+			Str::StringRef emoji("");
 			if ( c == '<' )
 			{
 				if ( span && !spanHasContent )
@@ -622,6 +642,19 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					out.append( spanstr );
 				}
 				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				while ( iter != parser.end() && *iter->RawToken().begin() != ']' )
+				{
+					++iter;
+				}
+			}
+			else if ( ( parseFlags & RP_EMOTICONS ) && !( emoji = EmojiAt( token.RawToken().begin() ) ).empty() )
+			{
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.append( spanstr );
+				}
+				out.append( emoji.c_str() );
 				while ( iter != parser.end() && *iter->RawToken().begin() != ']' )
 				{
 					++iter;
@@ -722,3 +755,21 @@ void Rocket_LoadFont( const char *font )
 {
 	Rml::GetFontEngineInterface()->LoadFontFace( font, false, Rml::Style::FontWeight::Auto );
 }
+
+struct ListEmojis : public Cmd::LambdaCmd {
+	ListEmojis();
+};
+
+ListEmojis::ListEmojis() : Cmd::LambdaCmd("listEmojis", "List (or filter by passing in a filter) available emojis.", []( const Cmd::Args& args ) {
+	Log::CommandInteractionMessage("Emoji list:");
+	auto filter = args.Argc() > 1 ? args.ConcatArgs( 1 ) : "";
+	for ( const auto& it : emojimap )
+	{
+		if ( !filter.empty() && !Com_Filter( filter.c_str(), it.first.c_str(), false ) )
+		{
+			continue;
+		}
+		Log::CommandInteractionMessage( Str::Format(" %s -> %s", it.first, it.second ) );
+	}
+}) {}
+ListEmojis listEmojisCmd;
