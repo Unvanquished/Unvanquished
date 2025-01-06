@@ -87,40 +87,9 @@ if ((BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL) AND (BUILD_CGAME OR
     set(BUILDING_ANY_GAMELOGIC 1)
 endif()
 
-#########################################
-# Externally built library dependencies #
-#########################################
-if (NACL)
-    set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
-    set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
-    set(FREETYPE_INCLUDE_DIRS ${DEPS_DIR}/pnacl_deps/include/freetype2)
-    set(LUA_INCLUDE_DIR ${DEPS_DIR}/pnacl_deps/include)
-    set(LUA_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/liblua.a)
-elseif (BUILDING_ANY_GAMELOGIC)
-    find_package(Lua REQUIRED)
-
-    if (BUILD_CGAME)
-        # Freetype (RmlUi dependency)
-        find_package(Freetype REQUIRED)
-        if (APPLE OR WIN32)
-            find_package(ZLIB REQUIRED)
-            set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
-        endif()
-    endif()
-endif()
-include_directories(${LUA_INCLUDE_DIR})
-
 ##################################
 # Libraries we build from source #
 ##################################
-
-if (BUILDING_ANY_GAMELOGIC AND BUILD_CGAME)
-    # RmlUi
-    include_directories(${FREETYPE_INCLUDE_DIRS})
-    include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
-    set_target_properties(RMLUI_LIB PROPERTIES FOLDER "libs")
-    include_directories(${RMLUI_INCLUDE_DIRS})
-endif()
 
 # Configuration for Recast
 set(RC_MAX_LAYERS 63 CACHE STRING "Must be 255 or smaller.")
@@ -129,6 +98,29 @@ set(RC_MAX_NEIS 16 CACHE STRING "")
 set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_NEIS)
 
 if (BUILDING_ANY_GAMELOGIC)
+    if (BUILD_CGAME)
+        # Freetype (RmlUi dependency), already found for a native game when the client is built.
+        if (NACL)
+            include(${DAEMON_DIR}/freetype.cmake)
+        elseif (NOT BUILD_CLIENT)
+            prefer_package(Freetype ${DAEMON_DIR}/freetype.cmake)
+
+            if (Freetype_FOUND AND (APPLE OR WIN32))
+                find_package(ZLIB REQUIRED)
+                set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
+            endif()
+        endif()
+
+        include_directories(${FREETYPE_INCLUDE_DIRS})
+
+        # RmlUi
+        include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
+    endif()
+
+    # Lua
+    prefer_package(Lua ${CMAKE_CURRENT_SOURCE_DIR}/lua.cmake)
+    include_directories(${LUA_INCLUDE_DIR})
+
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
     set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
@@ -251,7 +243,7 @@ if (BUILD_CGAME)
     FILES
         ${CGAMELIST}
     LIBS
-        RMLUI_LIB
+        srclibs-rmlui
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
         srclibs-tinygettext

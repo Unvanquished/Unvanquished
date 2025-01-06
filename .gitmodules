@@ -1,12 +1,15 @@
-[submodule "libs/recastnavigation"]
-	path = libs/recastnavigation
-	url = https://github.com/Unvanquished/recastnavigation.git
 [submodule "daemon"]
 	path = daemon
 	url = https://github.com/DaemonEngine/Daemon.git
-[submodule "libs/RmlUi"]
-	path = libs/RmlUi
-	url = https://github.com/Unvanquished/RmlUi.git
 [submodule "libs/glm"]
 	path = libs/glm
 	url = https://github.com/Unvanquished/glm.git
+[submodule "libs/lua"]
+	path = libs/lua
+	url = https://github.com/Unvanquished/lua.git
+[submodule "libs/recastnavigation"]
+	path = libs/recastnavigation
+	url = https://github.com/Unvanquished/recastnavigation.git
+[submodule "libs/RmlUi"]
+	path = libs/RmlUi
+	url = https://github.com/Unvanquished/RmlUi.git
