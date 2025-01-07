@@ -92,8 +92,6 @@ extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
 extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
 extern  Cvar::Cvar<bool> g_BPTransfer;
 
-extern Cvar::Cvar<bool> g_BPTransfer;
-
 extern Cvar::Range<Cvar::Cvar<int>> g_debugMomentum;
 extern Cvar::Cvar<float> g_momentumHalfLife;
 extern Cvar::Cvar<float> g_momentumRewardDoubleTime;
