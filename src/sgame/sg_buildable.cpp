@@ -2298,7 +2298,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 
 void G_BuildLogRevert( int id )
 {
-	buildLog_t *log;
+	buildLog_t *log = nullptr;
 	gentity_t  *ent;
 	vec3_t     dist;
 	gentity_t  *buildable;
@@ -2380,7 +2380,7 @@ void G_BuildLogRevert( int id )
 		}
 	}
 
-	if ( g_BPTransfer.Get() ) {
+	if ( g_BPTransfer.Get() && log != nullptr ) {
 		g_BPInitialBudgetHumans.Set( log->humanBP );
 		g_BPInitialBudgetAliens.Set( log->alienBP );
 
