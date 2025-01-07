@@ -111,6 +111,7 @@ circlemenu_documents = {
 	"human_build",
 	"human_buy",
 	"ingame_beaconmenu",
+	"ingame_bottacticmenu",
 }
 function CloseOtherCirclemenus(event)
 	-- The event is assumed to be on the <body> element
