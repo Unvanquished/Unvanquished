@@ -424,7 +424,7 @@ void G_UpdateBuildablePowerStates()
 				buildableComponent.SetPowerState(false);
 				return;
 			}
-			else
+			else if ( g_BPTransfer.Get() )
 			{
 				buildableComponent.SetPowerState(true);
 				return;
@@ -440,7 +440,10 @@ void G_UpdateBuildablePowerStates()
 			}
 		});
 
-		continue;
+		if ( g_BPTransfer.Get() )
+		{
+			continue;
+		}
 
 		// If there is no active main buildable, all buildables that can shut down already did so.
 		if (!activeMainBuildable) continue;
