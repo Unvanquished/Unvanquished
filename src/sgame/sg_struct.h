@@ -523,6 +523,8 @@ struct buildLog_t
 	namelog_t   *builtBy;
 	team_t      buildableTeam;
 	buildable_t modelindex;
+	int humanBP;
+	int alienBP;
 	float       momentumEarned;
 	bool        markedForDeconstruction;
 	vec3_t      origin;
