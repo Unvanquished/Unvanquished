@@ -229,8 +229,8 @@ protected:
 			child = GetChild( i );
 			width = child->GetOffsetWidth();
 			height = child->GetOffsetHeight();
-			float y = sinf( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
-			float x = cosf( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
+			float y = sinf( angle * ( i - 1 ) * Math::divpi_180_f ) * radius;
+			float x = cosf( angle * ( i - 1 ) * Math::divpi_180_f ) * radius;
 
 			child->SetProperty( "position", "absolute" );
 			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x ) );

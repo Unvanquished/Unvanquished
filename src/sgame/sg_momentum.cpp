@@ -135,8 +135,7 @@ static float MomentumTimeMod()
 	}
 	else
 	{
-		// ln(2) ~= 0.6931472
-		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_momentumRewardDoubleTime.Get() ) );
+		return exp( Math::ln2_f * ( ( level.matchTime / 60000.0f ) / g_momentumRewardDoubleTime.Get() ) );
 	}
 }
 
@@ -323,8 +322,7 @@ void G_DecreaseMomentum()
 	// only calculate decreaseFactor if the server configuration changed
 	if ( lastMomentumHalfLife != g_momentumHalfLife.Get() )
 	{
-		// ln(2) ~= 0.6931472
-		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_MOMENTUM_PERIOD ) *
+		decreaseFactor = exp( ( -Math::ln2_f / ( ( 60000.0f / DECREASE_MOMENTUM_PERIOD ) *
 		                                        g_momentumHalfLife.Get() ) ) );
 
 		lastMomentumHalfLife = g_momentumHalfLife.Get();
