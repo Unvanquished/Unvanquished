@@ -2200,6 +2200,12 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 	log->time = level.time;
 	log->fate = fate;
 	log->actor = actor && actor->client ? actor->client->pers.namelog : nullptr;
+
+	if ( g_BPTransfer.Get() ) {
+		log->humanBP = g_BPInitialBudgetHumans.Get();
+		log->alienBP = g_BPInitialBudgetAliens.Get();
+	}
+
 	return log;
 }
 
@@ -2365,6 +2371,13 @@ void G_BuildLogRevert( int id )
 			buildable->nextthink = level.time + FRAMETIME;
 			buildable->suicideTime = 30; // number of thinks before killing players in the way
 		}
+	}
+
+	if ( g_BPTransfer.Get() ) {
+		g_BPInitialBudgetHumans.Set( log->humanBP );
+		g_BPInitialBudgetAliens.Set( log->alienBP );
+
+		G_UpdateBPVampire( -1 );
 	}
 
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
