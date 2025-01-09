@@ -340,13 +340,13 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	switch ( otherTeam )
 	{
 	case TEAM_ALIENS:
-		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() - bpToTransfer );
-		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() + bpToTransfer );
+		level.team[ TEAM_HUMANS ].totalBudget -= bpToTransfer;
+		level.team[ TEAM_ALIENS ].totalBudget += bpToTransfer;
 		bpStolenAtThisFrame[ TEAM_ALIENS ] += bpToTransfer;
 		break;
 	case TEAM_HUMANS:
-		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() + bpToTransfer );
-		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() - bpToTransfer );
+		level.team[ TEAM_HUMANS ].totalBudget += bpToTransfer;
+		level.team[ TEAM_ALIENS ].totalBudget -= bpToTransfer;
 		bpStolenAtThisFrame[ TEAM_HUMANS ] += bpToTransfer;
 		break;
 	default:
