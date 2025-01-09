@@ -352,6 +352,8 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	default:
 		break;
 	}
+	// keep track of the budget surplus
+	// this is only required when the initial BP settings change during a game
 	for ( auto tup : { std::tuple< team_t, int >( TEAM_HUMANS, g_BPInitialBudgetHumans.Get() ),
 	                   std::tuple< team_t, int >( TEAM_ALIENS, g_BPInitialBudgetAliens.Get() ) } )
 	{
