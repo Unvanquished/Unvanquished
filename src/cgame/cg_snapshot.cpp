@@ -301,23 +301,27 @@ static snapshot_t *CG_ReadNextSnapshot()
 
 	while ( cgs.processedSnapshotNum < cg.latestSnapshotNum )
 	{
-		// decide which of the two slots to load it into
-		if ( cg.snap == &cg.activeSnapshots[ 0 ] )
-		{
-			dest = &cg.activeSnapshots[ 1 ];
-		}
-		else
-		{
-			dest = &cg.activeSnapshots[ 0 ];
-		}
-
 		// try to read the snapshot from the client system
 		cgs.processedSnapshotNum++;
-		r = trap_GetSnapshot( cgs.processedSnapshotNum, dest );
+		ipcSnapshot_t ipcSnapshot;
+		r = trap_GetSnapshot( cgs.processedSnapshotNum, &ipcSnapshot );
 
 		// if it succeeded, return
 		if ( r )
 		{
+			// decide which of the two slots to load it into
+			if ( cg.snap == &cg.activeSnapshots[ 0 ] )
+			{
+				dest = &cg.activeSnapshots[ 1 ];
+			}
+			else
+			{
+				dest = &cg.activeSnapshots[ 0 ];
+			}
+
+			*static_cast<snapshotBase_t *>( dest ) = std::move( ipcSnapshot.b );
+			memcpy( &dest->ps, &ipcSnapshot.ps, sizeof( dest->ps ) );
+
 			CG_AddLagometerSnapshotInfo( dest );
 			return dest;
 		}
