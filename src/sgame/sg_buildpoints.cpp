@@ -83,7 +83,6 @@ void G_UpdateBPVampire( int client ) // -1 to update everyone
 void G_UpdateBuildPointBudgets() {
 	int abp = g_BPInitialBudgetAliens.Get();
 	int hbp = g_BPInitialBudgetHumans.Get();
-	// TODO: maybe make vampire mode consider the current BP budgets
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		if ( team == TEAM_ALIENS && abp >= 0 )
 		{
@@ -97,13 +96,17 @@ void G_UpdateBuildPointBudgets() {
 		{
 			level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 		}
+		if ( g_BPTransfer.Get() )
+		{
+			level.team[ team ].totalBudget += level.team[ team ].vampireBudgetSurplus;
+		}
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
 		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
 		                                                 g_buildPointBudgetPerMiner.Get();
 	});
-	//G_UpdateBPVampire( -1 );
+	G_UpdateBPVampire( -1 );
 }
 
 void G_RecoverBuildPoints() {

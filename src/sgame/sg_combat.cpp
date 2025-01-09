@@ -350,7 +350,19 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 		bpStolenAtThisFrame[ TEAM_HUMANS ] += bpToTransfer;
 		break;
 	default:
-		return;
+		break;
+	}
+	for ( auto tup : { std::tuple< team_t, int >( TEAM_HUMANS, g_BPInitialBudgetHumans.Get() ),
+	                   std::tuple< team_t, int >( TEAM_ALIENS, g_BPInitialBudgetAliens.Get() ) } )
+	{
+		team_t team;
+		int initialBP;
+		std::tie( team, initialBP ) = tup;
+		if ( initialBP < 0 )
+		{
+			initialBP = g_buildPointInitialBudget.Get();
+		}
+		level.team[ team ].vampireBudgetSurplus = level.team[ team ].totalBudget - initialBP;
 	}
 }
 
