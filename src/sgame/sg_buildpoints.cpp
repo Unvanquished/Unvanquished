@@ -83,21 +83,15 @@ void G_UpdateBPVampire( int client ) // -1 to update everyone
 void G_UpdateBuildPointBudgets() {
 	int abp = g_BPInitialBudgetAliens.Get();
 	int hbp = g_BPInitialBudgetHumans.Get();
-	int alienSurplus = 0;  // vampire mode
-	int humanSurplus = 0;  // vampire mode
-	if ( g_BPTransfer.Get() )
-	{
-		alienSurplus = level.team[ TEAM_ALIENS ].totalBudget - abp;
-		humanSurplus = level.team[ TEAM_HUMANS ].totalBudget - hbp;
-	}
+	// TODO: maybe make vampire mode consider the current BP budgets
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		if ( team == TEAM_ALIENS && abp >= 0 )
 		{
-			level.team[team].totalBudget = abp + alienSurplus;
+			level.team[team].totalBudget = abp;
 		}
 		else if ( team == TEAM_HUMANS && hbp >= 0 )
 		{
-			level.team[team].totalBudget = hbp + humanSurplus;
+			level.team[team].totalBudget = hbp;
 		}
 		else
 		{
