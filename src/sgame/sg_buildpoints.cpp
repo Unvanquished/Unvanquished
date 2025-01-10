@@ -77,7 +77,7 @@ void G_UpdateBPVampire( int client ) // -1 to update everyone
 		return;
 	}
 
-	trap_SendServerCommand( client, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
+	trap_SendServerCommand( client, va( "bpvampire %d %d", static_cast<int>( level.team[ TEAM_HUMANS ].totalBudget ), static_cast<int>( level.team[ TEAM_ALIENS ].totalBudget ) ) );
 }
 
 void G_UpdateBuildPointBudgets() {
@@ -96,13 +96,17 @@ void G_UpdateBuildPointBudgets() {
 		{
 			level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 		}
+		if ( g_BPTransfer.Get() )
+		{
+			level.team[ team ].totalBudget += level.team[ team ].vampireBudgetSurplus;
+		}
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
 		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
 		                                                 g_buildPointBudgetPerMiner.Get();
 	});
-	//G_UpdateBPVampire( -1 );
+	G_UpdateBPVampire( -1 );
 }
 
 void G_RecoverBuildPoints() {

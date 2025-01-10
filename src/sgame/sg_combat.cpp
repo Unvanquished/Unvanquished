@@ -340,17 +340,31 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	switch ( otherTeam )
 	{
 	case TEAM_ALIENS:
-		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() - bpToTransfer );
-		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() + bpToTransfer );
+		level.team[ TEAM_HUMANS ].totalBudget -= bpToTransfer;
+		level.team[ TEAM_ALIENS ].totalBudget += bpToTransfer;
 		bpStolenAtThisFrame[ TEAM_ALIENS ] += bpToTransfer;
 		break;
 	case TEAM_HUMANS:
-		g_BPInitialBudgetHumans.Set( g_BPInitialBudgetHumans.Get() + bpToTransfer );
-		g_BPInitialBudgetAliens.Set( g_BPInitialBudgetAliens.Get() - bpToTransfer );
+		level.team[ TEAM_HUMANS ].totalBudget += bpToTransfer;
+		level.team[ TEAM_ALIENS ].totalBudget -= bpToTransfer;
 		bpStolenAtThisFrame[ TEAM_HUMANS ] += bpToTransfer;
 		break;
 	default:
-		return;
+		break;
+	}
+	// keep track of the budget surplus
+	// this is only required when the initial BP settings change during a game
+	for ( auto tup : { std::tuple< team_t, int >( TEAM_HUMANS, g_BPInitialBudgetHumans.Get() ),
+	                   std::tuple< team_t, int >( TEAM_ALIENS, g_BPInitialBudgetAliens.Get() ) } )
+	{
+		team_t team;
+		int initialBP;
+		std::tie( team, initialBP ) = tup;
+		if ( initialBP < 0 )
+		{
+			initialBP = g_buildPointInitialBudget.Get();
+		}
+		level.team[ team ].vampireBudgetSurplus = level.team[ team ].totalBudget - initialBP;
 	}
 }
 

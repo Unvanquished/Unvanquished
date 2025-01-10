@@ -2202,8 +2202,8 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 	log->actor = actor && actor->client ? actor->client->pers.namelog : nullptr;
 
 	if ( g_BPTransfer.Get() ) {
-		log->humanBP = g_BPInitialBudgetHumans.Get();
-		log->alienBP = g_BPInitialBudgetAliens.Get();
+		log->humanBP = level.team[ TEAM_HUMANS ].totalBudget;
+		log->alienBP = level.team[ TEAM_ALIENS ].totalBudget;
 	}
 
 	return log;
@@ -2374,8 +2374,8 @@ void G_BuildLogRevert( int id )
 	}
 
 	if ( g_BPTransfer.Get() && log != nullptr ) {
-		g_BPInitialBudgetHumans.Set( log->humanBP );
-		g_BPInitialBudgetAliens.Set( log->alienBP );
+		level.team[ TEAM_HUMANS ].totalBudget = log->humanBP;
+		level.team[ TEAM_ALIENS ].totalBudget = log->alienBP;
 
 		G_UpdateBPVampire( -1 );
 	}
