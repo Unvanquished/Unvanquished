@@ -72,7 +72,7 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
 
 void G_UpdateBPVampire( int client ) // -1 to update everyone
 {
-	if ( !g_BPTransfer.Get() )
+	if ( !g_BPVampire.Get() )
 	{
 		return;
 	}
@@ -96,7 +96,7 @@ void G_UpdateBuildPointBudgets() {
 		{
 			level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 		}
-		if ( g_BPTransfer.Get() )
+		if ( g_BPVampire.Get() )
 		{
 			level.team[ team ].totalBudget += level.team[ team ].vampireBudgetSurplus;
 		}
@@ -180,7 +180,7 @@ void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 	if ( G_IsPlayableTeam( team ) )
 	{
 		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
-		if ( !g_BPTransfer.Get() )
+		if ( !g_BPVampire.Get() )
 		{
 			level.team[ team ].queuedBudget += queuedAmount;
 		}
@@ -204,7 +204,7 @@ void G_SpendBudget( team_t team, int amount )
 
 int G_BuildableDeconValue(gentity_t *ent)
 {
-	if ( g_BPTransfer.Get() ) {
+	if ( g_BPVampire.Get() ) {
 		return BG_Buildable( ent->s.modelindex )->buildPoints;
 	}
 

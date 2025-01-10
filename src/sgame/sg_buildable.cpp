@@ -1064,7 +1064,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// It's preferrable to replace marked buildings first with BP vampire
-	if ( !g_BPTransfer.Get() ) {
+	if ( !g_BPVampire.Get() ) {
 		// check if we can already afford the new buildable
 		if ( G_GetFreeBudget( attr->team ) >= cost ) {
 			return IBE_NONE;
@@ -1134,7 +1134,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// Check if we can afford the new buildable with BP vampire if we don't have enough BP marked
-	if ( g_BPTransfer.Get() ) {
+	if ( g_BPVampire.Get() ) {
 		if ( G_GetFreeBudget( attr->team ) >= cost ) {
 			return IBE_NONE;
 		}
@@ -2201,7 +2201,7 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 	log->fate = fate;
 	log->actor = actor && actor->client ? actor->client->pers.namelog : nullptr;
 
-	if ( g_BPTransfer.Get() ) {
+	if ( g_BPVampire.Get() ) {
 		log->humanBP = level.team[ TEAM_HUMANS ].totalBudget;
 		log->alienBP = level.team[ TEAM_ALIENS ].totalBudget;
 	}
@@ -2373,7 +2373,7 @@ void G_BuildLogRevert( int id )
 		}
 	}
 
-	if ( g_BPTransfer.Get() && log != nullptr ) {
+	if ( g_BPVampire.Get() && log != nullptr ) {
 		level.team[ TEAM_HUMANS ].totalBudget = log->humanBP;
 		level.team[ TEAM_ALIENS ].totalBudget = log->alienBP;
 

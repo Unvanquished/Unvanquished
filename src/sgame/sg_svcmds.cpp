@@ -804,7 +804,7 @@ static void Svcmd_G_AdvanceMapRotation_f()
 
 static void Svcmd_G_UpdateBPVampire_f()
 {
-	if ( !g_BPTransfer.Get() )
+	if ( !g_BPVampire.Get() )
 	{
 		Log::Notice( "BP Vampire mode is not enabled." );
 		return;
