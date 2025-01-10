@@ -2041,15 +2041,6 @@ public:
 
 		if ( cg.bpVampireTime + 3000 + flashDuration > cg.time )
 		{
-
-			/* SetInnerRML(Rocket_QuakeToRML(Str::Format("^7%d ^%s%s^%s%s ^7%d\n%s",
-			                                             cg.bpVampire[ TEAM_ALIENS ],
-			                                             aCol, cg.bpVampireBarA,
-			                                             hCol, cg.bpVampireBarH,
-			                                             cg.bpVampire[ TEAM_HUMANS ],
-				                                         cg.bpMessage
-			                                             ).c_str(), RP_EMOTICONS ) ); */
-
 			// HACK: use <span> and hard coded CSS attributes to put the numbers to the sides of the bar
 			auto rml = [] ( std::string s )
 			{

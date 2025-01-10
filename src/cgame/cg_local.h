@@ -1178,8 +1178,6 @@ struct cg_t
 	int bpVampire[ NUM_TEAMS ];
 	int bpVampireOld[ NUM_TEAMS ];
 	int bpVampireTime;
-	std::string bpVampireBarH;
-	std::string bpVampireBarA;
 
 	std::string bpMessage;
 

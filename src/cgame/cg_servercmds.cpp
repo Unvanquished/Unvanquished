@@ -92,27 +92,6 @@ static void CG_BPVampire()
 
 	cg.bpVampire[ TEAM_HUMANS ] = atoi( CG_Argv( 1 ) );
 	cg.bpVampire[ TEAM_ALIENS ] = atoi( CG_Argv( 2 ) );
-
-	auto bar = [&] ( int team )
-	{
-		std::string result;
-		int bpAmount = cg.bpVampire[ team ];
-
-		int step = ( cg.bpVampire[ TEAM_HUMANS ] + cg.bpVampire[ TEAM_ALIENS ] ) / 15;
-		int limit = ( bpAmount + step / 2 ) / step;
-		if ( bpAmount > 0 && limit == 0 )
-		{
-			limit = 1;
-		}
-		for ( int i = 0; i < limit; i++ )
-		{
-			result += "█";
-		}
-		return result;
-	};
-
-	cg.bpVampireBarH = bar( TEAM_HUMANS );
-	cg.bpVampireBarA = bar( TEAM_ALIENS );
 }
 
 static void CG_PrintBPMessage_f()
