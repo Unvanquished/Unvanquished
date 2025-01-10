@@ -208,7 +208,7 @@ static int buildablesDestroyedAtThisFrame[ BA_NUM_BUILDABLES ];
 static std::vector<buildable_t> alienBuildables = { BA_A_SPAWN, BA_A_BOOSTER, BA_A_BARRICADE, BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_SPIKER, BA_A_HIVE, BA_A_OVERMIND };
 static std::vector<buildable_t> humanBuildables = { BA_H_SPAWN, BA_H_MGTURRET, BA_H_ROCKETPOD, BA_H_ARMOURY, BA_H_MEDISTAT, BA_H_REACTOR };
 
-static void resetDestroyedBuildables( team_t team )
+static void ResetDestroyedBuildables( team_t team )
 {
 	bpStolenAtThisFrame[ team ] = 0;
 	std::vector<buildable_t> &enemyBuildables = team == TEAM_HUMANS ? alienBuildables : humanBuildables;
@@ -219,7 +219,7 @@ static void resetDestroyedBuildables( team_t team )
 }
 
 
-static std::string destroyedMessage( team_t team, std::vector<buildable_t> &array )
+static std::string DestroyedMessage( team_t team, std::vector<buildable_t> &array )
 {
 	std::string result = "\"We destroyed";
 	bool needComma = false;
@@ -269,7 +269,7 @@ static void AnnounceDestructions( team_t team )
 	{
 		return;
 	}
-	std::string msg = destroyedMessage( team, team == TEAM_HUMANS ? alienBuildables : humanBuildables );
+	std::string msg = DestroyedMessage( team, team == TEAM_HUMANS ? alienBuildables : humanBuildables );
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		if ( G_Team( &g_entities[ i ] ) == team )
@@ -316,7 +316,7 @@ void G_AnnounceStolenBP()
 		AnnounceDestructions( team );
 
 		bpStolenAtThisFrame[ team ] = 0;
-		resetDestroyedBuildables( team );
+		ResetDestroyedBuildables( team );
 	}
 }
 

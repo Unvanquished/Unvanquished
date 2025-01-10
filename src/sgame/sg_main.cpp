@@ -2361,7 +2361,6 @@ void G_RunFrame( int levelTime )
 	// Power down buildables if there is a budget deficit.
 	G_UpdateBuildablePowerStates();
 
-	extern void G_AnnounceStolenBP();
 	G_AnnounceStolenBP();
 
 	G_DecreaseMomentum();
