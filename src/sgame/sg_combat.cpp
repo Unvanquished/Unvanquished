@@ -366,6 +366,12 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 		}
 		level.team[ team ].vampireBudgetSurplus = level.team[ team ].totalBudget - initialBP;
 	}
+	// vampire mode disables the call to G_FreeBudget in the component's
+	// HandleDie method, and does it here instead
+	// reason: HandleDie is called when the building dies, but we are here
+	// when the building explodes (or vanishes)
+	// the explosion happens several seconds after the death
+	G_FreeBudget( self->buildableTeam, 0, BG_Buildable( self->s.modelindex )->buildPoints );
 }
 
 /**
