@@ -83,12 +83,14 @@ static trace2_t MissileTrace(gentity_t* ent)
 
 		if (trWorld.startsolid)
 		{
-			return trWorld;
+			result = trWorld;
 		}
-
-		trace2_t trBody = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
-			passent, CONTENTS_BODY, 0);
-		result = trBody.fraction < 1.0f ? trBody : trWorld;
+		else
+		{
+			trace2_t trBody = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
+				passent, CONTENTS_BODY, 0);
+			result = trBody.fraction < 1.0f ? trBody : trWorld;
+		}
 	}
 	else
 	{
