@@ -189,6 +189,7 @@ void              G_AddMomentumToScore( gentity_t *self, float momentum );
 void              G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 void              G_InitDamageLocations();
 void              G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+void G_AnnounceStolenBP();
 
 // sg_momentum.c
 void              G_DecreaseMomentum();
