@@ -77,18 +77,18 @@ void G_UpdateBPVampire( int client ) // -1 to update everyone
 		return;
 	}
 
-	trap_SendServerCommand( client, va( "bpvampire %d %d", g_BPInitialBudgetHumans.Get(), g_BPInitialBudgetAliens.Get() ) );
+	trap_SendServerCommand( client, va( "bpvampire %d %d", static_cast<int>( level.team[ TEAM_HUMANS ].totalBudget ), static_cast<int>( level.team[ TEAM_ALIENS ].totalBudget ) ) );
 }
 
 void G_UpdateBuildPointBudgets() {
 	int abp = g_BPInitialBudgetAliens.Get();
 	int hbp = g_BPInitialBudgetHumans.Get();
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		if ( team == TEAM_ALIENS && abp > -32768 )
+		if ( team == TEAM_ALIENS && abp >= 0 )
 		{
 			level.team[team].totalBudget = abp;
 		}
-		else if ( team == TEAM_HUMANS && hbp > -32768 )
+		else if ( team == TEAM_HUMANS && hbp >= 0 )
 		{
 			level.team[team].totalBudget = hbp;
 		}
@@ -96,13 +96,17 @@ void G_UpdateBuildPointBudgets() {
 		{
 			level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 		}
+		if ( g_BPTransfer.Get() )
+		{
+			level.team[ team ].totalBudget += level.team[ team ].vampireBudgetSurplus;
+		}
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
 		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
 		                                                 g_buildPointBudgetPerMiner.Get();
 	});
-	//G_UpdateBPVampire( -1 );
+	G_UpdateBPVampire( -1 );
 }
 
 void G_RecoverBuildPoints() {
