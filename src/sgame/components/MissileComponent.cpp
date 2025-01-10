@@ -88,8 +88,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 
 		trace2_t trBody = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
 			passent, CONTENTS_BODY, 0);
-
-		result = trWorld.fraction < trBody.fraction ? trWorld : trBody;
+		result = trBody.fraction < 1.0f ? trBody : trWorld;
 	}
 	else
 	{
