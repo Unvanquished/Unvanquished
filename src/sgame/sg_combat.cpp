@@ -198,9 +198,9 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	return assistant;
 }
 
-Cvar::Cvar<bool> g_BPTransfer("g_BPTransfer", "BP transfer experiment", Cvar::NONE, false);
-static Cvar::Cvar<bool> g_BPTransferNotifyTeam("g_BPTransferNotifyTeam", "BP transfer experiment team notifications", Cvar::NONE, true);
-static Cvar::Cvar<float> g_BPTransferFactor("g_BPTransferFactor", "BP transfer factor", Cvar::NONE, 0.5f);
+Cvar::Cvar<bool> g_BPVampire("g_BPVampire", "BP transfer experiment", Cvar::NONE, false);
+static Cvar::Cvar<bool> g_BPVampireNotifyTeam("g_BPVampireNotifyTeam", "BP transfer experiment team notifications", Cvar::NONE, true);
+static Cvar::Cvar<float> g_BPVampireFactor("g_BPVampireFactor", "BP transfer factor", Cvar::NONE, 0.5f);
 
 static int bpStolenAtThisFrame[ NUM_TEAMS ];
 static int buildablesDestroyedAtThisFrame[ BA_NUM_BUILDABLES ];
@@ -265,7 +265,7 @@ static std::string DestroyedMessage( team_t team, std::vector<buildable_t> &arra
 
 static void AnnounceDestructions( team_t team )
 {
-	if ( !g_BPTransferNotifyTeam.Get() )
+	if ( !g_BPVampireNotifyTeam.Get() )
 	{
 		return;
 	}
@@ -281,7 +281,7 @@ static void AnnounceDestructions( team_t team )
 
 void G_AnnounceStolenBP()
 {
-	if ( !g_BPTransfer.Get() )
+	if ( !g_BPVampire.Get() )
 	{
 		return;
 	}
@@ -322,7 +322,7 @@ void G_AnnounceStolenBP()
 
 static void TransferBPToEnemyTeam( gentity_t *self )
 {
-	if ( !g_BPTransfer.Get() )
+	if ( !g_BPVampire.Get() )
 	{
 		return;
 	}
@@ -331,7 +331,7 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 		return;
 	}
 	buildablesDestroyedAtThisFrame[ self->s.modelindex ]++;
-	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints * g_BPTransferFactor.Get();
+	int bpToTransfer = BG_Buildable(self->s.modelindex)->buildPoints * g_BPVampireFactor.Get();
 	if ( bpToTransfer == 0 )
 	{
 		return;
