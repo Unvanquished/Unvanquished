@@ -2037,7 +2037,7 @@ public:
 			return;
 		}
 
-		blink();
+		Blink();
 
 		if ( cg.bpVampireTime + 3000 + flashDuration > cg.time )
 		{
@@ -2069,7 +2069,7 @@ private:
 	const Color::Color alienBPColor = Color::Color( 1.0f, 0.0f, 0.0f, 0.5f );
 	const Color::Color blinkBPColor = Color::Color( 1.0f, 1.0f, 0.0f, 0.5f );
 
-	void blink()
+	void Blink()
 	{
 		if ( ( cg.bpVampireTime + 3000 > cg.time )
 		  && ( lastFlashTime + flashDuration < cg.time ) )
