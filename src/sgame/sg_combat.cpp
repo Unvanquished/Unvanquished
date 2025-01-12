@@ -221,7 +221,7 @@ static void ResetDestroyedBuildables( team_t team )
 
 static std::string DestroyedMessage( team_t team, std::vector<buildable_t> &array )
 {
-	std::string result = "\"We destroyed";
+	std::string result = "We destroyed";
 	bool needComma = false;
 	auto sep = [&] ()
 	{
@@ -257,10 +257,9 @@ static std::string DestroyedMessage( team_t team, std::vector<buildable_t> &arra
 	result += "!";
 	if ( bpStolenAtThisFrame[ team ] > 0 )
 	{
-		result += " ^3+" + std::to_string( bpStolenAtThisFrame[ team ] ) + " ^7Build Points\"";
+		result += " ^3+" + std::to_string( bpStolenAtThisFrame[ team ] ) + " ^7Build Points";
 	}
-	result += "\"";
-	return result;
+	return Quote( result );
 }
 
 static void AnnounceDestructions( team_t team )
