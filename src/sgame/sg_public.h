@@ -117,6 +117,7 @@ void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmou
 void              G_SpendBudget(team_t team, int amount);
 int               G_BuildableDeconValue(gentity_t *ent);
 void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
+void              G_UpdateBPVampire( int client );
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
@@ -188,6 +189,7 @@ void              G_AddMomentumToScore( gentity_t *self, float momentum );
 void              G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 void              G_InitDamageLocations();
 void              G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+void G_AnnounceStolenBP();
 
 // sg_momentum.c
 void              G_DecreaseMomentum();
