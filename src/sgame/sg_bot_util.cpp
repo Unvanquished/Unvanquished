@@ -1622,14 +1622,6 @@ void BotAimAtEnemy( gentity_t *self )
 		int aimTime = self->botMind->futureAimTimeInterval = BotGetAimTime( self );
 		self->botMind->futureAimTime = level.time + aimTime;
 
-		// Save delta angles so we can be properly affected by chaingun view jitter etc.
-		// During the aim interval, we don't let the bot take into account these angle changes.
-		for ( int i = 0; i < 3; i++ )
-		{
-			self->botMind->futureAimBaseDeltaAngles[ i ] =
-				SHORT2ANGLE( self->client->ps.delta_angles[ i ] );
-		}
-
 		// Do aim prediction
 		// Here, we cap aim prediction time because extrapolating too much is harmful if this bot is slow to aim
 		int lagPredictTime = std::min( aimTime, 220 );
@@ -1650,7 +1642,7 @@ void BotAimAtEnemy( gentity_t *self )
 
 	for ( int i = 0; i < 3; i++ )
 	{
-		float angle = AngleSubtract( angles[ i ], self->botMind->futureAimBaseDeltaAngles[ i ] );
+		float angle = AngleSubtract( angles[ i ], SHORT2ANGLE( self->client->ps.delta_angles[ i ] ) );
 		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angle );
 	}
 }

@@ -108,9 +108,7 @@ struct playerState_t
 	int persistant[16];
 	int    viewheight;
 	int clientNum; // ranges from 0 to MAX_CLIENTS-1
-	// add to command angles to get view direction
-	// these can be used for external disturbances to a player's view not caused by their inputs
-	int   delta_angles[ 3 ];
+	int   delta_angles[ 3 ]; // add to command angles to get view direction
 	vec3_t viewangles; // for fixed views
 	int    commandTime; // cmd->serverTime of last executed command
 	// end of fields which must be identical to OpaquePlayerState
