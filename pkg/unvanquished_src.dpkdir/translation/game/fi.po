@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-13 13:26+0100\n"
-"PO-Revision-Date: 2024-12-15 08:00+0000\n"
-"Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2025-01-15 12:00+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9-rc\n"
+"X-Generator: Weblate 5.10-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -5370,12 +5370,12 @@ msgstr "Joukkueäänestys hyväksytty ($1$ — $2$)"
 #: src/sgame/sg_votes.cpp:891
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Äänestys hylätty ($1$ — $2$; $3$% tarvitaan)"
+msgstr "Äänestys epäonnistui ($1$ – $2$; tarvitaan $3$ %)"
 
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Joukkueäänestys hylätty ($1$ — $2$; $3$% tarvitaan)"
+msgstr "Joukkueen äänestys epäonnistui ($1$ — $2$; $3$ % tarvitaan)"
 
 #: src/shared/bg_misc.cpp:2483
 msgid "spectator"
