@@ -1623,8 +1623,7 @@ void BotAimAtEnemy( gentity_t *self )
 		self->botMind->futureAimTime = level.time + aimTime;
 
 		// Save delta angles so we can be properly affected by chaingun view jitter etc.
-		// During the aim interval, we don't let the bot take into account these angle changes,
-		// except the predictable part of chaingun jitter.
+		// During the aim interval, we don't let the bot take into account these angle changes.
 		for ( int i = 0; i < 3; i++ )
 		{
 			self->botMind->futureAimBaseDeltaAngles[ i ] =
@@ -1653,20 +1652,6 @@ void BotAimAtEnemy( gentity_t *self )
 	{
 		float angle = AngleSubtract( angles[ i ], self->botMind->futureAimBaseDeltaAngles[ i ] );
 		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angle );
-	}
-
-	// When firing chaingun, update for the deterministic upward component of chaingun jitter.
-	// Without this, low-skill bots constantly aim above the target.
-	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_CHAINGUN && self->client->ps.weaponTime > 0 )
-	{
-		int timeDelta = level.time - self->botMind->lastThink;
-		float degreesPerShot = BG_IsChaingunStabilized( &self->client->ps )
-			? STABILIZED_CHAINGUN_JITTER_PITCH_BIAS
-			: UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS;
-		float degreesPerMillisecond = degreesPerShot / BG_Weapon( WP_CHAINGUN )->repeatRate1;
-		float angleUpdate = degreesPerMillisecond * timeDelta;
-		self->botMind->futureAimBaseDeltaAngles[ PITCH ] = AngleSubtract(
-			self->botMind->futureAimBaseDeltaAngles[ PITCH ], -angleUpdate );
 	}
 }
 
@@ -2624,6 +2609,7 @@ void BotCalculateStuckTime( gentity_t *self )
 	{
 		BotResetStuckTime( self );
 	}
+	self->botMind->lastThink = level.time;
 }
 
 bool BotWalkIfStaminaLow( gentity_t *self )
