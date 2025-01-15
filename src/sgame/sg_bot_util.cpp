@@ -1628,7 +1628,7 @@ void BotAimAtEnemy( gentity_t *self )
 		for ( int i = 0; i < 3; i++ )
 		{
 			self->botMind->futureAimBaseDeltaAngles[ i ] =
-				SHORT2ANGLE( self->client->ps.delta_angles[ i ] );
+				SHORT2ANGLE( self->client->ps.delta_angles[ i ] & 65535 );
 		}
 
 		// Do aim prediction
@@ -1687,8 +1687,11 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 
 	for ( i = 0; i < 3; i++ )
 	{
-		float angle = AngleSubtract( aimAngles[ i ], SHORT2ANGLE( self->client->ps.delta_angles[ i ] ) );
-		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angle );
+		// FIXME: this still lets the bots cheat and ignore chaingun jitter etc.
+		// Anywhere where the real-time value of ps.delta_angles is corrected for
+		// is a cheat wrt ignoring the external view disturbances.
+		self->botMind->cmdBuffer.angles[ i ] =
+			ANGLE2SHORT( aimAngles[ i ] ) - self->client->ps.delta_angles[ i ];
 	}
 }
 
