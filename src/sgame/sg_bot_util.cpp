@@ -1628,7 +1628,7 @@ void BotAimAtEnemy( gentity_t *self )
 		for ( int i = 0; i < 3; i++ )
 		{
 			self->botMind->futureAimBaseDeltaAngles[ i ] =
-				SHORT2ANGLE( self->client->ps.delta_angles[ i ] );
+				SHORT2ANGLE( self->client->ps.delta_angles[ i ] & 65535 );
 		}
 
 		// Do aim prediction
@@ -1687,8 +1687,11 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 
 	for ( i = 0; i < 3; i++ )
 	{
-		float angle = AngleSubtract( aimAngles[ i ], SHORT2ANGLE( self->client->ps.delta_angles[ i ] ) );
-		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angle );
+		// FIXME: this still lets the bots cheat and ignore chaingun jitter etc.
+		// Anywhere where the real-time value of ps.delta_angles is corrected for
+		// is a cheat wrt ignoring the external view disturbances.
+		self->botMind->cmdBuffer.angles[ i ] =
+			ANGLE2SHORT( aimAngles[ i ] ) - self->client->ps.delta_angles[ i ];
 	}
 }
 
@@ -2137,7 +2140,10 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL3:
 			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
+				//compute and apply correct aim pitch to hit target
+				float pitch = -CalcPounceAimPitch( self, target );
+				self->botMind->cmdBuffer.angles[ PITCH ] =
+					ANGLE2SHORT( pitch ) - self->client->ps.delta_angles[ PITCH ];
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
 			}
 			else
@@ -2159,7 +2165,10 @@ void BotFireWeaponAI( gentity_t *self )
 
 			if ( outOfClawsRange && hasBarbs && barbIsSafe )
 			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
+				//compute and apply correct aim pitch to hit target
+				float pitch = -CalcBarbAimPitch( self, target );
+				self->botMind->cmdBuffer.angles[ PITCH ] =
+					ANGLE2SHORT( pitch ) - self->client->ps.delta_angles[ PITCH ];
 
 				glm::vec3 delta = targetPos - VEC2GLM( self->s.origin );
 
@@ -2178,7 +2187,11 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			else if ( self->botMind->skillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
+				//compute and apply correct aim pitch to hit target
+				float pitch = -CalcPounceAimPitch( self, target );
+				self->botMind->cmdBuffer.angles[ PITCH ] =
+					ANGLE2SHORT( pitch ) - self->client->ps.delta_angles[ PITCH ];
+
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
 			}
 			else
