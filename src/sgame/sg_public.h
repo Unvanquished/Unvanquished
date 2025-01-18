@@ -183,7 +183,7 @@ bool          G_CanDamage( gentity_t *targ, const vec3_t origin );
 void              G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, const vec3_t dir, const vec3_t point, int damage, int dflags, int mod, int team );
 bool          G_RadiusDamage( const vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod, team_t testHit = TEAM_NONE );
 bool          G_SelectiveRadiusDamage( const vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );
-void              G_RewardAttackers( gentity_t *self );
+void              G_RewardAttackers( gentity_t *self, bool freeBP );
 void              G_AddCreditsToScore( gentity_t *self, int credits );
 void              G_AddMomentumToScore( gentity_t *self, float momentum );
 void              G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );

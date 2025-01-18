@@ -750,7 +750,7 @@ bool G_DeconstructDead( gentity_t *buildable )
 	// Always let the builder prevent the explosion of a buildable.
 	if ( Entities::IsDead( buildable ) )
 	{
-		G_RewardAttackers( buildable );
+		G_RewardAttackers( buildable, false );
 		G_FreeEntity( buildable );
 		return true;
 	}
@@ -777,7 +777,7 @@ static void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t 
 
 	// reward attackers if the structure was hurt before deconstruction
 	float healthFraction = self->entity->Get<HealthComponent>()->HealthFraction();
-	if ( healthFraction < 1.0f ) G_RewardAttackers( self );
+	if ( healthFraction < 1.0f ) G_RewardAttackers( self, false );
 
 	// deconstruct
 	Entities::Kill(self, deconner, deconType);

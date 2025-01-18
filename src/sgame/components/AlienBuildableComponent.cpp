@@ -64,7 +64,7 @@ void AlienBuildableComponent::Blast(int /*timeDelta*/) {
 	Entities::AntiHumanRadiusDamage(entity, ba->splashDamage, ba->splashRadius, ba->meansOfDeath);
 
 	// Reward attackers.
-	G_RewardAttackers(entity.oldEnt);
+	G_RewardAttackers(entity.oldEnt, true);
 
 	// Stop collisions, add blast event and update buildable state.
 	entity.oldEnt->r.contents = 0; trap_LinkEntity(entity.oldEnt);

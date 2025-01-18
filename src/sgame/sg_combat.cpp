@@ -319,7 +319,7 @@ void G_AnnounceStolenBP()
 	}
 }
 
-static void TransferBPToEnemyTeam( gentity_t *self )
+static void TransferBPToEnemyTeam( gentity_t *self, bool freeBP )
 {
 	if ( !g_BPVampire.Get() )
 	{
@@ -370,14 +370,17 @@ static void TransferBPToEnemyTeam( gentity_t *self )
 	// reason: HandleDie is called when the building dies, but we are here
 	// when the building explodes (or vanishes)
 	// the explosion happens several seconds after the death
-	G_FreeBudget( self->buildableTeam, 0, BG_Buildable( self->s.modelindex )->buildPoints );
+	if ( freeBP )
+	{
+		G_FreeBudget( self->buildableTeam, 0, BG_Buildable( self->s.modelindex )->buildPoints );
+	}
 }
 
 /**
  * @brief Function to distribute rewards to entities that killed this one.
  * @param self
  */
-void G_RewardAttackers( gentity_t *self )
+void G_RewardAttackers( gentity_t *self, bool freeBP )
 {
 	float     value, share, reward, enemyDamage, damageShare;
 	int       playerNum, maxHealth;
@@ -500,7 +503,7 @@ void G_RewardAttackers( gentity_t *self )
 
 	if ( enemyDamagedBuildable )
 	{
-		TransferBPToEnemyTeam( self );
+		TransferBPToEnemyTeam( self, freeBP );
 	}
 }
 
@@ -650,7 +653,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 
 	// give credits for killing this player
-	G_RewardAttackers( self );
+	G_RewardAttackers( self, meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_REPLACE && meansOfDeath != MOD_BUILDLOG_REVERT );
 
 	VectorCopy( self->s.origin, self->client->pers.lastDeathLocation );
 

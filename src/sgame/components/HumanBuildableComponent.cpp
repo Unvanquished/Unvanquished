@@ -9,7 +9,7 @@ HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableCompon
 	: HumanBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent)
 {}
 
-void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
+void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t meansOfDeath) {
 	switch (GetBuildableComponent().GetState()) {
 		// Regular death, fully constructed.
 		case BuildableComponent::CONSTRUCTED:
@@ -35,7 +35,7 @@ void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 
 		// Construction was canceled.
 		case BuildableComponent::CONSTRUCTING:
-			G_RewardAttackers(entity.oldEnt);
+			G_RewardAttackers(entity.oldEnt, meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_REPLACE && meansOfDeath != MOD_BUILDLOG_REVERT);
 			entity.FreeAt(DeferredFreeingComponent::FREE_AFTER_THINKING);
 			humanBuildableLogger.Notice("Human buildable was canceled.");
 			break;
@@ -53,7 +53,7 @@ void HumanBuildableComponent::Blast(int /*timeDelta*/) {
 	Entities::KnockbackRadiusDamage(entity, ba->splashDamage, ba->splashRadius, ba->meansOfDeath);
 
 	// Reward attackers.
-	G_RewardAttackers(entity.oldEnt);
+	G_RewardAttackers(entity.oldEnt, true);
 
 	// Stop collisions, add blast event and update buildable state.
 	entity.oldEnt->r.contents = 0;
