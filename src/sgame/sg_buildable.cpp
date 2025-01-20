@@ -1063,10 +1063,12 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		cost -= G_BuildableDeconValue( level.markedBuildables[ entNum ] );
 	}
 
-	// check if we can already afford the new buildable
-	if ( G_GetFreeBudget( attr->team ) >= cost )
-	{
-		return IBE_NONE;
+	// It's preferrable to replace marked buildings first with BP vampire
+	if ( !g_BPVampire.Get() ) {
+		// check if we can already afford the new buildable
+		if ( G_GetFreeBudget( attr->team ) >= cost ) {
+			return IBE_NONE;
+		}
 	}
 
 	// build a list of additional buildables that can be deconstructed
@@ -1127,6 +1129,13 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		// check if we have enough resources now
 		if ( G_GetFreeBudget( attr->team ) >= cost )
 		{
+			return IBE_NONE;
+		}
+	}
+
+	// Check if we can afford the new buildable with BP vampire if we don't have enough BP marked
+	if ( g_BPVampire.Get() ) {
+		if ( G_GetFreeBudget( attr->team ) >= cost ) {
 			return IBE_NONE;
 		}
 	}
@@ -2191,6 +2200,12 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 	log->time = level.time;
 	log->fate = fate;
 	log->actor = actor && actor->client ? actor->client->pers.namelog : nullptr;
+
+	if ( g_BPVampire.Get() ) {
+		log->humanBP = level.team[ TEAM_HUMANS ].totalBudget;
+		log->alienBP = level.team[ TEAM_ALIENS ].totalBudget;
+	}
+
 	return log;
 }
 
@@ -2276,7 +2291,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 
 void G_BuildLogRevert( int id )
 {
-	buildLog_t *log;
+	buildLog_t *log = nullptr;
 	gentity_t  *ent;
 	vec3_t     dist;
 	gentity_t  *buildable;
@@ -2356,6 +2371,13 @@ void G_BuildLogRevert( int id )
 			buildable->nextthink = level.time + FRAMETIME;
 			buildable->suicideTime = 30; // number of thinks before killing players in the way
 		}
+	}
+
+	if ( g_BPVampire.Get() && log != nullptr ) {
+		level.team[ TEAM_HUMANS ].totalBudget = log->humanBP;
+		level.team[ TEAM_ALIENS ].totalBudget = log->alienBP;
+
+		G_UpdateBPVampire( -1 );
 	}
 
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )

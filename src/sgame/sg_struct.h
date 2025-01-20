@@ -523,6 +523,8 @@ struct buildLog_t
 	namelog_t   *builtBy;
 	team_t      buildableTeam;
 	buildable_t modelindex;
+	int humanBP;
+	int alienBP;
 	float       momentumEarned;
 	bool        markedForDeconstruction;
 	vec3_t      origin;
@@ -660,6 +662,7 @@ struct level_locals_t
 		float            totalBudget; // Read access always rounds towards zero.
 		int              spentBudget;
 		int              queuedBudget;
+		int              vampireBudgetSurplus;
 		spawnQueue_t     spawnQueue;
 		bool             locked;
 		float            momentum;

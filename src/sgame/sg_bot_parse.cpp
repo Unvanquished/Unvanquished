@@ -53,6 +53,18 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 	return true;
 }
 
+static bool prematureEof( pc_token_list **list )
+{
+	const pc_token_list *current = *list;
+
+	if ( !current )
+	{
+		Log::Warn( "Unexpected end of file" );
+		return true;
+	}
+	return false;
+}
+
 static AIValue_t AIBoxToken( const pc_token_stripped_t *token, bool negative = false )
 {
 	if ( token->type == tokenType_t::TT_STRING )
@@ -549,7 +561,7 @@ static const struct AIOpMap_s
 
 static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
-	if ( token->type != tokenType_t::TT_PUNCTUATION )
+	if ( token == nullptr || token->type != tokenType_t::TT_PUNCTUATION )
 	{
 		return OP_NONE;
 	}
@@ -768,7 +780,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	parenBegin = current->next;
 
 	// if the function has no parameters, allow it to be used without parenthesis
-	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
+	if ( v.nparams == 0 && parenBegin != nullptr && parenBegin->token.string[ 0 ] != '(' )
 	{
 		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
 		*ret = v;
@@ -1363,7 +1375,7 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		return nullptr;
 	}
 
-	if ( current == nullptr )
+	if ( prematureEof( &current ) )
 	{
 		return nullptr;
 	}
@@ -1388,18 +1400,11 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 			list->numNodes++;
 		}
 
-		if ( !node )
+		if ( !node || prematureEof( &current ) )
 		{
 			*tokenlist = current;
 			FreeNodeList( list );
 			return nullptr;
-		}
-
-		// TODO: this does not seem right, we are still waiting for a "}" token
-		if ( !current )
-		{
-			*tokenlist = current;
-			return ( AIGenericNode_t * ) list;
 		}
 	}
 

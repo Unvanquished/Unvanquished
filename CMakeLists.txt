@@ -99,18 +99,12 @@ set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_
 
 if (BUILDING_ANY_GAMELOGIC)
     if (BUILD_CGAME)
-        # Freetype (RmlUi dependency), already found for a native game when the client is built.
-        if (NACL)
-            include(${DAEMON_DIR}/freetype.cmake)
-        elseif (NOT BUILD_CLIENT)
-            prefer_package(Freetype ${DAEMON_DIR}/freetype.cmake)
-
-            if (Freetype_FOUND AND (APPLE OR WIN32))
-                find_package(ZLIB REQUIRED)
-                set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
-            endif()
+        # Freetype (RmlUi dependency)
+        prefer_package(Freetype ${DAEMON_DIR}/freetype.cmake)
+        if (Freetype_FOUND AND (APPLE OR WIN32))
+            find_package(ZLIB REQUIRED)
+            set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
         endif()
-
         include_directories(${FREETYPE_INCLUDE_DIRS})
 
         # RmlUi

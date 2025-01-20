@@ -79,6 +79,29 @@ static void CG_ParseScores()
 
 /*
 =================
+CG_BPVampire
+
+=================
+*/
+static void CG_BPVampire()
+{
+	cg.bpVampireTime = cg.time;
+
+	cg.bpVampireOld[ TEAM_HUMANS ] = cg.bpVampire[ TEAM_HUMANS ];
+	cg.bpVampireOld[ TEAM_ALIENS ] = cg.bpVampire[ TEAM_ALIENS ];
+
+	cg.bpVampire[ TEAM_HUMANS ] = atoi( CG_Argv( 1 ) );
+	cg.bpVampire[ TEAM_ALIENS ] = atoi( CG_Argv( 2 ) );
+}
+
+static void CG_PrintBPMessage_f()
+{
+	// cg.bpMessage = TranslateText_Internal( false, 1 ); // Fuck do you mean it's not found?
+	cg.bpMessage = CG_Argv( 1 );
+}
+
+/*
+=================
 CG_ParseTeamInfo
 
 =================
@@ -1352,6 +1375,7 @@ static void CG_PmoveParams_f() {
 static const consoleCommand_t svcommands[] =
 {	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
+	{ "bpvampire",        CG_BPVampire            },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
@@ -1363,6 +1387,7 @@ static const consoleCommand_t svcommands[] =
 	{ "map_restart",      CG_MapRestart           },
 	{ "pmove_params",     CG_PmoveParams_f        },
 	{ "print",            CG_Print_f              },
+	{ "print_bp_message", CG_PrintBPMessage_f     },
 	{ "print_tr",         CG_PrintTR_f            },
 	{ "print_tr_p",       CG_PrintTR_plural_f     },
 	{ "scores",           CG_ParseScores          },

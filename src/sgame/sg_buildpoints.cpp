@@ -69,6 +69,17 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
 /**
  * @brief Calculate the build point budgets for both teams.
  */
+
+void G_UpdateBPVampire( int client ) // -1 to update everyone
+{
+	if ( !g_BPVampire.Get() )
+	{
+		return;
+	}
+
+	trap_SendServerCommand( client, va( "bpvampire %d %d", static_cast<int>( level.team[ TEAM_HUMANS ].totalBudget ), static_cast<int>( level.team[ TEAM_ALIENS ].totalBudget ) ) );
+}
+
 void G_UpdateBuildPointBudgets() {
 	int abp = g_BPInitialBudgetAliens.Get();
 	int hbp = g_BPInitialBudgetHumans.Get();
@@ -85,12 +96,17 @@ void G_UpdateBuildPointBudgets() {
 		{
 			level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 		}
+		if ( g_BPVampire.Get() )
+		{
+			level.team[ team ].totalBudget += level.team[ team ].vampireBudgetSurplus;
+		}
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
 		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
 		                                                 g_buildPointBudgetPerMiner.Get();
 	});
+	G_UpdateBPVampire( -1 );
 }
 
 void G_RecoverBuildPoints() {
@@ -164,7 +180,10 @@ void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 	if ( G_IsPlayableTeam( team ) )
 	{
 		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
-		level.team[ team ].queuedBudget += queuedAmount;
+		if ( !g_BPVampire.Get() )
+		{
+			level.team[ team ].queuedBudget += queuedAmount;
+		}
 
 		// Note that there can be more build points in queue than total - spent.
 
@@ -185,6 +204,10 @@ void G_SpendBudget( team_t team, int amount )
 
 int G_BuildableDeconValue(gentity_t *ent)
 {
+	if ( g_BPVampire.Get() ) {
+		return BG_Buildable( ent->s.modelindex )->buildPoints;
+	}
+
 	HealthComponent* healthComponent = ent->entity->Get<HealthComponent>();
 
 	if (!healthComponent->Alive()) {

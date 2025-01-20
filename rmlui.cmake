@@ -566,12 +566,6 @@ set_source_files_properties(
     ${RMLUI_DIR}/Source/Core/SystemInterface.cpp # includes windows.h
     PROPERTIES SKIP_UNITY_BUILD_INCLUSION 1)
 
-if (NOT FREETYPE_INCLUDE_DIRS)
-    find_package(Freetype REQUIRED)
-endif()
-
-include_directories(${FREETYPE_INCLUDE_DIRS})
-
 set(RMLUI_INCLUDE_DIRS ${RMLUI_DIR}/Include)
 
 include_directories(${RMLUI_INCLUDE_DIRS})
