@@ -147,6 +147,11 @@ static void CG_LightVertex( vec3_t point, byte alpha, byte *rgba )
 
 	trap_R_LightForPoint( point, alight, dlight, lightdir );
 
+	for ( float &val : alight )
+	{
+		val = std::min( val, 1.0f ) * 255.0f;
+	}
+
 	for ( i = 0; i <= 2; i++ )
 	{
 		rgba[ i ] = ( int ) alight[ i ];

@@ -2507,7 +2507,16 @@ static void CG_RenderParticle( particle_t *p )
 		if ( bp->realLight )
 		{
 			vec3_t alight, dlight, lightdir;
+
+			// FIXME: at the time of writing, this API is broken with full-range overbright as it
+			// does not include the lightFactor
+			// But clamp it in case that is fixed later (which could lead to values greater than 1.)
+			// This FIXME also applies to trail realLight.
 			trap_R_LightForPoint( p->origin, alight, dlight, lightdir );
+			for ( float &val : alight )
+			{
+				val = std::min( val, 1.0f ) * 255.0f;
+			}
 
 			re.shaderRGBA.SetRed( alight[0] );
 			re.shaderRGBA.SetGreen( alight[1] );
