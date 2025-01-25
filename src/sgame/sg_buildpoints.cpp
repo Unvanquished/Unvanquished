@@ -180,10 +180,7 @@ void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 	if ( G_IsPlayableTeam( team ) )
 	{
 		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
-		if ( !g_BPVampire.Get() )
-		{
-			level.team[ team ].queuedBudget += queuedAmount;
-		}
+		level.team[ team ].queuedBudget += queuedAmount;
 
 		// Note that there can be more build points in queue than total - spent.
 
