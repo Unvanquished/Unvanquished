@@ -2118,13 +2118,24 @@ static void CG_GarbageCollectParticleSystems()
 ===============
 CG_CalculateTimeFrac
 
-Calculate the fraction of time passed
+Calculate the fraction of time passed, in range [0, 1]
+Fraction is 0 for the first `delay` ms of life, then ramps linearly to 1 at the time of death
 ===============
 */
 static float CG_CalculateTimeFrac( int birth, int life, int delay )
 {
-	int diff = life - delay;
-	return diff ? Math::Clamp( (float) (cg.time - birth + delay) / (float) diff, 0.0f, 1.0f ) : 1.0f;
+	ASSERT_LE( cg.time, birth + life ); // particle should still be alive
+	ASSERT_GE( delay, 0 ); // enforced by parser
+
+	int rampTime = cg.time - ( birth + delay );
+
+	if ( rampTime <= 0 )
+	{
+		return 0.0f;
+	}
+
+	int adjustedLife = life - delay;
+	return float(rampTime) / float(adjustedLife);
 }
 
 /*
@@ -2496,7 +2507,16 @@ static void CG_RenderParticle( particle_t *p )
 		if ( bp->realLight )
 		{
 			vec3_t alight, dlight, lightdir;
+
+			// FIXME: at the time of writing, this API is broken with full-range overbright as it
+			// does not include the lightFactor
+			// But clamp it in case that is fixed later (which could lead to values greater than 1.)
+			// This FIXME also applies to trail realLight.
 			trap_R_LightForPoint( p->origin, alight, dlight, lightdir );
+			for ( float &val : alight )
+			{
+				val = std::min( val, 1.0f ) * 255.0f;
+			}
 
 			re.shaderRGBA.SetRed( alight[0] );
 			re.shaderRGBA.SetGreen( alight[1] );
