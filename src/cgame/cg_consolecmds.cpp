@@ -351,8 +351,7 @@ static void CG_CompleteItem()
 
 static void CG_TestCGrade_f()
 {
-	qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
-						 (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
+	qhandle_t shader = trap_R_RegisterShader( CG_Argv(1), RSF_NOMIP );
 
 	// override shader 0
 	cgs.gameGradingTextures[ 0 ] = shader;

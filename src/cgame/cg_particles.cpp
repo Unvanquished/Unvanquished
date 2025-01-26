@@ -579,10 +579,11 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 				{
 					baseParticle_t *bp = bpe->particles[ l ];
 
+					const int extraFlags = bp->realLight ? RSF_FORCE_LIGHTMAP : 0;
+
 					for ( int k = 0; k < bp->numFrames; k++ )
 					{
-						bp->shaders[ k ] = trap_R_RegisterShader(bp->shaderNames[k],
-											 RSF_SPRITE);
+						bp->shaders[ k ] = trap_R_RegisterShader( bp->shaderNames[k], RSF_SPRITE | extraFlags );
 					}
 
 					for ( int k = 0; k < bp->numModels; k++ )
@@ -592,8 +593,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 
 					if ( bp->bounceMarkName[ 0 ] != '\0' )
 					{
-						bp->bounceMark = trap_R_RegisterShader(bp->bounceMarkName,
-										       RSF_DEFAULT);
+						bp->bounceMark = trap_R_RegisterShader( bp->bounceMarkName, extraFlags );
 					}
 
 					if ( bp->bounceSoundName[ 0 ] != '\0' )
@@ -2503,38 +2503,17 @@ static void CG_RenderParticle( particle_t *p )
 	{
 		re.reType = refEntityType_t::RT_SPRITE;
 
-		//apply environmental lighting to the particle
-		if ( bp->realLight )
-		{
-			vec3_t alight, dlight, lightdir;
+		
+		vec3_t colorRange;
 
-			// FIXME: at the time of writing, this API is broken with full-range overbright as it
-			// does not include the lightFactor
-			// But clamp it in case that is fixed later (which could lead to values greater than 1.)
-			// This FIXME also applies to trail realLight.
-			trap_R_LightForPoint( p->origin, alight, dlight, lightdir );
-			for ( float &val : alight )
-			{
-				val = std::min( val, 1.0f ) * 255.0f;
-			}
+		VectorSubtract( bp->finalColor,
+			            bp->initialColor, colorRange );
 
-			re.shaderRGBA.SetRed( alight[0] );
-			re.shaderRGBA.SetGreen( alight[1] );
-			re.shaderRGBA.SetBlue( alight[2] );
-		}
-		else
-		{
-			vec3_t colorRange;
-
-			VectorSubtract( bp->finalColor,
-			                bp->initialColor, colorRange );
-
-			VectorMA( bp->initialColor,
-			          CG_CalculateTimeFrac( p->birthTime,
-			                                p->lifeTime,
-			                                p->colorDelay ),
-			          colorRange, re.shaderRGBA.ToArray() );
-		}
+		VectorMA( bp->initialColor,
+			        CG_CalculateTimeFrac( p->birthTime,
+			                            p->lifeTime,
+			                            p->colorDelay ),
+			        colorRange, re.shaderRGBA.ToArray() );
 
 		re.shaderRGBA.SetAlpha( ( float ) 0xFF *
 		                               CG_LerpValues( p->alpha.initial,
