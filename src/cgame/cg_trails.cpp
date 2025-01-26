@@ -135,33 +135,6 @@ alphaRange = tb->class_->backAlpha -
 
 /*
 ===============
-CG_LightVertex
-
-Lights a particular vertex
-===============
-*/
-static void CG_LightVertex( vec3_t point, byte alpha, byte *rgba )
-{
-	int    i;
-	vec3_t alight, dlight, lightdir;
-
-	trap_R_LightForPoint( point, alight, dlight, lightdir );
-
-	for ( float &val : alight )
-	{
-		val = std::min( val, 1.0f ) * 255.0f;
-	}
-
-	for ( i = 0; i <= 2; i++ )
-	{
-		rgba[ i ] = ( int ) alight[ i ];
-	}
-
-	rgba[ 3 ] = alpha;
-}
-
-/*
-===============
 CG_RenderBeam
 
 Renders a beam
@@ -231,15 +204,8 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 1.0f;
 
-			if ( btb->realLight )
-			{
-				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
-			}
-			else
-			{
-				VectorCopy( i->color, verts[ numVerts ].modulate );
-				verts[ numVerts ].modulate[ 3 ] = i->alpha;
-			}
+			VectorCopy( i->color, verts[ numVerts ].modulate );
+			verts[ numVerts ].modulate[ 3 ] = i->alpha;
 
 			numVerts++;
 
@@ -247,15 +213,8 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 0.0f;
 
-			if ( btb->realLight )
-			{
-				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
-			}
-			else
-			{
-				VectorCopy( i->color, verts[ numVerts ].modulate );
-				verts[ numVerts ].modulate[ 3 ] = i->alpha;
-			}
+			VectorCopy( i->color, verts[ numVerts ].modulate );
+			verts[ numVerts ].modulate[ 3 ] = i->alpha;
 
 			numVerts++;
 		}
@@ -266,15 +225,8 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 0.0f;
 
-			if ( btb->realLight )
-			{
-				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
-			}
-			else
-			{
-				VectorCopy( i->color, verts[ numVerts ].modulate );
-				verts[ numVerts ].modulate[ 3 ] = i->alpha;
-			}
+			VectorCopy( i->color, verts[ numVerts ].modulate );
+			verts[ numVerts ].modulate[ 3 ] = i->alpha;
 
 			numVerts++;
 
@@ -282,15 +234,8 @@ static void CG_RenderBeam( trailBeam_t *tb )
 			verts[ numVerts ].st[ 0 ] = i->textureCoord;
 			verts[ numVerts ].st[ 1 ] = 1.0f;
 
-			if ( btb->realLight )
-			{
-				CG_LightVertex( verts[ numVerts ].xyz, i->alpha, verts[ numVerts ].modulate );
-			}
-			else
-			{
-				VectorCopy( i->color, verts[ numVerts ].modulate );
-				verts[ numVerts ].modulate[ 3 ] = i->alpha;
-			}
+			VectorCopy( i->color, verts[ numVerts ].modulate );
+			verts[ numVerts ].modulate[ 3 ] = i->alpha;
 
 			numVerts++;
 		}
@@ -1369,8 +1314,8 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 			{
 				btb = bts->beams[ j ];
 
-				btb->shader = trap_R_RegisterShader(btb->shaderName,
-								    RSF_DEFAULT);
+				const int extraFlags = btb->realLight ? RSF_FORCE_LIGHTMAP : 0;
+				btb->shader = trap_R_RegisterShader( btb->shaderName, extraFlags );
 			}
 
 			logs.WithoutSuppression().Verbose( "Registered trail system %s", name );
