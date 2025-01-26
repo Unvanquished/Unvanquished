@@ -281,6 +281,11 @@ struct pLerpValues_t
 	float randFrac;
 };
 
+/* All of the dynamic lights were originally being multiplied by 4
+While the assets can be changed to account for this, we cannot do the same for maps, which can also use dynamic lights
+through particles and trails */
+static const float dynamicLightIntensityCompensate = 4;
+
 //particle template
 struct baseParticle_t
 {
