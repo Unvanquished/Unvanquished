@@ -2645,7 +2645,8 @@ static void CG_RenderParticle( particle_t *p )
 		trap_R_AddLightToScene( p->origin,
 		                        CG_LerpValues( p->dLightRadius.initial, p->dLightRadius.final,
 		                        CG_CalculateTimeFrac( p->birthTime, p->lifeTime, p->dLightRadius.delay ) ),
-		                        3, bp->dLightColor[0] / 255.0f, bp->dLightColor[1] / 255.0f, bp->dLightColor[2] / 255.0f, 0 );
+		                        3 * dynamicLightIntensityCompensate,
+			                    bp->dLightColor[0] / 255.0f, bp->dLightColor[1] / 255.0f, bp->dLightColor[2] / 255.0f, 0 );
 	}
 
 	VectorCopy( p->origin, re.origin );

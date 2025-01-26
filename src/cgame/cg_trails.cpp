@@ -297,7 +297,8 @@ static void CG_RenderBeam( trailBeam_t *tb )
 
 		if( btb->dynamicLight ) {
 			trap_R_AddLightToScene( i->position, btb->dLightRadius,
-				3, btb->dLightColor[0] / 255.0f, btb->dLightColor[1] / 255.0f, btb->dLightColor[2] / 255.0f, 0 );
+				3 * dynamicLightIntensityCompensate,
+				btb->dLightColor[0] / 255.0f, btb->dLightColor[1] / 255.0f, btb->dLightColor[2] / 255.0f, 0 );
 		}
 
 		i = i->next;
