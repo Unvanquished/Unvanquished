@@ -86,9 +86,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 
 	// If destroyed violently, add all build points to queue.
 	if (meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_REPLACE && meansOfDeath != MOD_BUILDLOG_REVERT) {
-		if (!g_BPVampire.Get()) {
-			G_FreeBudget(team, 0, BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints);
-		}
+		G_FreeBudget(team, 0, BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints);
 	}
 }
 
