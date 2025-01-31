@@ -474,6 +474,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	Log::Notice( "------- Game Initialization -------" );
 	Log::Notice( "gamename: %s", GAME_VERSION );
+	Log::Notice( "Engine version: %s", ENGINE_VERSION );
 	Log::Notice( "gamedate: %s", __DATE__ );
 
 	// set some level globals
