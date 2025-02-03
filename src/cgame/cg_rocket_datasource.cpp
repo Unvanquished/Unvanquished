@@ -293,7 +293,6 @@ void CG_Rocket_BuildServerList()
 			continue;
 		}
 
-		char info[ MAX_STRING_CHARS ];
 		int ping, bots, clients, maxClients;
 
 		if ( !trap_LAN_ServerIsVisible( netSrc, i ) )
@@ -305,17 +304,18 @@ void CG_Rocket_BuildServerList()
 
 		if ( ping > 0 )
 		{
-			char addr[ 50 ]; // long enough for IPv6 literal plus port no.
 			char mapname[ 256 ];
-			trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
+			trustedServerInfo_t trustedInfo;
+			std::string info;
+			trap_LAN_GetServerInfo( netSrc, i, trustedInfo, info );
 
-			bots = atoi( Info_ValueForKey( info, "bots" ) );
-			clients = atoi( Info_ValueForKey( info, "clients" ) );
-			maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-			Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
-			Q_strncpyz( mapname, Info_ValueForKey( info, "mapname" ), sizeof( mapname ) );
+			bots = atoi( Info_ValueForKey( info.c_str(), "bots"));
+			clients = atoi( Info_ValueForKey( info.c_str(), "clients" ) );
+			maxClients = atoi( Info_ValueForKey( info.c_str(), "sv_maxclients" ) );
+			Q_strncpyz( mapname, Info_ValueForKey( info.c_str(), "mapname" ), sizeof( mapname ) );
 			rocketInfo.data.haveServerInfo[ netSrc ][ i ] =
-				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, mapname, addr, netSrc );
+				AddToServerList( Info_ValueForKey( info.c_str(), "hostname" ), trustedInfo.featuredLabel,
+					clients, bots, ping, maxClients, mapname, trustedInfo.addr, netSrc );
 		}
 	}
 
