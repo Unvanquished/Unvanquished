@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-13 13:26+0100\n"
-"PO-Revision-Date: 2025-01-15 12:00+0000\n"
+"PO-Revision-Date: 2025-02-04 14:01+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -563,7 +563,7 @@ msgstr "rakennuspistettä"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr "Krediittiä"
+msgstr "Kiitettävää"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
@@ -4496,8 +4496,8 @@ msgstr "Sinulla ei ole tilaa tämän kantamiseen"
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
-"Riittämättömät varat. Sinulla ei ole tarpeeksi krediittejä suorittaaksesi "
-"tätä toimenpidettä."
+"Rahat eivät riitä. Sinulla ei ole tarpeeksi luottoa tämän toiminnon "
+"suorittamiseen."
 
 #: src/cgame/cg_servercmds.cpp:610
 msgid "Insufficient funds"
