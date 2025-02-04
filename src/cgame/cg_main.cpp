@@ -425,12 +425,12 @@ static void CG_UpdateMediaFraction( float fraction )
 
 enum cgLoadingStep_t {
 	LOAD_START = 0,
+	LOAD_GEOMETRY,
 	LOAD_TRAILS,
 	LOAD_PARTICLES,
+	LOAD_ASSETS,
 	LOAD_CONFIGS,
 	LOAD_SOUNDS,
-	LOAD_GEOMETRY,
-	LOAD_ASSETS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
 	LOAD_CLASSES,
@@ -752,11 +752,6 @@ static void CG_RegisterGraphics()
 	// clear any references to old media
 	cg.refdef = {};
 	trap_R_ClearScene();
-
-	CG_UpdateLoadingStep( LOAD_GEOMETRY );
-	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
-
-	CG_UpdateLoadingStep( LOAD_ASSETS );
 
 	for ( i = 0; i < 11; i++ )
 	{
@@ -1313,16 +1308,27 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	CG_SetMapNameFromServerinfo();
 
+	CG_UpdateLoadingStep( LOAD_GEOMETRY );
 	// load the new map
 	CM_LoadMap(cgs.mapname);
 
 	CG_InitMinimap();
+
+	/* Always do this before loading any texture, as texture options may have
+	to be read from the map worldspawn entity before loading any texture.
+	See: https://github.com/Unvanquished/Unvanquished/pull/3312
+	And: https://github.com/DaemonEngine/Daemon/issues/1079 */
+	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
 
 	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
 
 	CG_UpdateLoadingStep( LOAD_PARTICLES );
 	CG_LoadParticleSystems();
+
+	// It updates loading steps by itself.
+	CG_UpdateLoadingStep( LOAD_ASSETS );
+	CG_RegisterGraphics();
 
 	// load configs after initializing particles and trails since it registers some
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
@@ -1337,11 +1343,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	cgs.voices = BG_VoiceInit();
 	BG_PrintVoices( cgs.voices, cg_debugVoices.Get() );
-
-	// It updates loading steps by itself.
-	// LOAD_GEOMETRY
-	// LOAD_ASSETS
-	CG_RegisterGraphics();
 
 	// load weapons upgrades and buildings after configs
 	CG_UpdateLoadingStep( LOAD_WEAPONS );
