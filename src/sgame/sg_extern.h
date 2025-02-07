@@ -91,6 +91,7 @@ extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
 extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
 extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
 extern  Cvar::Cvar<bool> g_BPVampire;
+extern  Cvar::Cvar<float> g_BPVampireFactor;
 
 extern Cvar::Range<Cvar::Cvar<int>> g_debugMomentum;
 extern Cvar::Cvar<float> g_momentumHalfLife;

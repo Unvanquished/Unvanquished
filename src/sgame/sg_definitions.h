@@ -90,4 +90,6 @@ enum buildFate_t
 	BF_AUTO
 };
 
+constexpr int VAMPIRE_DAMAGE_TIME = 5000;
+
 #endif // SG_DEFINITIONS_H_
