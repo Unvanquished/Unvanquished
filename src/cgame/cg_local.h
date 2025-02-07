@@ -2058,7 +2058,7 @@ int CG_AnimNumber( int anim );
 void CG_RunLerpFrame( lerpFrame_t *lf );
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, bool animChanged );
 void CG_BlendLerpFrame( lerpFrame_t *lf );
-void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton );
+void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refEntity_t* ent, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton, bool useAnim2 = false );
 
 //
 // cg_animmapobj.c
@@ -2096,10 +2096,12 @@ void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities();
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionEntityOnTag( refEntity_t *entity, const int parent,
                              const char *tagName );
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const int parent,
                                     const char *tagName );
+void CG_PositionRotatedEntityOnTagSync( refEntity_t *entity, const refEntity_t* parent,
+	const char *tagName );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 
 team_t CG_Team(const entityState_t &es);
@@ -2158,7 +2160,7 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
 void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
+void CG_AddPlayerWeapon( refEntity_t *parent, const int parentEntityID, playerState_t *ps, centity_t *cent );
 void CG_DrawHumanInventory();
 float CG_ChargeProgress();
 
