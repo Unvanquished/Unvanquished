@@ -664,17 +664,18 @@ void G_HandleVote( gentity_t* ent )
 			ADMP( va( "%s %s %s", QQ( "$1$: $2t$" ), cmd.c_str(), Quote( err ) ) );
 			return;
 		}
-		name = level.clients[ clientNum ].pers.netname;
-		name = Color::StripColors( name );
-		id = level.clients[ clientNum ].pers.namelog->id;
 
-		if ( g_entities[ clientNum ].r.svFlags & SVF_BOT )
+		if ( level.clients[ clientNum ].pers.isBot )
 		{
 			trap_SendServerCommand(
 				ent->num(),
 				va( "print_tr %s %s", QQ( N_( "$1$: player is a bot" ) ), cmd.c_str() ) );
 			return;
 		}
+
+		name = level.clients[ clientNum ].pers.netname;
+		name = Color::StripColors( name );
+		id = level.clients[ clientNum ].pers.namelog->id;
 
 		if ( vi.adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{

@@ -634,7 +634,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 
 	client->pers.namelog->unnamedNumber = number;
 
-	if ( client->ent()->r.svFlags & SVF_BOT )
+	if ( client->pers.isBot )
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
 			!g_unnamedBotNamePrefix.Get().empty() ? g_unnamedBotNamePrefix.Get().c_str() : UNNAMED_BOT "#",
@@ -1147,7 +1147,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 			continue;
 		}
 
-		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
+		if ( !level.clients[ i ].pers.isBot && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
@@ -1237,6 +1237,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 	ent->client = client;
 	ResetStruct( *client );
 
+	client->pers.isBot = true;
 	client->pers.localClient = true;
 	G_AddressParse( "localhost", &client->pers.ip );
 
@@ -1253,8 +1254,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 	{
 		return userInfoError;
 	}
-
-	ent->r.svFlags |= SVF_BOT;
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^*\" \"%s^*\" [BOT]",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
