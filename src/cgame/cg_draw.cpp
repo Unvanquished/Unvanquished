@@ -283,7 +283,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		                       b->size * 1.5f, b->size * 1.5f,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
-		                       270.0f - ( angle = atan2f( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
+		                       270.0f - ( angle = atan2f( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * Math::div180_pi_f );
 
 	if( b->type == BCT_TIMER )
 	{
@@ -605,8 +605,8 @@ static void CG_DrawBinaryShadersFinalPhases()
 
 	trap_Cvar_VariableStringBuffer( "r_znear", str, sizeof( str ) );
 	f = atof( str ) + 0.01;
-	l = f * tanf( DEG2RAD( cg.refdef.fov_x / 2 ) ) * ss;
-	u = f * tanf( DEG2RAD( cg.refdef.fov_y / 2 ) ) * ss;
+	l = f * tanf( Math::DegToRad( cg.refdef.fov_x / 2 ) ) * ss;
+	u = f * tanf( Math::DegToRad( cg.refdef.fov_y / 2 ) ) * ss;
 
 	VectorMA( cg.refdef.vieworg, f, cg.refdef.viewaxis[ 0 ], verts[ 0 ].xyz );
 	VectorMA( verts[ 0 ].xyz, l, cg.refdef.viewaxis[ 1 ], verts[ 0 ].xyz );
