@@ -577,18 +577,17 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 static bool BuildablesIntersect( buildable_t a, vec3_t originA,
                                      buildable_t b, vec3_t originB )
 {
-	vec3_t minsA, maxsA;
-	vec3_t minsB, maxsB;
+	bounds_t A, B;
 
-	BG_BuildableBoundingBox( a, minsA, maxsA );
-	VectorAdd( minsA, originA, minsA );
-	VectorAdd( maxsA, originA, maxsA );
+	BG_BuildableBoundingBox( a, A.mins, A.maxs );
+	VectorAdd( A.mins, originA, A.mins );
+	VectorAdd( A.maxs, originA, A.maxs );
 
-	BG_BuildableBoundingBox( b, minsB, maxsB );
-	VectorAdd( minsB, originB, minsB );
-	VectorAdd( maxsB, originB, maxsB );
+	BG_BuildableBoundingBox( b, B.mins, B.maxs );
+	VectorAdd( B.mins, originB, B.mins );
+	VectorAdd( B.maxs, originB, B.maxs );
 
-	return BoundsIntersect( minsA, maxsA, minsB, maxsB );
+	return BoundsIntersect( A, B );
 }
 
 static buildable_t cmpBuildable;
