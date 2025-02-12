@@ -159,7 +159,12 @@ int G_GetMarkedBudget(team_t team)
 	ForEntities<BuildableComponent>(
 	[&](Entity& entity, BuildableComponent& buildableComponent) {
 		if (G_Team(entity.oldEnt) == team && buildableComponent.MarkedForDeconstruction()) {
-			sum += G_BuildableDeconValue(entity.oldEnt);
+			int val = G_BuildableDeconValue(entity.oldEnt);
+			if ( g_BPVampire.Get() && level.time - entity.oldEnt->lastDamageTime < VAMPIRE_DAMAGE_TIME )
+			{
+				val *= g_BPVampireFactor.Get();
+			}
+			sum += val;
 		}
 	});
 
