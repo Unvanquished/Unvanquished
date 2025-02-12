@@ -110,6 +110,7 @@ private:
 	const std::unordered_map<std::string, std::string> webUrls = {
 		{ "bugs", "bugs.unvanquished.net" },
 		{ "chat", "unvanquished.net/chat" },
+		{ "download", "unvanquished.net/download" },
 		{ "forums", "forums.unvanquished.net" },
 		{ "wiki", "wiki.unvanquished.net" },
 	};
