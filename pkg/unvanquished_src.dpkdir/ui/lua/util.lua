@@ -53,8 +53,8 @@ function AvailabilityIcon(availability)
 		-- Padlock icon. UTF-8 encoding of \uf023
 		return "<icon>\xEF\x80\xA3</icon>"
 	elseif availability == "expensive" then
-		-- $1 bill icon. UTF-8 encoding of \uf0d6
-		return "<icon>\xEF\x83\x96</icon>";
+		-- $1 bill icon. UTF-8 encoding of \uf3d1
+		return "<icon>\xEF\x8F\x91</icon>";
 	elseif availability == "overmindfar" then
 		-- Padlock icon. UTF-8 encoding of \uf023
 		-- TODO: find a better icon?
