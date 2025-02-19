@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "sg_local.h"
 #include "sg_cm_world.h"
+#include "shared/math.hpp"
 
 /*
 ================
@@ -36,26 +37,20 @@ G_Bounce
 */
 static void G_Bounce( gentity_t *ent, trace_t *trace )
 {
-	vec3_t   velocity;
-	float    dot;
-	int      hitTime;
-	float    minNormal;
+	float minNormal = 0.707f;
 	bool invert = false;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
-	dot = DotProduct( velocity, trace->plane.normal );
-	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
+	int hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	glm::vec3 velocity = BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime );
+	float dot = glm::dot( velocity, VEC2GLM( trace->plane.normal ) );
+	velocity -= 2.f * dot * VEC2GLM( trace->plane.normal );
+	VectorCopy( velocity, ent->s.pos.trDelta );
 
 	if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		minNormal = BG_Buildable( ent->s.modelindex )->minNormal;
 		invert = BG_Buildable( ent->s.modelindex )->invertNormal;
-	}
-	else
-	{
-		minNormal = 0.707f;
 	}
 
 	// cut the velocity to keep from bouncing forever
@@ -95,8 +90,6 @@ G_Physics
 */
 void G_Physics( gentity_t *ent )
 {
-	vec3_t  origin;
-	trace_t tr;
 	int     contents;
 
 	// if groundentity has been set to ENTITYNUM_NONE, it may have been pushed off an edge
@@ -117,6 +110,8 @@ void G_Physics( gentity_t *ent )
 		}
 	}
 
+	glm::vec3 origin;
+	trace_t tr;
 	if ( ent->s.pos.trType == trType_t::TR_STATIONARY )
 	{
 		// check think function
@@ -129,8 +124,7 @@ void G_Physics( gentity_t *ent )
 
 			VectorMA( origin, -2.0f, ent->s.origin2, origin );
 
-			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->num(),
-			            ent->clipmask, 0 );
+			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, &origin[0], ent->num(), ent->clipmask, 0 );
 
 			if ( tr.fraction == 1.0f )
 			{
@@ -146,9 +140,9 @@ void G_Physics( gentity_t *ent )
 	// trace a line from the previous position to the current position
 
 	// get current position
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	origin = BG_EvaluateTrajectory( &ent->s.pos, level.time );
 
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->num(),
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, &origin[0], ent->num(),
 	            ent->clipmask, 0 );
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
