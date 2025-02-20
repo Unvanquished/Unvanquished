@@ -41,6 +41,7 @@
 				<datagrid id="iServers" source="server_browser.internet">
 					<col fields="label" width="3%" class="label"></col>
 					<col fields="name" width="50%" class="name"><ilink style="text-align:left;" onclick='Events.pushcmd("sortDS server_browser internet name")'><translate>Name:</translate></ilink></col>
+					<col fields="version" width="11%" class="version"><ilink onclick='Events.pushcmd("sortDS server_browser internet version")'><translate>Version:</translate></ilink></col>
 					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushcmd("sortDS server_browser internet map")'><translate>Map:</translate></ilink></col>
 					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushcmd("sortDS server_browser internet players")'><translate>Players (Bots)</translate></ilink></col>
 					<col fields="ping" width="11%" formatter="ServerPing" class="ping"><ilink onclick='Events.pushcmd("sortDS server_browser internet ping")'><translate>Ping</translate></ilink></col>
@@ -56,7 +57,8 @@
 			<panel>
 				<datagrid source="server_browser.local">
 					<col fields="label" width="3%" class="label" formatter="ServerLabel"></col>
-					<col fields="name" width="50%" class="name"><translate>Name:</translate></col>
+					<col fields="name" width="50%" class="name"><ilink style="text-align:left;" onclick='Events.pushcmd("sortDS server_browser local name")'><translate>Name:</translate></ilink></col>
+					<col fields="version" width="11%" class="version"><ilink onclick='Events.pushcmd("sortDS server_browser local version")'><translate>Version:</translate></ilink></col>
 					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushcmd("sortDS server_browser local map")'><translate>Map:</translate></ilink></col>
 					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushcmd("sortDS server_browser local players")'><translate>Players (Bots)</translate></ilink></col>
 					<col fields="ping" width="11%" formatter="ServerPing" class="ping"><ilink onclick='Events.pushcmd("sortDS server_browser local ping")'><translate>Ping</translate></ilink></col>
