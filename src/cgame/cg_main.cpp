@@ -675,7 +675,7 @@ void CG_RegisterGrading( int slot, const char *str )
 	}
 
 	cgs.gameGradingTextures[ slot ] =
-		trap_R_RegisterShader(texture, (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
+		trap_R_RegisterShader(texture, RSF_NOMIP );
 	cgs.gameGradingModels[ slot ] = model;
 	cgs.gameGradingDistances[ slot ] = dist;
 }
@@ -798,10 +798,10 @@ static void CG_RegisterGraphics()
 	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit", RSF_2D | RSF_FITSCREEN);
 	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison", RSF_2D | RSF_FITSCREEN);
 
-	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
-	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
-	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
-	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
+	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated", RSF_NOMIP );
+	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral", RSF_NOMIP );
+	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only", RSF_NOMIP );
+	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only", RSF_NOMIP );
 
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
