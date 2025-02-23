@@ -163,6 +163,7 @@ gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gen
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireEntityRandomly( gentity_t *entity, gentity_t *activator );
 void       G_FireEntity( gentity_t *ent, gentity_t *activator );
+void G_CustomCommandOnFire( int entityNum, const char *command );
 
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 void       G_HandleActCall( gentity_t *entity, gentityCall_t *call );
