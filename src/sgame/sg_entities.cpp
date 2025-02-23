@@ -36,9 +36,77 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_entities.h"
 #include "CBSE.h"
+#include "sgame/lua/Interpreter.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
+
+
+static std::vector<std::string> eventNames = { // in sync with `enum gentityCallEvent_t`
+	"default",
+	"custom",
+	"free",
+	"call",
+	"act",
+	"use",
+	"die",
+	"reach",
+	"reset",
+	"touch",
+	"enable",
+	"disable"
+};
+
+static const Str::StringRef EventToString( gentityCallEvent_t eventType )
+{
+	size_t index = eventType;
+	return eventNames[ index ];
+}
+
+static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
+{
+	lua_State *L = Lua::State();
+	// the lua state might not be ready yet
+	if ( L != nullptr )
+	{
+		lua_getglobal( L, "EntityHandlers" );
+		if ( lua_istable( L, -1 ) )
+		{
+			int entityNum = self->num();
+			if ( lua_geti( L, -1, entityNum ) == LUA_TFUNCTION )
+			{
+				lua_pushstring( L, eventName.c_str() );
+				Log::Notice( "executing lua handler for entity %d", entityNum );
+				if ( lua_pcall( L, 1, 0, 0 ) != 0 )
+				{
+					Log::Warn( lua_tostring( L, -1 ) );
+				}
+			}
+			else
+			{
+				lua_pop( L, 1 );
+			}
+		}
+		lua_pop( L, 1 );
+	}
+}
+
+static void DeleteLuaEntityHandler( gentity_t *self )
+{
+	lua_State *L = Lua::State();
+	if ( L != nullptr )
+	{
+		lua_getglobal( L, "EntityHandlers" );
+		if ( lua_istable( L, -1 ) )
+		{
+			int entityNum = self->num();
+			lua_pushinteger( L, entityNum );
+			lua_pushnil( L );
+			lua_settable( L, -3 );
+		}
+		lua_pop( L, 1 );
+	}
+}
 
 /*
 =================================================================================
@@ -169,6 +237,9 @@ Marks the entity as free
 */
 void G_FreeEntity( gentity_t *entity )
 {
+	CallLuaEntityHandler( entity, "free" );
+	DeleteLuaEntityHandler( entity );
+
 	trap_UnlinkEntity( entity );  // unlink from world
 
 	if ( g_debugEntities.Get() > 2 )
@@ -775,6 +846,8 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	int targetIndex;
 	gentityCall_t call;
 	call.activator = activator;
+
+	CallLuaEntityHandler( self, EventToString( eventType ) );
 
 	// Shader replacement. Example usage: map "habitat" elevator activation, red to green light replacement
 	if ( self->mapEntity.shaderKey && self->mapEntity.shaderReplacement )
