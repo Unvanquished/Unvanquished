@@ -106,6 +106,33 @@ public:
 };
 static ShowBehaviorCmd showBehaviorRegistration;
 
+class EntityOnFireCmd : public Cmd::StaticCmd
+{
+public:
+	EntityOnFireCmd() : StaticCmd( "entityOnFire", 0, "execute a command when an entity is fired" ) {}
+	void Run( const Cmd::Args& args ) const override
+	{
+		if ( args.Argc() != 3 )
+		{
+			PrintUsage( args, "<entity> <command>" );
+			return;
+		}
+
+		int entityNum = 0;
+		if ( !Str::ParseInt( entityNum, args.Argv( 1 ) )
+		     || entityNum < MAX_CLIENTS
+		     || entityNum >= level.num_entities
+		     || !g_entities[ entityNum ].inuse )
+		{
+			Print( "invalid entity number" );
+			return;
+		}
+
+		G_CustomCommandOnFire( entityNum, args.Argv( 2 ).c_str() );
+	}
+};
+static EntityOnFireCmd entityOnFireRegistration;
+
 static void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];
