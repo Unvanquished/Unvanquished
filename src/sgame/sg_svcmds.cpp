@@ -106,6 +106,54 @@ public:
 };
 static ShowBehaviorCmd showBehaviorRegistration;
 
+class BotObstacleCmd : public Cmd::StaticCmd
+{
+public:
+	BotObstacleCmd() : StaticCmd( "botObstacle", 0, "add or remove a bot obstacle for a given entity" ) {}
+	void Run( const Cmd::Args& args ) const override
+	{
+		if ( args.Argc() != 3 )
+		{
+			PrintUsage( args, "<entity> (on | off)" );
+			return;
+		}
+
+		int entityNum = 0;
+		if ( !Str::ParseInt( entityNum, args.Argv( 1 ) )
+		     || entityNum < MAX_CLIENTS
+		     || entityNum >= level.num_entities )
+		{
+			Print( "invalid entity number" );
+			return;
+		}
+
+		gentity_t *door = &g_entities[ entityNum ];
+		if ( door->s.eType != entityType_t::ET_MOVER )
+		{
+			Log::Notice( "not a ^5MOVER ^*entity " );
+			return;
+		}
+
+		if ( Q_stricmp( args.Argv( 2 ).c_str(), "on" ) == 0 )
+		{
+			glm::vec3 mins = VEC2GLM( door->mapEntity.restingPosition ) + VEC2GLM( door->r.mins );
+			glm::vec3 maxs = VEC2GLM( door->mapEntity.restingPosition ) + VEC2GLM( door->r.maxs );
+			G_BotAddObstacle( mins, maxs, door->num() );
+			Print( "obstacle for entity ^5%d ^*is ^5on^*", entityNum );
+		}
+		else if ( Q_stricmp( args.Argv( 2 ).c_str(), "off" ) == 0 )
+		{
+			G_BotRemoveObstacle( door->num() );
+			Print( "obstacle for entity ^5%d ^*is ^5off^*", entityNum );
+		}
+		else
+		{
+			Print( "argument must be ^5on ^*or ^5off^*" );
+		}
+	}
+};
+static BotObstacleCmd botObstacleRegistration;
+
 static void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];
