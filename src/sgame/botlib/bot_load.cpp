@@ -42,8 +42,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 static const char* NAVCON_HEADER_PREFIX = "navcon";
 static const int NAVCON_VERSION = 3;
 
-static Cvar::Range<Cvar::Cvar<int>> maxNavNodes(
-	"bot_maxNavNodes", "maximum number of nodes in navmesh", Cvar::NONE, 4096, 0, 65535);
+static Cvar::Range<Cvar::Cvar<int>> g_bot_maxNavNodes(
+	"g_bot_maxNavNodes", "maximum number of nodes in a bot's path", Cvar::NONE, 4096, 4, 65535);
 
 int numNavData = 0;
 NavData_t BotNavData[ MAX_NAV_DATA ];
@@ -490,7 +490,7 @@ navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, class_t species )
 		return navMeshStatus_t::LOAD_FAILED;
 	}
 
-	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes.Get() ) ) )
+	if ( dtStatusFailed( nav->query->init( nav->mesh, g_bot_maxNavNodes.Get() ) ) )
 	{
 		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", speciesName );
 		return navMeshStatus_t::LOAD_FAILED;
