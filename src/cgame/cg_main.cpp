@@ -1398,8 +1398,23 @@ CG_Shutdown
 Called before every level change or subsystem restart
 =================
 */
+#ifndef BUILD_VM_IN_PROCESS
+static Cvar::Cvar<bool> cg_pedanticShutdown("cg_pedanticShutdown", "run useless shutdown procedures in cgame process", Cvar::NONE,
+#ifdef USING_SANITIZER
+	true);
+#else
+	false);
+#endif
+#endif // !BUILD_VM_IN_PROCESS
 void CG_Shutdown()
 {
+#ifndef BUILD_VM_IN_PROCESS
+	if ( !cg_pedanticShutdown.Get() )
+	{
+		return;
+	}
+#endif
+
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
 	CG_Rocket_CleanUpDataSources();
