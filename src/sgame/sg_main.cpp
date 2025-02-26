@@ -726,10 +726,20 @@ static bool G_VotesRunning()
 G_ShutdownGame
 =================
 */
+#ifndef BUILD_VM_IN_PROCESS
+#ifdef USING_SANITIZER
+constexpr bool pedanticShutdownDefault = true;
+#else
+constexpr bool pedanticShutdownDefault = false;
+#endif
+static Cvar::Cvar<bool> g_pedanticShutdown(
+	"g_pedanticShutdown", "run useless shutdown procedures in sgame process", Cvar::NONE, pedanticShutdownDefault);
+#endif // !BUILD_VM_IN_PROCESS
 void G_ShutdownGame( int /* restart */ )
 {
 	// in case of a map_restart
 	G_ClearVotes( true );
+	trap_SetConfigstring( CS_WINNER, "" );
 
 	Log::Notice( "==== ShutdownGame ====" );
 
@@ -749,10 +759,18 @@ void G_ShutdownGame( int /* restart */ )
 		level.logGameplayFile = 0;
 	}
 
-	G_BotCleanup();
-
 	// write all the non-bot client session data so we can get it back
 	G_WriteSessionData();
+
+#ifndef BUILD_VM_IN_PROCESS
+	if ( !g_pedanticShutdown.Get() )
+	{
+		G_BotDelAllBots();
+		return;
+	}
+#endif
+
+	G_BotCleanup();
 
 	G_admin_cleanup();
 	G_namelog_cleanup();
@@ -764,7 +782,6 @@ void G_ShutdownGame( int /* restart */ )
 
 	level.restarted = false;
 	level.surrenderTeam = TEAM_NONE;
-	trap_SetConfigstring( CS_WINNER, "" );
 
 	Lua::Shutdown();
 
