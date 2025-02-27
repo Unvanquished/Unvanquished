@@ -3252,10 +3252,29 @@ static void CG_Rocket_DrawConnectText()
 	Rocket_SetInnerRMLRaw( rml );
 }
 
+static struct tm GetLocalTime()
+{
+	static time_t lastMinute;
+	static int localOffset;
+
+	time_t epochTimeLocal = time( nullptr ) + localOffset;
+	struct tm localDate = *gmtime( &epochTimeLocal );
+
+	// update on the first frame and every new minute
+	if ( epochTimeLocal - localDate.tm_sec != lastMinute )
+	{
+		localOffset = VM::GetLocalTimeOffset();
+		epochTimeLocal = time( nullptr ) + localOffset;
+		localDate = *gmtime( &epochTimeLocal );
+		lastMinute = epochTimeLocal - localDate.tm_sec;
+	}
+
+	return localDate;
+}
+
 static void CG_Rocket_DrawClock()
 {
 	char    *s;
-	qtime_t qt;
 
 	if ( !cg_drawClock.Get() )
 	{
@@ -3263,7 +3282,7 @@ static void CG_Rocket_DrawClock()
 		return;
 	}
 
-	Com_RealTime( &qt );
+	struct tm qt = GetLocalTime();
 
 	if ( cg_drawClock.Get() == 2 )
 	{
