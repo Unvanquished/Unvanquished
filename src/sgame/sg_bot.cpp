@@ -680,13 +680,7 @@ bool G_BotInit()
 
 void G_BotCleanup()
 {
-	for ( int i = 0; i < MAX_CLIENTS; ++i )
-	{
-		if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
-		{
-			G_BotDel( i );
-		}
-	}
+	G_BotDelAllBots();
 
 	G_BotClearNames();
 
