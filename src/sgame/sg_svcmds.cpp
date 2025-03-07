@@ -106,10 +106,10 @@ public:
 };
 static ShowBehaviorCmd showBehaviorRegistration;
 
-class EntityOnFireCmd : public Cmd::StaticCmd
+class EntityFiredCmd : public Cmd::StaticCmd
 {
 public:
-	EntityOnFireCmd() : StaticCmd( "entityOnFire", 0, "execute a command when an entity is fired" ) {}
+	EntityFiredCmd() : StaticCmd( "entityFired", 0, "execute a command when an entity is fired" ) {}
 	void Run( const Cmd::Args& args ) const override
 	{
 		if ( args.Argc() != 3 )
@@ -131,7 +131,7 @@ public:
 		G_CustomCommandOnFire( entityNum, args.Argv( 2 ).c_str() );
 	}
 };
-static EntityOnFireCmd entityOnFireRegistration;
+static EntityFiredCmd entityFiredRegistration;
 
 static void Svcmd_EntityFire_f()
 {
