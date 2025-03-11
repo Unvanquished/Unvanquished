@@ -101,11 +101,13 @@ if (BUILDING_ANY_GAMELOGIC)
     if (BUILD_CGAME)
         # Freetype (RmlUi dependency)
         prefer_package(Freetype ${DAEMON_DIR}/freetype.cmake)
-        if (Freetype_FOUND AND (APPLE OR WIN32))
+        include_directories(${FREETYPE_INCLUDE_DIRS})
+
+        # We may remove this once Freetype is removed from external_deps.
+        if (NOT ZLIB_FOUND AND NOT "${FREETYPE_INTERNAL_ZLIB}")
             find_package(ZLIB REQUIRED)
             set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
         endif()
-        include_directories(${FREETYPE_INCLUDE_DIRS})
 
         # RmlUi
         include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
