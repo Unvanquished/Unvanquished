@@ -505,7 +505,7 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 	}
 }
 
-static int cg_currentSelectedServer;
+static std::string cg_currentSelectedServer;
 
 class ConnectToCurrentSelectedServerCmd : public Cmd::StaticCmd {
 	public:
@@ -513,10 +513,9 @@ class ConnectToCurrentSelectedServerCmd : public Cmd::StaticCmd {
 		Cmd::CLIENT, "Connect to cg_currentSelectedServer" ) {}
 
 	void Run( const Cmd::Args& ) const override {
-		const int netSrc = cg_currentSelectedServer;
 		Rocket_DocumentAction( "server_mismatch", "close" );
 		trap_SendConsoleCommand(
-			Str::Format( "connect %s", rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr ).c_str()
+			Str::Format( "connect %s", cg_currentSelectedServer ).c_str()
 		);
 	}
 };
@@ -526,7 +525,7 @@ static void CG_Rocket_ExecServerList( const char *table )
 {
 	int netSrc = CG_StringToNetSource( table );
 	if ( Q_stricmp( rocketInfo.data.servers[netSrc]->abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION ) ) {
-		cg_currentSelectedServer = netSrc;
+		cg_currentSelectedServer = rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr;
 		Rocket_DocumentAction( "server_mismatch", "show" );
 	} else {
 		trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr ) );
