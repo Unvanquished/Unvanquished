@@ -510,7 +510,7 @@ static std::string cg_currentSelectedServer;
 class ConnectToCurrentSelectedServerCmd : public Cmd::StaticCmd {
 	public:
 	ConnectToCurrentSelectedServerCmd() : StaticCmd( "connectToCurrentSelectedServer",
-		Cmd::CLIENT, "Connect to cg_currentSelectedServer" ) {}
+		Cmd::CLIENT, "For internal use" ) {}
 
 	void Run( const Cmd::Args& ) const override {
 		Rocket_DocumentAction( "server_mismatch", "close" );
