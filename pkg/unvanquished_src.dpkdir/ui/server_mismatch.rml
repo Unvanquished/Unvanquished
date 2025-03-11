@@ -1,0 +1,14 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="menu.rcss" />
+	</head>
+	<body id="server_mismatch" template="window" class="window-options" style="width: 40%; margin-top: 40%; text-align: center; z-index: 30">
+		<h1 style="text-align: center"><translate>Engine version mismatch</translate></h1>
+		<span ><translate>This server uses a different Daemon engine version, which is not compatible.</translate></span>
+		<br/>
+		<span><translate>The latest Unvanquished release can be downloaded through the Updater app, at <web dest="download"/>, or in one of the official package repositories.</translate></span>
+		<button style="width:100%; margin-top: 2%;" onclick='Cmd.exec("connectToCurrentSelectedServer")'><translate>Connect anyway</translate></button>
+	</body>
+</rml>

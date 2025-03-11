@@ -36,7 +36,8 @@ Maryland 20850 USA.
 #include "cg_local.h"
 #include "shared/parse.h"
 
-static bool AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
+static bool AddToServerList( const char *name, const char *label, std::string version, std::string abiVersion, int clients, int bots,
+	int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
 
@@ -59,8 +60,9 @@ static bool AddToServerList( const char *name, const char *label, int clients, i
 	node->maxClients = maxClients;
 	node->addr = BG_strdup( addr );
 	node->label = BG_strdup( label );
+	node->version = version;
 	node->mapName = BG_strdup( mapName );
-
+	node->abiVersion = abiVersion;
 	rocketInfo.data.serverCount[ netSrc ]++;
 	return true;
 }
@@ -313,9 +315,12 @@ void CG_Rocket_BuildServerList()
 			clients = atoi( Info_ValueForKey( info.c_str(), "clients" ) );
 			maxClients = atoi( Info_ValueForKey( info.c_str(), "sv_maxclients" ) );
 			Q_strncpyz( mapname, Info_ValueForKey( info.c_str(), "mapname" ), sizeof( mapname ) );
+
+			const std::string version = Info_ValueForKey( info.c_str(), "version" );
+			const std::string abiVersion = Info_ValueForKey( info.c_str(), "abiVersion" );
 			rocketInfo.data.haveServerInfo[ netSrc ][ i ] =
 				AddToServerList( Info_ValueForKey( info.c_str(), "hostname" ), trustedInfo.featuredLabel,
-					clients, bots, ping, maxClients, mapname, trustedInfo.addr, netSrc );
+					version, abiVersion, clients, bots, ping, maxClients, mapname, trustedInfo.addr, netSrc );
 		}
 	}
 
@@ -336,6 +341,15 @@ void CG_Rocket_BuildServerList()
 		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
 		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
 		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+
+		std::string version;
+		if ( !Q_stricmp( rocketInfo.data.servers[netSrc][i].abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION) ) {
+			version = rocketInfo.data.servers[netSrc][i].version;
+		} else {
+			version = Str::Format( "^1!%s!", rocketInfo.data.servers[netSrc][i].version );
+		}
+
+		Info_SetValueForKey( data, "version", version.c_str(), false);
 		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
 		Rocket_DSAddRow( "server_browser", srcName, data );
@@ -430,6 +444,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
 		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
 		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+		Info_SetValueForKey( data, "version", rocketInfo.data.servers[netSrc][i].version.c_str(), false );
 		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
 		Rocket_DSAddRow( "server_browser", name, data );
@@ -483,16 +498,38 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
 			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
 			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+			Info_SetValueForKey( data, "version", rocketInfo.data.servers[netSrc][i].version.c_str(), false );
 
 			Rocket_DSAddRow( "server_browser", str, data );
 		}
 	}
 }
 
+static std::string cg_currentSelectedServer;
+
+class ConnectToCurrentSelectedServerCmd : public Cmd::StaticCmd {
+	public:
+	ConnectToCurrentSelectedServerCmd() : StaticCmd( "connectToCurrentSelectedServer",
+		Cmd::CLIENT, "For internal use" ) {}
+
+	void Run( const Cmd::Args& ) const override {
+		Rocket_DocumentAction( "server_mismatch", "close" );
+		trap_SendConsoleCommand(
+			Str::Format( "connect %s", cg_currentSelectedServer ).c_str()
+		);
+	}
+};
+static ConnectToCurrentSelectedServerCmd ConnectToCurrentSelectedServerCmdRegistration;
+
 static void CG_Rocket_ExecServerList( const char *table )
 {
 	int netSrc = CG_StringToNetSource( table );
-	trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
+	if ( Q_stricmp( rocketInfo.data.servers[netSrc]->abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION ) ) {
+		cg_currentSelectedServer = rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr;
+		Rocket_DocumentAction( "server_mismatch", "show" );
+	} else {
+		trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr ) );
+	}
 }
 
 static void CG_Rocket_SetResolutionListResolution( const char*, int index )

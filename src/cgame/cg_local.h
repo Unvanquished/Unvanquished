@@ -1372,6 +1372,8 @@ struct server_t
 {
 	char *name;
 	char *label;
+	std::string version;
+	std::string abiVersion;
 	int clients;
 	int bots;
 	int ping;
