@@ -811,7 +811,7 @@ CG_ParseParticle
 Parse a particle section
 ===============
 */
-static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
+static bool CG_ParseParticle( baseParticle_t *bp, const char* name, const char **text_p )
 {
 	// read optional parameters
 	while ( 1 )
@@ -1209,6 +1209,8 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		}
 		else if ( !Q_stricmp( token, "realLight" ) )
 		{
+			Log::Warn( "Particle system %s: realLight keyword is deprecated, use a diffuseMap stage to light particles instead",
+				name );
 			bp->realLight = true;
 		}
 		else if ( !Q_stricmp( token, "dynamicLight" ) )
@@ -1501,7 +1503,7 @@ CG_ParseParticleEjector
 Parse a particle ejector section
 ===============
 */
-static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **text_p )
+static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char* name, const char **text_p )
 {
 	// read optional parameters
 	while ( 1 )
@@ -1517,7 +1519,7 @@ static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **te
 		{
 			CG_InitialiseBaseParticle( &baseParticles[ numBaseParticles ] );
 
-			if ( !CG_ParseParticle( &baseParticles[ numBaseParticles ], text_p ) )
+			if ( !CG_ParseParticle( &baseParticles[ numBaseParticles ], name, text_p ) )
 			{
 				logger.Warn( "failed to parse particle" );
 				return false;
@@ -1649,7 +1651,7 @@ static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text
 
 		if ( !Q_stricmp( token, "{" ) )
 		{
-			if ( !CG_ParseParticleEjector( &baseParticleEjectors[ numBaseParticleEjectors ], text_p ) )
+			if ( !CG_ParseParticleEjector( &baseParticleEjectors[ numBaseParticleEjectors ], name, text_p ) )
 			{
 				logger.Warn( "failed to parse particle ejector" );
 				return false;
