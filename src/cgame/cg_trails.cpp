@@ -705,7 +705,7 @@ CG_ParseTrailBeam
 Parse a trail beam
 ===============
 */
-static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
+static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char* name, const char **text_p )
 {
 	// read optional parameters
 	while ( 1 )
@@ -957,7 +957,8 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 		else if ( !Q_stricmp( token, "realLight" ) )
 		{
 			btb->realLight = true;
-
+			Log::Warn( "Trail system %s: realLight keyword is deprecated, use a diffuseMap stage to light particles instead",
+				name );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "jitter" ) )
@@ -1083,7 +1084,7 @@ static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, const char **text_p, co
 		{
 			CG_InitialiseBaseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ] );
 
-			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
+			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], name, text_p ) )
 			{
 				logs.Warn( "failed to parse trail beam" );
 				return false;
