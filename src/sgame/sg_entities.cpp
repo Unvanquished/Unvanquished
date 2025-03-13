@@ -160,6 +160,8 @@ gentity_t *G_NewEntity( initEntityStyle_t style )
 	return ent;
 }
 
+static std::string *onFireCommands[ MAX_GENTITIES ];
+
 /*
 =================
 G_FreeEntity
@@ -184,6 +186,12 @@ void G_FreeEntity( gentity_t *entity )
 	{
 		// It's possible that this happened before, but we need to be sure.
 		BaseClustering::Remove(entity);
+	}
+
+	if ( onFireCommands[ entity->num() ] != nullptr )
+	{
+		delete onFireCommands[ entity->num() ];
+		onFireCommands[ entity->num() ] = nullptr;
 	}
 
 	delete entity->entity;
@@ -748,8 +756,20 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	}
 }
 
+void G_CustomCommandOnFire( int entityNum, const char *command )
+{
+	std::string *cmd = new std::string( command );
+	onFireCommands[ entityNum ] = cmd;
+}
+
 void G_FireEntity( gentity_t *self, gentity_t *activator )
 {
+	int entityNum = self->num();
+	if ( onFireCommands[ entityNum ] != nullptr )
+	{
+		Log::Notice( "executing custom command for entity %d", entityNum );
+		trap_SendConsoleCommand( onFireCommands[ entityNum ]->c_str() );
+	}
 	G_EventFireEntity( self, activator, ON_DEFAULT );
 }
 
