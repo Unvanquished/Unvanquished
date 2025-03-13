@@ -175,17 +175,25 @@ static void Svcmd_EntityShow_f()
 	int       lastTargetIndex, targetIndex;
 	gentity_t *selection;
 	gentity_t *possibleTarget = nullptr;
-	char argument[ 6 ];
+	char argument[ 128 ];
 
 
 	if (trap_Argc() != 2)
 	{
-		Log::Notice("usage: entityShow <entityNum>");
+		Log::Notice("usage: entityShow <entityNum or entityID>");
 		return;
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
-	entityNum = atoi( argument );
+	if ( !Str::ParseInt( entityNum, argument ) )
+	{
+		entityNum = G_IdToEntityNum( argument );
+		if ( entityNum < 0 )
+		{
+			Log::Notice( "entity ID `%s` does not exist", argument );
+			return;
+		}
+	}
 
 	if (entityNum >= level.num_entities || entityNum < MAX_CLIENTS)
 	{
@@ -209,6 +217,10 @@ static void Svcmd_EntityShow_f()
 	}
 	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
 	Log::Notice( "Classname: ^5%s^*", selection->classname );
+	if ( selection->id != nullptr )
+	{
+		Log::Notice( "ID: ^5%s^*", selection->id );
+	}
 	Log::Notice( "Capabilities:%s%s%s%s%s%s%s",
 			selection->act ? " acts" : "",
 			selection->think ? " thinks" : "",

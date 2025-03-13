@@ -926,6 +926,11 @@ static void G_SpawnGEntityFromSpawnVars()
 	}
 
 	SetAutomaticEntityId( spawningEntity );
+
+	if ( spawningEntity->id != nullptr )
+	{
+		G_RegisterEntityId( spawningEntity->num(), spawningEntity->id );
+	}
 }
 
 bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
