@@ -834,11 +834,15 @@ static void SetAutomaticEntityId( gentity_t *spawningEntity )
 	// we have to add it after the already existing func_door entities in
 	// the entity lump / .ent file.
 	// ideas for a method that would keep persistence in more cases:
-	// - sort the entities by their positions in space
+	// - method 1:
+	//   sort the entities by their positions in space
 	//   use the average of vertices for entities with models in the BSP
-	// - break ties by sorting by all properties
+	//   break ties by sorting by all properties
 	//   (overlapping entities of the same kind have been observed in several maps)
-	// the more complicated method is probably not worth it, as we can always assign
+	// - method 2:
+	//   calculate a hash from the entity description text
+	//   convert the hash to something human readable, use this as ID postfix
+	// the more complicated methods are probably not worth it, as we can always assign
 	// IDs of our own choosing in the entity lump / .ent file.
 	std::string classname = spawningEntity->classname;
 	auto it = autoClassnames.find( classname );
