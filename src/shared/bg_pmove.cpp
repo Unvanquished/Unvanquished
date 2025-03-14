@@ -4206,26 +4206,20 @@ static void PM_Weapon()
 	//FIXME: predicted angles miss a problem??
 	if ( pm->ps->weapon == WP_CHAINGUN )
 	{
-		if ( BG_IsChaingunStabilized( pm->ps ) )
+		if ( pm->ps->pm_flags & PMF_DUCKED ||
+		     BG_InventoryContainsUpgrade( UP_BATTLESUIT, pm->ps->stats ) )
 		{
-			pm->ps->delta_angles[ PITCH ] += ANGLE2SHORT(
-				crandom() * STABILIZED_CHAINGUN_JITTER_SCALE + STABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
-			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( crandom() * STABILIZED_CHAINGUN_JITTER_SCALE );
+			pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( ( ( random() * 0.5 ) - 0.125 ) * ( 30 / ( float ) addTime ) );
+			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( ( ( random() * 0.5 ) - 0.25 ) * ( 30.0 / ( float ) addTime ) );
 		}
 		else
 		{
-			pm->ps->delta_angles[ PITCH ] += ANGLE2SHORT(
-				crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE + UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
-			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE );
+			pm->ps->delta_angles[ PITCH ] -= ANGLE2SHORT( ( ( random() * 8 ) - 2 ) * ( 30.0 / ( float ) addTime ) );
+			pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( ( ( random() * 8 ) - 4 ) * ( 30.0 / ( float ) addTime ) );
 		}
 	}
 
 	pm->ps->weaponTime += addTime;
-}
-
-bool BG_IsChaingunStabilized( const playerState_t *ps )
-{
-	return ( ps->pm_flags & PMF_DUCKED ) || BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats );
 }
 
 /*

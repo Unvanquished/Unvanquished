@@ -163,7 +163,6 @@ struct botMemory_t
 
 		int         futureAimTime;
 		int         futureAimTimeInterval;
-		glm::vec3   futureAimBaseDeltaAngles;
 		glm::vec3   futureAim;
 
 		enemyQueue_t enemyQueue;
