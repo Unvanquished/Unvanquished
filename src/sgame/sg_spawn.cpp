@@ -791,33 +791,10 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 }
 
 static std::unordered_map< std::string, int > autoIdCounters;
-static const std::set< std::string > autoClassnames = {
-	"env_afx_ammo", "env_afx_gravity", "env_afx_heal", "env_afx_hurt",
-	"env_afx_push", "env_afx_teleport",
-
-	"func_bobbing", "func_button", "func_destructable", "func_door", "func_door_model",
-	"func_door_rotating", "func_dynamic", "func_group", "func_pendulum", "func_plat",
-	"func_rotating", "func_spawn", "func_timer", "func_train",
-
-	"sensor_buildable", "sensor_creep", "sensor_end", "sensor_player", "sensor_power",
-	"sensor_stage", "sensor_start", "sensor_support", "sensor_timer",
-
-	"target_alien_win", "target_delay", "target_human_win", "target_hurt", "target_kill",
-	"target_location", "target_position", "target_print", "target_push", "target_relay",
-	"target_rumble", "target_score", "target_speaker", "target_teleporter",
-
-	"trigger_always", "trigger_ammo", "trigger_buildable", "trigger_class",
-	"trigger_equipment", "trigger_gravity", "trigger_heal", "trigger_hurt",
-	"trigger_multiple", "trigger_push", "trigger_stage", "trigger_teleport",
-	"trigger_win",
-};
 
 static void ResetAutomaticEntityIdState()
 {
-	for ( auto classname : autoClassnames )
-	{
-		autoIdCounters[ classname ] = 0;
-	}
+	autoIdCounters.clear();
 }
 
 static void SetAutomaticEntityId( gentity_t *spawningEntity )
@@ -845,15 +822,12 @@ static void SetAutomaticEntityId( gentity_t *spawningEntity )
 	// the more complicated methods are probably not worth it, as we can always assign
 	// IDs of our own choosing in the entity lump / .ent file.
 	std::string classname = spawningEntity->classname;
-	auto it = autoClassnames.find( classname );
-	if ( it != autoClassnames.end() )
+	int counter = ++autoIdCounters[ classname ];
+	if ( spawningEntity->id == nullptr )
 	{
-		if ( spawningEntity->id == nullptr )
-		{
-			std::string autoId = Str::Format( "%s_%d", classname, autoIdCounters[ classname ] );
-			spawningEntity->id = G_NewString( autoId.c_str() );
-		}
-		autoIdCounters[ classname ]++;
+		// subtract 1 from counter because it starts at 1
+		std::string autoId = Str::Format( "%s_%d", classname, counter - 1 );
+		spawningEntity->id = G_NewString( autoId.c_str() );
 	}
 }
 
