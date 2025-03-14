@@ -790,6 +790,69 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 		G_WarnAboutDeprecatedEntityField(entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
 }
 
+static std::unordered_map< std::string, int > autoIdCounters;
+static const std::set< std::string > autoClassnames = {
+	"env_afx_ammo", "env_afx_gravity", "env_afx_heal", "env_afx_hurt",
+	"env_afx_push", "env_afx_teleport",
+
+	"func_bobbing", "func_button", "func_destructable", "func_door", "func_door_model",
+	"func_door_rotating", "func_dynamic", "func_group", "func_pendulum", "func_plat",
+	"func_rotating", "func_spawn", "func_timer", "func_train",
+
+	"sensor_buildable", "sensor_creep", "sensor_end", "sensor_player", "sensor_power",
+	"sensor_stage", "sensor_start", "sensor_support", "sensor_timer",
+
+	"target_alien_win", "target_delay", "target_human_win", "target_hurt", "target_kill",
+	"target_location", "target_position", "target_print", "target_push", "target_relay",
+	"target_rumble", "target_score", "target_speaker", "target_teleporter",
+
+	"trigger_always", "trigger_ammo", "trigger_buildable", "trigger_class",
+	"trigger_equipment", "trigger_gravity", "trigger_heal", "trigger_hurt",
+	"trigger_multiple", "trigger_push", "trigger_stage", "trigger_teleport",
+	"trigger_win",
+};
+
+static void ResetAutomaticEntityIdState()
+{
+	for ( auto classname : autoClassnames )
+	{
+		autoIdCounters[ classname ] = 0;
+	}
+}
+
+static void SetAutomaticEntityId( gentity_t *spawningEntity )
+{
+	// generate automatic IDs for some map entities, in case the map does not set IDs.
+	// these IDs are persistent, they do not change when loading a map with or
+	// without a layout.
+	// we are using a simple scheme for persistence. for instance, consider
+	// a map with 3 func_door entities, each without an ID assigned by the map.
+	// they will receive the automatic IDs: func_door_0, func_door_1, func_door_2
+	// their order in the entity lump / .ent file determines which entity comes first
+	// in this numbering.
+	// if we want to add another func_door entity to this map, and keep persistence,
+	// we have to add it after the already existing func_door entities in
+	// the entity lump / .ent file.
+	// ideas for a method that would keep persistence in more cases:
+	// - sort the entities by their positions in space
+	//   use the average of vertices for entities with models in the BSP
+	// - break ties by sorting by all properties
+	//   (overlapping entities of the same kind have been observed in several maps)
+	// the more complicated method is probably not worth it, as we can always assign
+	// IDs of our own choosing in the entity lump / .ent file.
+	std::string classname = spawningEntity->classname;
+	auto it = autoClassnames.find( classname );
+	if ( it != autoClassnames.end() )
+	{
+		if ( spawningEntity->id == nullptr )
+		{
+			std::string autoId = Str::Format( "%s_%d", classname, autoIdCounters[ classname ] );
+			spawningEntity->id = G_NewString( autoId.c_str() );
+		}
+		autoIdCounters[ classname ]++;
+	}
+}
+
 /*
 ===================
 G_SpawnGEntityFromSpawnVars
@@ -883,6 +946,8 @@ static void G_SpawnGEntityFromSpawnVars()
 	{
 		G_FreeEntity( spawningEntity );
 	}
+
+	SetAutomaticEntityId( spawningEntity );
 }
 
 bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
@@ -1140,6 +1205,7 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 void G_SpawnEntitiesFromString()
 {
 	level.numSpawnVars = 0;
+	ResetAutomaticEntityIdState();
 
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
