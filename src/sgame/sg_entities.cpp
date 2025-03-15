@@ -73,7 +73,8 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 		if ( lua_istable( L, -1 ) )
 		{
 			lua_pushstring( L, self->id );
-			if ( lua_gettable( L, -2 ) == LUA_TFUNCTION )
+			lua_gettable( L, -2 );
+			if ( lua_type( L, -1 ) == LUA_TFUNCTION )
 			{
 				lua_pushstring( L, eventName.c_str() );
 				Log::Verbose( "executing lua handler for entity %d with ID %s", self->num(), self->id );
@@ -84,6 +85,7 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 			}
 			else
 			{
+				Log::Warn( "lua entity handler entity %d with ID %s is not a function", self->num(), self->id );
 				lua_pop( L, 1 );
 			}
 		}
