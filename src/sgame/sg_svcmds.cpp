@@ -43,6 +43,35 @@ Maryland 20850 USA.
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
+static int StringToEntityNum( Str::StringRef str, Str::StringRef commandName )
+{
+	int entityNum;
+
+	if ( !Str::ParseInt( entityNum, str ) )
+	{
+		entityNum = G_IdToEntityNum( str );
+		if ( entityNum < 0 )
+		{
+			Log::Notice( "%s: no entity with ID %s", commandName, str );
+			return -1;
+		}
+	}
+
+	if ( entityNum >= level.num_entities || entityNum < MAX_CLIENTS )
+	{
+		Log::Notice( "%s: invalid entity number %d", commandName, entityNum );
+		return -1;
+	}
+
+	if ( !g_entities[entityNum].inuse )
+	{
+		Log::Notice( "%s: entity slot %d is unused/free", commandName, entityNum );
+		return -1;
+	}
+
+	return entityNum;
+}
+
 class TraceCmd : public Cmd::StaticCmd
 {
 public:
@@ -121,21 +150,13 @@ static void Svcmd_EntityFire_f()
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
-	entityNum = atoi( argument );
-
-	if ( entityNum >= level.num_entities || entityNum < MAX_CLIENTS )
+	entityNum = StringToEntityNum( argument, "entityFire" );
+	if ( entityNum < 0 )
 	{
-		Log::Notice( "invalid entityNum %d", entityNum );
 		return;
 	}
 
 	selection = &g_entities[entityNum];
-
-	if (!selection->inuse)
-	{
-		Log::Notice("entity slot %d is not in use", entityNum);
-		return;
-	}
 
 	if( trap_Argc() >= 3 )
 	{
@@ -185,29 +206,12 @@ static void Svcmd_EntityShow_f()
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
-	if ( !Str::ParseInt( entityNum, argument ) )
+	entityNum = StringToEntityNum( argument, "entityShow" );
+	if ( entityNum < 0 )
 	{
-		entityNum = G_IdToEntityNum( argument );
-		if ( entityNum < 0 )
-		{
-			Log::Notice( "entity ID `%s` does not exist", argument );
-			return;
-		}
-	}
-
-	if (entityNum >= level.num_entities || entityNum < MAX_CLIENTS)
-	{
-		Log::Notice("entityNum %d is out of range", entityNum);
 		return;
 	}
-
 	selection = &g_entities[entityNum];
-
-	if (!selection->inuse)
-	{
-		Log::Notice("entity slot %d is unused/free", entityNum);
-		return;
-	}
 
 	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
 	Log::Notice( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
@@ -364,16 +368,9 @@ static void Svcmd_EntityLock_f()
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
-
-	if ( !Str::ParseInt( e, argument ) )
+	e = StringToEntityNum( argument, "entityLock" );
+	if ( e < 0 )
 	{
-		Log::Warn( "entitylock: this is not numeric: %s", argument );
-		return;
-	}
-
-	if ( e >= level.num_entities || e < MAX_CLIENTS )
-	{
-		Log::Warn( "entitylock: not a valid entity" );
 		return;
 	}
 
