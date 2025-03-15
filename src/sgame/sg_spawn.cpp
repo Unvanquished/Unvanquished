@@ -822,11 +822,10 @@ static void SetAutomaticEntityId( gentity_t *spawningEntity )
 	// the more complicated methods are probably not worth it, as we can always assign
 	// IDs of our own choosing in the entity lump / .ent file.
 	std::string classname = spawningEntity->classname;
-	int counter = ++autoIdCounters[ classname ];
+	int counter = autoIdCounters[ classname ]++;
 	if ( spawningEntity->id == nullptr )
 	{
-		// subtract 1 from counter because it starts at 1
-		std::string autoId = Str::Format( "%s_%d", classname, counter - 1 );
+		std::string autoId = Str::Format( "%s_%d", classname, counter );
 		spawningEntity->id = G_NewString( autoId.c_str() );
 	}
 }
