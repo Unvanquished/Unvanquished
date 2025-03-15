@@ -925,6 +925,12 @@ static void G_SpawnGEntityFromSpawnVars()
 		return;
 	}
 
+	// i am not quite sure why this can happen, but it does happen on map thunder
+	if ( Str::IsIEqual( spawningEntity->classname, "freent" ) )
+	{
+		return;
+	}
+
 	SetAutomaticEntityId( spawningEntity );
 
 	if ( spawningEntity->id != nullptr )
