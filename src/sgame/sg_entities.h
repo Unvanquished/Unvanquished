@@ -151,6 +151,10 @@ gentity_t  *G_PickRandomEntity( const char *classname, size_t fieldofs, const ch
 gentity_t  *G_PickRandomEntityOfClass( const char *classname );
 gentity_t  *G_PickRandomEntityWithField( size_t fieldofs, const char *match );
 
+void G_RegisterEntityId( int entityNum, Str::StringRef id );
+void G_ForgetEntityId( Str::StringRef id );
+int G_IdToEntityNum( Str::StringRef id );
+
 //test
 bool   G_MatchesName( gentity_t *entity, const char* name );
 bool   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );

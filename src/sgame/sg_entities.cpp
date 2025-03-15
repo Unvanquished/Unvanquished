@@ -186,6 +186,11 @@ void G_FreeEntity( gentity_t *entity )
 		BaseClustering::Remove(entity);
 	}
 
+	if ( entity->id != nullptr )
+	{
+		G_ForgetEntityId( entity->id );
+	}
+
 	delete entity->entity;
 
 	unsigned generation = entity->generation;
@@ -379,6 +384,56 @@ gentity_t *G_IterateEntities( gentity_t *entity )
 gentity_t *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname )
 {
 	return G_IterateEntities( entity, classname, true, 0, nullptr );
+}
+
+/*
+=============
+Manage a mapping from entity IDs to entity numbers for quick lookup
+=============
+*/
+
+static std::unordered_map<std::string, int> idToEntityNumMap;
+
+int G_IdToEntityNum( Str::StringRef id )
+{
+	auto it = idToEntityNumMap.find( id );
+	if ( it != idToEntityNumMap.end() )
+	{
+		return it->second;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+void G_RegisterEntityId( int entityNum, Str::StringRef id )
+{
+	auto it = idToEntityNumMap.find( id );
+	if ( it != idToEntityNumMap.end() )
+	{
+		Log::Warn( "G_RegisterEntityId: overwriting existing id `%s`", id );
+		idToEntityNumMap.erase( it );
+	}
+	bool ok;
+	std::tie( it, ok ) = idToEntityNumMap.insert( { id, entityNum } );
+	if ( !ok )
+	{
+		Log::Warn( "G_RegisterEntityId: inserting id `%s` failed", id );
+	}
+}
+
+void G_ForgetEntityId( Str::StringRef id )
+{
+	auto it = idToEntityNumMap.find( id );
+	if ( it != idToEntityNumMap.end() )
+	{
+		idToEntityNumMap.erase( it );
+	}
+	else
+	{
+		Log::Warn( "G_ForgetEntityId: id `%s` does not exist", id );
+	}
 }
 
 /*
