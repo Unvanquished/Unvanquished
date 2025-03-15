@@ -92,7 +92,14 @@ static int Getscore( lua_State* L )
 
 static int GetcrosshairEntityNum( lua_State* L )
 {
-	lua_pushinteger( L, cg.crosshairEntityNum );
+	if ( cg.time - cg.crosshairEntityTime > 100 )
+	{
+		lua_pushnil( L );
+	}
+	else
+	{
+		lua_pushinteger( L, cg.crosshairEntityNum );
+	}
 	return 1;
 }
 
