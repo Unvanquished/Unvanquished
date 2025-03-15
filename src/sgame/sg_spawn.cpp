@@ -790,6 +790,46 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 		G_WarnAboutDeprecatedEntityField(entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
 }
 
+static std::unordered_map< std::string, int > autoIdCounters;
+
+static void ResetAutomaticEntityIdState()
+{
+	autoIdCounters.clear();
+}
+
+static void SetAutomaticEntityId( gentity_t *spawningEntity )
+{
+	// generate automatic IDs for some map entities, in case the map does not set IDs.
+	// these IDs are persistent, they do not change when loading a map with or
+	// without a layout.
+	// we are using a simple scheme for persistence. for instance, consider
+	// a map with 3 func_door entities, each without an ID assigned by the map.
+	// they will receive the automatic IDs: func_door_0, func_door_1, func_door_2
+	// their order in the entity lump / .ent file determines which entity comes first
+	// in this numbering.
+	// if we want to add another func_door entity to this map, and keep persistence,
+	// we have to add it after the already existing func_door entities in
+	// the entity lump / .ent file.
+	// ideas for a method that would keep persistence in more cases:
+	// - method 1:
+	//   sort the entities by their positions in space
+	//   use the average of vertices for entities with models in the BSP
+	//   break ties by sorting by all properties
+	//   (overlapping entities of the same kind have been observed in several maps)
+	// - method 2:
+	//   calculate a hash from the entity description text
+	//   convert the hash to something human readable, use this as ID postfix
+	// the more complicated methods are probably not worth it, as we can always assign
+	// IDs of our own choosing in the entity lump / .ent file.
+	std::string classname = spawningEntity->classname;
+	int counter = autoIdCounters[ classname ]++;
+	if ( spawningEntity->id == nullptr )
+	{
+		std::string autoId = Str::Format( "%s_%d", classname, counter );
+		spawningEntity->id = G_NewString( autoId.c_str() );
+	}
+}
+
 /*
 ===================
 G_SpawnGEntityFromSpawnVars
@@ -882,7 +922,10 @@ static void G_SpawnGEntityFromSpawnVars()
 	if ( !G_CallSpawnFunction( spawningEntity ) )
 	{
 		G_FreeEntity( spawningEntity );
+		return;
 	}
+
+	SetAutomaticEntityId( spawningEntity );
 }
 
 bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
@@ -1140,6 +1183,7 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 void G_SpawnEntitiesFromString()
 {
 	level.numSpawnVars = 0;
+	ResetAutomaticEntityIdState();
 
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
