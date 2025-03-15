@@ -67,16 +67,16 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 {
 	lua_State *L = Lua::State();
 	// the lua state might not be ready yet
-	if ( L != nullptr )
+	if ( L != nullptr && self->id != nullptr )
 	{
 		lua_getglobal( L, "EntityHandlers" );
 		if ( lua_istable( L, -1 ) )
 		{
-			int entityNum = self->num();
-			if ( lua_geti( L, -1, entityNum ) == LUA_TFUNCTION )
+			lua_pushstring( L, self->id );
+			if ( lua_gettable( L, -2 ) == LUA_TFUNCTION )
 			{
 				lua_pushstring( L, eventName.c_str() );
-				Log::Notice( "executing lua handler for entity %d", entityNum );
+				Log::Verbose( "executing lua handler for entity %d with ID %s", self->num(), self->id );
 				if ( lua_pcall( L, 1, 0, 0 ) != 0 )
 				{
 					Log::Warn( lua_tostring( L, -1 ) );
@@ -94,13 +94,12 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 static void DeleteLuaEntityHandler( gentity_t *self )
 {
 	lua_State *L = Lua::State();
-	if ( L != nullptr )
+	if ( L != nullptr && self->id != nullptr )
 	{
 		lua_getglobal( L, "EntityHandlers" );
 		if ( lua_istable( L, -1 ) )
 		{
-			int entityNum = self->num();
-			lua_pushinteger( L, entityNum );
+			lua_pushstring( L, self->id );
 			lua_pushnil( L );
 			lua_settable( L, -3 );
 		}
