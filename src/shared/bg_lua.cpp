@@ -126,4 +126,7 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< UpgradeProxy >::Register( L );
 	LuaLib< UnvGlobal>::push( L, &global );
 	lua_setglobal( L, "Unv" );
+
+	lua_newtable( L );
+	lua_setglobal( L, "EntityHandlers" );
 }
