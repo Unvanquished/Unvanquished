@@ -922,6 +922,7 @@ static void G_SpawnGEntityFromSpawnVars()
 	if ( !G_CallSpawnFunction( spawningEntity ) )
 	{
 		G_FreeEntity( spawningEntity );
+		return;
 	}
 
 	SetAutomaticEntityId( spawningEntity );
