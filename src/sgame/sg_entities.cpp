@@ -74,7 +74,8 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 		{
 			lua_pushstring( L, self->id );
 			lua_gettable( L, -2 );
-			if ( lua_type( L, -1 ) == LUA_TFUNCTION )
+			int type = lua_type( L, -1 );
+			if ( type == LUA_TFUNCTION )
 			{
 				lua_pushstring( L, eventName.c_str() );
 				Log::Verbose( "executing lua handler for entity %d with ID %s", self->num(), self->id );
@@ -83,7 +84,7 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 					Log::Warn( lua_tostring( L, -1 ) );
 				}
 			}
-			else
+			else if ( type != LUA_TNIL )
 			{
 				Log::Warn( "lua handler for entity %d with ID %s is not a function", self->num(), self->id );
 				lua_pop( L, 1 );
