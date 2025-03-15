@@ -85,7 +85,7 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 			}
 			else
 			{
-				Log::Warn( "lua entity handler entity %d with ID %s is not a function", self->num(), self->id );
+				Log::Warn( "lua handler for entity %d with ID %s is not a function", self->num(), self->id );
 				lua_pop( L, 1 );
 			}
 		}
