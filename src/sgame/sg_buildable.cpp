@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 #include "sg_cm_world.h"
+#include "sg_spawn.h" // for G_NewString()
 
 /**
  * @return Whether the means of death allow for an under-attack warning.
@@ -1608,6 +1609,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_A_OVERMIND:
+			built->id = G_NewString( "overmind" );
 			break;
 
 		case BA_H_SPAWN:
@@ -1630,6 +1632,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 			break;
 
 		case BA_H_REACTOR:
+			built->id = G_NewString( "reactor" );
 			break;
 
 		default:
