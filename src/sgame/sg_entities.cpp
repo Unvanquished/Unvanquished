@@ -84,9 +84,12 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 					Log::Warn( lua_tostring( L, -1 ) );
 				}
 			}
-			else if ( type != LUA_TNIL )
+			else
 			{
-				Log::Warn( "lua handler for entity %d with ID %s is not a function", self->num(), self->id );
+				if ( type != LUA_TNIL )
+				{
+					Log::Warn( "lua handler for entity %d with ID %s is not a function", self->num(), self->id );
+				}
 				lua_pop( L, 1 );
 			}
 		}
