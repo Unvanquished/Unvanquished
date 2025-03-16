@@ -925,8 +925,8 @@ static void G_SpawnGEntityFromSpawnVars()
 		return;
 	}
 
-	// i am not quite sure why this can happen, but it does happen on map thunder
-	if ( Str::IsIEqual( spawningEntity->classname, "freent" ) )
+	// if the entitiy removed itself, we are done
+	if ( !spawningEntity->inuse )
 	{
 		return;
 	}
