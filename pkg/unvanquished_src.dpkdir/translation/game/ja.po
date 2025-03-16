@@ -8,23 +8,25 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-03-16 23:43+0000\n"
+"Last-Translator: Couvez <ccouvez@free.fr>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "ビルド"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr ""
+msgstr "値段："
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -44,7 +46,7 @@ msgstr ""
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "グレンジャー"
 
 #: ui/alien_spawn.rml:49
 msgid ""
@@ -54,45 +56,46 @@ msgstr ""
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "チーム選択に戻る"
 
 #: ui/callvote_draw.rml:7
+#, fuzzy
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "引き分けの投票を呼びかけ"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "里油"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "投票を呼びかける"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr ""
+msgstr "ボットで満たす"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "チームには何人のプレイヤー（ユーザーとボット）が必要ですか？"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "両方のチーム"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr ""
+msgstr "エイリアン"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "人間"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "チーム"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
@@ -100,47 +103,47 @@ msgstr ""
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr ""
+msgstr "地図を変更"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "投票：次のマップへ移動"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "投票：現在のマップを設定する"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "現在のマップを設定する（ホスト）"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "メソッド"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr ""
+msgstr "マップ"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "アクションを実行する"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "エラー！"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "ゲームプレイガイド"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "ようこそ"
 
 #: ui/help_gameplay.rml:20
 msgid ""
@@ -150,35 +153,39 @@ msgstr ""
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "詳細については、当方の Web サイトやその他のコミュニティの場所でご覧ください！"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Libera.Chat IRC、Matrix、または Discord でプレイヤーや開発者とチャット：<web "
+"dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "フォーラムでニュースについて議論してください：<web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "ゲームの詳細については、Wiki をご覧ください：<web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "バグは <web dest=\"bugs\" /> に報告してください。"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "収入と進化"
 
 #: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"エイリアンは人間を殺すことで進化ポイントを獲得できます。そして、その進化ポイ"
+"ントを使って、より高度な形態の「ドラグーン」に進化することができます。"
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -236,7 +243,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
-msgstr ""
+msgstr "鉱山構造物"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -287,7 +294,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "火事"
 
 #: ui/help_gameplay.rml:94
 msgid ""
@@ -315,7 +322,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
-msgstr ""
+msgstr "攻撃中"
 
 #: ui/help_gameplay.rml:110
 msgid ""
@@ -327,11 +334,11 @@ msgstr ""
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr ""
+msgstr "治癒"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr ""
+msgstr "死ぬと敵に餌を与えるので、自分の命を救いたいかもしれません！"
 
 #: ui/help_gameplay.rml:121
 msgid ""
@@ -368,10 +375,12 @@ msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
+"人間は、一度だけ治療に使用できる医療キットを携帯しており、その後は [medstat] "
+"医療ステーションに戻って治療し、医療キットを補充する必要があります。"
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr ""
+msgstr "壁歩き"
 
 #: ui/help_gameplay.rml:142
 msgid ""
@@ -381,7 +390,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
-msgstr ""
+msgstr "これを使用して特別な場所に到達したり、通気口を通る近道を使用したりします。"
 
 #: ui/help_gameplay.rml:148
 msgid ""
@@ -439,15 +448,15 @@ msgstr ""
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr ""
+msgstr "ゲーム"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "ライフ"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr ""
+msgstr "フレームレート"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
@@ -455,39 +464,39 @@ msgstr ""
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "ビルドポイント"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "クレジット"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "武器"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "範囲："
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "ダメージ："
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
-msgstr ""
+msgstr "発射速度："
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr ""
+msgstr "アップグレード"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "初期装備を選択してください:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
@@ -495,7 +504,7 @@ msgstr ""
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "構築キット"
 
 #: ui/human_spawn.rml:48
 msgid ""
@@ -505,24 +514,24 @@ msgstr ""
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "ビーコン"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "観客"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "マップ："
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "時間："
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "チームを自動選択"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
@@ -538,19 +547,19 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr ""
+msgstr "エイリアンに加わる"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
-msgstr ""
+msgstr "人間に加わる"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "あるいは、ゲームをプレイせずに観戦することもできます。"
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr ""
+msgstr "観戦する"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -560,111 +569,111 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "試合"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr ""
+msgstr "試合を離れる"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
-msgstr ""
+msgstr "アクションを再開する"
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr ""
+msgstr "民主主義"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr ""
+msgstr "ホストメニュー"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "サーバー設定"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr ""
+msgstr "サーバーを停止"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr ""
+msgstr "サーバーを一時停止"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "ボット"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr ""
+msgstr "メインメニュー"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr ""
+msgstr "サーバー一覧"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "ローカル/LANゲームを開始する"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr ""
+msgstr "オプション"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
-msgstr ""
+msgstr "ゲームプレイガイド"
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
-msgstr ""
+msgstr "ゲームを終了する"
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr ""
+msgstr "ベータ"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "視野"
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr ""
+msgstr "エイリアンボットを追加する"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr ""
+msgstr "人間ボットを追加する"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr ""
+msgstr "全てのボットを削除"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
-msgstr ""
+msgstr "グローバル投票："
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr ""
+msgstr "はい"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr ""
+msgstr "または"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr ""
+msgstr "いいえ"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
-msgstr ""
+msgstr "チーム投票："
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr ""
+msgstr "ロボットを追い出す"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr ""
+msgstr "制限時間を延長する"
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
@@ -672,15 +681,15 @@ msgstr ""
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr ""
+msgstr "負けを認める"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "視野角"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = プレイヤーの視野の広さ（角度で測定）。"
 
 #: ui/options_fov.rml:12
 msgid ""
@@ -692,7 +701,7 @@ msgstr ""
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "角度"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -701,7 +710,7 @@ msgstr ""
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "リセット"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
@@ -729,15 +738,15 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "無効"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "軽度"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
-msgstr ""
+msgstr "デフォルト"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
@@ -745,7 +754,7 @@ msgstr ""
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "上下の動き"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
@@ -753,11 +762,11 @@ msgstr ""
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "ねじる動き"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr ""
+msgstr "グラフィックス"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
@@ -765,7 +774,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "最低"
 
 #: ui/options_graphics.rml:28
 msgid ""
@@ -776,7 +785,7 @@ msgstr ""
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
 msgid "Low"
-msgstr ""
+msgstr "低い"
 
 #: ui/options_graphics.rml:32
 msgid ""
@@ -817,11 +826,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "ビデオ"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr ""
+msgstr "輝度"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
@@ -829,7 +838,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr ""
+msgstr "画面解像度"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
@@ -837,11 +846,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "全画面表示"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr ""
+msgstr "オフ"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
@@ -871,11 +880,11 @@ msgstr ""
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "適用"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "点灯"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
@@ -959,7 +968,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
-msgstr ""
+msgstr "影"
 
 #: ui/options_graphics.rml:139
 msgid "Textures"
@@ -967,11 +976,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:141 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "無制限"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
@@ -995,7 +1004,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
-msgstr ""
+msgstr "画像サイズの制限"
 
 #: ui/options_graphics.rml:152
 msgid "Limit image size to save on memory."
@@ -1003,15 +1012,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
-msgstr ""
+msgstr "画面より小さくない"
 
 #: ui/options_graphics.rml:159
 msgid "No larger than screen"
-msgstr ""
+msgstr "画面より大きくない"
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
-msgstr ""
+msgstr "メニュー画像のサイズ制限"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
@@ -1085,11 +1094,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "空"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "空を描く。"
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
@@ -1289,7 +1298,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:351
 msgid "disabled"
-msgstr ""
+msgstr "無効"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
@@ -1353,11 +1362,11 @@ msgstr ""
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
-msgstr ""
+msgstr "キーバインド"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "Esc キーを押すと、キー バインドの変更がキャンセルされます。"
 
 #: ui/options_keys.rml:16
 msgid ""
@@ -1388,27 +1397,27 @@ msgstr ""
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr ""
+msgstr "走る/歩く："
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "スプリント："
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "前進："
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr ""
+msgstr "後退："
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "左に移動："
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "右に移動："
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
@@ -1416,15 +1425,15 @@ msgstr ""
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr ""
+msgstr "しゃがむ："
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr ""
+msgstr "壁歩き："
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "能力"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
@@ -1444,11 +1453,11 @@ msgstr ""
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr ""
+msgstr "リロード："
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "医療キットを使用する："
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
@@ -1472,11 +1481,11 @@ msgstr ""
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr ""
+msgstr "チームチャット："
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr ""
+msgstr "管理者チャット："
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
@@ -1496,11 +1505,11 @@ msgstr ""
 
 #: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
-msgstr ""
+msgstr "その他"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr ""
+msgstr "スコアを表示："
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
@@ -1512,7 +1521,7 @@ msgstr ""
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr ""
+msgstr "ビーコンメニュー："
 
 #: ui/options_keys.rml:159
 msgid "Toggle console:"
@@ -1520,7 +1529,7 @@ msgstr ""
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
-msgstr ""
+msgstr "スクリーンショット："
 
 #: ui/options_keys.rml:165
 msgid ""
@@ -1534,11 +1543,11 @@ msgstr ""
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "上を見る："
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "下を見る："
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
@@ -1562,7 +1571,7 @@ msgstr ""
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "Y 軸"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
@@ -1648,23 +1657,23 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "無効する"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
-msgstr ""
+msgstr "人間のみ"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr ""
+msgstr "人間とエイリアン"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "人間（半透明）"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "人間とエイリアン（半透明）"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1676,7 +1685,7 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
-msgstr ""
+msgstr "左利きモード"
 
 #: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
@@ -1684,7 +1693,7 @@ msgstr ""
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "プレーヤーの設定"
 
 #: ui/options_player.rml:20
 msgid "Personal"
@@ -1692,7 +1701,7 @@ msgstr ""
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "ニックネーム"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
