@@ -75,7 +75,7 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 	lua_getglobal( L, "EntityHandlers" );
 	if ( lua_istable( L, -1 ) )
 	{
-		lua_pushstring( L, self->id );
+		lua_pushinteger( L, self->num() );
 		lua_gettable( L, -2 );
 		int type = lua_type( L, -1 );
 		if ( type == LUA_TFUNCTION )
@@ -111,7 +111,7 @@ static void DeleteLuaEntityHandler( gentity_t *self )
 	lua_getglobal( L, "EntityHandlers" );
 	if ( lua_istable( L, -1 ) )
 	{
-		lua_pushstring( L, self->id );
+		lua_pushinteger( L, self->num() );
 		lua_pushnil( L );
 		lua_settable( L, -3 );
 	}
