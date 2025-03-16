@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "sg_entities.h"
 #include "CBSE.h"
 #include "sgame/lua/Interpreter.h"
+#include "sgame/lua/Entities.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
@@ -72,7 +73,7 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 		return;
 	}
 
-	lua_getglobal( L, "EntityHandlers" );
+	lua_rawgeti( L, LUA_REGISTRYINDEX, Lua::EntityHandlersRegistryHandle );
 	if ( lua_istable( L, -1 ) )
 	{
 		lua_pushinteger( L, self->num() );
@@ -108,7 +109,7 @@ static void DeleteLuaEntityHandler( gentity_t *self )
 		return;
 	}
 
-	lua_getglobal( L, "EntityHandlers" );
+	lua_rawgeti( L, LUA_REGISTRYINDEX, Lua::EntityHandlersRegistryHandle );
 	if ( lua_istable( L, -1 ) )
 	{
 		lua_pushinteger( L, self->num() );
