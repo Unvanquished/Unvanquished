@@ -209,7 +209,7 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 	}
 
 	// lerp between old and new animation if possible
-	if ( lf->blendlerp >= 0.0f )
+	if ( lf->blendlerp > 0.0f )
 	{
 		if ( newSkeleton->type != refSkeletonType_t::SK_INVALID && oldSkeleton->type != refSkeletonType_t::SK_INVALID && newSkeleton->numBones == oldSkeleton->numBones )
 		{
