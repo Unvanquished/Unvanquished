@@ -66,51 +66,56 @@ static const Str::StringRef EventToString( gentityCallEvent_t eventType )
 static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 {
 	lua_State *L = Lua::State();
-	// the lua state might not be ready yet
-	if ( L != nullptr && self->id != nullptr )
+
+	if ( L == nullptr || self->id == nullptr )
 	{
-		lua_getglobal( L, "EntityHandlers" );
-		if ( lua_istable( L, -1 ) )
+		return;
+	}
+
+	lua_getglobal( L, "EntityHandlers" );
+	if ( lua_istable( L, -1 ) )
+	{
+		lua_pushstring( L, self->id );
+		lua_gettable( L, -2 );
+		int type = lua_type( L, -1 );
+		if ( type == LUA_TFUNCTION )
 		{
-			lua_pushstring( L, self->id );
-			lua_gettable( L, -2 );
-			int type = lua_type( L, -1 );
-			if ( type == LUA_TFUNCTION )
+			lua_pushstring( L, eventName.c_str() );
+			Log::Verbose( "executing lua handler for entity %d with ID %s", self->num(), self->id );
+			if ( lua_pcall( L, 1, 0, 0 ) != 0 )
 			{
-				lua_pushstring( L, eventName.c_str() );
-				Log::Verbose( "executing lua handler for entity %d with ID %s", self->num(), self->id );
-				if ( lua_pcall( L, 1, 0, 0 ) != 0 )
-				{
-					Log::Warn( lua_tostring( L, -1 ) );
-				}
-			}
-			else
-			{
-				if ( type != LUA_TNIL )
-				{
-					Log::Warn( "lua handler for entity %d with ID %s is not a function", self->num(), self->id );
-				}
-				lua_pop( L, 1 );
+				Log::Warn( lua_tostring( L, -1 ) );
 			}
 		}
-		lua_pop( L, 1 );
+		else
+		{
+			if ( type != LUA_TNIL )
+			{
+				Log::Warn( "lua handler for entity %d with ID %s is not a function", self->num(), self->id );
+			}
+			lua_pop( L, 1 );
+		}
 	}
+	lua_pop( L, 1 );
 }
 
 static void DeleteLuaEntityHandler( gentity_t *self )
 {
 	lua_State *L = Lua::State();
-	if ( L != nullptr && self->id != nullptr )
+
+	if ( L == nullptr || self->id == nullptr )
 	{
-		lua_getglobal( L, "EntityHandlers" );
-		if ( lua_istable( L, -1 ) )
-		{
-			lua_pushstring( L, self->id );
-			lua_pushnil( L );
-			lua_settable( L, -3 );
-		}
-		lua_pop( L, 1 );
+		return;
 	}
+
+	lua_getglobal( L, "EntityHandlers" );
+	if ( lua_istable( L, -1 ) )
+	{
+		lua_pushstring( L, self->id );
+		lua_pushnil( L );
+		lua_settable( L, -3 );
+	}
+	lua_pop( L, 1 );
 }
 
 /*
