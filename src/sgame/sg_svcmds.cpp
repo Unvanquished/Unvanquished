@@ -39,6 +39,7 @@ Maryland 20850 USA.
 
 #include "common/Common.h"
 #include "sg_local.h"
+#include "sg_spawn.h"
 #include "botlib/bot_api.h"
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
@@ -105,6 +106,47 @@ public:
 	}
 };
 static ShowBehaviorCmd showBehaviorRegistration;
+
+class EntitySetIdCmd : public Cmd::StaticCmd
+{
+public:
+	EntitySetIdCmd() : StaticCmd( "entitySetID", 0, "set the ID of an entity" ) {}
+	void Run( const Cmd::Args& args ) const override
+	{
+		if ( args.Argc() != 3 )
+		{
+			PrintUsage( args, "<entityNum> <entityID>" );
+			return;
+		}
+
+		int entityNum;
+		if ( !Str::ParseInt( entityNum, args.Argv( 1 ) )
+		     || entityNum < MAX_CLIENTS
+		     || entityNum > level.num_entities
+		     || !g_entities[ entityNum ].inuse )
+		{
+			Print( "invalid entity %s", args.Argv( 1 ) );
+			return;
+		}
+
+		if ( g_entities[ entityNum ].id != nullptr )
+		{
+			Print( "entity %d already has ID `%s`", entityNum, g_entities[ entityNum ].id );
+			return;
+		}
+
+		int alreadyUsed = G_IdToEntityNum( args.Argv( 2 ) );
+		if ( alreadyUsed >= 0 )
+		{
+			Print( "ID `%s` is already used by entity %d", args.Argv( 2 ), alreadyUsed );
+			return;
+		}
+
+		g_entities[ entityNum ].id = G_NewString( args.Argv( 2 ).c_str() );
+		G_RegisterEntityId( entityNum, args.Argv( 2 ) );
+	}
+};
+static EntitySetIdCmd entitySetIdRegistration;
 
 static void Svcmd_EntityFire_f()
 {

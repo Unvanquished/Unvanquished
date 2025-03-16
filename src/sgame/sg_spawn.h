@@ -146,4 +146,6 @@ void     SP_Nothing( gentity_t *self );
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
 
+char *G_NewString( const char *string );
+
 #endif /* SG_SPAWN_H_ */
