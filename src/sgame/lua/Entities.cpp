@@ -41,7 +41,7 @@ namespace Lua {
 
 namespace {
 
-int getEntityById( lua_State *L )
+int idToNum( lua_State *L )
 {
 	const char *id = luaL_checkstring(L, 1);
 	int entityNum = G_IdToEntityNum( id );
@@ -56,6 +56,23 @@ int getEntityById( lua_State *L )
 	return 1;
 }
 
+int numToId( lua_State *L )
+{
+	int entityNum = luaL_checkinteger( L, 1 );
+	if ( entityNum < MAX_CLIENTS
+	     || entityNum > level.num_entities
+	     || !g_entities[ entityNum ].inuse
+	     || g_entities[ entityNum ].id == nullptr )
+	{
+		lua_pushnil( L );
+	}
+	else
+	{
+		lua_pushstring( L, g_entities[ entityNum ].id );
+	}
+	return 1;
+}
+
 }  // namespace
 
 int EntityHandlersRegistryHandle = 0;
@@ -63,8 +80,12 @@ int EntityHandlersRegistryHandle = 0;
 void RegisterEntities( lua_State* L )
 {
 	lua_newtable(L);
-	lua_pushcfunction(L, getEntityById);
-	lua_setfield(L, -2, "getById");
+
+	lua_pushcfunction(L, idToNum);
+	lua_setfield(L, -2, "idToNum");
+
+	lua_pushcfunction(L, numToId);
+	lua_setfield(L, -2, "numToId");
 
 	lua_newtable( L );
 	lua_setfield( L, -2, "handlers" );
