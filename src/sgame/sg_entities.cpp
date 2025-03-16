@@ -64,15 +64,41 @@ static const Str::StringRef EventToString( gentityCallEvent_t eventType )
 	return eventNames[ index ];
 }
 
-static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
+static bool LuaIsTopNilOrFalse( lua_State *L )
+{
+	switch ( lua_type( L, -1 ) )
+	{
+	case LUA_TNIL:
+		return true;
+	case LUA_TBOOLEAN:
+		if ( lua_toboolean( L, -1 ) == 0 )
+		{
+			return true;
+		}
+		return false;
+	default:
+		return false;
+	}
+}
+
+// call a user defined lua entity handler
+//
+// return value: whether the handler wants to prevent the game from firing
+// target entities, that is:
+// false -> the game shall proceed normally
+// true  -> the game shall not fire any target entities
+//          this allows the entity handler to nullify triggers etc, in case it
+//          wants to handle things differently
+static bool CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 {
 	lua_State *L = Lua::State();
 
 	if ( L == nullptr )
 	{
-		return;
+		return true;
 	}
 
+	bool disableTargets = false;
 	lua_rawgeti( L, LUA_REGISTRYINDEX, Lua::EntityHandlersRegistryHandle );
 	if ( lua_istable( L, -1 ) )
 	{
@@ -83,10 +109,15 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 		{
 			lua_pushstring( L, eventName.c_str() );
 			Log::Verbose( "executing lua handler for entity %d", self->num() );
-			if ( lua_pcall( L, 1, 0, 0 ) != 0 )
+			if ( lua_pcall( L, 1, 1, 0 ) != 0 )
 			{
 				Log::Warn( lua_tostring( L, -1 ) );
 			}
+			else
+			{
+				disableTargets = !LuaIsTopNilOrFalse( L );
+			}
+			lua_pop( L, 1 );
 		}
 		else
 		{
@@ -98,6 +129,8 @@ static void CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 		}
 	}
 	lua_pop( L, 1 );
+
+	return disableTargets;
 }
 
 static void DeleteLuaEntityHandler( gentity_t *self )
@@ -858,13 +891,18 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	CallLuaEntityHandler( self, EventToString( eventType ) );
+	bool disableTargets = CallLuaEntityHandler( self, EventToString( eventType ) );
 
 	// Shader replacement. Example usage: map "habitat" elevator activation, red to green light replacement
 	if ( self->mapEntity.shaderKey && self->mapEntity.shaderReplacement )
 	{
 		G_SetShaderRemap( self->mapEntity.shaderKey, self->mapEntity.shaderReplacement, level.time * 0.001 );
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+	}
+
+	if ( disableTargets )
+	{
+		return;
 	}
 
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != nullptr )
