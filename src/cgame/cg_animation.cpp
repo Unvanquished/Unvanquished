@@ -157,7 +157,17 @@ void CG_BlendLerpFrame( lerpFrame_t *lf )
 		return;
 	}
 
-	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
+	if ( lf->blendlerp < 1.0e-6f )
+	{
+		// Truncate to 0 to avoid wasting CPU/IPC on blending operations for
+		// invisibly small differences.
+		// 1e-6 is intended as a conservative value that would definitely not be visibly different;
+		// it would probably be fine to use 1e-4 and be slightly more efficient.
+		lf->blendlerp = 0.0f;
+		return;
+	}
+
+	if ( cg.time > lf->blendtime )
 	{
 		//exp blending
 		lf->blendlerp -= lf->blendlerp / cg_animBlend.Get();
