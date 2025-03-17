@@ -1181,7 +1181,7 @@ public:
 				return;
 			}
 
-			SetInnerRML( va( "<img src='/%s' />", CG_GetShaderNameFromHandle( cg_weapons[ weapon_ ].weaponIcon ) ) );
+			SetInnerRML( va( "<img src='/$handle/%d' />", cg_weapons[ weapon_ ].weaponIcon ) );
 			SetProperty( "display", "block" );
 		}
 

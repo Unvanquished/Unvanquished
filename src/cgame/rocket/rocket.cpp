@@ -290,7 +290,13 @@ private:
 	{
 		constexpr int flags = RSF_2D | RSF_FITSCREEN;
 
-		if ( Str::IsPrefix( "$levelshot/", source ) )
+		if ( Str::IsPrefix( "$handle/", source ) )
+		{
+			const char *num = source.c_str() + 8;
+			qhandle_t h;
+			return Str::ParseInt( h, num ) ? h : 0;
+		}
+		else if ( Str::IsPrefix( "$levelshot/", source ) )
 		{
 			const char *map = source.c_str() + 11;
 			qhandle_t h = trap_R_RegisterShader(
