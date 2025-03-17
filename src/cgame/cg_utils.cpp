@@ -62,22 +62,6 @@ bool CG_ParseColor( byte *c, const char **text_p )
 	return true;
 }
 
-/*
-==========================
-CG_GetShaderNameFromHandle
-
-Gets the name of a shader from the qhandle_t
-==========================
-*/
-
-const char *CG_GetShaderNameFromHandle( const qhandle_t shader )
-{
-	static char out[ MAX_STRING_CHARS ];
-
-	trap_R_GetShaderNameFromHandle( shader, out, sizeof( out ) );
-	return out;
-}
-
 //
 // UI Helper Function
 //

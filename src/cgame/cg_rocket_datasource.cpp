@@ -1132,7 +1132,7 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, false );
-		Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( cg_weapons[ i ].ammoIcon ), false );
+		Info_SetValueForKey( buf, "icon", va( "$handle/%d", cg_weapons[i].ammoIcon ), false);
 		Info_SetValueForKey( buf, "availability", WeaponAvailability( i ).c_str(), false );
 		Info_SetValueForKey( buf, "cmdName", BG_Weapon( i )->name, false );
 		Info_SetValueForKey( buf, "damage", WeaponDamage( weapon_t(i) ), false );
@@ -1200,7 +1200,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
 		Info_SetValueForKey( buf, "availability", UpgradeAvailability( upgrade_t(i) ).c_str(), false );
 		Info_SetValueForKey( buf, "cmdName", BG_Upgrade( i )->name, false );
-		Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( cg_upgrades[ i ].upgradeIcon ), false );
+		Info_SetValueForKey( buf, "icon", va( "$handle/%d", cg_upgrades[ i ].upgradeIcon ), false );
 
 		Rocket_DSAddRow( "armouryBuyList", table, buf );
 
@@ -1438,7 +1438,7 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 			Info_SetValueForKey( buf, "name", ba->humanName, false );
 			Info_SetValueForKey( buf, "desc", ba->desc, false );
-			Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( ba->icon[ 0 ][ 0 ] ), false );
+			Info_SetValueForKey( buf, "icon", va( "$handle/%d", ba->icon[ 0 ][ 0 ] ), false );
 
 			Rocket_DSAddRow( "beaconList", "default", buf );
 		}
