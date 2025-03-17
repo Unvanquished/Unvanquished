@@ -73,7 +73,7 @@ jobs:
       run: |
         set -x
         sudo apt-get update
-        sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
+        sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build
         git submodule update --init --recursive
 
         curl -sS https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules
