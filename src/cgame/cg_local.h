@@ -138,12 +138,6 @@ struct lerpFrame_t
 	float       blendtime;
 };
 
-// debugging values:
-
-extern int   debug_anim_current;
-extern int   debug_anim_old;
-extern float debug_anim_blend;
-
 //======================================================================
 
 //attachment system
