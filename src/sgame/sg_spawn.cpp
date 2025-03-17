@@ -925,6 +925,12 @@ static void G_SpawnGEntityFromSpawnVars()
 		return;
 	}
 
+	// if the entitiy removed itself, we are done
+	if ( !spawningEntity->inuse )
+	{
+		return;
+	}
+
 	SetAutomaticEntityId( spawningEntity );
 
 	if ( spawningEntity->id != nullptr )
