@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: 2023-05-31 09:42+0000\n"
-"Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
+"PO-Revision-Date: 2025-03-17 15:16+0000\n"
+"Last-Translator: Couvez <ccouvez@free.fr>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/eo/>\n"
 "Language: eo\n"
@@ -17,28 +17,28 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Konstrui"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr ""
+msgstr "Prezo:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Evolui"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "evolupunktoj"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Elektu vian komencan formon:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -56,19 +56,20 @@ msgstr ""
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Reveni al teamelekto"
 
 #: ui/callvote_draw.rml:7
+#, fuzzy
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Alvoku voĉdonon por egalvenko"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Kialo"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Alvoku voĉdonon"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
@@ -80,37 +81,37 @@ msgstr ""
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Ambaŭ teamoj"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr ""
+msgstr "Eksterteranoj"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "Homoj"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "Teamo"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Kvanto"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr ""
+msgstr "Ŝanĝi mapon"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Voĉdono: Movu al la sekva mapo"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Voĉdono: Agordu nunan mapon"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
@@ -118,23 +119,23 @@ msgstr ""
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Metodo"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr ""
+msgstr "Mapo"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Fari agon"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Eraro!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Bone"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
@@ -152,35 +153,39 @@ msgstr ""
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "Pli troveblas en nia retejo kaj aliaj komunumaj lokoj!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Babilu kun ludantoj kaj programistoj ĉe Libera.Chat IRC, Matrix aŭ Discord: "
+"<web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Diskutu pri lastajn novaĵojn en la forumoj: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Malkovru pli pri la ludo en la vikio: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Bonvolu raporti cimojn ĉe: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Enspezo kaj evolucio"
 
 #: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Eksterteranoj povas gajni evolupunktojn mortigante homojn. Ili tiam povas "
+"uzi tiujn evolupunktojn por evolui en [dragoon] pli progresintajn formojn."
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -237,8 +242,9 @@ msgid ""
 msgstr ""
 
 #: ui/help_gameplay.rml:65
+#, fuzzy
 msgid "Mining structures"
-msgstr ""
+msgstr "Minadstrukturoj"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -248,10 +254,13 @@ msgid ""
 msgstr ""
 
 #: ui/help_gameplay.rml:71
+#, fuzzy
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
+"Ne konstruu minadstrukturojn tro proksime unu al la alia, alie ili konkuros "
+"unu kun la alia kaj finos kosti konstruajn rimedojn!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -269,6 +278,10 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
+"Kiam konstruaĵo estas detruita, la ministoj reakiros ĝiajn konstrupunktojn "
+"malrapide. La mina reakiro malpliiĝas laŭlonge de la tempo, tiel ke fariĝas "
+"ĉiam pli malfacile rekonstrui detruitajn konstruaĵojn en longdaŭra matĉo. Ĉi "
+"tio anstataŭas subitan morton."
 
 #: ui/help_gameplay.rml:81
 msgid "Stages &amp; Momentum"
@@ -289,7 +302,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "Fajro"
 
 #: ui/help_gameplay.rml:94
 msgid ""
@@ -302,12 +315,16 @@ msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Se strukturoj estas konstruitaj tro proksime, la fajro povas transsalti al "
+"la malfeliĉaj najbaroj."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
+"Malgranda [fire] fajro havas bonan ŝancon estingi post iom da tempo sed "
+"grupo de brulantaj strukturoj retenos sin sufiĉe varma por pli granda kaoso."
 
 #: ui/help_gameplay.rml:103
 msgid ""
@@ -317,7 +334,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
-msgstr ""
+msgstr "Atakita"
 
 #: ui/help_gameplay.rml:110
 msgid ""
