@@ -33,11 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_animdelta.h"
 #include "cg_segmented_skeleton.h"
 
-// debugging
-int   debug_anim_current;
-int   debug_anim_old;
-float debug_anim_blend;
-
 static refSkeleton_t legsSkeleton;
 static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
@@ -1569,9 +1564,6 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 	if ( ci->skeletal )
 	{
-		debug_anim_current = lf->animationNumber;
-		debug_anim_old = lf->old_animationNumber;
-
 		if ( lf->old_animationNumber <= 0 )
 		{
 			// skip initial / invalid blending

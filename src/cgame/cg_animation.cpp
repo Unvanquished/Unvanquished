@@ -183,8 +183,6 @@ void CG_BlendLerpFrame( lerpFrame_t *lf )
 		}
 
 		lf->blendtime = cg.time + 10;
-
-		debug_anim_blend = lf->blendlerp;
 	}
 }
 
