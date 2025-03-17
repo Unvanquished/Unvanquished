@@ -90,6 +90,12 @@ static int Getscore( lua_State* L )
 	return 1;
 }
 
+static int GetcrosshairEntityNum( lua_State* L )
+{
+	lua_pushinteger( L, cg.crosshairEntityNum );
+	return 1;
+}
+
 }  // namespace
 
 namespace Shared {
@@ -112,6 +118,7 @@ luaL_Reg PlayerGetters[] =
 	GETTER(clips),
 	GETTER(credits),
 	GETTER(score),
+	GETTER(crosshairEntityNum),
 
 	{ nullptr, nullptr }
 };

@@ -121,16 +121,16 @@ Cvar::Range<Cvar::Cvar<int>> cg_disableWarningDialogs("cg_disableWarningDialogs"
 Cvar::Cvar<bool> cg_tutorial("cg_tutorial", "show tutorial text", Cvar::NONE, true);
 
 Cvar::Cvar<bool> cg_rangeMarkerDrawSurface("cg_rangeMarkerDrawSurface", "shade buildable range surfaces", Cvar::NONE, true);
-Cvar::Cvar<bool> cg_rangeMarkerDrawIntersection("cg_rangeMarkerDrawIntersection", "outline insersections between buildable range surfaces", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_rangeMarkerDrawIntersection("cg_rangeMarkerDrawIntersection", "outline where buildable range surfaces meet world", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_rangeMarkerDrawFrontline("cg_rangeMarkerDrawFrontline", "outline edges of buildable range surfaces", Cvar::NONE, false);
 Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerSurfaceOpacity("cg_rangeMarkerSurfaceOpacity", "opacity of buildable range surfaces", Cvar::NONE, 0.08, 0, 1);
 Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerLineOpacity("cg_rangeMarkerLineOpacity", "opacity of buildable range outlines", Cvar::NONE, 0.4, 0, 1);
 Cvar::Cvar<float> cg_rangeMarkerLineThickness("cg_rangeMarkerLineThickness", "thickness of buildable range surface outlines", Cvar::NONE, 4.0);
 Cvar::Cvar<bool> cg_rangeMarkerForBlueprint("cg_rangeMarkerForBlueprint", "show range marker when placing buildable", Cvar::NONE, true);
 Cvar::Modified<Cvar::Cvar<std::string>> cg_rangeMarkerBuildableTypes("cg_rangeMarkerBuildableTypes", "list of buildables or buildable types to show range marker for", Cvar::NONE, "support");
-Cvar::Cvar<bool> cg_rangeMarkerWhenSpectating("cg_rangeMarkerWhenSpectating", "show buildable rangers while spectating", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_rangeMarkerWhenSpectating("cg_rangeMarkerWhenSpectating", "show buildable ranges while spectating", Cvar::NONE, false);
 int cg_buildableRangeMarkerMask;
-Cvar::Range<Cvar::Cvar<float>> cg_binaryShaderScreenScale("cg_binaryShaderScreenScale", "I don't know", Cvar::NONE, 1.0, 0, 1);
+Cvar::Range<Cvar::Cvar<float>> cg_binaryShaderScreenScale("cg_binaryShaderScreenScale", "fraction of screen to draw buildable range marker outlines on", Cvar::NONE, 1.0, 0, 1);
 
 Cvar::Cvar<float> cg_painBlendUpRate("cg_painBlendUpRate", "how fast the pain indicator will appear", Cvar::NONE, 10.0);
 Cvar::Cvar<float> cg_painBlendDownRate("cg_painBlendDownRate", "how fast the pain indicator will disappear", Cvar::NONE, 0.5);
@@ -154,7 +154,7 @@ Cvar::Cvar<bool> cg_emoticonsInMessages("cg_emoticonsInMessages", "render emotic
 Cvar::Cvar<bool> cg_chatTeamPrefix("cg_chatTeamPrefix", "show [H] or [A] before names in chat", Cvar::NONE, true);
 
 Cvar::Cvar<bool> cg_animSpeed("cg_animspeed", "run animations? (for debugging)", Cvar::CHEAT, true);
-Cvar::Cvar<float> cg_animBlend("cg_animblend", "I don't know", Cvar::NONE, 5.0);
+Cvar::Cvar<float> cg_animBlend("cg_animblend", "inter-animation transition time (higher:slower, <=1:instant)", Cvar::NONE, 5.0);
 
 Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar::NONE, 0.05);
 Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
@@ -425,12 +425,12 @@ static void CG_UpdateMediaFraction( float fraction )
 
 enum cgLoadingStep_t {
 	LOAD_START = 0,
+	LOAD_GEOMETRY,
 	LOAD_TRAILS,
 	LOAD_PARTICLES,
+	LOAD_ASSETS,
 	LOAD_CONFIGS,
 	LOAD_SOUNDS,
-	LOAD_GEOMETRY,
-	LOAD_ASSETS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
 	LOAD_CLASSES,
@@ -752,11 +752,6 @@ static void CG_RegisterGraphics()
 	// clear any references to old media
 	cg.refdef = {};
 	trap_R_ClearScene();
-
-	CG_UpdateLoadingStep( LOAD_GEOMETRY );
-	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
-
-	CG_UpdateLoadingStep( LOAD_ASSETS );
 
 	for ( i = 0; i < 11; i++ )
 	{
@@ -1313,16 +1308,27 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	CG_SetMapNameFromServerinfo();
 
+	CG_UpdateLoadingStep( LOAD_GEOMETRY );
 	// load the new map
 	CM_LoadMap(cgs.mapname);
 
 	CG_InitMinimap();
+
+	/* Always do this before loading any texture, as texture options may have
+	to be read from the map worldspawn entity before loading any texture.
+	See: https://github.com/Unvanquished/Unvanquished/pull/3312
+	And: https://github.com/DaemonEngine/Daemon/issues/1079 */
+	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
 
 	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
 
 	CG_UpdateLoadingStep( LOAD_PARTICLES );
 	CG_LoadParticleSystems();
+
+	// It updates loading steps by itself.
+	CG_UpdateLoadingStep( LOAD_ASSETS );
+	CG_RegisterGraphics();
 
 	// load configs after initializing particles and trails since it registers some
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
@@ -1337,11 +1343,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	cgs.voices = BG_VoiceInit();
 	BG_PrintVoices( cgs.voices, cg_debugVoices.Get() );
-
-	// It updates loading steps by itself.
-	// LOAD_GEOMETRY
-	// LOAD_ASSETS
-	CG_RegisterGraphics();
 
 	// load weapons upgrades and buildings after configs
 	CG_UpdateLoadingStep( LOAD_WEAPONS );

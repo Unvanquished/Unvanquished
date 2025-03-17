@@ -109,6 +109,9 @@ struct playerState_t
 	int clientNum; // ranges from 0 to MAX_CLIENTS-1
 	// add to command angles to get view direction
 	// these can be used for external disturbances to a player's view not caused by their inputs
+	// Note: this is units of 360/65536 of a degree. So angle x is equivalent to x&65536,
+	// and we can transmit only the lower 16 bits on the network.
+	// TODO: change to unsigned so that wrapping is not undefined behavior
 	int   delta_angles[ 3 ];
 	vec3_t viewangles; // for fixed views
 	int    commandTime; // cmd->serverTime of last executed command

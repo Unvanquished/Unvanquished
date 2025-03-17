@@ -539,6 +539,12 @@ void G_BotThink( gentity_t *self )
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
 
+	// for real clients this is read off the network as a 16-bit value
+	for ( int &angle : self->botMind->cmdBuffer.angles )
+	{
+		angle &= 65535;
+	}
+
 	// ensure we really want to sprint or not
 	self->client->pers.cmd = self->botMind->cmdBuffer;
 	self->botMind->doSprint(
