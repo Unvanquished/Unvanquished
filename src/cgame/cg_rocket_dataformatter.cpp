@@ -144,12 +144,12 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 
 		if ( s && ( s->team == CG_MyTeam() || CG_MyTeam() == TEAM_NONE ) && s->weapon != WP_NONE )
 		{
-			rml = va( "<img src='/%s'/>", CG_GetShaderNameFromHandle( cg_weapons[ s->weapon ].weaponIcon ) );
+			rml = va( "<img src='/$handle/%d'/>", cg_weapons[ s->weapon ].weaponIcon );
 		}
 
 		if ( s && ( s->team == CG_MyTeam() || CG_MyTeam() == TEAM_NONE ) && s->team == TEAM_HUMANS && s->upgrade != UP_NONE )
 		{
-			rml = va( "%s<img src='/%s'/>", rml, CG_GetShaderNameFromHandle( cg_upgrades[ s->upgrade ].upgradeIcon ) );
+			rml = va( "%s<img src='/$handle/%d'/>", rml, cg_upgrades[ s->upgrade ].upgradeIcon );
 		}
 
 		Rocket_DataFormatterFormattedData( handle, rml, false );

@@ -1925,7 +1925,7 @@ void CG_DrawHumanInventory()
 	for ( i = 0; i < numItems; ++i )
 	{
 		const char *rmlClass;
-		const char *src =  CG_GetShaderNameFromHandle( items[ i ] < 32 ? cg_weapons[ items[ i ] ].weaponIcon : cg_upgrades[ items[ i ] - 32 ].upgradeIcon );
+		qhandle_t icon = items[ i ] < 32 ? cg_weapons[ items[ i ] ].weaponIcon : cg_upgrades[ items[ i ] - 32 ].upgradeIcon;
 
 		switch( colinfo[ i ] )
 		{
@@ -1949,7 +1949,7 @@ void CG_DrawHumanInventory()
 		}
 
 
-		Q_strcat( RML, sizeof( RML ), va( "<img class='%s' src='/%s' />", rmlClass, src ) );
+		Q_strcat( RML, sizeof( RML ), va( "<img class='%s' src='/$handle/%d' />", rmlClass, icon ) );
 	}
 	Q_strcat( RML, sizeof( RML ), "</div>" );
 

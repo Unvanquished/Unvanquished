@@ -286,11 +286,26 @@ public:
 	}
 
 private:
+
+	// Resolves the possible <img> "src"s, listed below:
+	// - Any q3shader name (includes images from VFS with no shader, which get a default shader created)
+	// - $handle/<num>: an int shader handle, as obtained from trap_R_RegisterShader
+	// - $levelshot/<mapname>: levelshot for the specified map
+	//
+	// Note that in RML you usually need to prepend a / to all paths (including magic $ ones)
+	// to avoid them being interpreted as relative paths. But this function receives the "path"
+	// without the leading slash.
 	qhandle_t GetShaderHandle( const Rml::String& source )
 	{
 		constexpr int flags = RSF_2D | RSF_FITSCREEN;
 
-		if ( Str::IsPrefix( "$levelshot/", source ) )
+		if ( Str::IsPrefix( "$handle/", source ) )
+		{
+			const char *num = source.c_str() + 8;
+			qhandle_t h;
+			return Str::ParseInt( h, num ) ? h : 0;
+		}
+		else if ( Str::IsPrefix( "$levelshot/", source ) )
 		{
 			const char *map = source.c_str() + 11;
 			qhandle_t h = trap_R_RegisterShader(

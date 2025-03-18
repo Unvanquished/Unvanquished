@@ -2320,7 +2320,6 @@ enum {
 // cg_utils.c
 //
 bool   CG_ParseColor( byte *c, const char **text_p );
-const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
 void CG_SetKeyCatcher( int catcher );
