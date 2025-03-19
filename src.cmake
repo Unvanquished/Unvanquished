@@ -342,9 +342,11 @@ set(SGAMELIST
 
     ${GAMELOGIC_DIR}/sgame/lua/Interpreter.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Interpreter.h
-
     ${GAMELOGIC_DIR}/sgame/lua/Entities.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Entities.h
+    ${GAMELOGIC_DIR}/sgame/lua/Clients.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Clients.h
+
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

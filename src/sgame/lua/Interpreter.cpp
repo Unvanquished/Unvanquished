@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include "shared/lua/Utils.h"
 #include "sgame/sg_local.h"
 #include "Entities.h"
+#include "Clients.h"
 
 using Shared::Lua::LuaLib;
 
@@ -185,6 +186,7 @@ void Initialize()
 	OverrideGlobalLuaFunctions();
 	BG_InitializeLuaConstants( L );
 	RegisterEntities( L );
+	RegisterClients( L );
 }
 
 void Shutdown()
