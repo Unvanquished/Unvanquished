@@ -73,6 +73,16 @@ int numToId( lua_State *L )
 	return 1;
 }
 
+int isNum( lua_State *L )
+{
+	int num = luaL_checkinteger( L, 1 );
+	lua_pushboolean( L,
+	                 num >= MAX_CLIENTS
+	                 && num < level.num_entities
+	                 && g_entities[ num ].inuse );
+	return 1;
+}
+
 }  // namespace
 
 int EntityHandlersRegistryHandle = 0;
@@ -86,6 +96,9 @@ void RegisterEntities( lua_State* L )
 
 	lua_pushcfunction(L, numToId);
 	lua_setfield(L, -2, "numToId");
+
+	lua_pushcfunction(L, isNum);
+	lua_setfield(L, -2, "isNum");
 
 	lua_newtable( L );
 	lua_setfield( L, -2, "handlers" );
