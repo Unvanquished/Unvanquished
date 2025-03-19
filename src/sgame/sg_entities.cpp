@@ -89,7 +89,7 @@ static bool LuaIsTopNilOrFalse( lua_State *L )
 // true  -> the game shall not fire any target entities
 //          this allows the entity handler to nullify triggers etc, in case it
 //          wants to handle things differently
-static bool CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
+static bool CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName, gentity_t *activator )
 {
 	lua_State *L = Lua::State();
 
@@ -108,8 +108,16 @@ static bool CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName )
 		if ( type == LUA_TFUNCTION )
 		{
 			lua_pushstring( L, eventName.c_str() );
+			if ( activator != nullptr )
+			{
+				lua_pushinteger( L, activator->num() );
+			}
+			else
+			{
+				lua_pushnil( L );
+			}
 			Log::Verbose( "executing lua handler for entity %d", self->num() );
-			if ( lua_pcall( L, 1, 1, 0 ) != 0 )
+			if ( lua_pcall( L, 2, 1, 0 ) != 0 )
 			{
 				Log::Warn( lua_tostring( L, -1 ) );
 			}
@@ -281,7 +289,7 @@ Marks the entity as free
 */
 void G_FreeEntity( gentity_t *entity )
 {
-	CallLuaEntityHandler( entity, "free" );
+	CallLuaEntityHandler( entity, "free", nullptr );
 	DeleteLuaEntityHandler( entity );
 
 	trap_UnlinkEntity( entity );  // unlink from world
@@ -891,7 +899,7 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	bool disableTargets = CallLuaEntityHandler( self, EventToString( eventType ) );
+	bool disableTargets = CallLuaEntityHandler( self, EventToString( eventType ), activator );
 
 	// Shader replacement. Example usage: map "habitat" elevator activation, red to green light replacement
 	if ( self->mapEntity.shaderKey && self->mapEntity.shaderReplacement )
