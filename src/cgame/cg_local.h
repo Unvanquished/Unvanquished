@@ -135,14 +135,7 @@ struct lerpFrame_t
 	animation_t *old_animation;
 
 	float       blendlerp;
-	float       blendtime;
 };
-
-// debugging values:
-
-extern int   debug_anim_current;
-extern int   debug_anim_old;
-extern float debug_anim_blend;
 
 //======================================================================
 
@@ -1910,8 +1903,6 @@ extern Cvar::Cvar<bool> cg_projectileNudge;
 extern Cvar::Cvar<bool> cg_emoticonsInMessages;
 
 extern Cvar::Cvar<bool> cg_chatTeamPrefix;
-
-extern Cvar::Cvar<float> cg_animBlend;
 
 extern Cvar::Cvar<float> cg_motionblur;
 extern Cvar::Cvar<float> cg_motionblurMinSpeed;
