@@ -36,9 +36,129 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_entities.h"
 #include "CBSE.h"
+#include "sgame/lua/Interpreter.h"
+#include "sgame/lua/Entities.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
+
+
+static std::vector<std::string> eventNames = { // in sync with `enum gentityCallEvent_t`
+	"default",
+	"custom",
+	"free",
+	"call",
+	"act",
+	"use",
+	"die",
+	"reach",
+	"reset",
+	"touch",
+	"enable",
+	"disable"
+};
+
+static const Str::StringRef EventToString( gentityCallEvent_t eventType )
+{
+	size_t index = eventType;
+	return eventNames[ index ];
+}
+
+static bool LuaIsTopNilOrFalse( lua_State *L )
+{
+	switch ( lua_type( L, -1 ) )
+	{
+	case LUA_TNIL:
+		return true;
+	case LUA_TBOOLEAN:
+		if ( lua_toboolean( L, -1 ) == 0 )
+		{
+			return true;
+		}
+		return false;
+	default:
+		return false;
+	}
+}
+
+// call a user defined lua entity handler
+//
+// return value: whether the handler wants to prevent the game from firing
+// target entities, that is:
+// false -> the game shall proceed normally
+// true  -> the game shall not fire any target entities
+//          this allows the entity handler to nullify triggers etc, in case it
+//          wants to handle things differently
+static bool CallLuaEntityHandler( gentity_t *self, Str::StringRef eventName, gentity_t *activator )
+{
+	lua_State *L = Lua::State();
+
+	if ( L == nullptr )
+	{
+		return true;
+	}
+
+	bool disableTargets = false;
+	lua_rawgeti( L, LUA_REGISTRYINDEX, Lua::EntityHandlersRegistryHandle );
+	if ( lua_istable( L, -1 ) )
+	{
+		lua_pushinteger( L, self->num() );
+		lua_gettable( L, -2 );
+		int type = lua_type( L, -1 );
+		if ( type == LUA_TFUNCTION )
+		{
+			lua_pushstring( L, eventName.c_str() );
+			if ( activator != nullptr )
+			{
+				lua_pushinteger( L, activator->num() );
+			}
+			else
+			{
+				lua_pushnil( L );
+			}
+			Log::Verbose( "executing lua handler for entity %d", self->num() );
+			if ( lua_pcall( L, 2, 1, 0 ) != 0 )
+			{
+				Log::Warn( lua_tostring( L, -1 ) );
+			}
+			else
+			{
+				disableTargets = !LuaIsTopNilOrFalse( L );
+			}
+			lua_pop( L, 1 );
+		}
+		else
+		{
+			if ( type != LUA_TNIL )
+			{
+				Log::Warn( "lua handler for entity %d is not a function", self->num() );
+			}
+			lua_pop( L, 1 );
+		}
+	}
+	lua_pop( L, 1 );
+
+	return disableTargets;
+}
+
+static void DeleteLuaEntityHandler( gentity_t *self )
+{
+	lua_State *L = Lua::State();
+
+	if ( L == nullptr )
+	{
+		return;
+	}
+
+	lua_rawgeti( L, LUA_REGISTRYINDEX, Lua::EntityHandlersRegistryHandle );
+	if ( lua_istable( L, -1 ) )
+	{
+		lua_pushinteger( L, self->num() );
+		lua_pushnil( L );
+		lua_settable( L, -3 );
+	}
+	lua_pop( L, 1 );
+}
 
 /*
 =================================================================================
@@ -169,6 +289,9 @@ Marks the entity as free
 */
 void G_FreeEntity( gentity_t *entity )
 {
+	CallLuaEntityHandler( entity, "free", nullptr );
+	DeleteLuaEntityHandler( entity );
+
 	trap_UnlinkEntity( entity );  // unlink from world
 
 	if ( g_debugEntities.Get() > 2 )
@@ -776,11 +899,18 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
+	bool disableTargets = CallLuaEntityHandler( self, EventToString( eventType ), activator );
+
 	// Shader replacement. Example usage: map "habitat" elevator activation, red to green light replacement
 	if ( self->mapEntity.shaderKey && self->mapEntity.shaderReplacement )
 	{
 		G_SetShaderRemap( self->mapEntity.shaderKey, self->mapEntity.shaderReplacement, level.time * 0.001 );
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+	}
+
+	if ( disableTargets )
+	{
+		return;
 	}
 
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != nullptr )
