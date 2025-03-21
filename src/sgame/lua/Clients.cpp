@@ -47,7 +47,7 @@ int isNum( lua_State *L )
 	lua_pushboolean( L,
 	                 num >= 0
 	                 && num < MAX_CLIENTS
-	                 && g_entities[ num ].client != nullptr );
+	                 && g_entities[ num ].inuse );
 	return 1;
 }
 
