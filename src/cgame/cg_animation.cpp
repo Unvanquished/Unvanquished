@@ -27,6 +27,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "cg_local.h"
 
+// This shouldn't be much longer than 100 because then short animations (e.g. barricade raise/lower)
+// still won't be fully blended in before they finish.
+// FIXME: detect short animations and accelerate convergence of blend fraction to make
+// sure it's close to 0 by the time the anim finishes?
+static Cvar::Cvar<float> cg_animBlendHalfLife(
+	"cg_animBlendHalfLife", "inter-animation transition time (higher:slower, 0:instant)", Cvar::NONE, 100);
+
 /*
 ===============
 CG_AnimNumber
@@ -146,12 +153,12 @@ void CG_RunMD5LerpFrame( lerpFrame_t *lf, bool animChanged )
 ===============
 CG_BlendLerpFrame
 
-Sets lf->blendlerp and lf->blendtime
+Sets lf->blendlerp
 ===============
 */
 void CG_BlendLerpFrame( lerpFrame_t *lf )
 {
-	if ( cg_animBlend.Get() <= 0.0f )
+	if ( cg_animBlendHalfLife.Get() <= 0.0f )
 	{
 		lf->blendlerp = 0.0f;
 		return;
@@ -167,23 +174,9 @@ void CG_BlendLerpFrame( lerpFrame_t *lf )
 		return;
 	}
 
-	if ( cg.time > lf->blendtime )
-	{
-		//exp blending
-		lf->blendlerp -= lf->blendlerp / cg_animBlend.Get();
-
-		if ( lf->blendlerp <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
-
-		if ( lf->blendlerp >= 1.0f )
-		{
-			lf->blendlerp = 1.0f;
-		}
-
-		lf->blendtime = cg.time + 10;
-	}
+	//exp blending
+	lf->blendlerp *= exp2f( -cg.frametime / cg_animBlendHalfLife.Get() );
+	lf->blendlerp = Math::Clamp( lf->blendlerp, 0.0f, 1.0f );
 }
 
 /*
