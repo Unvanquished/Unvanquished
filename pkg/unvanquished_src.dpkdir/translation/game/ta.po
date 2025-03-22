@@ -8,177 +8,189 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-03-22 09:01+0000\n"
+"Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
+"Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ta/>\n"
 "Language: ta\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "உருவாக்கு"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr ""
+msgstr "விலை:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "உருவாகிறது"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "மோர்ப் புள்ளிகள்"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "உங்கள் தொடக்க படிவத்தைத் தேர்வுசெய்க:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "கண்டிப்பான"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "கிரேன்சர்"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"டெட்சுகள் ஒரு திருட்டுத்தனமான தாக்குதல் வடிவம், மற்றும் கிரேஞ்சர்கள் அன்னிய கட்டுமான வடிவம்."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "அணி தேர்வுக்குத் திரும்பு"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "டிராவிற்கு வாக்களிக்கவும்"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "காரணம்"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "வாக்களிக்கவும்"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr ""
+msgstr "போட்களால் நிரப்பவும்"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "அணிகள் எத்தனை வீரர்கள் (பயனர்கள் மற்றும் போட்கள்) இருக்க வேண்டும்?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "இரு அணிகளும்"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr ""
+msgstr "வேற்றுகிரகவாசிகள்"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "மனிதர்கள்"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "அணி"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "தொகை"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr ""
+msgstr "வரைபடத்தை மாற்றவும்"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "வாக்கு: அடுத்ததாக மாற்றவும்"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "வாக்கு: தற்போதைய வரைபடத்தை அமைக்கவும்"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "தற்போதைய வரைபடத்தை அமைக்கவும் (ஓச்ட்)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "முறை"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr ""
+msgstr "வரைபடம்"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "செயலைச் செய்யுங்கள்"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "பிழை!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "சரி"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "விளையாட்டு வழிகாட்டி"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "வரவேற்கிறோம்"
 
 #: ui/help_gameplay.rml:20
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"இந்த பிரிவில் வெற்றிகரமான வீரராக மாறுவதற்கு முக்கிய விளையாட்டு கூறுகளின் சுருக்கத்தை "
+"நீங்கள் காண்பீர்கள்."
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "மேலும் எங்கள் வலைத்தளம் மற்றும் பிற சமூக இடங்களில் காணலாம்!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"லிபரா ஐ.ஆர்.சி, மேட்ரிக்ச் அல்லது டிச்கார்ட்: <வலை டெச்டம் = \"காட்சி\" /> இல் வீரர்கள் "
+"மற்றும் டெவலப்பர்களுடன் அரட்டையடிக்கவும்"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr ""
+"மன்றங்களில் செய்திகளைப் பற்றி விவாதிக்கவும்: <web dest = \"மன்றங்கள்\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr ""
+"விக்கியில் விளையாட்டைப் பற்றி மேலும் கண்டறியவும்: <web dest = \"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "பிழைகள் குறித்து புகாரளிக்கவும்: <web dest = \"பிழைகள்\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "வருமானம் &amp; பரிணாமம்"
 
 #: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"மனிதர்களைக் கொல்வதன் மூலம் வேற்றுகிரகவாசிகள் படிமலர்ச்சி புள்ளிகளைப் பெற முடியும். பின்னர் "
+"அவர்கள் அந்த படிமலர்ச்சி புள்ளிகளைப் பயன்படுத்தி [டிராகன்] மிகவும் மேம்பட்ட வடிவங்களாக "
+"உருவாகலாம்."
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -186,12 +198,17 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"ஒரு மனித வீரரின் பார்வை அல்லது கட்டமைக்கக்கூடிய வரிசையில் இல்லாவிட்டால் வேற்றுகிரகவாசிகள் "
+"எல்லா இடங்களிலிருந்தும் உருவாகலாம். [ஓவர் மைண்ட்] ஓவர் மைண்டிற்கு அருகில் இருக்கும்போது "
+"குறைந்த மேம்பட்ட வடிவங்களை (சில செலவில்) வேற்றுகிரகவாசிகள் வழங்கலாம்."
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"ஒரு [கிரேன்சர்] கிரேன்சருடன் ஒரு மிகைப்படுத்தலை உருவாக்குங்கள், அது அழிக்கப்பட்டால், உருவா"
+"க உங்களுக்கு ஒரு நேரடி ஓவர் மைண்ட் தேவை!"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -199,16 +216,23 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"வேற்றுகிரகவாசிகளைக் கொல்வதன் மூலமும், அன்னிய பில்டபிள்சை அழிப்பதன் மூலமும் மனிதர்கள் "
+"வரவுகளை சம்பாதிக்க முடியும், பின்னர் அவர்கள் புதிய [LCANNON] ஆயுதங்கள், உடல் கவசங்கள் "
+"அல்லது [BSUIT] போர்க்களம் மற்றும் ரேடார் அல்லது செட் பேக் போன்ற பாகங்கள் வாங்க அந்த வரவுகளைப்"
+" பயன்படுத்தலாம்."
 
 #: ui/help_gameplay.rml:50
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"[ஆர்மரி] ஆயுதக் களஞ்சியத்தில் மனிதர்கள் ஆயுதங்களை வாங்கி விற்கிறார்கள், ஒன்று "
+"கட்டப்பட்டிருப்பதை உறுதிப்படுத்திக் கொள்ளுங்கள்! ஒரு ஆயுதக் களஞ்சியத்தை காணவில்லை என்றால் "
+"கட்டுமானக் கருவியைப் பயன்படுத்தவும்."
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
-msgstr ""
+msgstr "பில்டபிள்சை இயக்கும்"
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -218,6 +242,11 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
+"ஒரு கட்டமைப்பை உருவாக்க உருவாக்க புள்ளிகள் தேவை. உங்கள் குழு ஒரு சிறிய கட்டுமான "
+"புள்ளிகளுடன் தொடங்கும், ஆனால் நீங்கள் ஒரு பகுதியில் அதிக எண்ணிக்கையிலான கட்டடங்களை வைக்க "
+"விரும்பினால், கிடைக்கக்கூடிய சக்தியை அதிகரிக்கவும், மேலும் உருவாக்க புள்ளிகளை வழங்கவும் "
+"நீங்கள் ஒரு [லீச்] சுரங்க கட்டமைப்பை உருவாக்கலாம். சுரங்க கட்டமைப்புகள் அழிக்கப்பட்டால் நீங்கள் "
+"உருவாக்க புள்ளிகளை இழக்க நேரிடும் என்று எச்சரிக்கையாக இருங்கள்."
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -226,6 +255,10 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
+"சுரங்க கட்டமைப்புகளை விட ([லீச்] லீச், [துரப்பணம்] துரப்பணம்) விட அதிகமான பிபி (பில்ட் "
+"பாயிண்ட்) ஐப் பயன்படுத்தும்போது (காலப்போக்கில் நீங்கள் மீட்கும் தற்போதைய பிபிஎச் + பிபிஎச்) "
+"வழங்கும் திறன் கொண்டவை, மற்ற கட்டடங்கள் செயல்பாட்டுக்கு போதுமான ஆற்றல் இருக்கும் வரை "
+"பில்டபிள்கள் இயங்கும்."
 
 #: ui/help_gameplay.rml:61
 msgid ""
@@ -233,10 +266,13 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
+"ச்பான் கட்டமைப்புகள் ([முட்டை] முட்டை மற்றும் [டெலனோட்] டெலனோட்கள்), சுரங்க கட்டமைப்புகள் (லீச்"
+" மற்றும் துரப்பணம்) மற்றும் தனித்துவமான கட்டமைப்புகள் ([ஓவர் மைண்ட்] ஓவர் மைண்ட் மற்றும் [உலை] "
+"உலை) பிபிஎச் இல்லாததால் பாதிக்கப்படாது."
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
-msgstr ""
+msgstr "சுரங்க கட்டமைப்புகள்"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -244,12 +280,16 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
+"இரண்டு சுரங்க கட்டமைப்புகள் வழியாக உருவாக்க புள்ளிகள் பெறப்படுகின்றன: மனித [துரப்பணம்] "
+"துரப்பணம் மற்றும் ஏலியன் [லீச்] லீச். இந்த கட்டிடங்கள் செயல்திறனுக்காக பரவ வேண்டும்."
 
 #: ui/help_gameplay.rml:71
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
+"சுரங்க கட்டமைப்புகளை மிக நெருக்கமாக உருவாக்க வேண்டாம் அல்லது அவை ஒருவருக்கொருவர் "
+"போட்டியிடுகின்றன, இறுதியில் வளங்களை உருவாக்கும்!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -259,6 +299,11 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
+"பில்டர்கள் அதன் செயல்திறனைக் குறிக்கும் ஒரு வள செனரேட்டரின் சுகாதாரப் பட்டிக்கு மேலே "
+"மற்றொரு பட்டியைக் காண்பார்கள். நீங்கள் கட்டமைக்கக்கூடியதாக இருக்கும்போது ஒரு கணிப்பு "
+"காண்பிக்கப்படும். சுரங்க அமைப்பு கட்டிடத்தை முடிக்கும்போது உருவாக்க புள்ளிகள் உடனடியாகக் "
+"கிடைக்கின்றன, மேலும் கட்டிடம் அழிக்கப்பட்டால் மீண்டும் கழிக்கப்படும். பாதுகாப்பற்ற பயிற்சிகளை "
+"உருவாக்க வேண்டாம்!"
 
 #: ui/help_gameplay.rml:77
 msgid ""
@@ -267,10 +312,14 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
+"ஒரு கட்டிடம் அழிக்கப்படும் போது, சுரங்கத் தொழிலாளர்கள் அதன் உருவாக்க புள்ளிகளை மெதுவாக "
+"மீட்டெடுப்பார்கள். சுரங்க மீட்பு விகிதம் காலப்போக்கில் குறைகிறது, இதனால் நீண்ட கால போட்டியில் "
+"அழிக்கப்பட்ட கட்டிடங்களை மீண்டும் கட்டியெழுப்புவது கடினமாகிறது. இது திடீர் மரணத்தை "
+"மாற்றுகிறது."
 
 #: ui/help_gameplay.rml:81
 msgid "Stages &amp; Momentum"
-msgstr ""
+msgstr "நிலைகள் &amp; உந்தம்"
 
 #: ui/help_gameplay.rml:84
 msgid ""
@@ -278,44 +327,57 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
+"கட்டமைப்புகளை உருவாக்குவதும் அழிப்பதும் எதிரிகளைக் கொல்வதும் உங்கள் அணிக்கு வேகமான ஒரு "
+"புதிய வளத்தைப் பெறுகிறது. புதிய ஆயுதங்களை நீங்கள் பெற்றால், கட்டமைப்புகள் அல்லது வகுப்புகள்"
+" திறக்கப்படும்."
 
 #: ui/help_gameplay.rml:87
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
+"காலப்போக்கில் உந்தம் அதிவேகமாக குறைகிறது, எனவே நீங்கள் சும்மா இருந்தால் உங்கள் குழு புதிய "
+"உருப்படிகளுக்கான அணுகலை இழக்க நேரிடும். தற்போதுள்ள மேம்பாடுகள் செயல்பாட்டுடன் இருக்கும்."
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr ""
+msgstr "காட்டுத்தீ"
 
 #: ui/help_gameplay.rml:94
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"[ஃபிளேமர்] ஃபிளமேத்ரோவர் அல்லது [ஃபயர்பாம்ப்] ஃபயர்பாம்ப் மூலம் தாக்கப்படும்போது ஏலியன் "
+"பில்டபிள்ச் நெருப்பைப் பிடிக்கலாம்."
 
 #: ui/help_gameplay.rml:97
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"கட்டமைப்புகள் மிக நெருக்கமாக கட்டப்பட்டால், நெருப்பு துரதிர்ச்டவசமான அண்டை நாடுகளுக்கு "
+"செல்லலாம்."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
+"ஒரு சிறிய [தீ] தீ சிறிது நேரத்திற்குப் பிறகு வெளியே செல்ல ஒரு நல்ல வாய்ப்பு உள்ளது, "
+"ஆனால் எரியும் கட்டமைப்புகளின் ஒரு குழு அதிக சகதியில் தன்னை சூடாக வைத்திருக்கும்."
 
 #: ui/help_gameplay.rml:103
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
+"[Advgranger] மேம்பட்ட கிரெஞ்சரின் SPIT தாக்குதல் தீவை வெளியேற்ற அல்லது ஊடுருவும் நபர்களை"
+" மெதுவாக்க பயன்படுத்தலாம்!"
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
-msgstr ""
+msgstr "தாக்குதலுக்கு உள்ளாகும்"
 
 #: ui/help_gameplay.rml:110
 msgid ""
@@ -324,14 +386,17 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"[உலை] உலை மற்றும் [மிகைப்படுத்தப்பட்ட] மேலதிகாரி 75% ஆரோக்கியத்தில், 50% ஆரோக்கியத்தில், "
+"25% ஆரோக்கியத்தில் மற்றும் அழிக்கப்படும் போது அணிக்கு எச்சரிக்கைகளை வழங்கும்."
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr ""
+msgstr "குணப்படுத்துதல்"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr ""
+"இறப்பது எதிரிக்கு உணவளிக்கிறது, நீங்கள் உங்கள் உயிரைக் காப்பாற்ற விரும்பலாம்!"
 
 #: ui/help_gameplay.rml:121
 msgid ""
@@ -340,6 +405,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
+"வேற்றுகிரகவாசிகள் எங்கிருந்தாலும் மெதுவாக குணமடைவார்கள், ஆனால் அவர்கள் குழுக்களிலும், "
+"அன்னிய பில்டபிள்களுக்கும் அருகில் குணமடைகிறார்கள். முன்னோக்கி கட்டுவது தீர்க்கமானதாக "
+"இருக்கும்! எந்தவொரு வகையிலும் குணப்படுத்துவது [அட்வ்ராகூன்] மேம்பட்ட டிராகன் எறிபொருள்களை "
+"மீட்டெடுப்பதற்கும் பங்களிக்கும்."
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -347,6 +416,9 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
+"பூச்டர் அருகிலுள்ள வெளிநாட்டினருக்கு விரைவான குணப்படுத்துதலை அளிக்கிறது, உங்களால் "
+"முடிந்தவரை ஒன்றை உருவாக்குங்கள், விரைவில் அதைத் திறக்க முயற்சிக்கவும். உங்கள் தாக்குதல்களை "
+"மிகவும் ஆபத்தானதாக மாற்ற பூச்டர் உங்களுக்கு சில விசத்தையும் வழங்கும்."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -354,6 +426,9 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
+"[ஓவர் மைண்ட்] ஓவர் மைண்ட் அல்லது [முட்டை] முட்டைகளின் இடைநிலை தூரத்தில் தங்குவது உங்களுக்கு "
+"சற்று மேம்பட்ட குணப்படுத்துதலையும் தரும், இருப்பினும் தவழும் விட குறைவாக இருந்தாலும். இது"
+" தளங்களை பாதுகாக்க உதவும்."
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -362,80 +437,107 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
+"வேற்றுகிரகவாசிகள் மூன்றாவது குணப்படுத்தும் ஊக்கத்தைக் கொண்டுள்ளனர்: மற்ற "
+"வேற்றுகிரகவாசிகளுடன் அருகாமையில். நீங்கள் ஒரு நட்பு தம அன்னியருக்கு அருகில் இருந்தால், "
+"நீங்கள் சற்று வேகமாக குணமடைவீர்கள், மேலும் இரண்டு அணி வீரர்களுடன், அன்னிய கட்டமைப்பைத் "
+"தொடுவதன் மூலம் நீங்கள் விரும்பும் அளவுக்கு வேகமாக குணப்படுத்துவீர்கள். சில குழுப்பணிகள் மூலம்"
+", எதிரிகளை முற்றுகையிட இது ஒரு சிறந்த வழியாகும்!"
 
 #: ui/help_gameplay.rml:135
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
+"மனிதர்கள் ஒரு முறை குணமடைய அவர்கள் பயன்படுத்தக்கூடிய ஒரு மெட்கிட்டை அவர்களுடன் சுமந்து "
+"செல்கிறார்கள், அதன் பிறகு அவர்கள் [மெட்ச்டாட்] மெடிச்டேசனுக்குத் திரும்ப வேண்டும்."
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr ""
+msgstr "வால்விங்"
 
 #: ui/help_gameplay.rml:142
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
+"[ட்ரெட்ச்] டிரெட்ச், [மன்டிச்] மன்டிச் மற்றும் [அட்வ்கிரேஞ்சர்] மேம்பட்ட கிரேன்சர் போன்ற சில அன்னி"
+"ய வடிவங்கள் சுவர்களில் நடக்க முடியும்!"
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
+"சிறப்பு இடங்களை அடைய இதைப் பயன்படுத்தவும் அல்லது வென்ட்கள் மூலம் குறுக்குவழிகளைப் "
+"பயன்படுத்தவும்."
 
 #: ui/help_gameplay.rml:148
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
+"டிராப்பர் மற்றும் ச்பைக்கர் போன்ற அன்னிய தற்காப்பு கட்டமைப்புகள் சுவர்களில் சிறப்பாக "
+"செயல்படுகின்றன, அவற்றை உச்சவரம்பில் கட்டுவது கையெறி குண்டுகளிலிருந்து பாதுகாக்கும்."
 
 #: ui/help_gameplay.rml:151
 msgid "The advanced granger can be unlocked with momentum."
-msgstr ""
+msgstr "மேம்பட்ட கிரேன்சரை வேகத்துடன் திறக்கலாம்."
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
-msgstr ""
+msgstr "அதிர்ச்சியடைந்ததிலிருந்து"
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr ""
+msgstr "அதிர்ச்சியடைந்ததிலிருந்து, சகிப்புத்தன்மை அதிகரித்துள்ளது."
 
 #: ui/help_gameplay.rml:161
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
+"அனைத்து அன்னிய படிமலர்ச்சி செலவுகள் மற்றும் ஆதாயங்கள் இரட்டிப்பாகியுள்ளன. ஒரு ஏலியன் "
+"சேமிக்கக்கூடிய புதிய அதிகபட்சம் 20 (முன்பு 9)."
 
 #: ui/help_gameplay.rml:164
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
+"நிலைகள் வேகத்துடன் மாற்றப்பட்டன, மேலும் உருவாக்க புள்ளிகள் நேரடியாக பயிற்சிகளின் "
+"எண்ணிக்கையைப் பொறுத்தது."
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
+"மனிதர்களுக்கு இனி டெச்லா பாதுகாப்பு கோபுரம் அல்லது பாதுகாப்பு கணினி இல்லை, ஆனால் அவர்கள்"
+" ராக்கெட் காய்களை உருவாக்க முடியும்."
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
+"வேற்றுகிரகவாசிகள் ச்பைக்கர் கட்டமைப்பைப் பெற்றனர், இது விவேகமற்ற மனிதர்களை ஆழமாக "
+"காயப்படுத்தக்கூடும், ஆனால் அது மிகவும் பாதிக்கப்படக்கூடிய கட்டமைப்பு, அதை வெற்றுப் "
+"பார்வையில் வைக்க வேண்டாம்!"
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
+"பசிலிச்க் மான்டிசால் மாற்றப்பட்டது, அது இனி பிடிக்க முடியாது, ஆனால் அதன் கடி அவர்களின் "
+"பாதிக்கப்பட்டவர்களை மெதுவாக்குகிறது, மேலும் இது மிக விரைவான அணுகுமுறைகளுக்குச் "
+"செல்லலாம்."
 
 #: ui/help_gameplay.rml:176
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
+"வேற்றுகிரகவாசிகள் ஓவர் மைண்டிற்கு அருகில் பரவ முடியும், மேலும் மேம்பட்ட கிரேன்சர் ச்பிட் "
+"சுவையான காரியங்களைச் செய்ய முடியும், அதை நெருப்பில் அல்லது மனிதர்களாக முயற்சிக்கவும்!"
 
 #: ui/hud_basics.rml:196
 msgid "Game"
