@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: 2025-03-22 09:01+0000\n"
+"PO-Revision-Date: 2025-03-22 13:15+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ta/>\n"
@@ -541,164 +541,172 @@ msgstr ""
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr ""
+msgstr "விளையாட்டு"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "வாழ்க்கை"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr ""
+msgstr "எம்.எச்"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "புள்ளிகளை உருவாக்குங்கள்"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "வரவு"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "ஆயுதங்கள்"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "தாவல்"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "எல்லை:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "சேதம்:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
-msgstr ""
+msgstr "தீ வீதம்:"
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr ""
+msgstr "மேம்படுத்தல்கள்"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "உங்கள் தொடக்க உபகரணங்களைத் தேர்வுசெய்க:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr ""
+msgstr "எச்.எம்.சி."
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "கட்டுமான அறிவிலி"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"எச்.எம்.சி ஒரு விரைவான தீ தொடக்க கருவி, மற்றும் கட்டுமான அறிவிலி மனித கட்டமைப்புகளை "
+"உருவாக்கி சரிசெய்கிறது. அனைத்து உபகரணங்களையும் ஆயுதக் களஞ்சியத்தில் வணிகம் செய்யலாம்."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "பீக்கான்கள்"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "பார்வையாளர்கள்"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "வரைப்படம்:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "நேரம்:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "ஒரு குழுவை தானாக தேர்ந்தெடுக்கவும்"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"வேற்றுகிரகவாசிகள் அதிக மொபைல் மற்றும் பலவிதமான இயக்க அடிப்படையிலான தாக்குதல்களைக் "
+"கொண்டுள்ளனர். அவர்கள் உறுதியானவர்கள், ஆனால் திருட்டுத்தனம் மற்றும் ஏய்ப்பை நம்ப வேண்டும்."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"ஆயுதங்கள் மற்றும் உபகரணங்களின் வகைப்படுத்தலுடன் மனிதர்கள் தங்களை சித்தப்படுத்த முடியும். அவை "
+"நெகிழ்வானவை மற்றும் தூரத்தில் ஆபத்தானவை, ஆனால் உடையக்கூடியவை."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr ""
+msgstr "வேற்றுகிரகவாசிகளில் சேரவும்"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
-msgstr ""
+msgstr "மனிதர்களுடன் சேருங்கள்"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "மாற்றாக நீங்கள் விளையாடாமல் விளையாட்டைப் பார்க்கலாம்."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr ""
+msgstr "கவனமாக"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
+"இது அறியப்படாத பீட்டா பதிப்பாகும். <Web dest = \"பிழைகள்\" /> இல் நீங்கள் காணக்கூடிய "
+"எந்தவொரு சிக்கலையும் தெரிவிக்கவும்"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "போட்டி"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr ""
+msgstr "போட்டியை விடுங்கள்"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
-msgstr ""
+msgstr "நடவடிக்கை மீண்டும் தொடங்குங்கள்"
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr ""
+msgstr "குடியாட்சி"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr ""
+msgstr "புரவலன் பட்டியல்"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "சேவையக அமைப்பு"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr ""
+msgstr "சேவையகத்தை நிறுத்து"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr ""
+msgstr "இடைநிறுத்த சேவையகம்"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "போட்"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr ""
+msgstr "பட்டியல் விளையாடுங்கள்"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
