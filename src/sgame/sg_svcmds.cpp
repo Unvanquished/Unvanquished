@@ -160,7 +160,7 @@ static void Svcmd_EntityFire_f()
 static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	Log::Notice( "%3i: %15s/^5%-24s^*%s%s",
-			entity->num(), Com_EntityTypeName( entity->s.eType ), entity->classname,
+			entity->num(), Com_EntityTypeName( static_cast<entityType_t>( entity->s.eType ) ), entity->classname,
 			entity->mapEntity.names[0] ? entity->mapEntity.names[0] : "", entity->mapEntity.names[1] ? " …" : "");
 }
 
@@ -202,7 +202,7 @@ static void Svcmd_EntityShow_f()
 	}
 
 	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
-	Log::Notice( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
+	Log::Notice( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( static_cast<entityType_t>( selection->s.eType ) ) );
 	if (IS_NON_NULL_VEC3(selection->s.origin))
 	{
 		Log::Notice("%26s", vtos( selection->s.origin ) );
