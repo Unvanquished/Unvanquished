@@ -32,6 +32,52 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+// entityState_t is the information conveyed from the server
+// in an update message about entities that the client will
+// need to render in some way
+// Different eTypes may use the information in different ways
+// The messages are delta compressed, so it doesn't really matter if
+// the structure size is fairly large
+//
+// NOTE: all fields in here must be 32 bits (or those within sub-structures)
+//
+// You can use Com_EntityTypeName to get a String representation of this enum
+enum entityType_t
+{
+	ET_GENERAL,
+	ET_PLAYER,
+	ET_ITEM,
+
+	ET_BUILDABLE,       // buildable type
+
+	ET_LOCATION,
+
+	ET_MISSILE,
+	ET_MOVER,
+	ET_UNUSED,
+	ET_PORTAL,
+	ET_SPEAKER,
+	ET_PUSHER,
+	ET_TELEPORTER,
+	ET_INVISIBLE,
+	ET_FIRE,
+
+	ET_CORPSE,
+	ET_PARTICLE_SYSTEM,
+	ET_ANIMMAPOBJ,
+	ET_MODELDOOR,
+	ET_LIGHTFLARE,
+	ET_LEV2_ZAP_CHAIN,
+
+	ET_BEACON,
+
+	ET_EVENTS       // any of the EV_* events can be added freestanding
+									// by setting eType to ET_EVENTS + eventNum
+									// this avoids having to set eFlags and eventNum
+};
+
+const char *Com_EntityTypeName(entityType_t entityType);
+
 // TODO remove this function when it will no longer be useful
 // This function is a compatibility layer
 template<typename T>
