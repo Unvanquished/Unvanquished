@@ -431,6 +431,17 @@ static void CG_BeaconMenu_f()
 	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
+static void CG_BotTacticMenu_f()
+{
+	clientInfo_t &ci = cgs.clientinfo[ cg.clientNum ];
+	if ( !ci.infoValid // not sure if this can happen, play it safe
+	     || ci.team == TEAM_NONE )
+	{
+		return;
+	}
+	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BOTTACTIC ].id, "show" );
+}
+
 static const struct cg_cmd_t
 {
 	const char *cmd;
@@ -458,6 +469,7 @@ static const struct cg_cmd_t
 	{ "asay",             0,                       0                },
 	{ "beacon",           0,                       CG_CompleteBeacon },
 	{ "beaconMenu",       CG_BeaconMenu_f,         0                },
+	{ "botTacticMenu",    CG_BotTacticMenu_f,      0                },
 	{ "build",            0,                       CG_CompleteBuild },
 	{ "buy",              0,                       CG_CompleteBuy   },
 	{ "callteamvote",     0,                       CG_CompleteTeamVote },

@@ -925,6 +925,12 @@ static void G_SpawnGEntityFromSpawnVars()
 		return;
 	}
 
+	// if the entitiy removed itself, we are done
+	if ( !spawningEntity->inuse )
+	{
+		return;
+	}
+
 	SetAutomaticEntityId( spawningEntity );
 
 	if ( spawningEntity->id != nullptr )
@@ -1072,15 +1078,22 @@ static void InitDisabledItemCvars()
 	G_SpawnStringIntoCVar( "disabledBuildables", g_disabledBuildables );
 }
 
+static std::string defaultTacticBehaviors = "default, defend, attack, stay_here, follow";
 static void InitTacticBehaviorsCvar()
 {
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_tacticBehaviors(
 	   "g_tacticBehaviors",
 		"Allowed behaviors for the tactic command, example: " QQ("default, camper, reckless"),
 		Cvar::NONE,
-		"",
+		defaultTacticBehaviors.c_str(),
 		BG_SetTacticBehaviors
 		);
+	static bool alreadyInitialized = false;
+	if ( !alreadyInitialized )
+	{
+		BG_SetTacticBehaviors( defaultTacticBehaviors.c_str() );
+		alreadyInitialized = true;
+	}
 }
 
 /**
