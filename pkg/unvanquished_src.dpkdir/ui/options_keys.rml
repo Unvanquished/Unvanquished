@@ -155,6 +155,10 @@
 					<p><translate>Beacon menu:</translate></p>
 				</row>
 				<row>
+					<keybind cmd='botTacticMenu' />
+					<p><translate>Bot Tactic menu:</translate></p>
+				</row>
+				<row>
 					<keybind cmd="<console>" />
 					<p><translate>Toggle console:</translate></p>
 				</row>
