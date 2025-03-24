@@ -42,7 +42,6 @@ static const char* const OPEN_MENU_CMD = "toggleMenu";
 
 static bind_t bindings[] =
 {
-	{ "+speed",         N_( "Run/Walk" ),                              {} },
 	{ "+sprint",        N_( "Sprint" ),                                {} },
 	{ "+moveup",        N_( "Jump" ),                                  {} },
 	{ "+movedown",      N_( "Crouch" ),                                {} },
@@ -53,7 +52,6 @@ static bind_t bindings[] =
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
 	{ "+deconstruct",   N_( "Deconstruct Structure" ),                 {} },
-	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
 	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ "message_public", N_( "Global chat" ),                           {} },
 	{ "message_team",   N_( "Team chat" ),                             {} },
@@ -621,9 +619,9 @@ const std::string& CG_TutorialText()
 		text += '\n';
 		text += va( _( "Press %s to chat with your team." ), CG_KeyNameForCommand( "message_team" ) );
 		text += '\n';
-		text += va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleConsole" ) );
+		text += va( _( "Press %s to open the console." ), CG_KeyNameForCommand( OPEN_CONSOLE_CMD ) );
 		text += '\n';
-		text += va( _( "Press %s for the menu." ), CG_KeyNameForCommand( "toggleMenu" ) );
+		text += va( _( "Press %s for the menu." ), CG_KeyNameForCommand( OPEN_MENU_CMD ) );
 	}
 
 	return text;
