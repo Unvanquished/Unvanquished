@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: 2025-03-22 13:15+0000\n"
+"PO-Revision-Date: 2025-03-24 11:56+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ta/>\n"
@@ -710,99 +710,101 @@ msgstr "பட்டியல் விளையாடுங்கள்"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr ""
+msgstr "சேவையக பட்டியல்கள்"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "உள்ளூர்/லேன் விளையாட்டைத் தொடங்கவும்"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr ""
+msgstr "விருப்பங்கள்"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
-msgstr ""
+msgstr "விளையாட்டு வழிகாட்டி"
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
-msgstr ""
+msgstr "விளையாட்டை விட்டு"
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr ""
+msgstr "பீட்டா"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "பார்வைத் துறைகள்"
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr ""
+msgstr "ஒரு அன்னிய போட் சேர்க்கவும்"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr ""
+msgstr "ஒரு மனித போட் சேர்க்கவும்"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr ""
+msgstr "அனைத்து போட்களையும் அகற்றவும்"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
-msgstr ""
+msgstr "உலகளாவிய வாக்கு:"
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr ""
+msgstr "ஆம்"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr ""
+msgstr "அல்லது"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr ""
+msgstr "இல்லை"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
-msgstr ""
+msgstr "குழு வாக்கு:"
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr ""
+msgstr "கிக் போட்ச்"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr ""
+msgstr "நேர நீட்டிப்பு"
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
-msgstr ""
+msgstr "ஒரு டிராவை அழைக்கவும்"
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr ""
+msgstr "தோல்வியை அனுமதிக்கவும்"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "பார்வையின் கோணங்கள்"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = பிளேயரின் பார்வையின் அகலம், டிகிரிகளில் அளவிடப்படுகிறது."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
+"பல வீரர்கள் முதல் நபர் துப்பாக்கி சுடும் வீரர்களாக விளையாடுவதன் மூலம் லேசான இயக்க நோயை "
+"சந்திக்கிறார்கள். இதை எதிர்த்துப் போராட அதிக FOV உதவும்."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "டிகிரி"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -811,159 +813,169 @@ msgstr ""
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr ""
+msgstr "மன்டிச்"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr ""
+msgstr "மராடர்"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
-msgstr ""
+msgstr "பாதிப்புக்குள்ளான"
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
-msgstr ""
+msgstr "கொடுங்கோலன்"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr ""
+msgstr "பாபிங்கைக் காண்க"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr ""
+msgstr "கேமரா பிட்ச்"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "முடக்கப்பட்டது"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "லேசான"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
-msgstr ""
+msgstr "இயல்புநிலை"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "வலுவான"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "மேல் மற்றும் கீழ் இயக்கம்"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr ""
+msgstr "கேமரா உருட்டல்"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "முறுக்கு இயக்கம்"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr ""
+msgstr "கிராபிக்ச்"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "முன்னமைவுகள்"
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "மிகக் குறைந்த"
 
 #: ui/options_graphics.rml:28
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"குறைந்த துணைப்பிரிவுகள், வானம் இல்லை, நிழல் இல்லை, துள்ளல் துகள்கள் இல்லை, 16 படப்புள்ளி "
+"அமைப்புகள்…"
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
 msgid "Low"
-msgstr ""
+msgstr "குறைந்த"
 
 #: ui/options_graphics.rml:32
 msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
 msgstr ""
+"மல்டிசாம்ப்ளிங், அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங், நிழல்கள், பவுன்சிங் துகள்கள், 256 படப்புள்ளி "
+"அமைப்புகள்…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr ""
+msgstr "சராசரி"
 
 #: ui/options_graphics.rml:36
 msgid ""
 "Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
 "textures…"
 msgstr ""
+"இயல்பான, ஏகப்பட்ட மற்றும் இயற்பியல் மேப்பிங், ப்ளூம், ட்ரிலினியர் வடிகட்டுதல், 512-பிக்சல் "
+"அமைப்புகள்…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:255
 #: ui/options_graphics.rml:367 ui/options_graphics.rml:375
 msgid "High"
-msgstr ""
+msgstr "உயர்ந்த"
 
 #: ui/options_graphics.rml:40
 msgid ""
 "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
 "pixel textures…"
 msgstr ""
+"மாறும் விளக்குகள், வெப்ப மூடுபனி, மோசன் மங்கலானது, சிறந்த மல்டிசாம்ப்ளிங், 2048 படப்புள்ளி"
+" அமைப்புகள் வரை…"
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "அல்ட்ரா"
 
 #: ui/options_graphics.rml:44
 msgid ""
 "Relief mapping and other features and effects enabled, up to 4096-pixel "
 "textures…"
 msgstr ""
+"நிவாரண மேப்பிங் மற்றும் பிற நற்பொருத்தங்கள் மற்றும் விளைவுகள் இயக்கப்பட்டவை, 4096 படப்புள்ளி "
+"அமைப்புகள் வரை…"
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "ஒளிதோற்றம்"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr ""
+msgstr "ஒளி"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
-msgstr ""
+msgstr "காமா:"
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr ""
+msgstr "திரை தெளிவுத்திறன்"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
-msgstr ""
+msgstr "எல்லையற்ற சாளரம்"
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "முழு திரை"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr ""
+msgstr "அணை"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "நெகிழ்வான vsync"
 
 #: ui/options_graphics.rml:76
 msgid "Full Vsync"
-msgstr ""
+msgstr "முழு vsync"
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
 #: ui/options_graphics.rml:79
 msgid ""
@@ -971,846 +983,876 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"VSYNC காட்சி கிழிப்பதைத் தடுக்கிறது, ஆனால் உள்ளீட்டு தாமதத்தை அதிகரிக்கிறது. ஃபிரேம்-வீதம்"
+" மானிட்டரின் புதுப்பிப்பு விகிதத்திற்கு மேலே இருக்கும்போது மட்டுமே நெகிழ்வான VSYNC "
+"செயல்படுத்துகிறது, FPS குறையும் போது திணறுவதைத் தவிர்க்கிறது."
 
 #: ui/options_graphics.rml:84
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "வேகமாக தோராயமான எதிர்ப்பு மாற்றுப்பெயர் (FXAA)"
 
 #: ui/options_graphics.rml:88 ui/options_graphics.rml:135
 #: ui/options_graphics.rml:199 ui/options_graphics.rml:238
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "இப்பொழுது இடு"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "லைட்டிங்"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr ""
+msgstr "விளக்குகள்"
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
-msgstr ""
+msgstr "ஒளி மேப்பிங்"
 
 #: ui/options_graphics.rml:97
 msgid "normal"
-msgstr ""
+msgstr "சாதாரண"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
-msgstr ""
+msgstr "வெர்டெக்ச் லைட்டிங்"
 
 #: ui/options_graphics.rml:98
 msgid "low, ugly"
-msgstr ""
+msgstr "குறைந்த, அசிங்கமான"
 
 #: ui/options_graphics.rml:100
 msgid "Lighting system"
-msgstr ""
+msgstr "லைட்டிங் சிச்டம்"
 
 #: ui/options_graphics.rml:103
 msgid "Brightness clamping"
-msgstr ""
+msgstr "ஒளி கிளம்பிங்"
 
 #: ui/options_graphics.rml:105
 msgid ""
 "Old brightness limit of map lighting of world surfaces and models (the way "
 "legacy maps looked before)"
 msgstr ""
+"உலக மேற்பரப்புகள் மற்றும் மாதிரிகளின் வரைபட விளக்குகளின் பழைய பிரகாச வரம்பு (மரபு "
+"வரைபடங்கள் முன்பு பார்த்த விதம்)"
 
 #: ui/options_graphics.rml:108
 msgid "Light styles"
-msgstr ""
+msgstr "ஒளி பாணிகள்"
 
 #: ui/options_graphics.rml:110
 msgid "Precomputed dynamic lights emitted by static map objects."
-msgstr ""
+msgstr "நிலையான வரைபட பொருள்களால் வெளிப்படும் முன்கூட்டிய மாறும் விளக்குகள்."
 
 #: ui/options_graphics.rml:113
 msgid "Dynamic lights"
-msgstr ""
+msgstr "மாறும் விளக்குகள்"
 
 #: ui/options_graphics.rml:115
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
+"ஆயுதங்கள் மற்றும் கட்டிடங்கள் போன்ற பொருட்களை நகர்த்துவதன் மூலம் உமிழப்படும் நிகழ்நேர மாறும் "
+"விளக்குகள்."
 
 #: ui/options_graphics.rml:118
 msgid "Rim lighting"
-msgstr ""
+msgstr "விளிம்பு விளக்குகள்"
 
 #: ui/options_graphics.rml:120
 msgid "Light the edges of models from behind."
-msgstr ""
+msgstr "பின்னால் இருந்து மாதிரிகளின் விளிம்புகளை ஒளிரச் செய்யுங்கள்."
 
 #: ui/options_graphics.rml:123
 msgid "Half Lambert lighting"
-msgstr ""
+msgstr "அரை லம்பேர்ட் லைட்டிங்"
 
 #: ui/options_graphics.rml:125
 msgid "Non-physical lighting technique to make models less dark."
-msgstr ""
+msgstr "மாதிரிகள் குறைவான இருட்டாக மாற்ற இயற்பியல் அல்லாத விளக்கு நுட்பம்."
 
 #: ui/options_graphics.rml:129
 msgid "Blobs"
-msgstr ""
+msgstr "குமிழ்கள்"
 
 #: ui/options_graphics.rml:129
 msgid "low"
-msgstr ""
+msgstr "குறைந்த"
 
 #: ui/options_graphics.rml:130 ui/options_graphics.rml:351
 #: ui/options_ui.rml:177
 msgid "None"
-msgstr ""
+msgstr "எதுவுமில்லை"
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
-msgstr ""
+msgstr "நிழல்கள்"
 
 #: ui/options_graphics.rml:139
 msgid "Textures"
-msgstr ""
+msgstr "கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:141 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "பொது"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "வரம்பு இல்லை"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr ""
+msgstr "(அல்ட்ரா)"
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
-msgstr ""
+msgstr "(உயர்)"
 
 #: ui/options_graphics.rml:147
 msgid "(medium)"
-msgstr ""
+msgstr "(நடுத்தர)"
 
 #: ui/options_graphics.rml:148
 msgid "(low)"
-msgstr ""
+msgstr "(குறைந்த)"
 
 #: ui/options_graphics.rml:149
 msgid "(lowest)"
-msgstr ""
+msgstr "(மிகக் குறைந்த)"
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
-msgstr ""
+msgstr "பட அளவு வரம்பு"
 
 #: ui/options_graphics.rml:152
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "நினைவகத்தில் சேமிக்க பட அளவைக் கட்டுப்படுத்துங்கள்."
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
-msgstr ""
+msgstr "திரையை விட சிறியதாக இல்லை"
 
 #: ui/options_graphics.rml:159
 msgid "No larger than screen"
-msgstr ""
+msgstr "திரையை விட பெரியது இல்லை"
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
-msgstr ""
+msgstr "பட்டியல் பட அளவு வரம்பு"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "நினைவகத்தில் சேமிக்க பட்டியல் பட அளவைக் கட்டுப்படுத்துங்கள்."
 
 #: ui/options_graphics.rml:167
 msgid "High-precision rendering"
-msgstr ""
+msgstr "உயர் துல்லியமான வழங்குதல்"
 
 #: ui/options_graphics.rml:168
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
+"உயர் துல்லியமான படப்புள்ளி இடையகங்களைப் பயன்படுத்தவும், இது வண்ணக் குழிவைக் குறைக்கிறது."
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "முடிந்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்துங்கள்"
 
 #: ui/options_graphics.rml:174
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"வன்பொருள்/இயக்கி ஆதரித்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்தவும். இது செயல்திறனை "
+"மேம்படுத்தக்கூடும்."
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:224
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:329
 #: ui/options_graphics.rml:334 ui/options_graphics.rml:339
 msgid "Experimental."
-msgstr ""
+msgstr "சோதனை."
 
 #: ui/options_graphics.rml:177
 msgid "Mip-mapping"
-msgstr ""
+msgstr "மிப்-மேப்பிங்"
 
 #: ui/options_graphics.rml:178
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
+"எம்ஐபி-மேப்பிங் குறைந்த தெளிவுத்திறன் கொண்ட அமைப்புகளைப் பயன்படுத்துவதன் மூலம் தொலைதூர "
+"மேற்பரப்புகளை சிறப்பாகக் காட்டுகிறது. இது பொதுவாக செயல்திறனை பாதிக்காது."
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
 msgid "No"
-msgstr ""
+msgstr "இல்லை"
 
 #: ui/options_graphics.rml:187
 msgid "Anisotropic mip-mapping"
-msgstr ""
+msgstr "அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங்"
 
 #: ui/options_graphics.rml:188
 msgid "Better interpretation of mip-maps on angled surfaces."
-msgstr ""
+msgstr "கோண மேற்பரப்புகளில் எம்ஐபி-வரைபடங்களின் சிறந்த விளக்கம்."
 
 #: ui/options_graphics.rml:192
 msgid "Trilinear"
-msgstr ""
+msgstr "Trilinear"
 
 #: ui/options_graphics.rml:192
 msgid "better"
-msgstr ""
+msgstr "சிறந்தது"
 
 #: ui/options_graphics.rml:193
 msgid "Bilinear"
-msgstr ""
+msgstr "பிலினியர்"
 
 #: ui/options_graphics.rml:195
 msgid "Texture scaling filter"
-msgstr ""
+msgstr "அமைப்பு அளவிடுதல் வடிகட்டி"
 
 #: ui/options_graphics.rml:203 ui/options_graphics.rml:205
 msgid "Materials"
-msgstr ""
+msgstr "பொருட்கள்"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "வானம்"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "வானத்தை வரையவும்."
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
-msgstr ""
+msgstr "சாதாரண மேப்பிங்"
 
 #: ui/options_graphics.rml:214
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr ""
+msgstr "தட்டையான மேற்பரப்புகளில் கூடுதல் விளக்கு விவரங்களை உருவகப்படுத்துகிறது."
 
 #: ui/options_graphics.rml:217
 msgid "Deluxe mapping"
-msgstr ""
+msgstr "டீலக்ச் மேப்பிங்"
 
 #: ui/options_graphics.rml:219
 msgid "Light direction based on baked textures."
-msgstr ""
+msgstr "வேகவைத்த அமைப்புகளின் அடிப்படையில் ஒளி திசை."
 
 #: ui/options_graphics.rml:222
 msgid "Relief mapping"
-msgstr ""
+msgstr "நிவாரண மேப்பிங்"
 
 #: ui/options_graphics.rml:224
 msgid "Adds bumps on supported surfaces."
-msgstr ""
+msgstr "உதவி மேற்பரப்புகளில் புடைப்புகளைச் சேர்க்கிறது."
 
 #: ui/options_graphics.rml:227
 msgid "Specular mapping"
-msgstr ""
+msgstr "ஏகப்பட்ட மேப்பிங்"
 
 #: ui/options_graphics.rml:229
 msgid "Simulate light specularity."
-msgstr ""
+msgstr "ஒளி ஊகத்தை உருவகப்படுத்துங்கள்."
 
 #: ui/options_graphics.rml:232
 msgid "Physical mapping"
-msgstr ""
+msgstr "உடல் வரைபடம்"
 
 #: ui/options_graphics.rml:234
 msgid "Material appearance based on physical approximations."
-msgstr ""
+msgstr "உடல் தோராயங்களின் அடிப்படையில் பொருள் தோற்றம்."
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "பிரதிபலிப்புகள்"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr ""
+msgstr "நிலையான பிரதிபலிப்புகள்"
 
 #: ui/options_graphics.rml:248
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
+"ஆதரிக்கப்பட்ட மேற்பரப்புகளில் நிலையான கியூபேப் பிரதிபலிப்புகளைச் சேர்க்கிறது. சாதாரண, "
+"ஏகப்பட்ட மற்றும் டீலக்ச் மேப்பிங் தேவை. தற்போது உடல் மேப்பிங் மூலம் ஆதரிக்கப்படவில்லை."
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "மிகக் குறைவு"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
-msgstr ""
+msgstr "மிதமான"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "மிக உயர்ந்த"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "தகுதி"
 
 #: ui/options_graphics.rml:259
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"நிலையான பிரதிபலிப்பு கியூபேப்சின் தகுதி. அதிக குணங்கள் நிறைய வட்டு இடத்தைப் "
+"பயன்படுத்தலாம்."
 
 #: ui/options_graphics.rml:262
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "க்யூப்மேப் கட்டம் இடைவெளி"
 
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "நடப்பு:"
 
 #: ui/options_graphics.rml:272 ui/options_ui.rml:129
 msgid "Never"
-msgstr ""
+msgstr "ஒருபோதும்"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
-msgstr ""
+msgstr "வட்டில் கேச்"
 
 #: ui/options_graphics.rml:274
 msgid "Always rebuild"
-msgstr ""
+msgstr "எப்போதும் மீண்டும் உருவாக்கவும்"
 
 #: ui/options_graphics.rml:276
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "நிலையான பிரதிபலிப்பு கியூபேப்ச் தன்னியக்க கட்டை"
 
 #: ui/options_graphics.rml:277
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr ""
+msgstr "தானாகவே உருவாக்க/ஏற்ற/பிரதிபலிப்பு க்யூபேப்புகளை சேமிக்கவும்."
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "விளைவுகள்"
 
 #: ui/options_graphics.rml:289
 msgid "Bloom"
-msgstr ""
+msgstr "பூக்கும்"
 
 #: ui/options_graphics.rml:291
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "உங்கள் திரையில் பிரகாசமான பகுதிகளை ஒளிரச் செய்கிறது."
 
 #: ui/options_graphics.rml:294
 msgid "Color grading"
-msgstr ""
+msgstr "வண்ண தகுதி"
 
 #: ui/options_graphics.rml:296
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "குறிப்பிட்ட ஆத்மினங்களை உருவாக்க வண்ணங்களை மாற்றவும்."
 
 #: ui/options_graphics.rml:299
 msgid "Heat-haze"
-msgstr ""
+msgstr "வெப்பம் கேள்விக்குரிய"
 
 #: ui/options_graphics.rml:301
 msgid "Simulate air refraction in severe heat."
-msgstr ""
+msgstr "கடுமையான வெப்பத்தில் காற்று ஒளிவிலகல் உருவகப்படுத்தவும்."
 
 #: ui/options_graphics.rml:304
 msgid "Screen space ambient occlusion (SSAO)"
-msgstr ""
+msgstr "திரை விண்வெளி சுற்றுப்புற மறுப்பு (SSAO)"
 
 #: ui/options_graphics.rml:306
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "இருண்ட மூலைகளை உருவகப்படுத்துங்கள்."
 
 #: ui/options_graphics.rml:309
 msgid "Marks"
-msgstr ""
+msgstr "மதிப்பெண்கள்"
 
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
+"மேற்பரப்புகளில் மதிப்பெண்களை (புல்லட் துளைகள் அல்லது க்ரீப் போன்றவை) வரையவும்"
 
 #: ui/options_graphics.rml:314
 msgid "Particle physics"
-msgstr ""
+msgstr "துகள் இயற்பியல்"
 
 #: ui/options_graphics.rml:316
 msgid "Allow particles to bounce off surfaces."
-msgstr ""
+msgstr "துகள்கள் மேற்பரப்புகளைத் துடைக்க அனுமதிக்கவும்."
 
 #: ui/options_graphics.rml:323
 msgid "Renderer"
-msgstr ""
+msgstr "ரெண்டரர்"
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
-msgstr ""
+msgstr "பொருள் அமைப்பு"
 
 #: ui/options_graphics.rml:329
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"செயல்திறனை கணிசமாக மேம்படுத்தும் புதிய அமைப்பைப் பயன்படுத்தவும். சில ஓட்டுநர்கள் இதில் "
+"தோல்வியடையக்கூடும் (எ.கா. சி. மேசா மற்றும் ஏஎம்டி தனியுரிம ஓட்டுநர்கள்)."
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "Finu freustum culling"
 
 #: ui/options_graphics.rml:334
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "பார்வைக்கு வெளியே இருக்கும் குல் மேற்பரப்புகள்."
 
 #: ui/options_graphics.rml:337
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "சி.பீ.யூ மறைவு"
 
 #: ui/options_graphics.rml:339
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "மறைக்கப்பட்ட மேற்பரப்புகள்."
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
-msgstr ""
+msgstr "விளையாட்டு"
 
 #: ui/options_graphics.rml:348
 msgid "Building markers"
-msgstr ""
+msgstr "கட்டிட குறிப்பான்கள்"
 
 #: ui/options_graphics.rml:351
 msgid "disabled"
-msgstr ""
+msgstr "முடக்கப்பட்டது"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
-msgstr ""
+msgstr "அனைத்து கட்டமைப்புகளும்"
 
 #: ui/options_graphics.rml:353
 msgid "Support structures"
-msgstr ""
+msgstr "உதவி கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:354
 msgid "Offensive structures"
-msgstr ""
+msgstr "தாக்குதல் கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:355
 msgid "Alien structures"
-msgstr ""
+msgstr "அன்னிய கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:356
 msgid "Human structures"
-msgstr ""
+msgstr "மனித கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:357
 msgid "Alien support structures"
-msgstr ""
+msgstr "அன்னிய உதவி கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:358
 msgid "Human support structures"
-msgstr ""
+msgstr "மனித உதவி கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:359
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "தாக்குதல் அன்னிய கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:360
 msgid "Offensive human structures"
-msgstr ""
+msgstr "தாக்குதல் மனித கட்டமைப்புகள்"
 
 #: ui/options_graphics.rml:362
 msgid "Building ranges"
-msgstr ""
+msgstr "கட்டிட வரம்புகள்"
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr ""
+msgstr "மாதிரிகள்"
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
-msgstr ""
+msgstr "இயக்க மங்கலானது"
 
 #: ui/options_graphics.rml:380
 msgid "Intensity"
-msgstr ""
+msgstr "தீவிரம்"
 
 #: ui/options_graphics.rml:381
 msgid "Level of motion-blur."
-msgstr ""
+msgstr "மோசன்-ப்ளூரின் நிலை."
 
 #: ui/options_graphics.rml:384
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
+msgstr "இயக்க-BLUR ஐ செயல்படுத்த குறைந்தபட்ச இயக்க விரைவு"
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
-msgstr ""
+msgstr "முக்கிய பிணைப்புகள்"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "முக்கிய பிணைப்பை மாற்றுவதை ரத்து செய்ய எச்கேப் அழுத்தவும்."
 
 #: ui/options_keys.rml:16
 msgid ""
 "Classic First Person Shooter binds,<br />keys will be adjusted to your "
 "layout."
 msgstr ""
+"கிளாசிக் முதல் நபர் துப்பாக்கி சுடும் பிணைப்பு, <br /> விசைகள் உங்கள் தளவமைப்புடன் "
+"சரிசெய்யப்படும்."
 
 #: ui/options_keys.rml:20
 msgid ""
 "One column shifted to the right,<br />keys will be adjusted to your layout."
 msgstr ""
+"ஒரு நெடுவரிசை வலதுபுறமாக மாற்றப்பட்டது, <br /> விசைகள் உங்கள் தளவமைப்புடன் "
+"சரிசெய்யப்படும்."
 
 #: ui/options_keys.rml:24
 msgid "Special binds for left-handed,<br />touchpad users."
-msgstr ""
+msgstr "இடது கை, <br /> டச்பேட் பயனர்களுக்கான சிறப்பு பிணைப்புகள்."
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
-msgstr ""
+msgstr "கேம்பேட்"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
-msgstr ""
+msgstr "மெனுக்களில் இன்னும் வேலை செய்யவில்லை, <br /> & nbsp; சோதனை."
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr ""
+msgstr "நகர்த்தவும்"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr ""
+msgstr "ரன் / வாக்:"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "ச்பிரிண்ட்:"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "முன்னோக்கி:"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr ""
+msgstr "பேக் பிளேல்:"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "இடதுபுறம் நகர்த்து:"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "வலதுபுறம் செல்லுங்கள்:"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr ""
+msgstr "சம்ப்:"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr ""
+msgstr "க்ரூச்:"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr ""
+msgstr "வால்வாக்:"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "திறன்கள்"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "முதன்மை தாக்குதல்:"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "இரண்டாம் நிலை தாக்குதல்:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
-msgstr ""
+msgstr "படப்பிடிப்பு பார்ப்:"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr ""
+msgstr "கையெறி குண்டு வீசவும்:"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr ""
+msgstr "மீண்டும் ஏற்றவும்:"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "மெட்கிட்டைப் பயன்படுத்துங்கள்:"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "கட்டமைப்பைப் பயன்படுத்துங்கள்:"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "உருவாகிறது:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "பூனை/வாக்கு"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr ""
+msgstr "சைகை:"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr ""
+msgstr "உலக அரட்டை:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr ""
+msgstr "குழு அரட்டை:"
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr ""
+msgstr "நிர்வாக அரட்டை:"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "ஆம்: ஆம்:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "வாக்களம் இல்லை:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr ""
+msgstr "குழு வாக்கு ஆம்:"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr ""
+msgstr "குழு வாக்கு எண்:"
 
 #: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
-msgstr ""
+msgstr "இதர"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr ""
+msgstr "மதிப்பெண்களைக் காட்டு:"
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
-msgstr ""
+msgstr "மாற்றுவதற்கான கட்டமைப்பைக் குறிக்கவும்:"
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
-msgstr ""
+msgstr "கட்டமைப்பை மறுகட்டமைக்க விசையை வைத்திருங்கள்."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr ""
+msgstr "பெக்கான் மெனு:"
 
 #: ui/options_keys.rml:159
 msgid "Toggle console:"
-msgstr ""
+msgstr "கன்சோலை மாற்றவும்:"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
-msgstr ""
+msgstr "திரை சாட்:"
 
 #: ui/options_keys.rml:165
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
 msgstr ""
+"ஒரு பி.என்.சி -யைப் பிடிக்க திரை காட்சி எடுக்கும்போது சிப்டைப் பிடிக்கவும், இல்லையெனில் "
+"காட்சிகள் JPEG இல் எடுக்கப்படுகின்றன."
 
 #: ui/options_keys.rml:167
 msgid "Quake-look"
-msgstr ""
+msgstr "நிலநடுக்கம்"
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "பாருங்கள்:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "கீழே பாருங்கள்:"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
-msgstr ""
+msgstr "இடதுபுறம் திரும்பவும்:"
 
 #: ui/options_keys.rml:183
 msgid "Turn right:"
-msgstr ""
+msgstr "வலதுபுறம் திரும்பவும்:"
 
 #: ui/options_keys.rml:187
 msgid "Mouse look:"
-msgstr ""
+msgstr "சுட்டி தோற்றம்:"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
-msgstr ""
+msgstr "சென்டர்வியூ:"
 
 #: ui/options_mouse.rml:7 ui/options.rml:19
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "சுட்டி மற்றும் நோக்கம்"
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "ஒய் அச்சு"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr ""
+msgstr "சாதாரண"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "தலைகீழ்"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
-msgstr ""
+msgstr "செங்குத்து சுட்டி இயக்கத்தின் நடத்தை."
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "சுட்டி உணர்திறன்"
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
-msgstr ""
+msgstr "சுட்டி வடிகட்டி"
 
 #: ui/options_mouse.rml:27
 msgid "Smooth out sudden mouse movements."
-msgstr ""
+msgstr "திடீர் சுட்டி இயக்கங்களை மென்மையாக்கவும்."
 
 #: ui/options_mouse.rml:30
 msgid "Free look"
-msgstr ""
+msgstr "இலவச தோற்றம்"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr ""
+msgstr "நீங்கள் ஒரு நிலநடுக்கம் சன்கியாக இருந்தால் மட்டுமே அணைக்கவும்."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "வட்டம் பட்டியல் சுட்டி பிடிப்பு"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
+"வட்டம் மெனுக்கள் (ஆர்மரி மெனுவைத் தவிர்த்து) சுட்டி உள்ளீடுகளை எடுத்துக் கொள்ளுங்கள்"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr ""
+msgstr "இயக்கம் மற்றும் ஒப்பனை"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
-msgstr ""
+msgstr "இயக்கம்"
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
-msgstr ""
+msgstr "சுவர்-நடைபயிற்சி ஆட்டோ பிட்ச்"
 
 #: ui/options_movements_cosmetic.rml:12
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
 msgstr ""
+"நீங்கள் ஒரு மேற்பரப்பில் இருந்து இன்னொரு மேற்பரப்புக்கு சுவர்-நடை இருக்கும்போது எப்போதும் "
+"பார்வையை சுழற்றுங்கள்."
 
 #: ui/options_movements_cosmetic.rml:21
 msgid "Wall-walking pitch-speed"
-msgstr ""
+msgstr "சுவர் நடைபயிற்சி சுருதி-வேகம்"
 
 #: ui/options_movements_cosmetic.rml:22
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
+"நீங்கள் சுவர்-ஆவியாக இருக்கும்போது உங்கள் பார்வை எவ்வளவு விரைவாக சுழல்கிறது மற்றும் "
+"திருப்புகிறது."
 
 #: ui/options_movements_cosmetic.rml:25
 msgid "Wall-walking toggles"
-msgstr ""
+msgstr "சுவர் நடைபயிற்சி மாற்றங்கள்"
 
 #: ui/options_movements_cosmetic.rml:27 ui/options_movements_cosmetic.rml:32
 msgid "Tap key instead of hold key to activate."
-msgstr ""
+msgstr "செயல்படுத்துவதற்கு விசைக்கு பதிலாக விசையைத் தட்டவும்."
 
 #: ui/options_movements_cosmetic.rml:30
 msgid "Sprint toggles"
-msgstr ""
+msgstr "ச்பிரிண்ட் மாற்று"
 
 #: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
-msgstr ""
+msgstr "ஒப்பனை"
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "முடக்கு"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
-msgstr ""
+msgstr "மனிதர்கள் மட்டுமே"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr ""
+msgstr "மனிதர்கள் மற்றும் வேற்றுகிரகவாசிகள்"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "மனிதர்கள் (கசியும்)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "மனிதர்கள் மற்றும் வேற்றுகிரகவாசிகள் (கசியும்)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
-msgstr ""
+msgstr "முதல் நபர் ஆயுதங்கள்"
 
 #: ui/options_movements_cosmetic.rml:45
 msgid "Show gun, pincer, hand and mandible models in first-person."
-msgstr ""
+msgstr "முதல் நபரில் துப்பாக்கி, பின்சர், கை மற்றும் கட்டாய மாடல்களைக் காட்டு."
 
 #: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
-msgstr ""
+msgstr "இடது கை பயன்முறை"
 
 #: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
-msgstr ""
+msgstr "மிரர் முதல் நபர் துப்பாக்கி மாதிரிகள்."
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "பிளேயர் அமைப்பு"
 
 #: ui/options_player.rml:20
 msgid "Personal"
-msgstr ""
+msgstr "தனிப்பட்ட"
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "புனைப்பெயர்"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr ""
+msgstr "உங்கள் பெயர் மற்றவர்களுக்கு தெரியும்."
 
 #: ui/options_player.rml:26
 msgid "Colour codes and symbols"
-msgstr ""
+msgstr "வண்ண குறியீடுகள் மற்றும் சின்னங்கள்"
 
 #: ui/options_player.rml:29
 msgid ""
@@ -1818,1928 +1860,1955 @@ msgid ""
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
+"ஒரு கேரட் (^) சின்னத்துடன் தொடங்கி அவற்றின் தப்பிக்கும் குறியீட்டை தட்டச்சு செய்வதன் மூலம் "
+"வண்ணங்கள் பயன்படுத்தப்படுகின்றன. ^*ஐப் பயன்படுத்தி வண்ணத்தை மீண்டும் இயல்பாக மீட்டமைக்க முடியும்"
+", அல்லது உண்மையான கேரட்டை ^^ ஐப் பயன்படுத்தி தட்டச்சு செய்யலாம்."
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr ""
+msgstr "எமோடிகான்கள்"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr ""
+msgstr "உங்கள் புனைப்பெயரிலும் எமோடிகான்களை வைக்கலாம்."
 
 #: ui/options_player.rml:70
 msgid ""
 "Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
 msgstr ""
+"எடுத்துக்காட்டு:^7 ^^ 3fred ^^ 1 Baggins [^7 grenade]^* ஆகிறது^3fred^1baggins "
+"[GRENADE]"
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr ""
+msgstr "கிடைக்கக்கூடிய எமோடிகான்களின் பட்டியல் இங்கே:"
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
-msgstr ""
+msgstr "மனித கட்டடங்கள்"
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
-msgstr ""
+msgstr "ஏலியன் பில்டபிள்ச்"
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "மற்றவர்கள்"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
-msgstr ""
+msgstr "டுடோரியல் பயன்முறை"
 
 #: ui/options_player.rml:216
 msgid "Display hints for key bindings on-screen."
-msgstr ""
+msgstr "திரையில் முக்கிய பிணைப்புகளுக்கான குறிப்புகளைக் காண்பி."
 
 #: ui/options_player.rml:220
 msgid "Show only team chat"
-msgstr ""
+msgstr "குழு அரட்டையை மட்டும் காட்டு"
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr ""
+msgstr "இரங்கல்களைக் காட்டு"
 
 #: ui/options.rml:11
 msgid "Player"
-msgstr ""
+msgstr "வீரர்"
 
 #: ui/options.rml:21 ui/options_sound.rml:7
 msgid "Sound"
-msgstr ""
+msgstr "ஒலி"
 
 #: ui/options.rml:23
 msgid "User interface and HUD"
-msgstr ""
+msgstr "பயனர் இடைமுகம் மற்றும் HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr ""
+msgstr "உலகளாவிய தொகுதி"
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "இசை"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
-msgstr ""
+msgstr "எதிரொலி தீவிரம்"
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr ""
+msgstr "எதிரொலி விளைவு"
 
 #: ui/options_sound.rml:26
 msgid "Doppler intensity"
-msgstr ""
+msgstr "டாப்ளர் தீவிரம்"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr ""
+msgstr "ஒரு ஒலியிலிருந்து அல்லது நோக்கி நகரும் போது சுருதி-சிப்ட் விளைவு."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr ""
+msgstr "திறந்த சாதனம்"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "ஆடியோ வெளியீட்டு சாதனம்/அட்டை"
 
 #: ui/options_ui.rml:18
 msgid "User interface"
-msgstr ""
+msgstr "பயனர் இடைமுகம்"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "முக்கிய"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "மொழி"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr ""
+msgstr "சில மொழிகள் முழுமையாக மொழிபெயர்க்கப்படவில்லை."
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "மொழியை மாற்றவும்"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
-msgstr ""
+msgstr "நிகழ்நேர கடிகாரம்"
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr ""
+msgstr "12 மணி நேரம்"
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr ""
+msgstr "24 மணி நேரம்"
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
-msgstr ""
+msgstr "நிச வாழ்க்கையில் நேரத்தைக் காட்டு."
 
 #: ui/options_ui.rml:54
 msgid "Game-time clock"
-msgstr ""
+msgstr "விளையாட்டு நேர கடிகாரம்"
 
 #: ui/options_ui.rml:56
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "ஒரு போட்டி எவ்வளவு காலம் நீடித்தது என்பதைக் காட்டு."
 
 #: ui/options_ui.rml:60
 msgid "Show ping"
-msgstr ""
+msgstr "பிங் காட்டு"
 
 #: ui/options_ui.rml:62
 msgid "Time that information takes to get to the server and back."
-msgstr ""
+msgstr "சேவையகத்திற்குச் செல்ல செய்தி எடுக்கும் நேரம்."
 
 #: ui/options_ui.rml:65
 msgid "Show movement speed"
-msgstr ""
+msgstr "இயக்க வேகத்தைக் காட்டு"
 
 #: ui/options_ui.rml:67
 msgid "Current, maximum and graph of movement-speed."
-msgstr ""
+msgstr "இயக்க-வேகத்தின் தற்போதைய, அதிகபட்ச மற்றும் வரைபடம்."
 
 #: ui/options_ui.rml:70
 msgid "Show FPS"
-msgstr ""
+msgstr "FPS ஐக் காட்டு"
 
 #: ui/options_ui.rml:72
 msgid "Frames per second."
-msgstr ""
+msgstr "நொடிக்கு பிரேம்கள்."
 
 #: ui/options_ui.rml:75
 msgid "Console colors"
-msgstr ""
+msgstr "கன்சோல் வண்ணங்கள்"
 
 #: ui/options_ui.rml:79 ui/options_ui.rml:158 ui/options_ui.rml:202
 msgid "Red:"
-msgstr ""
+msgstr "சிவப்பு:"
 
 #: ui/options_ui.rml:83 ui/options_ui.rml:162 ui/options_ui.rml:206
 msgid "Green:"
-msgstr ""
+msgstr "பச்சை:"
 
 #: ui/options_ui.rml:87 ui/options_ui.rml:166 ui/options_ui.rml:210
 msgid "Blue:"
-msgstr ""
+msgstr "நீலம்:"
 
 #: ui/options_ui.rml:91 ui/options_ui.rml:170 ui/options_ui.rml:214
 msgid "Alpha:"
-msgstr ""
+msgstr "ஆல்பா:"
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
-msgstr ""
+msgstr "குறுக்கு நாற்காலி"
 
 #: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "எச்சரிக்கை: முன்னோட்டம் விளையாட்டில் மட்டுமே வேலை செய்கிறது."
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr ""
+msgstr "கருவி"
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
-msgstr ""
+msgstr "பிளாச்டர்"
 
 #: ui/options_ui.rml:108
 msgid "Rifle"
-msgstr ""
+msgstr "துப்பாக்கி"
 
 #: ui/options_ui.rml:109
 msgid "Pain Saw"
-msgstr ""
+msgstr "வலி பார்த்தேன்"
 
 #: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
-msgstr ""
+msgstr "சாட்கன்"
 
 #: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
-msgstr ""
+msgstr "லேடி"
 
 #: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
-msgstr ""
+msgstr "வெகுசன இயக்கி"
 
 #: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr ""
+msgstr "கார்தேச்"
 
 #: ui/options_ui.rml:114
 msgid "Flamer"
-msgstr ""
+msgstr "ஃபிளேமர்"
 
 #: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
-msgstr ""
+msgstr "துடிப்பு துப்பாக்கி"
 
 #: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
-msgstr ""
+msgstr "லூசிபர் பீரங்கி"
 
 #: ui/options_ui.rml:127
 msgid "Crosshair visiblity"
-msgstr ""
+msgstr "குறுக்கு நாற்காலி தெரிவுநிலை"
 
 #: ui/options_ui.rml:130
 msgid "Ranged weapons only"
-msgstr ""
+msgstr "வரம்பான ஆயுதங்கள் மட்டுமே"
 
 #: ui/options_ui.rml:131
 msgid "Always"
-msgstr ""
+msgstr "எப்போதும்"
 
 #: ui/options_ui.rml:136
 msgid "Crosshair size"
-msgstr ""
+msgstr "குறுக்குவழி அளவு"
 
 #: ui/options_ui.rml:138
 msgid "Tiny"
-msgstr ""
+msgstr "சிறிய"
 
 #: ui/options_ui.rml:139
 msgid "Small"
-msgstr ""
+msgstr "சிறிய"
 
 #: ui/options_ui.rml:140
 msgid "Regular"
-msgstr ""
+msgstr "வழக்கமான"
 
 #: ui/options_ui.rml:141
 msgid "Huge"
-msgstr ""
+msgstr "பெரிய"
 
 #: ui/options_ui.rml:146
 msgid "Crosshair colour"
-msgstr ""
+msgstr "குறுக்கு நாற்காலி நிறம்"
 
 #: ui/options_ui.rml:148
 msgid "Image colour"
-msgstr ""
+msgstr "பட நிறம்"
 
 #: ui/options_ui.rml:149 ui/options_ui.rml:179
 msgid "Custom colour"
-msgstr ""
+msgstr "தனிப்பயன் நிறம்"
 
 #: ui/options_ui.rml:154
 msgid "Crosshair colours"
-msgstr ""
+msgstr "குறுக்கு நாற்காலி வண்ணங்கள்"
 
 #: ui/options_ui.rml:175
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "குறுக்கு நாற்காலி அவுட்லைன் நிறம்"
 
 #: ui/options_ui.rml:178
 msgid "Auto colour"
-msgstr ""
+msgstr "வாகன நிறம்"
 
 #: ui/options_ui.rml:184
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "குறுக்குவழி அவுட்லைன் அளவு"
 
 #: ui/options_ui.rml:186
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr ""
+msgstr "எதிர்மறை மதிப்புகள் குறுக்குவழிக்குள் இருக்க அவுட்லைனை மாற்றும்."
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr ""
+msgstr "அளவு:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
-msgstr ""
+msgstr "ஆஃப்செட்:"
 
 #: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "குறுக்குவழி வண்ணங்கள்"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "வணக்கம்!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "நாங்கள் உங்களை எப்படி அழைக்க வேண்டும்?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "வண்ணங்கள் மற்றும் சின்னங்கள் பயன்படுத்தப்படலாம்."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "விருப்பங்களில் எந்த நேரத்திலும் இதை மாற்றலாம்."
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "நீங்கள் எந்த மொழியைப் பயன்படுத்த விரும்புகிறீர்கள்?"
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
-msgstr ""
+msgstr "போர்க்களத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "சேவையக பட்டியல்கள்"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
-msgstr ""
+msgstr "இணையம்"
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr ""
+msgstr "பெயர்:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "வீரர்கள் (போட்ச்)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
-msgstr ""
+msgstr "பிங்"
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr ""
+msgstr "இணை"
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
-msgstr ""
+msgstr "புதுப்பிப்பு"
 
 #: ui/server_browser.rml:55
 msgid "LAN"
-msgstr ""
+msgstr "லேன்"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr ""
+msgstr "புரவலன்பெயர்"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "கடவுச்சொல்"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "உருவாக்குபவர் பயன்முறை (ஏமாற்றுக்காரர்களை இயக்கு)"
 
 #: ui/server_create.rml:54
 msgid "Building layout to use"
-msgstr ""
+msgstr "பயன்படுத்த தளவமைப்பு"
 
 #: ui/server_create.rml:62
 msgid "Start"
-msgstr ""
+msgstr "தொடங்கு"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
-msgstr ""
+msgstr "இலவச பொருள் அதிர்வெண்"
 
 #: ui/server_setup.rml:17
 msgid "Every X seconds the player is alive, they will receive free funds."
 msgstr ""
+"ஒவ்வொரு ஃச் விநாடிகளிலும் வீரர் உயிருடன் இருக்கிறார், அவர்கள் இலவச நிதியைப் பெறுவார்கள்."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "நொடிகள்"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
-msgstr ""
+msgstr "நட்பு தீ சேதம் பெருக்கிகள்"
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
 msgstr ""
+"குழு சேதத்திற்கான சேதம் பெருக்கி (கட்டிடங்கள் அல்லது சுயத்தை சேர்க்கவில்லை)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr ""
+msgstr "ஏலியன்:"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr ""
+msgstr "மனித:"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
-msgstr ""
+msgstr "நட்பு கட்டமைக்கக்கூடிய தீ"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "வாக்களிக்க அனுமதிக்கவும்"
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
-msgstr ""
+msgstr "வெப்பமயமாதல்"
 
 #: ui/server_setup.rml:48
 msgid "Do warmups at every game start"
-msgstr ""
+msgstr "ஒவ்வொரு விளையாட்டு தொடக்கத்திலும் வெப்பமயமாதல் செய்யுங்கள்"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
-msgstr ""
+msgstr "சேர மெதுவான கணினிகளில் வீரர்களுக்கு சேர நேரம் தருகிறது."
 
 #: ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "அணிகள்"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
-msgstr ""
+msgstr "அன்னிய கட்டிடத்தை அனுமதிக்கவும்"
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr ""
+msgstr "மனித கட்டிடத்தை அனுமதிக்கவும்"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "இயற்பியல்"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "ஈர்ப்பு"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr ""
+msgstr "குட்டி பன்ட்"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr ""
+msgstr "ட்ரெட்சுகளை தாக்குவதன் மூலம் வழியிலிருந்து வெளியேற்றலாம்."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
-msgstr ""
+msgstr "எதிர்ப்பு ச்பான்-பிளாக்"
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
-msgstr ""
+msgstr "மெதுவான மக்களை ச்பான்களிலிருந்து விலக்கவும்."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "உந்தம்"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
-msgstr ""
+msgstr "அரை ஆயுள் நேரம்"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
-msgstr ""
+msgstr "வேகத்திற்கான நேரம் 50%குறைக்க. 0 இந்த நடத்தையை முடக்குகிறது."
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "நிமிடங்கள்"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
-msgstr ""
+msgstr "இரட்டை வெகுமதி நேரந்தவறுகை"
 
 #: ui/server_setup.rml:105
 msgid "Time after which some momentum rewards double"
-msgstr ""
+msgstr "சில வேக வெகுமதிகள் இரட்டிப்பாகும் நேரம்"
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
-msgstr ""
+msgstr "அடிப்படை பெருக்கி"
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr ""
+msgstr "பொதுவான வேக வெகுமதி பெருக்கி"
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
-msgstr ""
+msgstr "வெகுமதி பெருக்கி கொலைகள்"
 
 #: ui/server_setup.rml:121
 msgid "Momentum reward multiplier for kills"
-msgstr ""
+msgstr "கொலைகளுக்கான வேக வெகுமதி பெருக்கி"
 
 #: ui/server_setup.rml:128
 msgid "Building reward multiplier"
-msgstr ""
+msgstr "கட்டிடம் வெகுமதி பெருக்கி"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr ""
+msgstr "கட்டுமானத்திற்கான வேக வெகுமதி பெருக்கி"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
-msgstr ""
+msgstr "மறுகட்டமைப்பு தண்டம் பெருக்கி"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr ""
+msgstr "மறுகட்டமைப்பிற்கான வேக பெனால்டி பெருக்கி"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
-msgstr ""
+msgstr "கட்டிடம் கொலை வெகுமதி பெருக்கி"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr ""
+msgstr "கட்டடங்களை கொல்வதற்கான வேக வெகுமதி பெருக்கி"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "அமைப்பை உருவாக்குங்கள்"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr ""
+msgstr "தொடக்க மதிப்பு"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr ""
+msgstr "ஆரம்ப உருவாக்க புள்ளிகள் எண்ணிக்கை"
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
-msgstr ""
+msgstr "மைனர் போனச்"
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
-msgstr ""
+msgstr "ஒரு சுரங்கத் தொழிலாளருக்கு புள்ளி பட்செட்டை உருவாக்குங்கள்"
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr ""
+msgstr "ஆரம்ப மீளுருவாக்கம் விரைவு"
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
-msgstr ""
+msgstr "பிபி மீட்கப்படும் ஆரம்ப விரைவு (நிமிடத்திற்கு பிபி)"
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
-msgstr ""
+msgstr "அரை மீளுருவாக்கம் நேரம்"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
+"பிபி மீட்பு இரண்டு மடங்கு மெதுவாக வருவதற்கு முன்பு ஒருவர் காத்திருப்பார்"
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "போட்ச்: பொது"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr ""
+msgstr "ஒரு அணிக்கு குறைந்தபட்ச போட்கள்"
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "போதுமான வீரர்கள் இருக்கும் வரை அணிகளை நிரப்பவும்"
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "போட்"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr ""
+msgstr "இயல்புநிலை திறன் நிலை"
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "புதிய போட்களுக்கு மட்டுமே வேலை செய்கிறது."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "மனிதநேயம்"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "பார்வை புலம்"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "எதிர்வினை நேரம்"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "நடத்தை"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "தாக்குதல் கட்டமைப்புகள்"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "மோசடி"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "எல்லையற்ற நிதிகள்"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "தருணத்தை புறக்கணிக்கவும்"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "நவ்மேச் தலைமுறை"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "சுமை நேரத்தில் நவ்மேச்களை உருவாக்குங்கள்"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "தொழிலாளர் நூல்களின் எண்ணிக்கை"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "போட்ச்: மனிதர்கள்"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
-msgstr ""
+msgstr "ஒட்டுமொத்தமாக"
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "மனித போட்கள் உபகரணங்களை வாங்குகின்றன"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "AIM வேக மாற்றியமைப்பாளர் (அதிக அளவு மெதுவாக)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "தனித்தனியாக"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "முதன்மை ஆயுதங்கள்"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "கட்டுமான அறிவிலி (பழுதுபார்ப்பு)"
 
 #: ui/server_setup.rml:279
 msgid "Painsaw"
-msgstr ""
+msgstr "பின்சா"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Flamethrower"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "கவசங்கள்"
 
 #: ui/server_setup.rml:312
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "போட்கள் ஒளி கவசத்தை வாங்குகின்றனவா"
 
 #: ui/server_setup.rml:316
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "போட்கள் நடுத்தர கவசத்தை வாங்குகின்றனவா"
 
 #: ui/server_setup.rml:320
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "போட்கள் போர்க்களத்தை வாங்குகின்றனவா"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "ஃபயர்பாம்ப்"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
-msgstr ""
+msgstr "கையெறி"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "கதிரலைக் கும்பா"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
-msgstr ""
+msgstr "ஏலியன் போட்ச் மார்ப்"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "மேம்பட்ட மராடர்"
 
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "மேம்பட்ட டிராகன்"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
-msgstr ""
+msgstr "துண்டிக்கவும்"
 
 #: ui/transition_downloading.rml:58
 msgid "Additional files are required. Please be patient while they download."
-msgstr ""
+msgstr "கூடுதல் கோப்புகள் தேவை. அவர்கள் பதிவிறக்கும்போது பொறுமையாக இருங்கள்."
 
 #: ui/transition_downloading.rml:59
 msgid "Time left:"
-msgstr ""
+msgstr "எஞ்சிய நேரம்:"
 
 #: ui/transition_downloading.rml:60
 msgid "Download rate:"
-msgstr ""
+msgstr "பதிவிறக்க விகிதம்:"
 
 #: ui/transition_downloading.rml:61
 msgid "Size:"
-msgstr ""
+msgstr "அளவு:"
 
 #: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "அறிவிக்கப்படாதவர்களுக்கு வரவேற்கிறோம்"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"இந்த மெனுவை மூடி, ஒரு அணியில் சேர எங்கும் சொடுக்கு செய்து விளையாடத் தொடங்கவும்!"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*மரணத்திற்கு விழுந்தது"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*மரணத்திற்கு விழுந்தது"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*மரணத்திற்கு விழுந்தது"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*நசுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*நசுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*நசுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*நீரில் மூழ்கியது"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*நீரில் மூழ்கியது"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*நீரில் மூழ்கியது"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "male"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*உருகியது"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "female"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*உருகியது"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "neuter"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*உருகியது"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*சில எரிமலைக்குள் குறைந்தது"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*சில எரிமலைக்குள் குறைந்தது"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*சில எரிமலைக்குள் குறைந்தது"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*தவறான இடத்தில் இருந்தது"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*தவறான இடத்தில் இருந்தது"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*தவறான இடத்தில் இருந்தது"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*வெடிப்பில் சிக்கியது"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*வெடிப்பில் சிக்கியது"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*வெடிப்பில் சிக்கியது"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*அமிலத்தில் சிக்கியது"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*அமிலத்தில் சிக்கியது"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*அமிலத்தில் சிக்கியது"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*ஒரு கோபுரத்தால் சுட்டுக் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*ஒரு கோபுரத்தால் சுட்டுக் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*ஒரு கோபுரத்தால் சுட்டுக் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு கோபுரத்தால் சுட்டுக் கொல்லப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு கோபுரத்தால் சுட்டுக் கொல்லப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு கோபுரத்தால் சுட்டுக் கொல்லப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*ஒரு ராக்கெட்டைப் பிடித்தது"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*ஒரு ராக்கெட்டைப் பிடித்தது"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*ஒரு ராக்கெட்டைப் பிடித்தது"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு ராக்கெட்டைப் பிடித்தது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு ராக்கெட்டைப் பிடித்தது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு ராக்கெட்டைப் பிடித்தது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*ஒரு அமிலக் குழாயால் உருகப்பட்டது"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*ஒரு அமிலக் குழாயால் உருகப்பட்டது"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*ஒரு அமிலக் குழாயால் உருகப்பட்டது"
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு அமிலக் குழாயால் உருகப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு அமிலக் குழாயால் உருகப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு அமிலக் குழாயால் உருகப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*ஒரு ச்பைக்கரால் ஃப்ளெசெட் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*ஒரு ச்பைக்கரால் ஃப்ளெசெட் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*ஒரு ச்பைக்கரால் ஃப்ளெசெட் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு ச்பைக்கரால் ஃப்ளெசெட் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு ச்பைக்கரால் ஃப்ளெசெட் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒரு ச்பைக்கரால் ஃப்ளெசெட் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*மிகைப்படுத்தலால் தட்டப்பட்டது"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*மிகைப்படுத்தலால் தட்டப்பட்டது"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*மிகைப்படுத்தலால் தட்டப்பட்டது"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*மிகைப்படுத்தலால் தட்டப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*மிகைப்படுத்தலால் தட்டப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*மிகைப்படுத்தலால் தட்டப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*உலாவால் வறுத்தெடுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*உலாவால் வறுத்தெடுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*உலாவால் வறுத்தெடுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*உலையால் வறுத்தெடுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*உலையால் வறுத்தெடுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*உலையால் வறுத்தெடுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*கிரேன்சரைத் தவிர்க்க முடியவில்லை"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*கிரேன்சரைத் தவிர்க்க முடியவில்லை"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*கிரேன்சரைத் தவிர்க்க முடியவில்லை"
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*கிரேன்சரைத் தவிர்க்க முடியவில்லை; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*கிரேன்சரைத் தவிர்க்க முடியவில்லை; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*கிரேன்சரைத் தவிர்க்க முடியவில்லை; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "%s%s ^*திரள் மூலம் நுகரப்பட்டது"
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "%s%s ^*திரள் மூலம் நுகரப்பட்டது"
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "%s%s ^*திரள் மூலம் நுகரப்பட்டது"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*திரள் மூலம் நுகரப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*திரள் மூலம் நுகரப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*திரள் மூலம் நுகரப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s%s ^*ஒளியைக் கண்டது"
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s%s ^*ஒளியைக் கண்டது"
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s%s ^*ஒளியைக் கண்டது"
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒளியைக் கண்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒளியைக் கண்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ஒளியைக் கண்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் காணப்பட்டது"
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் காணப்பட்டது"
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் காணப்பட்டது"
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் காணப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் காணப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் காணப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் வெடித்தது"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் வெடித்தது"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் வெடித்தது"
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் வெடித்தது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் வெடித்தது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் வெடித்தது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*இயந்திரத்தை%s%s%s ஆல் இணைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*இயந்திரத்தை%s%s%s ஆல் இணைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*இயந்திரத்தை%s%s%s ஆல் இணைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*இயந்திரத்தை%s%s%s ^*ஆல் இணைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*இயந்திரத்தை%s%s%s ^*ஆல் இணைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*இயந்திரத்தை%s%s%s ^*ஆல் இணைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் குறைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் குறைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் குறைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் குறைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் குறைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் குறைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் சுட்டுக்கொள்ளப்பட்டது"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் சுட்டுக்கொள்ளப்பட்டது"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் சுட்டுக்கொள்ளப்பட்டது"
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் சுட்டுக் கொல்லப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் சுட்டுக் கொல்லப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் சுட்டுக் கொல்லப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் துடிப்பு குண்டு வெடிப்பால் காணப்பட்டது"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் துடிப்பு குண்டு வெடிப்பால் காணப்பட்டது"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் துடிப்பு குண்டு வெடிப்பால் காணப்பட்டது"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் துடிப்பு குண்டு வெடிப்பால் காணப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் துடிப்பு குண்டு வெடிப்பால் காணப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் துடிப்பு குண்டு வெடிப்பால் காணப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் ச்னிப் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் ச்னிப் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் ச்னிப் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் ச்னிப் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் ச்னிப் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் ச்னிப் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் லேசர் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் லேசர் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் லேசர் செய்யப்பட்டது"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் லேசர் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் லேசர் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் லேசர் செய்யப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் சுடரால் வறுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் சுடரால் வறுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் சுடரால் வறுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் சுடரால் வறுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் சுடரால் வறுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் சுடரால் வறுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*ஒரு மிருதுவாக எரிந்தது"
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*ஒரு மிருதுவாக எரிந்தது"
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*ஒரு மிருதுவாக எரிந்தது"
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
-msgstr ""
+msgstr "%s%s ^*எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
-msgstr ""
+msgstr "%s%s ^*எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
-msgstr ""
+msgstr "%s%s ^*எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் அழிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் அழிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் அழிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் நிர்மூலமாக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் நிர்மூலமாக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் நிர்மூலமாக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் கதிரியக்கப்படுத்தப்பட்டது"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் கதிரியக்கப்படுத்தப்பட்டது"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் கதிரியக்கப்படுத்தப்பட்டது"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் கதிரியக்கப்படுத்தப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் கதிரியக்கப்படுத்தப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் பிளாச்மா குண்டு வெடிப்பால் கதிரியக்கப்படுத்தப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "male"
 msgid "%s%s ^*was irradiated"
-msgstr ""
+msgstr "%s%s ^*கதிரியக்கப்படுத்தப்பட்டது"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "female"
 msgid "%s%s ^*was irradiated"
-msgstr ""
+msgstr "%s%s ^*கதிரியக்கப்படுத்தப்பட்டது"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated"
-msgstr ""
+msgstr "%s%s ^*கதிரியக்கப்படுத்தப்பட்டது"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கையெறி குண்டு வீசப்பட்டது"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கையெறி குண்டு வீசப்பட்டது"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கையெறி குண்டு வீசப்பட்டது"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கையெறி குண்டியால் வீசப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கையெறி குண்டியால் வீசப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கையெறி குண்டியால் வீசப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "male"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*வெடித்தது"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "female"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*வெடித்தது"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*வெடித்தது"
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் ஃபயர்பாம்பால் எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் ஃபயர்பாம்பால் எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் ஃபயர்பாம்பால் எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் ஃபயர்பாம்பால் எரிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் ஃபயர்பாம்பால் எரிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் ஃபயர்பாம்பால் எரிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "male"
 msgid "%s%s ^*was incinerated"
-msgstr ""
+msgstr "%s%s ^*எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "female"
 msgid "%s%s ^*was incinerated"
-msgstr ""
+msgstr "%s%s ^*எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated"
-msgstr ""
+msgstr "%s%s ^*எரிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கிரேஞ்சரால் மெதுவாகத் துடைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கிரேஞ்சரால் மெதுவாகத் துடைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கிரேஞ்சரால் மெதுவாகத் துடைக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கிரேன்சரால் மெதுவாகத் துடைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கிரேன்சரால் மெதுவாகத் துடைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கிரேன்சரால் மெதுவாகத் துடைக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் கடிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் கடிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் கடிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் கடிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் கடிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*ஆல் கடிக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மன்டிகளால் வெட்டப்பட்டது"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மன்டிகளால் வெட்டப்பட்டது"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மன்டிகளால் வெட்டப்பட்டது"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மன்டிகளால் வெட்டப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மன்டிகளால் வெட்டப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மன்டிகளால் வெட்டப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் துண்டாக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் துண்டாக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் துண்டாக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் துண்டாக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் துண்டாக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் துண்டாக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் மின்சாரம் வழங்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் மின்சாரம் வழங்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் மின்சாரம் வழங்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் மின்சாரம் வழங்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் மின்சாரம் வழங்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் மராடரால் மின்சாரம் வழங்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் வெளியேற்றப்பட்டது"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் வெளியேற்றப்பட்டது"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் வெளியேற்றப்பட்டது"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் வெளியேற்றப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் வெளியேற்றப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் வெளியேற்றப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் குதிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் குதிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகன் மூலம் குதிக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் துள்ளப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் துள்ளப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் துள்ளப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் முடுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் முடுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் முடுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் முடுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் முடுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் டிராகூன் மூலம் முடுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "male"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*முள்"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "female"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*முள்"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*முள்"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கொடுங்கோலரால் மாற்றப்பட்டது"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கொடுங்கோலரால் மாற்றப்பட்டது"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கொடுங்கோலரால் மாற்றப்பட்டது"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கொடுங்கோலரால் மாற்றப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கொடுங்கோலரால் மாற்றப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் கொடுங்கோலரால் மாற்றப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கொடுங்கோலரின் வழியிலிருந்து வெளியேறியிருக்க வேண்டும்"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கொடுங்கோலரின் வழியிலிருந்து வெளியேறியிருக்க வேண்டும்"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கொடுங்கோலரின் வழியிலிருந்து வெளியேறியிருக்க வேண்டும்"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "male"
@@ -3747,6 +3816,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கொடுங்கோலரின் வழியிலிருந்து வெளியேற வேண்டும்; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "female"
@@ -3754,6 +3824,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கொடுங்கோலரின் வழியிலிருந்து வெளியேற வேண்டும்; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "neuter"
@@ -3761,1517 +3832,1589 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் கொடுங்கோலரின் வழியிலிருந்து வெளியேற வேண்டும்; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் எடையின் கீழ் நசுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் எடையின் கீழ் நசுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் எடையின் கீழ் நசுக்கப்பட்டது"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் எடையின் கீழ் நசுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் எடையின் கீழ் நசுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் எடையின் கீழ் நசுக்கப்பட்டது; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் விசத்திற்கு எதிராக ஒரு மெட்கிட்டைப் பயன்படுத்தியிருக்க வேண்டும்"
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் விசத்திற்கு எதிராக ஒரு மெட்கிட்டைப் பயன்படுத்தியிருக்க வேண்டும்"
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் விசத்திற்கு எதிராக ஒரு மெட்கிட்டைப் பயன்படுத்தியிருக்க வேண்டும்"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் விசத்திற்கு எதிராக ஒரு மெட்கிட்டைப் பயன்படுத்தியிருக்க வேண்டும்; "
+"%s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் விசத்திற்கு எதிராக ஒரு மெட்கிட்டைப் பயன்படுத்தியிருக்க வேண்டும்; "
+"%s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*%s%s%s ^*இன் விசத்திற்கு எதிராக ஒரு மெட்கிட்டைப் பயன்படுத்தியிருக்க வேண்டும்; "
+"%s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் தனிப்பட்ட இடத்தை ஆக்கிரமிக்க முயற்சித்தது"
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் தனிப்பட்ட இடத்தை ஆக்கிரமிக்க முயற்சித்தது"
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^*இன் தனிப்பட்ட இடத்தை ஆக்கிரமிக்க முயற்சித்தது"
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
-msgstr ""
+msgstr "%s%s ^*வெற்றிடத்தில் முடிந்தது"
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
-msgstr ""
+msgstr "%s%s ^*வெற்றிடத்தில் முடிந்தது"
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
-msgstr ""
+msgstr "%s%s ^*வெற்றிடத்தில் முடிந்தது"
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*உணர்ந்த%s%s%s ^*இன் அதிகாரம்"
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*உணர்ந்த%s%s%s ^*இன் அதிகாரம்"
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*உணர்ந்த%s%s%s ^*இன் அதிகாரம்"
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*உணர்ந்த%s%s%s ^*இன் அதிகாரம்; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*உணர்ந்த%s%s%s ^*இன் அதிகாரம்; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*உணர்ந்த%s%s%s ^*இன் அதிகாரம்; %s%s%s^* உதவி"
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ஆல் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^* மற்றும்%s%s%s ஆல் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^* மற்றும்%s%s%s ஆல் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*%s%s%s ^* மற்றும்%s%s%s ஆல் கொல்லப்பட்டது"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s%s ^*தற்கொலை செய்து கொண்டார்"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s%s ^*தற்கொலை செய்து கொண்டார்"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s%s ^*தற்கொலை செய்து கொண்டார்"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "male"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* இறந்தது"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "female"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* இறந்தது"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "neuter"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* இறந்தது"
 
 #: src/cgame/cg_consolecmds.cpp:130
 #, c-format
 msgid "Listed %2d clients"
-msgstr ""
+msgstr "பட்டியலிடப்பட்ட %2 டி வாடிக்கையாளர்கள்"
 
 #: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
-msgstr ""
+msgstr "நீங்கள் ^1teammate ^* %s ஐக் கொன்றீர்கள்"
 
 #: src/cgame/cg_event.cpp:1218
 msgid "The Overmind is under attack!"
-msgstr ""
+msgstr "மிகைப்படுத்தல் தாக்குதலுக்கு உள்ளாகியுள்ளது!"
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
-msgstr ""
+msgstr "உலை தாக்குதலுக்கு உள்ளாகிறது!"
 
 #: src/cgame/cg_event.cpp:1240
 msgid "The Overmind is dying!"
-msgstr ""
+msgstr "ஓவர் மைண்ட் இறந்து கொண்டிருக்கிறது!"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is going down!"
-msgstr ""
+msgstr "உலை கீழே போகிறது!"
 
 #: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
 msgid "Our base is under attack!"
-msgstr ""
+msgstr "எங்கள் அடிப்படை தாக்குதலுக்கு உள்ளாகிறது!"
 
 #: src/cgame/cg_event.cpp:1269
 #, c-format
 msgid "%s under attack – %s"
-msgstr ""
+msgstr "%s தாக்குதலுக்கு உள்ளாகின்றன - %s"
 
 #: src/cgame/cg_event.cpp:1273
 #, c-format
 msgid "%s under attack"
-msgstr ""
+msgstr "%s தாக்குதலுக்கு உள்ளாகின்றன"
 
 #: src/cgame/cg_main.cpp:472
 msgid "Calling home…"
-msgstr ""
+msgstr "வீட்டிற்கு அழைக்கும்…"
 
 #: src/cgame/cg_main.cpp:472
 msgid "Sending to the front…"
-msgstr ""
+msgstr "முன் அனுப்புகிறது…"
 
 #: src/cgame/cg_main.cpp:477
 msgid "Tracking your movements…"
-msgstr ""
+msgstr "உங்கள் இயக்கங்களைக் கண்காணித்தல்…"
 
 #: src/cgame/cg_main.cpp:477
 msgid "Letting out the magic smoke…"
-msgstr ""
+msgstr "மந்திர புகையை வெளியே விடுங்கள்…"
 
 #: src/cgame/cg_main.cpp:481
 msgid "Collecting bees for the hives…"
-msgstr ""
+msgstr "படை நோய் தேனீக்களை சேகரித்தல்…"
 
 #: src/cgame/cg_main.cpp:481
 msgid "Initialising fireworks…"
-msgstr ""
+msgstr "பட்டாசுகளைத் தொடங்குதல்…"
 
 #: src/cgame/cg_main.cpp:481
 msgid "Causing electrical faults…"
-msgstr ""
+msgstr "மின் தவறுகளை ஏற்படுத்துகிறது…"
 
 #: src/cgame/cg_main.cpp:485
 msgid "Reading the manual…"
-msgstr ""
+msgstr "கையேட்டைப் படித்தல்…"
 
 #: src/cgame/cg_main.cpp:485
 msgid "Looking at blueprints…"
-msgstr ""
+msgstr "வரைபடங்களைப் பார்க்கிறது…"
 
 #: src/cgame/cg_main.cpp:489
 msgid "Generating annoying noises…"
-msgstr ""
+msgstr "எரிச்சலூட்டும் சத்தங்களை உருவாக்குகிறது…"
 
 #: src/cgame/cg_main.cpp:489
 msgid "Recording granger purring…"
-msgstr ""
+msgstr "கிரேன்சர் பர்ரிங் பதிவு செய்தல்…"
 
 #: src/cgame/cg_main.cpp:493
 msgid "Hello World!"
-msgstr ""
+msgstr "வணக்கம் உலகம்!"
 
 #: src/cgame/cg_main.cpp:493
 msgid "Making a scene…"
-msgstr ""
+msgstr "ஒரு காட்சியை உருவாக்குதல்…"
 
 #: src/cgame/cg_main.cpp:497
 msgid "Taking pictures of the world…"
-msgstr ""
+msgstr "உலகின் படங்களை எடுப்பது…"
 
 #: src/cgame/cg_main.cpp:497
 msgid "Drawing smiley faces…"
-msgstr ""
+msgstr "ச்மைலி முகங்களை வரைதல்…"
 
 #: src/cgame/cg_main.cpp:501
 msgid "Sharpening the aliens' claws…"
-msgstr ""
+msgstr "வேற்றுகிரகவாசிகளின் நகங்களை கூர்மைப்படுத்துதல்…"
 
 #: src/cgame/cg_main.cpp:501
 msgid "Overloading lucifer cannons…"
-msgstr ""
+msgstr "லூசிபர் பீரங்கிகளை ஓவர்லோட் செய்தல்…"
 
 #: src/cgame/cg_main.cpp:505
 msgid "Unwrapping jetpacks…"
-msgstr ""
+msgstr "செட் பேக்குகளை அவிழ்த்து விடுதல்…"
 
 #: src/cgame/cg_main.cpp:505
 msgid "Spinning silk for reticles…"
-msgstr ""
+msgstr "ரெட்டிகல்களுக்கான பட்டு சுழலும்…"
 
 #: src/cgame/cg_main.cpp:509
 msgid "Adding turret spam…"
-msgstr ""
+msgstr "சிறு கோபுரம் ச்பேம் சேர்ப்பது…"
 
 #: src/cgame/cg_main.cpp:509
 msgid "Awakening the overmind…"
-msgstr ""
+msgstr "மேலதிக விழிப்புணர்வு…"
 
 #: src/cgame/cg_main.cpp:513
 msgid "Teleporting soldiers…"
-msgstr ""
+msgstr "படையினரை டெலிபோர்டிங்…"
 
 #: src/cgame/cg_main.cpp:513
 msgid "Replicating alien DNA…"
-msgstr ""
+msgstr "ஏலியன் டி.என்.ஏவை பிரதிபலிக்கிறது…"
 
 #: src/cgame/cg_main.cpp:517
 msgid "Customizing helmets…"
-msgstr ""
+msgstr "எல்மெட் தனிப்பயனாக்குதல்…"
 
 #: src/cgame/cg_main.cpp:521
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr ""
+msgstr "சி.எல்.எச்.எல் சேடர்களை தொகுத்தல் (தயவுசெய்து பொறுமையாக இருங்கள்)…"
 
 #: src/cgame/cg_main.cpp:525
 msgid "Surveying the map…"
-msgstr ""
+msgstr "வரைபடத்தை ஆய்வு செய்தல்…"
 
 #: src/cgame/cg_main.cpp:529
 msgid "Done!"
-msgstr ""
+msgstr "முடிந்தது!"
 
 #: src/cgame/cg_main.cpp:1136
 msgid "Generating bot navigation meshes"
-msgstr ""
+msgstr "போட் வழிசெலுத்தல் மெச்களை உருவாக்குதல்"
 
 #: src/cgame/cg_main.cpp:1180
 #, c-format
 msgid "by %s"
-msgstr ""
+msgstr "மூலம் %s"
 
 #: src/cgame/cg_players.cpp:1436
 #, c-format
 msgid "%s^* renamed to %s"
-msgstr ""
+msgstr "%s^* %s என மறுபெயரிடப்பட்டது"
 
 #: src/cgame/cg_players.cpp:1443
 #, c-format
 msgid "%s^* left the %s"
-msgstr ""
+msgstr "%s^* %s ஐ விட்டுவிட்டது"
 
 #: src/cgame/cg_players.cpp:1448
 #, c-format
 msgid "%s^* joined the %s"
-msgstr ""
+msgstr "%s^* %s இல் சேர்ந்தது"
 
 #: src/cgame/cg_players.cpp:1453
 #, c-format
 msgid "%s^* left the %s and joined the %s"
-msgstr ""
+msgstr "%s^* %s ஐ விட்டுவிட்டு %s இல் சேர்ந்தது"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:77
 #, c-format
 msgid "Custom: %dx%d"
-msgstr ""
+msgstr "தனிப்பயன்: %dx %d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 #, c-format
 msgid "Same as screen (%dx%d)"
-msgstr ""
+msgstr "திரை அதே (%dx%d)"
 
 #: src/cgame/cg_rocket_draw.cpp:2632
 msgid "You are at the front of the spawn queue"
-msgstr ""
+msgstr "நீங்கள் ச்பான் வரிசையின் முன்னால் இருக்கிறீர்கள்"
 
 #: src/cgame/cg_rocket_draw.cpp:2636
 #, c-format
 msgid "You are at position %d in the spawn queue"
-msgstr ""
+msgstr "ச்பான் வரிசையில் நீங்கள் %d நிலையில் இருக்கிறீர்கள்"
 
 #: src/cgame/cg_rocket_draw.cpp:2676
 msgid "There are no spawns remaining"
-msgstr ""
+msgstr "மீதமுள்ள ச்பான்ச் இல்லை"
 
 #: src/cgame/cg_rocket_draw.cpp:2680
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d ச்பான் மீதமுள்ளது"
+msgstr[1] "%d ச்பான்ச் மீதமுள்ளவை"
 
 #: src/cgame/cg_rocket_draw.cpp:3229
 #, c-format
 msgid "Awaiting connection…%i"
-msgstr ""
+msgstr "இணைப்புக்காக காத்திருக்கிறது…%i"
 
 #: src/cgame/cg_rocket_draw.cpp:3233
 #, c-format
 msgid "Awaiting challenge…%i"
-msgstr ""
+msgstr "சவாலுக்காக காத்திருக்கிறது…%i"
 
 #: src/cgame/cg_rocket_draw.cpp:3237
 msgid "Awaiting gamestate…"
-msgstr ""
+msgstr "கேம்ச்டேட்டுக்காக காத்திருக்கிறது…"
 
 #: src/cgame/cg_rocket_draw.cpp:3319
 msgid "Say:"
-msgstr ""
+msgstr "சொல்லுங்கள்:"
 
 #: src/cgame/cg_rocket_draw.cpp:3320
 msgid "Team Say:"
-msgstr ""
+msgstr "குழு கூறுகிறது:"
 
 #: src/cgame/cg_rocket_draw.cpp:3321
 msgid "Admin Say:"
-msgstr ""
+msgstr "நிர்வாகி சொல்லுங்கள்:"
 
 #: src/cgame/cg_rocket_draw.cpp:3322
 msgid "Command:"
-msgstr ""
+msgstr "கட்டளை:"
 
 #: src/cgame/cg_rocket_draw.cpp:3672
 msgid "FIGHT!"
-msgstr ""
+msgstr "சண்டை!"
 
 #: src/cgame/cg_rocket_draw.cpp:3766
 msgid "estimating"
-msgstr ""
+msgstr "மதிப்பீடு"
 
 #: src/cgame/cg_servercmds.cpp:471
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr ""
+"ஏலியன் அணியில் அதிகமான வீரர்கள் உள்ளனர். இடங்கள் கிடைக்கும் வரை காத்திருங்கள் அல்லது மனித "
+"அணியில் சேரவும்."
 
 #: src/cgame/cg_servercmds.cpp:473
 msgid "The alien team has too many players"
-msgstr ""
+msgstr "ஏலியன் அணியில் அதிகமான வீரர்கள் உள்ளனர்"
 
 #: src/cgame/cg_servercmds.cpp:477
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr ""
+"மனித அணியில் அதிகமான வீரர்கள் உள்ளனர். இடங்கள் கிடைக்கும் வரை காத்திருங்கள் அல்லது அன்னிய "
+"அணியில் சேரவும்."
 
 #: src/cgame/cg_servercmds.cpp:479
 msgid "The human team has too many players"
-msgstr ""
+msgstr "மனித அணியில் அதிகமான வீரர்கள் உள்ளனர்"
 
 #: src/cgame/cg_servercmds.cpp:483
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
+"அன்னிய அணி பூட்டப்பட்டுள்ளது. இந்த நேரத்தில் நீங்கள் வெளிநாட்டினருடன் சேர முடியாது."
 
 #: src/cgame/cg_servercmds.cpp:485
 msgid "The alien team is locked"
-msgstr ""
+msgstr "அன்னிய அணி பூட்டப்பட்டுள்ளது"
 
 #: src/cgame/cg_servercmds.cpp:489
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
+"மனித அணி பூட்டப்பட்டுள்ளது. இந்த நேரத்தில் நீங்கள் மனிதர்களுடன் சேர முடியாது."
 
 #: src/cgame/cg_servercmds.cpp:491
 msgid "The human team is locked"
-msgstr ""
+msgstr "மனித அணி பூட்டப்பட்டுள்ளது"
 
 #: src/cgame/cg_servercmds.cpp:495
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
+"விளையாடும் வாடிக்கையாளர்களின் அதிகபட்ச எண்ணிக்கை எட்டப்பட்டுள்ளது. இடங்கள் கிடைக்கும் வரை "
+"காத்திருங்கள்."
 
 #: src/cgame/cg_servercmds.cpp:497
 msgid "No free player slots"
-msgstr ""
+msgstr "இலவச பிளேயர் இடங்கள் இல்லை"
 
 #: src/cgame/cg_servercmds.cpp:501
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
+"ஒரு அணியில் சேருவதற்கு முன்பு சூடான நேரம் முடியும் வரை நீங்கள் காத்திருக்க வேண்டும்."
 
 #: src/cgame/cg_servercmds.cpp:503
 msgid "You cannot join a team during warmup."
-msgstr ""
+msgstr "வெப்பமயமாதலின் போது நீங்கள் ஒரு அணியில் சேர முடியாது."
 
 #: src/cgame/cg_servercmds.cpp:511
 msgid "Cheats are not enabled on this server"
-msgstr ""
+msgstr "இந்த சேவையகத்தில் ஏமாற்றுக்காரர்கள் இயக்கப்படவில்லை"
 
 #: src/cgame/cg_servercmds.cpp:515
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
 msgstr ""
+"இந்த சேவையகத்தில் ஏமாற்றுக்காரர்கள் இயக்கப்படவில்லை, எனவே நீங்கள் ஒரு குழுவில் இருக்கும்போது "
+"இந்த கட்டளையைப் பயன்படுத்தக்கூடாது"
 
 #: src/cgame/cg_servercmds.cpp:522
 msgid "Join a team first"
-msgstr ""
+msgstr "முதலில் ஒரு அணியில் சேரவும்"
 
 #: src/cgame/cg_servercmds.cpp:528
 msgid "You can only use this command when spectating"
-msgstr ""
+msgstr "நீங்கள் பார்க்கும்போது மட்டுமே இந்த கட்டளையைப் பயன்படுத்த முடியும்"
 
 #: src/cgame/cg_servercmds.cpp:533
 msgid "Must be alien to use this command"
-msgstr ""
+msgstr "இந்த கட்டளையைப் பயன்படுத்த அந்நியராக இருக்க வேண்டும்"
 
 #: src/cgame/cg_servercmds.cpp:538
 msgid "Must be human to use this command"
-msgstr ""
+msgstr "இந்த கட்டளையைப் பயன்படுத்த மனிதராக இருக்க வேண்டும்"
 
 #: src/cgame/cg_servercmds.cpp:543
 msgid "Must be alive to use this command"
-msgstr ""
+msgstr "இந்த கட்டளையைப் பயன்படுத்த உயிருடன் இருக்க வேண்டும்"
 
 #: src/cgame/cg_servercmds.cpp:549
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
 msgstr ""
+"இங்கே கட்ட இடமில்லை. கட்டமைப்பு ஒளிஊடுருவக்கூடிய பச்சை நிறமாக மாறும் வரை நகர்த்தவும், "
+"இது சரியான கட்டமைப்பைக் குறிக்கிறது."
 
 #: src/cgame/cg_servercmds.cpp:551
 msgid "There is no room to build here"
-msgstr ""
+msgstr "இங்கே கட்ட இடமில்லை"
 
 #: src/cgame/cg_servercmds.cpp:555
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
 msgstr ""
+"இந்த மேற்பரப்பில் உருவாக்க முடியாது. மேற்பரப்பு மிகவும் செங்குத்தானது அல்லது கட்டமைக்க "
+"பொருத்தமற்றது. இந்த கட்டமைப்பிற்கு மற்றொரு தளத்தைத் தேர்வுசெய்க."
 
 #: src/cgame/cg_servercmds.cpp:558
 msgid "Cannot build on this surface"
-msgstr ""
+msgstr "இந்த மேற்பரப்பில் உருவாக்க முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:563
 msgid "You cannot build that structure"
-msgstr ""
+msgstr "நீங்கள் அந்த கட்டமைப்பை உருவாக்க முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:567
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
 msgstr ""
+"இந்த நடவடிக்கை உங்கள் அணியின் கடைசி ச்பான் புள்ளியை அகற்றும், இது பெரும்பாலும் விரைவாக "
+"இழப்பை ஏற்படுத்துகிறது. மேலும் ச்பான்களை உருவாக்க முயற்சிக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:570
 msgid "You may not deconstruct the last spawn"
-msgstr ""
+msgstr "கடைசி ச்பானை நீங்கள் மறுகட்டமைக்கக்கூடாது"
 
 #: src/cgame/cg_servercmds.cpp:574
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
 msgstr ""
+"முக்கிய அமைப்பு உடனடி அகற்றுதலுக்கு எதிராக பாதுகாக்கப்படுகிறது. அது குறிக்கப்படும்போது"
+", அதை அங்கே கட்டுவதன் மூலம் அதை வேறு இடத்திற்கு நகர்த்தலாம்."
 
 #: src/cgame/cg_servercmds.cpp:577
 msgid "You may not deconstruct this structure"
-msgstr ""
+msgstr "இந்த கட்டமைப்பை நீங்கள் மறுகட்டமைக்கக்கூடாது"
 
 #: src/cgame/cg_servercmds.cpp:581
 msgid "Building has been disabled on the server for your team."
-msgstr ""
+msgstr "உங்கள் அணிக்கான சேவையகத்தில் கட்டிடம் முடக்கப்பட்டுள்ளது."
 
 #: src/cgame/cg_servercmds.cpp:582
 msgid "Building has been disabled for your team"
-msgstr ""
+msgstr "உங்கள் அணிக்கு கட்டிடம் முடக்கப்பட்டுள்ளது"
 
 #: src/cgame/cg_servercmds.cpp:586
 msgid "You are no longer permitted to build."
-msgstr ""
+msgstr "நீங்கள் இனி கட்ட அனுமதிக்கப்படுவதில்லை."
 
 #: src/cgame/cg_servercmds.cpp:587
 msgid "You are no longer permitted to build"
-msgstr ""
+msgstr "நீங்கள் இனி கட்ட அனுமதிக்கப்படுவதில்லை"
 
 #: src/cgame/cg_servercmds.cpp:591
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
+"தோல்வியை ஒப்புக் கொள்ளவும், விளையாட்டை ஒப்புக்கொள்ளவும் உங்கள் குழு முடிவு செய்துள்ளது: இனி"
+" எதையும் கட்டுவதில் எந்த அர்த்தமும் இல்லை."
 
 #: src/cgame/cg_servercmds.cpp:593
 msgid "Cannot build after admitting defeat"
-msgstr ""
+msgstr "தோல்வியை ஒப்புக் கொண்ட பிறகு உருவாக்க முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:597
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
 msgstr ""
+"மீதமுள்ள ஆதாரங்கள் இல்லை. மறுகட்டமைப்பிற்கு ஏற்கனவே உள்ள கட்டடங்களைக் குறிப்பதன் மூலம் வளங்களை"
+" விடுவிக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:599
 msgid "There are no resources remaining"
-msgstr ""
+msgstr "மீதமுள்ள ஆதாரங்கள் இல்லை"
 
 #: src/cgame/cg_servercmds.cpp:603
 msgid "This buildable is not powered."
-msgstr ""
+msgstr "இந்த கட்டமைக்கக்கூடியது இயக்கப்படவில்லை."
 
 #: src/cgame/cg_servercmds.cpp:604
 msgid "This buildable is not powered"
-msgstr ""
+msgstr "இந்த கட்டமைக்கக்கூடியது இயக்கப்படவில்லை"
 
 #: src/cgame/cg_servercmds.cpp:608
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
 msgstr ""
+"உலை இல்லை. வேறு எந்த கட்டமைப்பையும் வைப்பதற்கு முன்பு ஒரு உலை கட்டப்பட வேண்டும்."
 
 #: src/cgame/cg_servercmds.cpp:610
 msgid "There is no reactor"
-msgstr ""
+msgstr "உலை இல்லை"
 
 #: src/cgame/cg_servercmds.cpp:614
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
+"ஒரு உலை மட்டுமே இருக்க முடியும். நீங்கள் அதை நகர்த்த விரும்பினால் ஏற்கனவே இருக்கும் ஒன்றைக் "
+"குறிக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:616
 msgid "There can only be one Reactor"
-msgstr ""
+msgstr "ஒரு உலை மட்டுமே இருக்க முடியும்"
 
 #: src/cgame/cg_servercmds.cpp:621
 msgid "Your team cannot have any more drills"
-msgstr ""
+msgstr "உங்கள் குழுவில் மேலும் பயிற்சிகள் இருக்க முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:625
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
 msgstr ""
+"இதைச் சுமக்க உங்களுக்கு இடமில்லை. இந்த உருப்படியை வாங்குவதற்கு முன் முரண்பட்ட மேம்பாடுகளை "
+"விற்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:627
 msgid "You have no room to carry this"
-msgstr ""
+msgstr "இதைச் சுமக்க உங்களுக்கு இடமில்லை"
 
 #: src/cgame/cg_servercmds.cpp:631
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
-msgstr ""
+msgstr "போதுமான பொருள். இந்த செயலைச் செய்ய உங்களுக்கு போதுமான வரவு இல்லை."
 
 #: src/cgame/cg_servercmds.cpp:633
 msgid "Insufficient funds"
-msgstr ""
+msgstr "போதுமான பொருள்"
 
 #: src/cgame/cg_servercmds.cpp:637
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr ""
+"நீங்கள் ஏற்கனவே இந்த உருப்படியை வைத்திருக்கிறீர்கள். ஒரே வகையின் பல உருப்படிகளை எடுத்துச் "
+"செல்ல முடியாது."
 
 #: src/cgame/cg_servercmds.cpp:639
 msgid "You already hold this item"
-msgstr ""
+msgstr "நீங்கள் ஏற்கனவே இந்த உருப்படியை வைத்திருக்கிறீர்கள்"
 
 #: src/cgame/cg_servercmds.cpp:643
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
 msgstr ""
+"ஆயுதங்கள், மேம்பாடுகள் அல்லது வெடிமருந்துகளை வாங்க நீங்கள் இயங்கும் ஆயுதக் களஞ்சியத்திற்கு "
+"அருகில் இருக்க வேண்டும்."
 
 #: src/cgame/cg_servercmds.cpp:645
 msgid "You must be near a powered Armoury"
-msgstr ""
+msgstr "நீங்கள் இயங்கும் ஆயுதக் களஞ்சியத்திற்கு அருகில் இருக்க வேண்டும்"
 
 #: src/cgame/cg_servercmds.cpp:649
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
 msgstr ""
+"ஆற்றல் வெடிமருந்துகளை வாங்குவதற்கு நீங்கள் ஒரு உலை, ஒரு துரப்பணம் அல்லது இயங்கும் ஆயுதக் "
+"களஞ்சியத்திற்கு அருகில் இருக்க வேண்டும்."
 
 #: src/cgame/cg_servercmds.cpp:651
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
+"நீங்கள் ஒரு உலை, ஒரு துரப்பணம் அல்லது இயங்கும் ஆயுதக் களஞ்சியத்திற்கு அருகில் இருக்க வேண்டும்"
 
 #: src/cgame/cg_servercmds.cpp:655
 msgid "There is not enough room here to change armour."
-msgstr ""
+msgstr "கவசத்தை மாற்ற இங்கு போதுமான இடம் இல்லை."
 
 #: src/cgame/cg_servercmds.cpp:656
 msgid "Not enough room here to change armour."
-msgstr ""
+msgstr "கவசத்தை மாற்ற இங்கு போதுமான இடம் இல்லை."
 
 #: src/cgame/cg_servercmds.cpp:660
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
+"உங்கள் பில்ட் நேரங்குறிகருவி காலாவதியாகும் வரை ஆயுதங்களை வாங்கவோ விற்கவோ உங்களுக்கு "
+"இசைவு இல்லை."
 
 #: src/cgame/cg_servercmds.cpp:662
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
+"உங்கள் உருவாக்க நேரங்குறிகருவி காலாவதியாகும் வரை நீங்கள் ஆயுதங்களை வாங்கவோ விற்கவோ "
+"முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:667
 msgid "You must be dead to use the class command"
-msgstr ""
+msgstr "வகுப்பு கட்டளையைப் பயன்படுத்த நீங்கள் இறந்திருக்க வேண்டும்"
 
 #: src/cgame/cg_servercmds.cpp:671
 msgid "Unknown starting item"
-msgstr ""
+msgstr "தெரியாத தொடக்க உருப்படி"
 
 #: src/cgame/cg_servercmds.cpp:675
 msgid "Starting item not allowed"
-msgstr ""
+msgstr "தொடக்க உருப்படி அனுமதிக்கப்படவில்லை"
 
 #: src/cgame/cg_servercmds.cpp:681
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr ""
+"மிகைப்படுத்தல் இல்லை. வேறு எந்த கட்டமைப்பையும் வைப்பதற்கு முன்பு ஒரு மிகைப்படுத்தல் கட்டப்பட "
+"வேண்டும்."
 
 #: src/cgame/cg_servercmds.cpp:683 src/cgame/cg_servercmds.cpp:723
 msgid "There is no Overmind"
-msgstr ""
+msgstr "மிகைப்படுத்தல் இல்லை"
 
 #: src/cgame/cg_servercmds.cpp:687
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
+"ஒரு மிகைப்படுத்தல் மட்டுமே இருக்க முடியும். நீங்கள் அதை நகர்த்த விரும்பினால் ஏற்கனவே "
+"இருக்கும் ஒன்றை மறுகட்டமைக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:689
 msgid "There can only be one Overmind"
-msgstr ""
+msgstr "ஒரு மிகைப்படுத்தல் மட்டுமே இருக்க முடியும்"
 
 #: src/cgame/cg_servercmds.cpp:694
 msgid "Your team cannot have any more leeches"
-msgstr ""
+msgstr "உங்கள் குழுவில் மேலும் லீச்ச்கள் இருக்க முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:698
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
+"ஓவர் மைண்ட் மேலும் எந்த கட்டமைப்புகளையும் கட்டுப்படுத்த முடியாது. மேலும் உருவாக்க இருக்கும் "
+"கட்டமைப்புகளை மறுகட்டமைக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:700
 msgid "The Overmind cannot control any more structures"
-msgstr ""
+msgstr "ஓவர் மைண்ட் மேலும் எந்த கட்டமைப்புகளையும் கட்டுப்படுத்த முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:704
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
+"இங்கே உருவாக இடமில்லை. சுவர்கள் அல்லது அருகிலுள்ள பிற பொருட்களிலிருந்து விலகி மீண்டும் "
+"முயற்சிக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:706
 msgid "There is no room to evolve here"
-msgstr ""
+msgstr "இங்கே உருவாக இடமில்லை"
 
 #: src/cgame/cg_servercmds.cpp:710
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr ""
+"இந்த இடம் உருவாக எதிரிக்கு மிக அருகில் உள்ளது. எதிரியின் இருப்பிலிருந்து விலகி மீண்டும் "
+"முயற்சிக்கவும்."
 
 #: src/cgame/cg_servercmds.cpp:712
 msgid "This location is too close to the enemy to evolve"
-msgstr ""
+msgstr "இந்த இடம் உருவாக எதிரிக்கு மிக அருகில் உள்ளது"
 
 #: src/cgame/cg_servercmds.cpp:716 src/cgame/cg_servercmds.cpp:717
 msgid "The Overmind is too far away to devolve."
-msgstr ""
+msgstr "மிகைப்படுத்தல் வெகு தொலைவில் உள்ளது."
 
 #: src/cgame/cg_servercmds.cpp:721
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
+"மிகைப்படுத்தல் இல்லை. மேம்படுத்த உங்களை அனுமதிக்க ஒரு மிகைப்படுத்தல் கட்டப்பட வேண்டும்."
 
 #: src/cgame/cg_servercmds.cpp:727
 msgid "You cannot evolve until your build timer has expired."
 msgstr ""
+"உங்கள் உருவாக்க நேரங்குறிகருவி காலாவதியாகும் வரை நீங்கள் உருவாக முடியாது."
 
 #: src/cgame/cg_servercmds.cpp:728
 msgid "You cannot evolve until your build timer expires"
 msgstr ""
+"உங்கள் உருவாக்க நேரங்குறிகருவி காலாவதியாகும் வரை நீங்கள் உருவாக முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:732
 msgid "Wait a second after attacking or evolving"
-msgstr ""
+msgstr "தாக்குதல் அல்லது உருவான பிறகு ஒரு நொடி காத்திருங்கள்"
 
 #: src/cgame/cg_servercmds.cpp:740
 #, c-format
 msgid "You cannot evolve into a %s"
-msgstr ""
+msgstr "நீங்கள் ஒரு %s ஆக உருவாக முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:745
 msgid "You cannot evolve while wallwalking"
-msgstr ""
+msgstr "வால்விங் செய்யும் போது நீங்கள் உருவாக முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:749
 msgid "Unknown class"
-msgstr ""
+msgstr "தெரியாத வகுப்பு"
 
 #: src/cgame/cg_servercmds.cpp:753
 #, c-format
 msgid "You cannot spawn as a %s"
-msgstr ""
+msgstr "நீங்கள் ஒரு %s ஆக உருவாக முடியாது"
 
 #: src/cgame/cg_servercmds.cpp:758
 #, c-format
 msgid "The %s is not allowed"
-msgstr ""
+msgstr "%s அனுமதிக்கப்படவில்லை"
 
 #: src/cgame/cg_servercmds.cpp:763
 #, c-format
 msgid "The %s has not been unlocked yet"
-msgstr ""
+msgstr "%s இன்னும் திறக்கப்படவில்லை"
 
 #: src/cgame/cg_servercmds.cpp:768
 #, c-format
 msgid "cgame: debug: no such menu %d"
-msgstr ""
+msgstr "CGAME: பிழைத்திருத்தம்: அத்தகைய பட்டியல் இல்லை %d"
 
 #: src/cgame/cg_servercmds.cpp:871
 msgid "^1*DEAD*^*"
-msgstr ""
+msgstr "^1*இறந்த*^*"
 
 #: src/cgame/cg_servercmds.cpp:932
 #, c-format
 msgid "%sPrivate message from: ^7%s"
-msgstr ""
+msgstr "இருந்து%தனிப்பட்ட செய்தி: ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:940
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
-msgstr ""
+msgstr "பதிலளிக்க, '/m %d [உங்கள் செய்தி]' அல்லது '/r [உங்கள் செய்தி]' <<"
 
 #: src/cgame/cg_servercmds.cpp:1430
 #, c-format
 msgid "Unknown client game command: %s"
-msgstr ""
+msgstr "தெரியாத கிளையன்ட் விளையாட்டு கட்டளை: %s"
 
 #: src/cgame/cg_tutorial.cpp:45
 msgid "Run/Walk"
-msgstr ""
+msgstr "ரன்/வாக்"
 
 #: src/cgame/cg_tutorial.cpp:46
 msgid "Sprint"
-msgstr ""
+msgstr "ச்பிரிண்ட்"
 
 #: src/cgame/cg_tutorial.cpp:47
 msgid "Jump"
-msgstr ""
+msgstr "தாவு"
 
 #: src/cgame/cg_tutorial.cpp:48
 msgid "Crouch"
-msgstr ""
+msgstr "குரோச்"
 
 #: src/cgame/cg_tutorial.cpp:49
 msgid "Primary Attack"
-msgstr ""
+msgstr "முதன்மை தாக்குதல்"
 
 #: src/cgame/cg_tutorial.cpp:50
 msgid "Secondary Attack"
-msgstr ""
+msgstr "இரண்டாம் நிலை தாக்குதல்"
 
 #: src/cgame/cg_tutorial.cpp:51
 msgid "Tertiary Attack"
-msgstr ""
+msgstr "மூன்றாம் நிலை தாக்குதல்"
 
 #: src/cgame/cg_tutorial.cpp:52
 msgid "Reload"
-msgstr ""
+msgstr "ஏற்றவும்"
 
 #: src/cgame/cg_tutorial.cpp:53
 msgid "Use Medkit"
-msgstr ""
+msgstr "மெட்கிட் பயன்படுத்தவும்"
 
 #: src/cgame/cg_tutorial.cpp:54
 msgid "Use Structure/Evolve"
-msgstr ""
+msgstr "கட்டமைப்பைப் பயன்படுத்தவும்/உருவாகவும்"
 
 #: src/cgame/cg_tutorial.cpp:55
 msgid "Deconstruct Structure"
-msgstr ""
+msgstr "கட்டமைப்பை மறுகட்டமைத்தல்"
 
 #: src/cgame/cg_tutorial.cpp:56
 msgid "Previous Weapon"
-msgstr ""
+msgstr "முந்தைய கருவி"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Next Weapon"
-msgstr ""
+msgstr "அடுத்த கருவி"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Global chat"
-msgstr ""
+msgstr "உலக அரட்டை"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Team chat"
-msgstr ""
+msgstr "குழு அரட்டை"
 
 #: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Console"
-msgstr ""
+msgstr "கன்சோலை மாற்றவும்"
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Toggle Menu"
-msgstr ""
+msgstr "மெனுவை மாற்றவும்"
 
 #: src/cgame/cg_tutorial.cpp:62
 msgid "Throw a grenade"
-msgstr ""
+msgstr "ஒரு கையெறி குண்டு வீசவும்"
 
 #: src/cgame/cg_tutorial.cpp:107
 msgid "SHIFT-ESCAPE"
-msgstr ""
+msgstr "சிப்ட்-எச்கேப்"
 
 #: src/cgame/cg_tutorial.cpp:114
 msgid "ESCAPE"
-msgstr ""
+msgstr "தப்பிக்கும்"
 
 #: src/cgame/cg_tutorial.cpp:125 src/cgame/rocket/rocket_keys.cpp:356
 #, c-format
 msgid "%s or %s"
-msgstr ""
+msgstr "%s அல்லது %s"
 
 #: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: src/cgame/cg_tutorial.cpp:135
 #, c-format
 msgid "\"%s\" (unbound)"
-msgstr ""
+msgstr "\"%s\" (வரம்பற்ற)"
 
 #: src/cgame/cg_tutorial.cpp:179
 #, c-format
 msgid "Press %s to place the %s."
-msgstr ""
+msgstr "%s வைக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:182
 #, c-format
 msgid "Press %s to cancel placing the %s."
-msgstr ""
+msgstr "%s ஐ ரத்து செய்ய %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:187
 #, c-format
 msgid "Press %s to build a structure."
-msgstr ""
+msgstr "ஒரு கட்டமைப்பை உருவாக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:197
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
-msgstr ""
+msgstr "இந்த கட்டமைப்பை மாற்றுவதற்கு %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:202
 #, c-format
 msgid "Press %s to mark this structure for replacement."
-msgstr ""
+msgstr "மாற்றாக இந்த கட்டமைப்பைக் குறிக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:206
 #, c-format
 msgid "Hold %s to deconstruct this structure."
-msgstr ""
+msgstr "இந்த கட்டமைப்பை மறுகட்டமைக்க %s வைத்திருங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:222 src/cgame/cg_tutorial.cpp:262
 #: src/cgame/cg_tutorial.cpp:321
 #, c-format
 msgid "Press %s to swipe."
-msgstr ""
+msgstr "ச்வைப் செய்ய %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:228
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
+"துப்பிக்க %s ஐ அழுத்தவும். ச்பிட் மனிதர்களை மெதுவாக்கும் மற்றும் நெருப்பை அகற்றும்."
 
 #: src/cgame/cg_tutorial.cpp:231 src/cgame/cg_tutorial.cpp:251
 #: src/cgame/cg_tutorial.cpp:268
 #, c-format
 msgid "Press %s to walk on walls."
-msgstr ""
+msgstr "சுவர்களில் நடக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:245
 msgid "Touch humans to damage them."
-msgstr ""
+msgstr "மனிதர்களை சேதப்படுத்தத் தொடவும்."
 
 #: src/cgame/cg_tutorial.cpp:248
 msgid "Aim at their heads to cause more damage."
-msgstr ""
+msgstr "அதிக சேதத்தை ஏற்படுத்த அவர்களின் தலையை நோக்கமாகக் கொள்ளுங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:265
 #, c-format
 msgid "Press %s to lunge."
-msgstr ""
+msgstr "லன்ச் செய்ய %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:279 src/cgame/cg_tutorial.cpp:299
 #, c-format
 msgid "Press %s to bite."
-msgstr ""
+msgstr "கடிக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:284
 #, c-format
 msgid "Press %s to invoke an electrical attack."
-msgstr ""
+msgstr "மின் தாக்குதலை செயல்படுத்த %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:288
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr ""
+msgstr "%s கீழே வைத்திருங்கள், பின்னர் சுவர் தாவலுக்கு ஒரு சுவரைத் தொடவும்."
 
 #: src/cgame/cg_tutorial.cpp:304
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr ""
+msgstr "ஒரு பார்பைத் தொடங்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:308
 #, c-format
 msgid "Hold down and release %s to pounce."
-msgstr ""
+msgstr "துள்ளுவதற்கு %s ஐ கீழே வைத்திருங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:324
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
-msgstr ""
+msgstr "மிதிக்க முன்னேறும்போது கீழே வைத்திருங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:351
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr ""
+"மேலும் வெடிமருந்துகளுக்கு ஒரு ஆயுதக் கொரி, துரப்பணம் அல்லது உலை ஆகியவற்றைக் கண்டறியவும்."
 
 #: src/cgame/cg_tutorial.cpp:356
 msgid "Find an Armoury for more ammo."
-msgstr ""
+msgstr "மேலும் வெடிமருந்துகளுக்கு ஒரு ஆயுதக் களஞ்சியத்தைக் கண்டறியவும்."
 
 #: src/cgame/cg_tutorial.cpp:371 src/cgame/cg_tutorial.cpp:376
 #: src/cgame/cg_tutorial.cpp:392
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr ""
+msgstr "%s ஐ சுட %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:379
 #, c-format
 msgid "Hold %s to zoom."
-msgstr ""
+msgstr "பெரிதாக்க %s ஐ வைத்திருங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:384
 #, c-format
 msgid "Hold %s to activate the %s."
-msgstr ""
+msgstr "%s ஐ செயல்படுத்த %s ஐ வைத்திருங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:389
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
-msgstr ""
+msgstr "சார்ச் செய்யப்பட்ட சாட்டை சுட %s பிடித்து விடுவிக்கவும்."
 
 #: src/cgame/cg_tutorial.cpp:416
 #, c-format
 msgid "Press %s to throw the %s."
-msgstr ""
+msgstr "%s ஐ வீச %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:425 src/cgame/cg_tutorial.cpp:454
 #, c-format
 msgid "Press %s to use the %s."
-msgstr ""
+msgstr "%s ஐப் பயன்படுத்த %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:431
 #, c-format
 msgid "Hold %s to use the Jetpack."
-msgstr ""
+msgstr "செட் பேக்கைப் பயன்படுத்த %s வைத்திருங்கள்."
 
 #: src/cgame/cg_tutorial.cpp:439
 #, c-format
 msgid "Press %s to use your Medkit."
-msgstr ""
+msgstr "உங்கள் மெட்கிட்டைப் பயன்படுத்த %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:446
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
-msgstr ""
+msgstr "ஆயுதக் களஞ்சியத்தில் உபகரணங்கள் மேம்படுத்தல்களை வாங்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:459
 #, c-format
 msgid "Press %s and any direction to sprint."
-msgstr ""
+msgstr "ச்பிரிண்டிற்கு %s மற்றும் எந்த திசையையும் அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:462
 #, c-format
 msgid "Press %s to crouch."
-msgstr ""
+msgstr "க்ரூச் செய்ய %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:477
 #, c-format
 msgid "Press %s to leave spawn queue."
-msgstr ""
+msgstr "ச்பான் வரிசையை விட %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:482
 #, c-format
 msgid "Press %s to spawn."
-msgstr ""
+msgstr "ச்பான் செய்ய %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:488
 #, c-format
 msgid "Press %s to join a team."
-msgstr ""
+msgstr "ஒரு அணியில் சேர %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:494
 #, c-format
 msgid "Press %s to stop following."
-msgstr ""
+msgstr "பின்தொடர்வதை நிறுத்த %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:499
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
-msgstr ""
+msgstr "சேச்-கேம் பார்வையாளர் பயன்முறைக்கு மாற %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:504
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
-msgstr ""
+msgstr "முதல் நபர் பார்வையாளர் பயன்முறைக்குத் திரும்ப %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:508
 #, c-format
 msgid "Press %s to follow the next player."
-msgstr ""
+msgstr "அடுத்த வீரரைப் பின்பற்ற %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:513
 #, c-format
 msgid "Press %s to follow a player."
-msgstr ""
+msgstr "ஒரு வீரரைப் பின்தொடர %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:594
 #, c-format
 msgid "Press %s to evolve."
-msgstr ""
+msgstr "உருவாக %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:603
 #, c-format
 msgid "Press %s when ready to continue."
-msgstr ""
+msgstr "தொடர தயாராக இருக்கும்போது %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:607
 msgid "Waiting for other players to be ready."
-msgstr ""
+msgstr "மற்ற வீரர்கள் தயாராக இருப்பதற்காக காத்திருக்கிறார்கள்."
 
 #: src/cgame/cg_tutorial.cpp:615
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr ""
+msgstr "அனைத்து வீரர்களுடனும் அரட்டை அடிக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:617
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr ""
+msgstr "உங்கள் குழுவுடன் அரட்டையடிக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:619
 #, c-format
 msgid "Press %s to open the console."
-msgstr ""
+msgstr "கன்சோலைத் திறக்க %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:621
 #, c-format
 msgid "Press %s for the menu."
-msgstr ""
+msgstr "மெனுவுக்கு %s ஐ அழுத்தவும்."
 
 #: src/cgame/rocket/rocket_keys.cpp:343
 msgid "Unbound"
-msgstr ""
+msgstr "வரம்பற்ற"
 
 #: src/sgame/sg_active.cpp:730
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
-msgstr ""
+msgstr "$ 1 $^* செயலற்ற தன்மை காரணமாக $ 2 $ முதல் பார்வையாளர்களுக்கு நகர்ந்தது"
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity spectate!"
-msgstr ""
+msgstr "செயலற்ற தன்மை வரும் வரை பத்து வினாடிகள்!"
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity drop!"
-msgstr ""
+msgstr "செயலற்ற தன்மை குறையும் வரை பத்து வினாடிகள்!"
 
 #: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
-msgstr ""
+msgstr "^3 ஏலியன் பாய் பெயர்கள்:"
 
 #: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
-msgstr ""
+msgstr "^3 உமன் போட் பெயர்கள்:"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
-msgstr ""
+msgstr "$ 1 $^* துண்டிக்கப்பட்டது"
 
 #: src/sgame/sg_bot_nav.cpp:160
 msgid "^1Bot navmesh generation failed!"
-msgstr ""
+msgstr "T 1 போட் நவ்மேச் தலைமுறை தோல்வியடைந்தது!"
 
 #: src/sgame/sg_bot_nav.cpp:173
 msgid "Server: generating bot navigation meshes... $1$%"
-msgstr ""
+msgstr "சேவையகம்: போட் வழிசெலுத்தல் மெச்களை உருவாக்குதல் ... $ 1 $%"
 
 #: src/sgame/sg_buildable.cpp:1697
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
-msgstr ""
+msgstr "$ 1 $^2 பில்ட்^* ஆல் $ 2 $^*,^3replacing^* $ 3 $"
 
 #: src/sgame/sg_buildable.cpp:1698
 msgid "$1$ ^2built^* by $2$$3$"
-msgstr ""
+msgstr "$ 1 $ ^2 கட்டப்பட்ட ^* $ 2 $$ 3 by"
 
 #: src/sgame/sg_client.cpp:846
 msgid "Name change spam protection ($1$ = $2$)"
-msgstr ""
+msgstr "பெயர் மாற்றம் ச்பேம் பாதுகாப்பு ($ 1 $ = $ 2 $)"
 
 #: src/sgame/sg_client.cpp:855
 msgid "Maximum name changes reached ($1$ = $2$)"
-msgstr ""
+msgstr "அதிகபட்ச பெயர் மாற்றங்கள் எட்டப்பட்டன ($ 1 $ = $ 2 $)"
 
 #: src/sgame/sg_client.cpp:863
 msgid "You cannot change your name while you are muted"
-msgstr ""
+msgstr "நீங்கள் முடக்கப்பட்டிருக்கும் போது உங்கள் பெயரை மாற்ற முடியாது"
 
 #: src/sgame/sg_client.cpp:875
 msgid "Name is too long! Must be less than $1$ characters or color codes."
 msgstr ""
+"பெயர் மிக நீளமானது! $ 1 $ எழுத்துக்கள் அல்லது வண்ண குறியீடுகளுக்கு குறைவாக இருக்க "
+"வேண்டும்."
 
 #: src/sgame/sg_client.cpp:1156
 msgid "Your GUID is not secure"
-msgstr ""
+msgstr "உங்கள் வழிகாட்டுதல் பாதுகாப்பாக இல்லை"
 
 #: src/sgame/sg_client.cpp:1197
 msgid "$1$^* connected"
-msgstr ""
+msgstr "$ 1 $^* இணைக்கப்பட்டுள்ளது"
 
 #: src/sgame/sg_client.cpp:1267
 msgid "$1$^* is connecting…"
-msgstr ""
+msgstr "$ 1 $^* இணைக்கிறது…"
 
 #: src/sgame/sg_client.cpp:1334
 msgid "$1$^* entered the game"
-msgstr ""
+msgstr "$ 1 $^* விளையாட்டில் நுழைந்தது"
 
 #: src/sgame/sg_combat.cpp:629
 msgid "Your killer, $1$^*, had $2$ HP."
-msgstr ""
+msgstr "உங்கள் கொலையாளி, $ 1 $^*, $ 2 $ எச்பி இருந்தது."
 
 #: src/sgame/sg_combat.cpp:1213
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
-msgstr ""
+msgstr "$ 1 $ ^3deconstructed ^* by $ 2 $"
 
 #: src/sgame/sg_combat.cpp:1214
 msgid "$1$ ^3DESTROYED^* by $2$"
-msgstr ""
+msgstr "$ 1 $ ^3destroyed ^* by $ 2 $"
 
 #: src/sgame/sg_main.cpp:1995
 msgid "Timelimit hit"
-msgstr ""
+msgstr "டைம்லிமிட் இட்"
 
 #: src/sgame/sg_main.cpp:2006
 msgid "$1$ minutes remaining!"
-msgstr ""
+msgstr "$ 1 $ நிமிடங்கள் மீதமுள்ளவை!"
 
 #: src/sgame/sg_main.cpp:2014
 msgid "1 minute remaining!"
-msgstr ""
+msgstr "1 மணித்துளி மீதமுள்ள!"
 
 #: src/sgame/sg_main.cpp:2027
 msgid "Humans win"
-msgstr ""
+msgstr "மனிதர்கள் செய் பெறுகிறார்கள்"
 
 #: src/sgame/sg_main.cpp:2041
 msgid "Aliens win"
-msgstr ""
+msgstr "வேற்றுகிரகவாசிகள் செய் பெறுகிறார்கள்"
 
 #: src/sgame/sg_main.cpp:2055
 msgid "Empty teams skip map time exceeded."
-msgstr ""
+msgstr "வெற்று அணிகள் வரைபட நேரம் மீறியது."
 
 #: src/sgame/sg_main.cpp:2221
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "விளையாட்டு இடைநிறுத்தப்பட்டுள்ளது. தயவுசெய்து காத்திருங்கள்."
 
 #: src/sgame/sg_main.cpp:2225
 msgid "Server: Game will auto-unpause in $1$ seconds"
-msgstr ""
+msgstr "சேவையகம்: விளையாட்டு $ 1 $ வினாடிகளில் தானாக முன்வரும்"
 
 #: src/sgame/sg_main.cpp:2244
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
-msgstr ""
+msgstr "சேவையகம்: விளையாட்டு தானாகவே பொருந்தாது (அதிகபட்சம் $ 1 $ நிமிடங்கள்)"
 
 #: src/sgame/sg_main.cpp:2247
 msgid "The game has been unpaused!"
-msgstr ""
+msgstr "விளையாட்டு பொருந்தாது!"
 
 #: src/sgame/sg_spawn_mover.cpp:1078
 msgid "^1This door is locked!"
-msgstr ""
+msgstr "^1 இந்த கதவு பூட்டப்பட்டுள்ளது!"
 
 #: src/sgame/sg_svcmds.cpp:527
 msgid "Alien team has admitted defeat"
-msgstr ""
+msgstr "ஏலியன் குழு தோல்வியை ஒப்புக் கொண்டுள்ளது"
 
 #: src/sgame/sg_svcmds.cpp:532
 msgid "Human team has admitted defeat"
-msgstr ""
+msgstr "மனித குழு தோல்வியை ஒப்புக் கொண்டுள்ளது"
 
 #: src/sgame/sg_svcmds.cpp:565
 msgid "Evacuation ordered"
-msgstr ""
+msgstr "வெளியேற்றம் உத்தரவிடப்பட்டது"
 
 #: src/sgame/sg_team.cpp:604
 msgid "Teams are imbalanced. Humans have more players."
-msgstr ""
+msgstr "அணிகள் சமநிலையற்றவை. மனிதர்களுக்கு அதிகமான வீரர்கள் உள்ளனர்."
 
 #: src/sgame/sg_team.cpp:611
 msgid "Teams are imbalanced. Aliens have more players."
-msgstr ""
+msgstr "அணிகள் சமநிலையற்றவை. வேற்றுகிரகவாசிகள் அதிக வீரர்களைக் கொண்டுள்ளனர்."
 
 #: src/sgame/sg_votes.cpp:59
 #, c-format
 msgid "Kick player '%s'"
-msgstr ""
+msgstr "கிக் பிளேயர் '%s'"
 
 #: src/sgame/sg_votes.cpp:71
 #, c-format
 msgid "Move player '%s' to spectators"
-msgstr ""
+msgstr "பிளேயர் '%s' பார்வையாளர்களுக்கு நகர்த்தவும்"
 
 #: src/sgame/sg_votes.cpp:82
 msgid "$1$: player is already muted"
-msgstr ""
+msgstr "$ 1 $: பிளேயர் ஏற்கனவே முடக்கப்பட்டுள்ளார்"
 
 #: src/sgame/sg_votes.cpp:89
 #, c-format
 msgid "Mute player '%s'"
-msgstr ""
+msgstr "முடக்கு வீரர் '%s'"
 
 #: src/sgame/sg_votes.cpp:101
 msgid "$1$: player is not currently muted"
-msgstr ""
+msgstr "$ 1 $: பிளேயர் தற்போது முடக்கப்படவில்லை"
 
 #: src/sgame/sg_votes.cpp:108
 #, c-format
 msgid "Unmute player '%s'"
-msgstr ""
+msgstr "ஆன்யூட் பிளேயர் '%s'"
 
 #: src/sgame/sg_votes.cpp:120
 msgid "$1$: player already lost building rights"
-msgstr ""
+msgstr "$ 1 $: பிளேயர் ஏற்கனவே கட்டிட உரிமைகளை இழந்தார்"
 
 #: src/sgame/sg_votes.cpp:138
 msgid "$1$: player already has building rights"
-msgstr ""
+msgstr "$ 1 $: பிளேயருக்கு ஏற்கனவே கட்டிட உரிமைகள் உள்ளன"
 
 #: src/sgame/sg_votes.cpp:197 src/sgame/sg_votes.cpp:263
 msgid "$1$: map name not specified"
-msgstr ""
+msgstr "$ 1 $: வரைபட பெயர் குறிப்பிடப்படவில்லை"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
-msgstr ""
+msgstr "$ 1 $: 'வரைபடங்கள்/$ 2 $ .BSP' சேவையகத்தில் காணப்படவில்லை"
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"
-msgstr ""
+msgstr "கால்வோட்: லேஅவுட் '$ 1 $' சேவையகத்தில் காண முடியவில்லை"
 
 #: src/sgame/sg_votes.cpp:271
 msgid "$1$: the next map is already set to '$2$'"
-msgstr ""
+msgstr "$ 1 $: அடுத்த வரைபடம் ஏற்கனவே '$ 2 $' என அமைக்கப்பட்டுள்ளது"
 
 #: src/sgame/sg_votes.cpp:330
 msgid "$1$: there are no active bots"
-msgstr ""
+msgstr "$ 1 $: செயலில் போட்கள் இல்லை"
 
 #: src/sgame/sg_votes.cpp:349 src/sgame/sg_votes.cpp:371
 #: src/sgame/sg_votes.cpp:393
 msgid "$1$: number must be non-negative and smaller than $2$"
 msgstr ""
+"$ 1 $: எண் எதிர்மறையாக இருக்க வேண்டும் மற்றும் $ 2 than ஐ விட சிறியதாக இருக்க வேண்டும்"
 
 #: src/sgame/sg_votes.cpp:358
 #, c-format
 msgid "Fill each team with bots to %d"
-msgstr ""
+msgstr "ஒவ்வொரு அணியையும் போட்களுடன் %d க்கு நிரப்பவும்"
 
 #: src/sgame/sg_votes.cpp:380
 #, c-format
 msgid "Fill the human team with bots to %d"
-msgstr ""
+msgstr "மனித அணியை போட்களுடன் %d க்கு நிரப்பவும்"
 
 #: src/sgame/sg_votes.cpp:402
 #, c-format
 msgid "Fill the alien team with bots to %d"
-msgstr ""
+msgstr "அன்னிய அணியை போட்களுடன் %d க்கு நிரப்பவும்"
 
 #: src/sgame/sg_votes.cpp:477
 msgid "$1$: voting not allowed here"
-msgstr ""
+msgstr "$ 1 $: வாக்களிப்பு இங்கே அனுமதிக்கப்படவில்லை"
 
 #: src/sgame/sg_votes.cpp:486
 msgid "$1$: you are not permitted to call $2$ votes"
-msgstr ""
+msgstr "$ 1 $: $ 2 $ வாக்குகளை அழைக்க உங்களுக்கு இசைவு இல்லை"
 
 #: src/sgame/sg_votes.cpp:495
 msgid "$1$: a vote is already in progress"
-msgstr ""
+msgstr "$ 1 $: ஒரு வாக்கு ஏற்கனவே நடந்து வருகிறது"
 
 #: src/sgame/sg_votes.cpp:516
 msgid "Invalid vote string"
-msgstr ""
+msgstr "தவறான வாக்கு சரம்"
 
 #: src/sgame/sg_votes.cpp:519
 msgid "Valid vote commands are: "
-msgstr ""
+msgstr "செல்லுபடியாகும் வாக்கு கட்டளைகள்: "
 
 #: src/sgame/sg_votes.cpp:520
 msgid "Valid team-vote commands are: "
-msgstr ""
+msgstr "செல்லுபடியாகும் குழு-வார் கட்டளைகள்: "
 
 #: src/sgame/sg_votes.cpp:551
 msgid "$1$: you have already called the maximum number of votes ($2$)"
-msgstr ""
+msgstr "$ 1 $: நீங்கள் ஏற்கனவே அதிகபட்ச வாக்குகளை ($ 2 $) அழைத்திருக்கிறீர்கள்"
 
 #: src/sgame/sg_votes.cpp:561
 msgid "'$1$' votes have been disabled"
-msgstr ""
+msgstr "'$ 1 $' வாக்குகள் முடக்கப்பட்டுள்ளன"
 
 #: src/sgame/sg_votes.cpp:582
 msgid "'$1$' votes are not allowed once $2$ minutes have passed"
-msgstr ""
+msgstr "$ 2 $ நிமிடங்கள் கடந்துவிட்டவுடன் '$ 1 $' வாக்குகள் அனுமதிக்கப்படாது"
 
 #: src/sgame/sg_votes.cpp:596
 msgid "'$1$' votes are not allowed until $2$ minutes have passed"
-msgstr ""
+msgstr "$ 2 $ நிமிடங்கள் கடக்கும் வரை '$ 1 $' வாக்குகள் அனுமதிக்கப்படாது"
 
 #: src/sgame/sg_votes.cpp:611
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining"
 msgstr ""
+"'$ 1 $' வாக்குகள் $ 2 $ நிமிடங்களுக்கும் குறைவாக மட்டுமே அனுமதிக்கப்படுகின்றன"
 
 #: src/sgame/sg_votes.cpp:655
 msgid "$1$: no target"
-msgstr ""
+msgstr "$ 1 $: இலக்கு இல்லை"
 
 #: src/sgame/sg_votes.cpp:675
 msgid "$1$: player is a bot"
-msgstr ""
+msgstr "$ 1 $: பிளேயர் ஒரு போட்"
 
 #: src/sgame/sg_votes.cpp:683 src/sgame/sg_votes.cpp:697
 msgid "$1$: admin is immune"
-msgstr ""
+msgstr "$ 1 $: நிர்வாகி நோய் எதிர்ப்பு ஆற்றல் கொண்டவர்"
 
 #: src/sgame/sg_votes.cpp:704
 msgid "$1$: player is not on your team"
-msgstr ""
+msgstr "$ 1 $: பிளேயர் உங்கள் அணியில் இல்லை"
 
 #: src/sgame/sg_votes.cpp:716
 msgid "$1$: You must provide a reason"
-msgstr ""
+msgstr "$ 1 $: நீங்கள் ஒரு காரணத்தை வழங்க வேண்டும்"
 
 #: src/sgame/sg_votes.cpp:738
 msgid "$1$^* called a vote: $2$"
-msgstr ""
+msgstr "$ 1 $^* ஒரு வாக்கு: $ 2 $"
 
 #: src/sgame/sg_votes.cpp:742
 msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
+"$ 1 $^7 வாக்களித்தது:\n"
+" ^7 $ 2 $"
 
 #: src/sgame/sg_votes.cpp:759
 msgid "$1$^* called a team vote: $2t$"
-msgstr ""
+msgstr "$ 1 $^* ஒரு குழு வாக்கு: $ 2t $"
 
 #: src/sgame/sg_votes.cpp:764
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$ 1 $^7 ஒரு குழு வாக்கெடுப்பு என்று அழைக்கப்பட்டது:\n"
+" ^7 $ 2t $"
 
 #: src/sgame/sg_votes.cpp:877
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "வாக்கு தோல்வியுற்றது ($ 1 $ 2 $; கோரம் எட்டப்படவில்லை)"
 
 #: src/sgame/sg_votes.cpp:878
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "குழு வாக்கு தோல்வியடைந்தது ($ 1 $ 2 $; கோரம் எட்டப்படவில்லை)"
 
 #: src/sgame/sg_votes.cpp:884
 msgid "Vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "வாக்கு நிறைவேற்றப்பட்டது ($ 1 $ - $ 2 $)"
 
 #: src/sgame/sg_votes.cpp:885
 msgid "Team vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "குழு வாக்கு நிறைவேற்றப்பட்டது ($ 1 $ - $ 2 $)"
 
 #: src/sgame/sg_votes.cpp:891
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "வாக்கு தோல்வியுற்றது ($ 1 $ - $ 2 $; $ 3 $% தேவை)"
 
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "குழு வாக்கு தோல்வியடைந்தது ($ 1 $ - $ 2 $; $ 3 $% தேவை)"
 
 #: src/shared/bg_misc.cpp:2483
 msgid "spectator"
-msgstr ""
+msgstr "பார்வையாளர்"
 
 #: src/shared/bg_misc.cpp:2488
 msgid "alien"
-msgstr ""
+msgstr "ஏலியன்"
 
 #: src/shared/bg_misc.cpp:2493
 msgid "human"
-msgstr ""
+msgstr "மனித"
 
 #: src/shared/bg_misc.cpp:2503
 msgid "spectators"
-msgstr ""
+msgstr "பார்வையாளர்கள்"
 
 #: src/shared/bg_misc.cpp:2508
 msgid "aliens"
-msgstr ""
+msgstr "வேற்றுகிரகவாசிகள்"
 
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
-msgstr ""
+msgstr "மனிதர்கள்"
