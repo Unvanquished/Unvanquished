@@ -156,7 +156,7 @@
 				</row>
 				<row>
 					<keybind cmd='botTacticMenu' />
-					<p><translate>Bot Tactic menu:</translate></p>
+					<p><translate>Bot tactic menu:</translate></p>
 				</row>
 				<row>
 					<keybind cmd="<console>" />
