@@ -906,6 +906,11 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 	else
 	{
 		lf->blendlerp = 1.0f - lf->blendlerp; //use old blending for smooth blending between two blended animations
+		// Is this really a good idea? We have to discontinuously jump from blending A->B to blending B->C.
+		// This replaces the fraction of A with the same amount of C while keeping the fraction of B constant.
+		// Would help if the current frame of A and the beginning of C are similar; could be worse
+		// (as opposed to starting the fraction at 1) in other cases.
+		// FIXME: consider blending A->C instead of B->C if prior fraction was close to 1?
 	}
 }
 
