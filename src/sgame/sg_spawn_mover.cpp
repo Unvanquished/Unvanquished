@@ -1303,15 +1303,11 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	}
 }
 
-static void G_ResetFloatField( float* result, bool fallbackIfNegative, float instanceField, float classField, float fallback )
+static void G_ResetFloatField( float* result, bool fallbackIfNegative, float instanceField, float fallback )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
 		*result = instanceField;
-	}
-	else if (classField && (classField > 0 || !fallbackIfNegative))
-	{
-		*result = classField;
 	}
 	else
 	{
@@ -1327,7 +1323,7 @@ static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	if(!fallbackSpeed)
 		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->num(), self->classname);
 
-	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, fallbackSpeed);
+	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, fallbackSpeed);
 
 	// reset duration only for linear movement else func_bobbing will not move
 	if ( self->s.pos.trType != trType_t::TR_SINE )
@@ -1448,7 +1444,7 @@ static void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	VectorSubtract( self->mapEntity.activatedPosition, self->mapEntity.restingPosition, move );
 	angle = VectorLength( move );
 
-	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, fallbackSpeed);
+	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, fallbackSpeed);
 
 	VectorScale( move, self->mapEntity.speed, self->s.apos.trDelta );
 	self->s.apos.trDuration = angle * 1000 / self->mapEntity.speed;
@@ -1640,8 +1636,8 @@ static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, 
 
 static void func_door_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, true, self->mapEntity.config.health, self->mapEntity.eclass->config.health, 0);
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+	G_ResetIntField(&self->health, true, self->mapEntity.config.health, 0);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 
 	reset_moverspeed( self, 400 );
 }
@@ -1762,8 +1758,8 @@ void SP_func_door( gentity_t *self )
 
 static void func_door_rotating_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, true, self->mapEntity.config.health, self->mapEntity.eclass->config.health, 0);
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+	G_ResetIntField(&self->health, true, self->mapEntity.config.health, 0);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 
 	reset_rotatorspeed( self, 120 );
 }
@@ -1896,8 +1892,8 @@ void SP_func_door_rotating( gentity_t *self )
 
 static void func_door_model_reset( gentity_t *self )
 {
-	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, 200);
-	G_ResetIntField(&self->health, true, self->mapEntity.config.health, self->mapEntity.eclass->config.health, 0);
+	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, 200);
+	G_ResetIntField(&self->health, true, self->mapEntity.config.health, 0);
 
 	self->s.torsoAnim = self->s.weapon * ( 1000.0f / self->mapEntity.speed ); //framerate
 	if ( self->s.torsoAnim <= 0 )
@@ -2156,7 +2152,7 @@ void SP_func_plat( gentity_t *self )
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 
 	if(!self->mapEntity.config.wait.time)
 		self->mapEntity.config.wait.time = 1.0f;
@@ -2223,7 +2219,7 @@ static void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *acti
 
 static void func_button_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->health, true, self->mapEntity.config.health, self->mapEntity.eclass->config.health, 0);
+	G_ResetIntField(&self->health, true, self->mapEntity.config.health, 0);
 
 	reset_moverspeed( self, 40 );
 }
@@ -2344,9 +2340,9 @@ static void func_train_reached( gentity_t *self )
 	VectorCopy( next->nextPathSegment->s.origin, self->mapEntity.activatedPosition );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
-	G_ResetFloatField( &self->mapEntity.speed, true, next->mapEntity.config.speed, next->mapEntity.eclass->config.speed, 0);
+	G_ResetFloatField( &self->mapEntity.speed, true, next->mapEntity.config.speed, 0);
 	if(!self->mapEntity.speed) {
-		G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
+		G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, DEFAULT_FUNC_TRAIN_SPEED);
 	}
 
 	// calculate duration
@@ -2571,7 +2567,7 @@ void SP_func_train( gentity_t *self )
 	}
 	else
 	{
-		G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+		G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 	}
 
 	trap_SetBrushModel( self, self->mapEntity.model );
@@ -2734,14 +2730,14 @@ static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activ
 
 void SP_func_rotating( gentity_t *self )
 {
-	G_ResetFloatField(&self->mapEntity.speed, false, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, 100);
+	G_ResetFloatField(&self->mapEntity.speed, false, self->mapEntity.config.speed, 100);
 
 	// set the axis of rotation
 	self->s.apos.trType = trType_t::TR_LINEAR;
 
 	FuncRotatingSetSpeedAccordingToSpawnflags( self );
 
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 
 	trap_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
@@ -2775,7 +2771,7 @@ void SP_func_bobbing( gentity_t *self )
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 
 	trap_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
@@ -2816,7 +2812,7 @@ void SP_func_pendulum( gentity_t *self )
 	float phase;
 	G_SpawnFloat( "phase", "0", &phase );
 
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 2);
 
 	trap_SetBrushModel( self, self->mapEntity.model );
 
@@ -2926,7 +2922,7 @@ static void func_destructable_reset( gentity_t *self )
 	glm::vec3 mins = VEC2GLM( self->r.absmin );
 	glm::vec3 maxs = VEC2GLM( self->r.absmax );
 	G_BotAddObstacle( mins, maxs, self->num() );
-	G_ResetIntField(&self->health, true, self->mapEntity.config.health, self->mapEntity.eclass->config.health, 100);
+	G_ResetIntField(&self->health, true, self->mapEntity.config.health, 100);
 }
 
 /*
