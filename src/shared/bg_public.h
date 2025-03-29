@@ -192,6 +192,79 @@ struct playerState_t
 	bool IsWeaponReady() const;
 };
 
+struct entityState_t
+{
+	// You can add fields to this struct, but you should not add them at
+	// the start. Daemon will read those fields here and expects them to be
+	// in that order. Do not touch these unless you intend on modifying
+	// daemon too.
+	//
+	// ###########################
+	// # BEGIN OF DAEMON SECTION #
+	// ###########################
+	int          number; // entity index
+	entityType_t eType; // entityType_t
+	int          eFlags;
+
+	vec3_t       origin;
+	// this can be the point from where bullets are shot,
+	// the position of the second side of a portal, etc.
+	vec3_t       origin2;
+
+	vec3_t       angles;
+	vec3_t       angles2;
+
+	int          generic1;
+
+	int          clientNum; // 0 to (MAX_CLIENTS - 1), for players, and hijacked for corpses
+	int          otherEntityNum; // shotgun sources, etc
+	// #########################
+	// # END OF DAEMON SECTION #
+	// #########################
+
+	// You can add struct members below without a daemon change.
+
+	int          otherEntityNum2;
+
+	int constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
+	int loopSound; // constantly loop this sound
+
+	int modelindex;
+	int modelindex2;
+
+	int groundEntityNum; // ENTITYNUM_NONE = in air. EV_OBITUARY hijacks this to be the kill assistant entityNum
+
+
+	trajectory_t pos; // for calculating position
+	trajectory_t apos; // for calculating angles
+
+	int time;
+	int time2;
+
+	int frame;
+
+	int solid; // for client side prediction, trap_linkentity sets this properly
+
+	// old style events, in for compatibility only
+	int event; // impulse events -- muzzle flashes, footsteps, etc
+	int eventParm;
+
+	int eventSequence; // pmove generated events
+	int events[ MAX_EVENTS ];
+	int eventParms[ MAX_EVENTS ];
+
+	// for players and buildables
+	int weapon; // determines weapon and flash model, etc
+	// for (human and alien) players, buildables and doors
+	int legsAnim; // mask off ANIM_TOGGLEBIT
+	// for human players only
+	int torsoAnim; // mask off ANIM_TOGGLEBIT
+
+	int misc; // bit flags
+	int weaponAnim; // mask off ANIM_TOGGLEBIT
+};
+
+
 // the possibility and the cost of evolving to an alien form
 struct evolveInfo_t {
 	bool isDevolving;
