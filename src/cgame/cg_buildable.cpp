@@ -173,6 +173,9 @@ static sfxHandle_t defaultHumanSounds[ MAX_BUILDABLE_ANIMATIONS ];
 static refSkeleton_t bSkeleton;
 static refSkeleton_t oldbSkeleton;
 
+static int buildingID;
+static std::vector<skelAnimation_t> skelAnimations;
+
 /*
 =================
 CG_AlienBuildableDying
@@ -857,7 +860,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		{
 			if ( lf->old_animation != nullptr && lf->old_animation->handle )
 			{
-				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
+				if ( !trap_R_BuildSkeleton2( &oldbSkeleton, &skelAnimations[buildingID], lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin) )
 				{
 					Log::Warn( "Can't build old buildable bSkeleton" );
 					return;
@@ -952,6 +955,10 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	}
 }
 
+void CG_BuildAllBuildableAnimSkeletons( std::vector<centity_t*> buildings ) {
+	//
+}
+
 /*
 ===============
 CG_BuildableAnimation
@@ -1030,7 +1037,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, &bSkeleton, &oldbSkeleton );
+		CG_BuildAnimSkeleton( lf, &bSkeleton, &oldbSkeleton, &skelAnimations[buildingID] );
 	}
 }
 
@@ -1985,6 +1992,30 @@ void CG_DrawBuildableStatus()
 
 #define BUILDABLE_SOUND_PERIOD 500
 
+void CG_GetAllBuildableAnims( std::vector<centity_t*>& buildings ) {
+	std::vector<qhandle_t> anims;
+	anims.reserve( buildings.size() );
+
+	for ( const centity_t* entity : buildings ) {
+		if ( entity->lerpFrame.animation && entity->lerpFrame.animation->handle ) {
+			anims.emplace_back( entity->lerpFrame.animation->handle );
+		} else {
+			anims.emplace_back( 0 );
+		}
+	}
+
+	skelAnimations = trap_R_BatchGetAnimations( anims );
+}
+
+void CG_AllBuildables( std::vector<centity_t*>& buildings ) {
+	buildingID = 0;
+	CG_GetAllBuildableAnims( buildings );
+
+	for ( centity_t* building : buildings ) {
+		CG_Buildable( building );
+	}
+}
+
 /*
 ==================
 CG_Buildable
@@ -2421,6 +2452,8 @@ void CG_Buildable( centity_t *cent )
 	{
 		CG_EndShadowCaster( );
 	}
+
+	buildingID++;
 }
 
 // maybe move this to shared/ and add a prototype?
