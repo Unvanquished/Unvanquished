@@ -8,8 +8,6 @@ The following files are subject to the MIT License:
 - default.svg
 - defend.png
 - defend.svg
-- follow.png
-- follow.svg
 - stay_here.png
 - stay_here.svg
 
@@ -47,7 +45,9 @@ The following files are licensed under the MIT license and are attributed to Gri
 
 - attack.png
 - attack.svg
-
+- follow.png
+- follow.svg
+- 
 #### License Details
 
 ```
