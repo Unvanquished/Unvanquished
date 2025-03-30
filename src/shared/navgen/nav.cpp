@@ -1068,7 +1068,7 @@ std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
 
 	t->cfg.cs = cellSize;
 	t->cfg.ch = cellHeight_;
-	t->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
+	t->cfg.walkableSlopeAngle = Math::RadToDeg( acosf( MIN_WALK_NORMAL ) );
 	t->cfg.walkableHeight = ( int ) ceilf( height / t->cfg.ch );
 	t->cfg.walkableClimb = ( int ) floorf( climb / t->cfg.ch );
 	t->cfg.walkableRadius = ( int ) ceilf( radius * config_.walkableRadiusFactor / t->cfg.cs );
