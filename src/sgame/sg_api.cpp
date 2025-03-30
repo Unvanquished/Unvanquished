@@ -166,6 +166,11 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxc
 	return G_CM_AreaEntities(mins, maxs, list, maxcount);
 }
 
+int trap_EntitiesInBox( const glm::vec3& mins, const glm::vec3& maxs, int *list, int maxcount )
+{
+	return G_CM_AreaEntities(&mins[0], &maxs[0], list, maxcount);
+}
+
 bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
 {
 	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
@@ -196,11 +201,6 @@ void trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins
 {
 	trap_Trace( results, GLM4READ( start ), GLM4READ( mins ), GLM4READ( maxs ), GLM4READ( end ),
 		passEntityNum, contentmask, skipmask );
-}
-
-int trap_PointContents(const vec3_t point, int passEntityNum)
-{
-	return G_CM_PointContents( point, passEntityNum );
 }
 
 void trap_SetBrushModel(gentity_t *ent, const char *name)

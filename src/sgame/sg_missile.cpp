@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_cm_world.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "shared/math.hpp"
 
 // -----------
 // definitions
@@ -59,15 +60,11 @@ enum missileTimePowerMod_t {
 
 static void BounceMissile( gentity_t *ent, const trace2_t *trace )
 {
-	vec3_t velocity;
-	float  dot;
-	int    hitTime;
-
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
-	dot = DotProduct( velocity, trace->plane.normal );
-	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
+	int hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	glm::vec3 velocity = BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime );
+	float dot = glm::dot( velocity, VEC2GLM( trace->plane.normal ) );
+	velocity = velocity - 2.f * dot * VEC2GLM( trace->plane.normal );
 
 	if ( ent->s.eFlags & EF_BOUNCE_HALF )
 	{
@@ -360,13 +357,14 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 	{
 		if ( ma->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
 		{
-			vec3_t dir;
-
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
-
-			if ( VectorNormalize( dir ) == 0 )
+			glm::vec3 dir = BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time );
+			if ( glm::length2( dir ) == 0 )
 			{
 				dir[ 2 ] = 1; // stepped on a grenade
+			}
+			else
+			{
+				dir = glm::normalize( dir );
 			}
 
 			int dflags = 0;
@@ -374,7 +372,7 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
 			hitEnt->Damage(ma->damage * MissileTimeDmgMod(ent), attacker,
-			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
+			                       VEC2GLM( trace->endpos ), dir, dflags,
 			                       ma->meansOfDeath);
 		}
 
