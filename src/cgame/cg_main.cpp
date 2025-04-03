@@ -868,6 +868,13 @@ static void CG_RegisterGraphics()
 	trap_R_RegisterShader( "gfx/feedback/bottactic/stay_here", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 	trap_R_RegisterShader( "gfx/feedback/bottactic/follow", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
+	trap_R_RegisterShader( "gfx/feedback/vsay/attack", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/vsay/defend", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/vsay/flank", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/vsay/follow", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/vsay/no", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	trap_R_RegisterShader( "gfx/feedback/vsay/yes", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	
 	// register the inline models
 	cgs.numInlineModels = CM_NumInlineModels();
 
