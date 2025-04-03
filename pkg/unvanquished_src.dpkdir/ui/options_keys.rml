@@ -155,6 +155,10 @@
 					<p><translate>Beacon menu:</translate></p>
 				</row>
 				<row>
+					<keybind cmd='VsayMenu' />
+					<p><translate>Vsays menu:</translate></p>
+				</row>
+				<row>
 					<keybind cmd='botTacticMenu' />
 					<p><translate>Bot tactic menu:</translate></p>
 				</row>
