@@ -1510,7 +1510,7 @@ static void CG_Rocket_BuildVsayList( const char *table )
 		setCommand( "1", "followme", N_( "Follow" ), N_( "Follow me!" ), "gfx/feedback/vsay/follow" );
 		setCommand( "3", "no", N_( "No" ), N_( "No." ), "gfx/feedback/vsay/no" );
 		setCommand( "4", "yes", N_( "Yes" ), N_( "Yes." ), "gfx/feedback/vsay/yes" );
-		setCommand( "4", "flank", N_( "Flank" ), N_( "Flank, behind you!" ), "gfx/feedback/vsay/flank" );
+		setCommand( "5", "flank", N_( "Flank" ), N_( "Flank, behind you!" ), "gfx/feedback/vsay/flank" );
 	}
 }
 
