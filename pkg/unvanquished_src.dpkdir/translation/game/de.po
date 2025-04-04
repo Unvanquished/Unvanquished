@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: 2024-10-19 18:26+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2025-03-17 15:16+0000\n"
+"Last-Translator: DJGummikuh <djgummikuh@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.11-dev\n"
 "X-POOTLE-MTIME: 1398345746.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -37,7 +37,7 @@ msgstr "Entwicklungspunkte"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Wähle eine Startklasse:"
+msgstr "Wähle deine Startklasse:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -52,16 +52,16 @@ msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
-"Dretches sind kleinem schnelle Kampfeinheiten, und Grangers sind die "
-"Konstrukteure der Außerirdischen."
+"Dretches sind kleine schnelle Kampfeinheiten, und Grangers sind die "
+"Baumeister der Aliens."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "Zurück zur Teamauswahl"
+msgstr "Zurück zur Team-Auswahl"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Rufe eine Abstimmung für ein Unentschieden auf"
+msgstr "Abstimmung über ein Unentschieden durchführen"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -77,7 +77,7 @@ msgstr "Mit Bots füllen"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Wie viele Mitglieder (Spieler und Bots) sollen die Teams bekommen?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -86,7 +86,7 @@ msgstr "Beide Teams"
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr "Außerirdische"
+msgstr "Aliens"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
@@ -139,7 +139,7 @@ msgstr "OK"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Spielanleitung"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -156,8 +156,8 @@ msgstr ""
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
-"Für weitere Informationen besuchen Sie bitte unsere Website oder anderen "
-"Community-Foren!"
+"Für weitere Informationen besuche unsere Website oder anderen Community-"
+"Foren!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
@@ -188,9 +188,8 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
-"Außerirdische können Weiterenticklungspunkte verdienen, indem sie Menschen "
-"töten. Sie können dann diese Weiterenticklungspunkte nutzen, um sich in "
-"[dragoon] fortgeschrittenere Formen zu entwickeln."
+"Aliens erhalten Entwicklungspunkte, wenn sie Menschen töten. Damit können "
+"sie sich in [dragoon] stärkere Klassen verwandeln."
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -627,7 +626,7 @@ msgstr "Zeit:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr "Automatische Teamauswahl"
+msgstr "Team automatisch auswählen"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
@@ -667,8 +666,8 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"Das ist eine Beta-Version von Unvanquished. Bitte melde jegliche Probleme, "
-"die du findest, unter <web dest=\"bugs\" />"
+"Dies ist die Beta-Version von Unvanquished. Bitte alle auftretenden Fehler "
+"hier melden: <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
@@ -692,7 +691,7 @@ msgstr "Host Menü"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr "Servereinrichtung"
+msgstr "Server-Einstellungen"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
@@ -1104,7 +1103,7 @@ msgstr "Allgemeines"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr ""
+msgstr "Unbegrenzt"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
@@ -1128,11 +1127,11 @@ msgstr "(am niedrigsten)"
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
-msgstr ""
+msgstr "Bildgrößen-Limit"
 
 #: ui/options_graphics.rml:152
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Begrenze die Bildgröße um Speicher zu sparen."
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
@@ -1144,11 +1143,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Hauptmenü-Bild Größenbegrenzung"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Begrenzt die maximale Größe des Menü-Bilds um Speicher zu sparen."
 
 #: ui/options_graphics.rml:167
 msgid "High-precision rendering"
@@ -1157,16 +1156,19 @@ msgstr ""
 #: ui/options_graphics.rml:168
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
+"Verwende Hochpräzisions Pixelbuffer um Farbstreifenbildung zu reduzieren."
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "Verwende Bindless Textures falls möglich"
 
 #: ui/options_graphics.rml:174
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"Verwende Bindless Textures falls durch die Hardware/den Treiber unterstützt. "
+"Dies kann Einfluss auf die Performance haben."
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:224
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:329
@@ -1221,11 +1223,11 @@ msgstr "Materialien"
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr ""
+msgstr "Himmel"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr ""
+msgstr "Stelle den Himmel dar."
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
@@ -1269,11 +1271,11 @@ msgstr "Materialerscheinung basierend auf physikalischen Näherungen."
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr ""
+msgstr "Reflektionen"
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr ""
+msgstr "Statische Reflektionen"
 
 #: ui/options_graphics.rml:248
 msgid ""
@@ -1283,7 +1285,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr ""
+msgstr "Sehr niedrig"
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
@@ -1291,17 +1293,19 @@ msgstr "Mäßig"
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr ""
+msgstr "Sehr hoch"
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr ""
+msgstr "Qualität"
 
 #: ui/options_graphics.rml:259
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"Qualität statischer Reflektions Cube Maps. Höhere Qualität kann eine große "
+"Menge Festplattenspeicher verbrauchen."
 
 #: ui/options_graphics.rml:262
 msgid "Cubemap grid spacing"
@@ -1318,19 +1322,19 @@ msgstr "Niemals"
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
-msgstr ""
+msgstr "Auf Festplatte zwischenspeichern"
 
 #: ui/options_graphics.rml:274
 msgid "Always rebuild"
-msgstr ""
+msgstr "Immer neu erzeugen"
 
 #: ui/options_graphics.rml:276
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Statische Reflektions Cube Maps automatisch erstellen"
 
 #: ui/options_graphics.rml:277
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr ""
+msgstr "Reflektions Cube Maps automatisch bauen/laden/speichern."
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
@@ -1388,7 +1392,7 @@ msgstr "Erlaube Partikeln, von Oberflächen abzuprallen."
 
 #: ui/options_graphics.rml:323
 msgid "Renderer"
-msgstr ""
+msgstr "Renderer"
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
@@ -1399,22 +1403,24 @@ msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Verwende ein neues System mit stark verbesserter Leistung. Manche Treiber "
+"können hiermit Probleme haben (z.b. Mesa und proprietäre AMD Treiber)."
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "GPU Frustrum Culling"
 
 #: ui/options_graphics.rml:334
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "Oberflächen, die nicht gesehen werden nicht rendern."
 
 #: ui/options_graphics.rml:337
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "GPU Occlusion Culling"
 
 #: ui/options_graphics.rml:339
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "Verhindert das Rendern verdeckter Oberflächen."
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
@@ -1470,7 +1476,7 @@ msgstr "Bauwerkbereiche"
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr ""
+msgstr "Modelle"
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
@@ -1741,11 +1747,11 @@ msgstr "Ausschalten nur, wenn du ein Quake-Fanatiker bist."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Kreismenü Maus-Interaktion"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
-msgstr ""
+msgstr "Kreismenüs (außer dem Waffenkammer Menü) erlauben Mauseingabe"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
@@ -1903,7 +1909,7 @@ msgstr "Zeige nur Team-Chat an"
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr ""
+msgstr "Nachrufe anzeigen"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -2124,7 +2130,7 @@ msgstr "riesig"
 
 #: ui/options_ui.rml:146
 msgid "Crosshair colour"
-msgstr "Fadenkreuzfarbe"
+msgstr "Fadenkreuz Farbe"
 
 #: ui/options_ui.rml:148
 msgid "Image colour"
@@ -2158,7 +2164,7 @@ msgstr ""
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr "Skala:"
+msgstr "Größe:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
@@ -2333,7 +2339,7 @@ msgstr "Schiebe langsame Personen weg von den Spawns."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Schwung"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
@@ -2398,7 +2404,7 @@ msgstr "Schwung-Belohnungsmultiplikator für das Töten von Bauwerken"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Konstruktionssystem"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2438,7 +2444,7 @@ msgstr ""
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Bots: Allgemein"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
@@ -2462,51 +2468,51 @@ msgstr "Funktioniert nur für neue Bots."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Menschheit"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Sichtfeld"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Reaktionszeit"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Verhalten"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Greife Gebäude an"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Cheaten"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Unendliche Resourcen"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Ignoriere Schwung"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Navmesh Generierung"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Erzeuge Navhmeshes während des Ladens"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Anzahl Arbeiterthreads"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Bots: Menschen"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
@@ -2514,51 +2520,51 @@ msgstr ""
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Menschliche Bots kaufen Ausrüstung"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Zielgeschwindigkeits-Modifikator (höher bedeutet langsamer)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Individuell"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Primärwaffen"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Konstruktionswerkzeug (repariert)"
 
 #: ui/server_setup.rml:279
 msgid "Painsaw"
-msgstr ""
+msgstr "Schreckensäge"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Flammenwerfer"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "Panzerung"
 
 #: ui/server_setup.rml:312
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "falls Bots leichte Panzerung kaufen sollen"
 
 #: ui/server_setup.rml:316
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "falls Bots mittlere Panzerung kaufen sollen"
 
 #: ui/server_setup.rml:320
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "falls Bots den Kampfanzug kaufen sollen"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "Brandbombe"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
@@ -2566,23 +2572,23 @@ msgstr "Granate"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Radar"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Alien Bots verwandeln sich"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Verbesserter Marauder"
 
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Verbesserter Dragoon"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
-msgstr "Verbindung abbrechen"
+msgstr "Verbindung beenden"
 
 #: ui/transition_downloading.rml:58
 msgid "Additional files are required. Please be patient while they download."

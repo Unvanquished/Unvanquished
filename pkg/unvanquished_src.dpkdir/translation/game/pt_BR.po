@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-12 19:09+0100\n"
-"PO-Revision-Date: 2024-10-21 20:29+0000\n"
-"Last-Translator: Tomaz-Vieira <tom.fogaca@gmail.com>\n"
+"PO-Revision-Date: 2025-03-31 04:35+0000\n"
+"Last-Translator: \"Camilo Abraão (Chacal)\" <camiloabraaosr@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "unvanquished/unvanquished/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -78,7 +78,7 @@ msgstr "Preencher com bots"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Quantos jogadores (usuários e bots) as equipes devem ter?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -140,7 +140,7 @@ msgstr "Ok"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Guia de jogo"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -1360,7 +1360,7 @@ msgstr "Faz com que áreas brilhantes na sua tela brilhem."
 
 #: ui/options_graphics.rml:294
 msgid "Color grading"
-msgstr ""
+msgstr "Classificação de cores"
 
 #: ui/options_graphics.rml:296
 msgid "Alter colors to create specific ambiences."
@@ -1417,7 +1417,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "Eliminação de frustum de GPU"
 
 #: ui/options_graphics.rml:334
 msgid "Cull surfaces that are out of view."
@@ -1425,11 +1425,11 @@ msgstr "Descartar superfícies fora de vista."
 
 #: ui/options_graphics.rml:337
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "Eliminação de oclusão de GPU"
 
 #: ui/options_graphics.rml:339
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "Elimine superfícies ocultas."
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
@@ -1485,7 +1485,7 @@ msgstr "Alcances das construções"
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr ""
+msgstr "Modelos"
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
@@ -1756,11 +1756,12 @@ msgstr "Desative apenas se você é um viciado em Quake."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Captura do mouse no menu circular"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
+"Os menus circulares (excluindo o menu Armoury) aceitam entradas do mouse"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
@@ -1820,11 +1821,11 @@ msgstr "Humanos e alienígenas"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "Humanos (translúcidos)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "Humanos e alienígenas (translúcido)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1916,7 +1917,7 @@ msgstr "Mostrar apenas o chat da equipe"
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr ""
+msgstr "Mostrar obituários"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -1968,7 +1969,7 @@ msgstr "Interface de usuário"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Inicio"
 
 #: ui/options_ui.rml:24
 msgid "Language"
@@ -2052,23 +2053,23 @@ msgstr "Alfa:"
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
-msgstr ""
+msgstr "Mira"
 
 #: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "AVISO: A pré-visualização só funciona no jogo."
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr ""
+msgstr "Arma"
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
-msgstr ""
+msgstr "Detonador"
 
 #: ui/options_ui.rml:108
 msgid "Rifle"
-msgstr ""
+msgstr "Rifle"
 
 #: ui/options_ui.rml:109
 msgid "Pain Saw"
@@ -2076,11 +2077,11 @@ msgstr ""
 
 #: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
-msgstr ""
+msgstr "Espingarda"
 
 #: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
-msgstr ""
+msgstr "Arma laser"
 
 #: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
@@ -2088,7 +2089,7 @@ msgstr ""
 
 #: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr ""
+msgstr "Metralhadora"
 
 #: ui/options_ui.rml:114
 msgid "Flamer"
