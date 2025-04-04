@@ -2701,7 +2701,7 @@ entityType_t botTarget_t::getTargetType() const
 {
 	if ( targetsValidEntity() )
 	{
-		return ent->s.eType;
+		return static_cast<entityType_t>( ent->s.eType );
 	}
 	else
 	{

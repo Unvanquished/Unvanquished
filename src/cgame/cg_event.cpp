@@ -1401,7 +1401,7 @@ void CG_CheckEvents( centity_t *cent )
 	// check for event-only entities
 	if ( cent->currentState.eType > entityType_t::ET_EVENTS )
 	{
-		event = Util::enum_cast<entity_event_t>( Util::ordinal(cent->currentState.eType) - Util::ordinal(entityType_t::ET_EVENTS) );
+		event = Util::enum_cast<entity_event_t>( Util::ordinal(static_cast<entityType_t>( cent->currentState.eType )) - Util::ordinal(entityType_t::ET_EVENTS) );
 
 		if ( cent->previousEvent )
 		{
@@ -1410,7 +1410,7 @@ void CG_CheckEvents( centity_t *cent )
 
 		cent->previousEvent = 1;
 
-		cent->currentState.event = Util::ordinal(cent->currentState.eType) - Util::ordinal(entityType_t::ET_EVENTS);
+		cent->currentState.event = Util::ordinal(static_cast<entityType_t>( cent->currentState.eType )) - Util::ordinal(entityType_t::ET_EVENTS);
 
 		// Move the pointer to the entity that the
 		// event was originally attached to
