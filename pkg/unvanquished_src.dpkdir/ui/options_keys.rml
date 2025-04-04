@@ -155,7 +155,7 @@
 					<p><translate>Beacon menu:</translate></p>
 				</row>
 				<row>
-					<keybind cmd='VsayMenu' />
+					<keybind cmd='vsayMenu' />
 					<p><translate>Vsays menu:</translate></p>
 				</row>
 				<row>
