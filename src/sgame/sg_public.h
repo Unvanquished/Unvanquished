@@ -326,6 +326,8 @@ float G_DistanceToBBox( const glm::vec3 &origin, gentity_t* ent );
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 bool G_IsOnFire( const gentity_t *ent );
 
+void SpawnDebugLine(vec3_t start, vec3_t end, int lifetime);
+
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
 void              G_GiveMaxAmmo( gentity_t *self );

@@ -413,7 +413,7 @@ static void CG_Missile( centity_t *cent )
 	// add missile sound
 	if ( ma->sound )
 	{
-		vec3_t velocity;
+		vec3_t velocity = {0, 0, 0};
 
 		BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
 
@@ -1159,6 +1159,28 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	//       entity types (e.g. particle entities)
 }
 
+static void CG_DebugEntity(centity_t *cent)
+{
+	// vec3_t mins = {-1, -1, -1};
+	// vec3_t maxs = {1, 1, 1};
+	// CG_DrawBoundingBox( 1, cent->lerpOrigin, mins, maxs );
+
+	vec3_t start, end, up;  // TODO: use glm::vec3
+	polyVert_t verts[4];
+
+	VectorCopy(cent->currentState.origin, start);
+	VectorCopy(cent->currentState.origin2, end);
+
+	GetPerpendicularViewVector(cg.refdef.vieworg, start, end, up);
+
+	VectorMA(start, 1.0f,  up, verts[0].xyz );
+	VectorMA(start, -1.0f, up, verts[1].xyz );
+	VectorMA(end,   -1.0f, up, verts[2].xyz );
+	VectorMA(end,   1.0f,  up, verts[3].xyz );
+
+	trap_R_AddPolysToScene(cgs.media.redBuildShader, 4, verts, 1);
+}
+
 /*
 ===============
 CG_AddCEntity
@@ -1245,6 +1267,10 @@ static void CG_AddCEntity( centity_t *cent )
 
 		case entityType_t::ET_LEV2_ZAP_CHAIN:
 			CG_Lev2ZapChain( cent );
+			break;
+
+		case entityType_t::ET_UNUSED:
+			CG_DebugEntity(cent);
 			break;
 	}
 }

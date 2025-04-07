@@ -1016,3 +1016,28 @@ bool gentity_t::Damage( float amount, gentity_t* source,
 	}
 	return true;
 }
+
+/*
+===============
+Debug entities
+===============
+*/
+void SpawnDebugLine(vec3_t start, vec3_t end, int lifetime)
+{
+	gentity_t *ent;
+
+	ent = G_NewEntity(NO_CBSE);
+	ent->s.eType = entityType_t::ET_UNUSED;
+	ent->classname = "debug";
+
+	ent->think = G_FreeEntity;
+	ent->nextthink = level.time + lifetime;
+
+	// ent->s.pos.trType = trType_t::TR_INTERPOLATE;
+	// VectorCopy(start, ent->s.pos.trBase);
+	VectorCopy(start, ent->r.currentOrigin);
+	VectorCopy(start, ent->s.origin);
+	VectorCopy(end, ent->s.origin2);
+
+	trap_LinkEntity(ent);
+}

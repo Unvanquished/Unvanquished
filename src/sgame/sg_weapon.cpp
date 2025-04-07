@@ -696,7 +696,7 @@ static void FireLcannonPrimary( gentity_t *self, int damage )
 			// Explode immediately when overcharged.
 			// But beware glitchy and framerate-dependent behavior: despite exploding
 			// "instantly" (in the next frame), it "travels" for a distance
-			// (MISSILE_PRESTEP_TIME + length of 1 frame) × attr.speed
+			// (MISSILE_PRESTEP_TIME + length of 1 frame) ï¿½ attr.speed
 			// and can score direct hits against other entities
 			attr.lifetime = 0;
 		}

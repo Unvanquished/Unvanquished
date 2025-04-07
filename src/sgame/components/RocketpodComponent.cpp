@@ -128,6 +128,8 @@ void RocketpodComponent::Think(int timeDelta) {
 			AngleVectors(GetTurretComponent().GetAimAngles(), &aimDirection, nullptr, nullptr);
 			bool safeShot = SafeShot(aimDirection);
 
+			SpawnDebugLine(entity.oldEnt->s.origin, GetTurretComponent().GetTarget()->oldEnt->s.origin, 300);
+
 			// Lock onto the target and shoot if lock was held long enough and it's safe to do so.
 			if (lockingOn && safeShot && lockingOnSince + LOCKON_TIME <= level.time) {
 				// The lockon timer has expired and it's safe to shoot, so do so.
