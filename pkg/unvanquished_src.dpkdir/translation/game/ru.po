@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 19:09+0100\n"
+"POT-Creation-Date: 2025-04-09 17:47+0200\n"
 "PO-Revision-Date: 2024-12-15 08:00+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
@@ -620,6 +620,10 @@ msgstr ""
 msgid "Beacons"
 msgstr "Маяки"
 
+#: ui/ingame_bottacticmenu.rml:78
+msgid "Bot Tactic"
+msgstr ""
+
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
 msgstr "Наблюдатели"
@@ -668,6 +672,10 @@ msgstr "Также вы можете следить за игрой без уч�
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
 msgstr "Наблюдать"
+
+#: ui/ingame_vsaymenu.rml:78
+msgid "Vsay"
+msgstr ""
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -857,6 +865,7 @@ msgid "Mild"
 msgstr "Лёгкий"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
+#: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -1201,6 +1210,7 @@ msgstr ""
 "влияет на производительность."
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Нет"
 
@@ -1678,14 +1688,22 @@ msgid "Beacon menu:"
 msgstr "Меню маяка:"
 
 #: ui/options_keys.rml:159
+msgid "Vsays menu:"
+msgstr ""
+
+#: ui/options_keys.rml:163
+msgid "Bot tactic menu:"
+msgstr ""
+
+#: ui/options_keys.rml:167
 msgid "Toggle console:"
 msgstr "Показать/скрыть консоль:"
 
-#: ui/options_keys.rml:163
+#: ui/options_keys.rml:171
 msgid "Screenshot:"
 msgstr "Скриншот:"
 
-#: ui/options_keys.rml:165
+#: ui/options_keys.rml:173
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
@@ -1693,31 +1711,31 @@ msgstr ""
 "Удерживайте SHIFT, пока делаете скриншот, чтобы захватить его в PNG, иначе "
 "скриншот будет сохранён в JPEG."
 
-#: ui/options_keys.rml:167
+#: ui/options_keys.rml:175
 msgid "Quake-look"
 msgstr "Обзор в стиле Quake"
 
-#: ui/options_keys.rml:171
+#: ui/options_keys.rml:179
 msgid "Look up:"
 msgstr "Посмотреть наверх:"
 
-#: ui/options_keys.rml:175
+#: ui/options_keys.rml:183
 msgid "Look down:"
 msgstr "Посмотреть вниз:"
 
-#: ui/options_keys.rml:179
+#: ui/options_keys.rml:187
 msgid "Turn left:"
 msgstr "Повернуться налево:"
 
-#: ui/options_keys.rml:183
+#: ui/options_keys.rml:191
 msgid "Turn right:"
 msgstr "Повернуться направо:"
 
-#: ui/options_keys.rml:187
+#: ui/options_keys.rml:195
 msgid "Mouse look:"
 msgstr "Обзор мышью:"
 
-#: ui/options_keys.rml:191
+#: ui/options_keys.rml:199
 msgid "Centerview:"
 msgstr "Центрировать взгляд:"
 
@@ -4167,11 +4185,11 @@ msgstr "Обследуем карту местности…"
 msgid "Done!"
 msgstr "Всё!"
 
-#: src/cgame/cg_main.cpp:1136
+#: src/cgame/cg_main.cpp:1144
 msgid "Generating bot navigation meshes"
 msgstr "Генерируем навигационные сетки ботов"
 
-#: src/cgame/cg_main.cpp:1180
+#: src/cgame/cg_main.cpp:1188
 #, c-format
 msgid "by %s"
 msgstr "%s"
@@ -4205,6 +4223,77 @@ msgstr "Своё: %dx%d"
 #, c-format
 msgid "Same as screen (%dx%d)"
 msgstr "То же, что и у экрана (%dx%d)"
+
+#: src/cgame/cg_rocket_datasource.cpp:1474
+msgid "The default behavior. This is what bots do when the game starts."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1475
+#: src/cgame/cg_rocket_datasource.cpp:1508
+msgid "Defend"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1475
+msgid "The bots stay in the base."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1476
+#: src/cgame/cg_rocket_datasource.cpp:1509
+msgid "Attack"
+msgstr "Атака"
+
+#: src/cgame/cg_rocket_datasource.cpp:1476
+msgid "The bots attack the enemy base."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1477
+msgid "Stay Here"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1477
+msgid "The bots stay where you are currently."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1478
+#: src/cgame/cg_rocket_datasource.cpp:1510
+msgid "Follow"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1478
+msgid "The bots follow you wherever you go."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1508
+msgid "Defend our base!!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1509
+msgid "Attack!"
+msgstr "Атакуем!"
+
+#: src/cgame/cg_rocket_datasource.cpp:1510
+msgid "Follow me!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1511
+msgid "No."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1512
+msgid "Yes"
+msgstr "Да"
+
+#: src/cgame/cg_rocket_datasource.cpp:1512
+msgid "Yes."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1513
+msgid "Flank"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1513
+msgid "Flank, behind you!"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2632
 msgid "You are at the front of the spawn queue"
@@ -4717,326 +4806,327 @@ msgid "Unknown client game command: %s"
 msgstr "Неизвестная команда клиента игры: %s"
 
 #: src/cgame/cg_tutorial.cpp:45
-msgid "Run/Walk"
-msgstr "Бег/Ходьба"
-
-#: src/cgame/cg_tutorial.cpp:46
 msgid "Sprint"
 msgstr "Спринт"
 
-#: src/cgame/cg_tutorial.cpp:47
+#: src/cgame/cg_tutorial.cpp:46
 msgid "Jump"
 msgstr "Прыжок"
 
-#: src/cgame/cg_tutorial.cpp:48
+#: src/cgame/cg_tutorial.cpp:47
 msgid "Crouch"
 msgstr "Красться"
 
-#: src/cgame/cg_tutorial.cpp:49
+#: src/cgame/cg_tutorial.cpp:48
 msgid "Primary Attack"
 msgstr "Основная атака"
 
-#: src/cgame/cg_tutorial.cpp:50
+#: src/cgame/cg_tutorial.cpp:49
 msgid "Secondary Attack"
 msgstr "Вторичная атака"
 
-#: src/cgame/cg_tutorial.cpp:51
+#: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
 msgstr "Третичная Атака"
 
-#: src/cgame/cg_tutorial.cpp:52
+#: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
 msgstr "Перезарядка"
 
-#: src/cgame/cg_tutorial.cpp:53
+#: src/cgame/cg_tutorial.cpp:52
 msgid "Use Medkit"
 msgstr "Использовать аптечку"
 
-#: src/cgame/cg_tutorial.cpp:54
+#: src/cgame/cg_tutorial.cpp:53
 msgid "Use Structure/Evolve"
 msgstr "Использовать постройку/Эволюционировать"
 
-#: src/cgame/cg_tutorial.cpp:55
+#: src/cgame/cg_tutorial.cpp:54
 msgid "Deconstruct Structure"
 msgstr "Разрушить постройку"
 
-#: src/cgame/cg_tutorial.cpp:56
-msgid "Previous Weapon"
-msgstr "Предыдущее оружие"
-
-#: src/cgame/cg_tutorial.cpp:57
+#: src/cgame/cg_tutorial.cpp:55
 msgid "Next Weapon"
 msgstr "Следующее оружие"
 
-#: src/cgame/cg_tutorial.cpp:58
+#: src/cgame/cg_tutorial.cpp:56
 msgid "Global chat"
 msgstr "Глобальный чат"
 
-#: src/cgame/cg_tutorial.cpp:59
+#: src/cgame/cg_tutorial.cpp:57
 msgid "Team chat"
 msgstr "Командный чат"
 
-#: src/cgame/cg_tutorial.cpp:60
+#: src/cgame/cg_tutorial.cpp:58
+msgid "Bot tactic menu"
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
 msgstr "Открыть/Закрыть Консоль"
 
-#: src/cgame/cg_tutorial.cpp:61
+#: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
 msgstr "Переключить меню"
 
-#: src/cgame/cg_tutorial.cpp:62
+#: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
 msgstr "Кинуть гранату"
 
-#: src/cgame/cg_tutorial.cpp:107
+#: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
 msgstr "SHIFT-ESCAPE"
 
-#: src/cgame/cg_tutorial.cpp:114
+#: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
 msgstr "ESCAPE"
 
-#: src/cgame/cg_tutorial.cpp:125 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
 #, c-format
 msgid "%s or %s"
 msgstr "%s или %s"
 
-#: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: src/cgame/cg_tutorial.cpp:135
+#: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
 msgstr "\"%s\" (не настроено)"
 
-#: src/cgame/cg_tutorial.cpp:179
+#: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
 msgstr "Нажмите %s, чтобы разместить %s."
 
-#: src/cgame/cg_tutorial.cpp:182
+#: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
 msgstr "Нажмите %s, чтобы отменить размещение %s."
 
-#: src/cgame/cg_tutorial.cpp:187
+#: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
 msgstr "Нажмите %s, чтобы построить структуру."
 
-#: src/cgame/cg_tutorial.cpp:197
+#: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
 msgstr "Нажмите %s, чтобы отменить отметку замены для этой структуры."
 
-#: src/cgame/cg_tutorial.cpp:202
+#: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
 msgstr "Нажмите %s, чтобы пометить эту структуру для замены."
 
-#: src/cgame/cg_tutorial.cpp:206
+#: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
 msgstr "Удерживайте %s, чтобы разобрать структуру."
 
-#: src/cgame/cg_tutorial.cpp:222 src/cgame/cg_tutorial.cpp:262
-#: src/cgame/cg_tutorial.cpp:321
+#: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
+#: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
 msgstr "Нажми %s чтобы перелистнуть."
 
-#: src/cgame/cg_tutorial.cpp:228
+#: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
 "Нажмите %s, чтобы плюнуть. Плевок может замедлить людей и потушить огонь."
 
-#: src/cgame/cg_tutorial.cpp:231 src/cgame/cg_tutorial.cpp:251
-#: src/cgame/cg_tutorial.cpp:268
+#: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
+#: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
 msgstr "Нажмите %s, чтобы ходить по стенам."
 
-#: src/cgame/cg_tutorial.cpp:245
+#: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
 msgstr "Задень людей, чтобы нанести им урон."
 
-#: src/cgame/cg_tutorial.cpp:248
+#: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
 msgstr "Прицелься на их головы, чтобы нанести больше урона."
 
-#: src/cgame/cg_tutorial.cpp:265
+#: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
 msgstr "Нажмите %s, чтобы совершить рывок."
 
-#: src/cgame/cg_tutorial.cpp:279 src/cgame/cg_tutorial.cpp:299
+#: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
 msgstr "Нажмите %s, чтобы укусить."
 
-#: src/cgame/cg_tutorial.cpp:284
+#: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
 msgstr "Нажмите %s, чтобы вызвать электрическую атаку."
 
-#: src/cgame/cg_tutorial.cpp:288
+#: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
 msgstr ""
 "Нажмите и держите %s и затем дотроньтесь до стены, чтобы начать бег по ней."
 
-#: src/cgame/cg_tutorial.cpp:304
+#: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
 msgstr "Нажмите %s, чтобы выстрелить шипом."
 
-#: src/cgame/cg_tutorial.cpp:308
+#: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
 msgstr "Зажмите и отпустить %s, чтобы наброситься."
 
-#: src/cgame/cg_tutorial.cpp:324
+#: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
 msgstr "Удерживайте %s, пока движетесь вперёд, чтобы топтать."
 
-#: src/cgame/cg_tutorial.cpp:351
+#: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
+#, c-format
+msgid "Press %s to show the bot tactic menu."
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr "Найдите Арсенал, Бур или Реактор, чтобы получить больше патронов."
 
-#: src/cgame/cg_tutorial.cpp:356
+#: src/cgame/cg_tutorial.cpp:357
 msgid "Find an Armoury for more ammo."
 msgstr "Найдите Арсенал, чтобы получить больше патронов."
 
-#: src/cgame/cg_tutorial.cpp:371 src/cgame/cg_tutorial.cpp:376
-#: src/cgame/cg_tutorial.cpp:392
+#: src/cgame/cg_tutorial.cpp:372 src/cgame/cg_tutorial.cpp:377
+#: src/cgame/cg_tutorial.cpp:393
 #, c-format
 msgid "Press %s to fire the %s."
 msgstr "Нажимте %s чтобы выстрелить %s."
 
-#: src/cgame/cg_tutorial.cpp:379
+#: src/cgame/cg_tutorial.cpp:380
 #, c-format
 msgid "Hold %s to zoom."
 msgstr "Удерживайте %s, чтобы приблизить."
 
-#: src/cgame/cg_tutorial.cpp:384
+#: src/cgame/cg_tutorial.cpp:385
 #, c-format
 msgid "Hold %s to activate the %s."
 msgstr "Удерживайте %s, чтобы активировать %s."
 
-#: src/cgame/cg_tutorial.cpp:389
+#: src/cgame/cg_tutorial.cpp:390
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
 msgstr "Удерживайте и отпустите %s, чтобы запустить заряженный выстрел."
 
-#: src/cgame/cg_tutorial.cpp:416
+#: src/cgame/cg_tutorial.cpp:417
 #, c-format
 msgid "Press %s to throw the %s."
 msgstr "Нажмите %s, чтобы кинуть %s."
 
-#: src/cgame/cg_tutorial.cpp:425 src/cgame/cg_tutorial.cpp:454
+#: src/cgame/cg_tutorial.cpp:426 src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to use the %s."
 msgstr "Нажмите %s, чтобы использовать %s."
 
-#: src/cgame/cg_tutorial.cpp:431
+#: src/cgame/cg_tutorial.cpp:432
 #, c-format
 msgid "Hold %s to use the Jetpack."
 msgstr "Удерживайте %s, чтобы использовать Джетпак."
 
-#: src/cgame/cg_tutorial.cpp:439
+#: src/cgame/cg_tutorial.cpp:440
 #, c-format
 msgid "Press %s to use your Medkit."
 msgstr "Нажмите %s, чтобы использовать вашу Аптечку."
 
-#: src/cgame/cg_tutorial.cpp:446
+#: src/cgame/cg_tutorial.cpp:447
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
 msgstr "Нажмите %s для покупки улучшений экипировки в Арсенале."
 
-#: src/cgame/cg_tutorial.cpp:459
+#: src/cgame/cg_tutorial.cpp:460
 #, c-format
 msgid "Press %s and any direction to sprint."
 msgstr "Нажмите %s и двигайтесь в любом направлении, чтобы бежать."
 
-#: src/cgame/cg_tutorial.cpp:462
+#: src/cgame/cg_tutorial.cpp:463
 #, c-format
 msgid "Press %s to crouch."
 msgstr "Нажмите %s, чтобы красться."
 
-#: src/cgame/cg_tutorial.cpp:477
+#: src/cgame/cg_tutorial.cpp:478
 #, c-format
 msgid "Press %s to leave spawn queue."
 msgstr "Нажмите %s, чтобы покинуть очередь."
 
-#: src/cgame/cg_tutorial.cpp:482
+#: src/cgame/cg_tutorial.cpp:483
 #, c-format
 msgid "Press %s to spawn."
 msgstr "Нажмите %s, чтобы появиться."
 
-#: src/cgame/cg_tutorial.cpp:488
+#: src/cgame/cg_tutorial.cpp:489
 #, c-format
 msgid "Press %s to join a team."
 msgstr "Нажмите %s, чтобы присоединиться к команде."
 
-#: src/cgame/cg_tutorial.cpp:494
+#: src/cgame/cg_tutorial.cpp:495
 #, c-format
 msgid "Press %s to stop following."
 msgstr "Нажмите %s, чтобы перестать следить."
 
-#: src/cgame/cg_tutorial.cpp:499
+#: src/cgame/cg_tutorial.cpp:500
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
 msgstr "Нажмите %s, чтобы переключиться в режим наблюдения с камерой слежения."
 
-#: src/cgame/cg_tutorial.cpp:504
+#: src/cgame/cg_tutorial.cpp:505
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
 msgstr "Нажмите %s, чтобы вернуться в режим наблюдения от первого лица."
 
-#: src/cgame/cg_tutorial.cpp:508
+#: src/cgame/cg_tutorial.cpp:509
 #, c-format
 msgid "Press %s to follow the next player."
 msgstr "Нажмите %s, чтобы следовать за следующим игроком."
 
-#: src/cgame/cg_tutorial.cpp:513
+#: src/cgame/cg_tutorial.cpp:514
 #, c-format
 msgid "Press %s to follow a player."
 msgstr "Нажмите %s, чтобы следовать за игроком."
 
-#: src/cgame/cg_tutorial.cpp:594
+#: src/cgame/cg_tutorial.cpp:595
 #, c-format
 msgid "Press %s to evolve."
 msgstr "Нажмите %s, чтобы эволюционировать."
 
-#: src/cgame/cg_tutorial.cpp:603
+#: src/cgame/cg_tutorial.cpp:606
 #, c-format
 msgid "Press %s when ready to continue."
 msgstr "Нажмите %s, когда будете готовы, чтобы продолжить."
 
-#: src/cgame/cg_tutorial.cpp:607
+#: src/cgame/cg_tutorial.cpp:610
 msgid "Waiting for other players to be ready."
 msgstr "Ожидаем готовности остальных игроков."
 
-#: src/cgame/cg_tutorial.cpp:615
+#: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to chat with all players."
 msgstr "Нажмите %s, чтобы общаться со всеми игроками."
 
-#: src/cgame/cg_tutorial.cpp:617
+#: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s to chat with your team."
 msgstr "Нажмите %s, чтобы общаться со своей командой."
 
-#: src/cgame/cg_tutorial.cpp:619
+#: src/cgame/cg_tutorial.cpp:622
 #, c-format
 msgid "Press %s to open the console."
 msgstr "Нажмите %s для открытия консоли."
 
-#: src/cgame/cg_tutorial.cpp:621
+#: src/cgame/cg_tutorial.cpp:624
 #, c-format
 msgid "Press %s for the menu."
 msgstr "Нажмите %s для открытия меню."
@@ -5065,7 +5155,7 @@ msgstr "^3Имена ботов инопланетян:"
 msgid "^3Human bot names:"
 msgstr "^3Имена ботов людей:"
 
-#: src/sgame/sg_bot.cpp:368
+#: src/sgame/sg_bot.cpp:343
 msgid "$1$^* disconnected"
 msgstr "$1$^* отсоединился"
 
@@ -5110,11 +5200,11 @@ msgstr "Ваш GUID не защищен"
 msgid "$1$^* connected"
 msgstr "$1$^* присоединился"
 
-#: src/sgame/sg_client.cpp:1267
+#: src/sgame/sg_client.cpp:1266
 msgid "$1$^* is connecting…"
 msgstr "$1$^* присоединяется…"
 
-#: src/sgame/sg_client.cpp:1334
+#: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
 msgstr "$1$^* вошел в игру"
 
@@ -5130,43 +5220,43 @@ msgstr "$1$ ^3ДЕКОНСТРУИРОВАН^* $2$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3РАЗРУШЕН^* $2$"
 
-#: src/sgame/sg_main.cpp:1995
+#: src/sgame/sg_main.cpp:1994
 msgid "Timelimit hit"
 msgstr "Время вышло"
 
-#: src/sgame/sg_main.cpp:2006
+#: src/sgame/sg_main.cpp:2005
 msgid "$1$ minutes remaining!"
 msgstr "осталось $1$ минут!"
 
-#: src/sgame/sg_main.cpp:2014
+#: src/sgame/sg_main.cpp:2013
 msgid "1 minute remaining!"
 msgstr "осталась 1 минута!"
 
-#: src/sgame/sg_main.cpp:2027
+#: src/sgame/sg_main.cpp:2026
 msgid "Humans win"
 msgstr "Люди победили"
 
-#: src/sgame/sg_main.cpp:2041
+#: src/sgame/sg_main.cpp:2040
 msgid "Aliens win"
 msgstr "Чужие победили"
 
-#: src/sgame/sg_main.cpp:2055
+#: src/sgame/sg_main.cpp:2054
 msgid "Empty teams skip map time exceeded."
 msgstr "Превышено время пропуска карты пустыми командами."
 
-#: src/sgame/sg_main.cpp:2221
+#: src/sgame/sg_main.cpp:2220
 msgid "The game has been paused. Please wait."
 msgstr "Игра была приостановлена. Пожалуйста, подождите."
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2224
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Сервер: Игра будет автоматически снята с паузы через $1$ секунд"
 
-#: src/sgame/sg_main.cpp:2244
+#: src/sgame/sg_main.cpp:2243
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Сервер: Игра была автоматически снята с паузы (максимум $1$ минут(а))"
 
-#: src/sgame/sg_main.cpp:2247
+#: src/sgame/sg_main.cpp:2246
 msgid "The game has been unpaused!"
 msgstr "Игра снята с паузы!"
 
@@ -5174,15 +5264,15 @@ msgstr "Игра снята с паузы!"
 msgid "^1This door is locked!"
 msgstr "^1Эта дверь заперта!"
 
-#: src/sgame/sg_svcmds.cpp:527
+#: src/sgame/sg_svcmds.cpp:539
 msgid "Alien team has admitted defeat"
 msgstr "Команда Чужих признала поражение"
 
-#: src/sgame/sg_svcmds.cpp:532
+#: src/sgame/sg_svcmds.cpp:544
 msgid "Human team has admitted defeat"
 msgstr "Команда Людей признала поражение"
 
-#: src/sgame/sg_svcmds.cpp:565
+#: src/sgame/sg_svcmds.cpp:577
 msgid "Evacuation ordered"
 msgstr "Приказано эвакуироваться"
 
@@ -5318,27 +5408,27 @@ msgstr "Голоса '$1$' принимаются только пока оста
 msgid "$1$: no target"
 msgstr "$1$: нет цели"
 
-#: src/sgame/sg_votes.cpp:675
+#: src/sgame/sg_votes.cpp:672
 msgid "$1$: player is a bot"
 msgstr "$1$: игрок является ботом"
 
-#: src/sgame/sg_votes.cpp:683 src/sgame/sg_votes.cpp:697
+#: src/sgame/sg_votes.cpp:684 src/sgame/sg_votes.cpp:698
 msgid "$1$: admin is immune"
 msgstr "$1$: У админа иммунитет"
 
-#: src/sgame/sg_votes.cpp:704
+#: src/sgame/sg_votes.cpp:705
 msgid "$1$: player is not on your team"
 msgstr "$1$: Игрок не в вашей команде"
 
-#: src/sgame/sg_votes.cpp:716
+#: src/sgame/sg_votes.cpp:717
 msgid "$1$: You must provide a reason"
 msgstr "$1$: Вы должны указать причину"
 
-#: src/sgame/sg_votes.cpp:738
+#: src/sgame/sg_votes.cpp:739
 msgid "$1$^* called a vote: $2$"
 msgstr "$1$^* назначил голосование : $2$"
 
-#: src/sgame/sg_votes.cpp:742
+#: src/sgame/sg_votes.cpp:743
 msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
@@ -5346,11 +5436,11 @@ msgstr ""
 "$1$^7 назначил голосование:\n"
 "^7$2$"
 
-#: src/sgame/sg_votes.cpp:759
+#: src/sgame/sg_votes.cpp:760
 msgid "$1$^* called a team vote: $2t$"
 msgstr "$1$^* назначил командное голосование: $2t$"
 
-#: src/sgame/sg_votes.cpp:764
+#: src/sgame/sg_votes.cpp:765
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
@@ -5358,32 +5448,32 @@ msgstr ""
 "$1$^7 назначил командное голосование:\n"
 "^7$2t$"
 
-#: src/sgame/sg_votes.cpp:877
+#: src/sgame/sg_votes.cpp:878
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr ""
 "Голосование провалено ($1$ из $2$; необходимое число участников не "
 "достигнуто)"
 
-#: src/sgame/sg_votes.cpp:878
+#: src/sgame/sg_votes.cpp:879
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr ""
 "Командное голосование провалено ($1$ из $2$; необходимое число участников не "
 "достигнуто)"
 
-#: src/sgame/sg_votes.cpp:884
+#: src/sgame/sg_votes.cpp:885
 msgid "Vote passed ($1$ — $2$)"
 msgstr "Голосование прошло ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:885
+#: src/sgame/sg_votes.cpp:886
 msgid "Team vote passed ($1$ — $2$)"
 msgstr "Командное голосование прошло ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:891
+#: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Голосование провалено ($1$ — $2$; $3$% требуется)"
 
-#: src/sgame/sg_votes.cpp:892
+#: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Командное голосование провалено (необходимо $1$ — $2$; $3$% )"
@@ -5411,6 +5501,12 @@ msgstr "пришельцы"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "люди"
+
+#~ msgid "Run/Walk"
+#~ msgstr "Бег/Ходьба"
+
+#~ msgid "Previous Weapon"
+#~ msgstr "Предыдущее оружие"
 
 #, c-format
 #~ msgid ">> to reply, say: /m %d [your message] <<"
@@ -5932,9 +6028,6 @@ msgstr "люди"
 
 #~ msgid "Return To Main Menu?"
 #~ msgstr "Вернуться в Главное Меню?"
-
-#~ msgid "Yes"
-#~ msgstr "Да"
 
 #~ msgid "Want To Quit Game?"
 #~ msgstr "Выйти из игры?"
@@ -9463,9 +9556,6 @@ msgstr "люди"
 #~ msgid "Command"
 #~ msgstr "Приказ"
 
-#~ msgid "Attack"
-#~ msgstr "Атака"
-
 #~ msgid "Defense"
 #~ msgstr "Защита"
 
@@ -9477,9 +9567,6 @@ msgstr "люди"
 
 #~ msgid "I'm Attacking"
 #~ msgstr "Я атакую"
-
-#~ msgid "Attack!"
-#~ msgstr "Атакуем!"
 
 #~ msgid "I need backup!"
 #~ msgstr "Нужна поддержка!"

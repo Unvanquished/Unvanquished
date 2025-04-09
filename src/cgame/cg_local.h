@@ -135,14 +135,7 @@ struct lerpFrame_t
 	animation_t *old_animation;
 
 	float       blendlerp;
-	float       blendtime;
 };
-
-// debugging values:
-
-extern int   debug_anim_current;
-extern int   debug_anim_old;
-extern float debug_anim_blend;
 
 //======================================================================
 
@@ -1348,6 +1341,7 @@ enum rocketMenuType_t {
 	ROCKETMENU_ERROR,
 	ROCKETMENU_WELCOME,
 	ROCKETMENU_BOTTACTIC,
+	ROCKETMENU_VSAY,
 	ROCKETMENU_NUM_TYPES
 };
 
@@ -1918,8 +1912,6 @@ extern Cvar::Cvar<bool> cg_projectileNudge;
 extern Cvar::Cvar<bool> cg_emoticonsInMessages;
 
 extern Cvar::Cvar<bool> cg_chatTeamPrefix;
-
-extern Cvar::Cvar<float> cg_animBlend;
 
 extern Cvar::Cvar<float> cg_motionblur;
 extern Cvar::Cvar<float> cg_motionblurMinSpeed;

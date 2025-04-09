@@ -4,12 +4,12 @@
 
 The following files are subject to the MIT License:
 
-- default.png
-- default.svg
 - defend.png
 - defend.svg
-- stay_here.png
-- stay_here.svg
+- no.svg
+- yes.svg
+- no.png
+- yes.png
 
 These files originate from the Feather Icons project.
 
@@ -47,7 +47,7 @@ The following files are licensed under the MIT license and are attributed to Gri
 - attack.svg
 - follow.png
 - follow.svg
-- 
+
 #### License Details
 
 ```
@@ -73,3 +73,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+The images `flank.svg` and `flank.png` were created by assembling the following icons from SVG Repo:
+
+- [Run Person Fast Rush](https://www.svgrepo.com/svg/307091/run-person-fast-rush)
+- [Human Boy Person Man](https://www.svgrepo.com/svg/307357/human-boy-person-man)
+- [Surprised](https://www.svgrepo.com/svg/321531/surprised)
+
+For more information on licensing terms, visit the [SVG Repo Licensing Page](https://www.svgrepo.com/page/licensing/).

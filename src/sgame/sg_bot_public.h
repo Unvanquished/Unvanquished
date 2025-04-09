@@ -42,9 +42,7 @@ struct botMemory_t;
 #define UNNAMED_BOT "[bot] Bot"
 
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler = false );
-int  G_BotGetSkill( int clientNum );
 void G_BotSetSkill( int clientNum, int skill );
-const char *G_BotGetBehavior( int clientNum );
 void G_BotChangeBehavior( int clientNum, Str::StringRef behavior );
 bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior );
 bool G_BotSetDefaults( int clientNum, team_t team, Str::StringRef behavior );

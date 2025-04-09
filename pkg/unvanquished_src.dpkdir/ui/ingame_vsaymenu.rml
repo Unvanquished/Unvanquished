@@ -1,0 +1,91 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+		<style>
+			body {
+				width: 100%;
+				height: 100%;
+				background: #00000066;
+				text-align: center;
+			}
+
+			.circlemenu icon {
+				display: inline-block;
+				position: absolute;
+				bottom: 0.3em;
+				right: 0.75em;
+				font-size: 1.7em;
+			}
+
+			.circlemenu button {
+				position: relative;
+			}
+
+			.circlemenu button.active {
+				decorator: image(/ui/assets/circle-hover);
+				image-color: rgb(100, 100, 100);
+			}
+			.circlemenu button.active:hover {
+				decorator: image(/ui/assets/circle-hover);
+				image-color: rgb(255, 255, 255);
+			}
+			.circlemenu button.active icon {
+				color: #9affbd;
+			}
+
+			.circlemenu button img {
+				color: rgb(230, 230, 230);
+			}
+		</style>
+		<script src="lua/util.lua" />
+		<script>
+			function VsayClick(idx, event)
+				if idx > #Vsays then return end
+				Cmd.exec("vsay " .. Vsays[idx][2])
+				Events.pushcmd("hide ingame_vsaymenu")
+			end
+			function VsayHover(document, idx)
+				ClearVsayInfo(document)
+				local vsay = Vsays[idx]
+				document:GetElementById("VsayName"):AppendChild(document:CreateTextNode(vsay[3]))
+				document:GetElementById("VsayDesc"):AppendChild(document:CreateTextNode(vsay[4]))
+			end
+			function ClearVsayInfo(document)
+				document:GetElementById("VsayName").inner_rml = ""
+				document:GetElementById("VsayDesc").inner_rml = ""
+			end
+			function BuildVsayMenu(document)
+				ClearVsayInfo(document)
+				if Vsays == nil then
+					CDataSource.Build("VsayList", "default")
+					Vsays = CDataSource.Read("VsayList", "default", "icon,name,title,desc")
+				end
+				local circlemenu = document:GetElementById("vsayMenu")
+				circlemenu.inner_rml = CirclemenuSkeleton(#Vsays)
+				for i=1,#Vsays do
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
+						'<button onclick="VsayClick(%d, event)" onmouseover="VsayHover(document,%d)"><img src="/%s"/></button>',
+						i, i, Vsays[i][1])
+				end
+				document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#Vsays)
+			end
+		</script>
+	</head>
+	<body id="ingame_vsaymenu" class="circlemenu" onkeydown="CirclemenuHandleKey(event, document, VsayClick)" onshow="CloseOtherCirclemenus(event) BuildVsayMenu(document)">
+		<tabset class="circlemenu">
+			<tab><translate>Vsay</translate></tab>
+			<panel>
+				<div class="circlemenu-circle" id="keyboardHints"/>
+				<div class="circlemenu-circle" id="vsayMenu"/>
+				<div style="position: absolute; left: 0; width: 40%;">
+					<div class="infobox">
+						<h2 id="VsayName"></h2>
+						<p class="text" style="text-align: left;" id="VsayDesc"></p>
+					</div>
+				</div>
+			</panel>
+		</tabset>
+	</body>
+</rml>

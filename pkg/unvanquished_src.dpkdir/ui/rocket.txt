@@ -32,6 +32,7 @@
 		ui/error.rml error                                     // ROCKETMENU_ERROR
 		ui/welcome.rml welcome                                 // ROCKETMENU_WELCOME
 		ui/ingame_bottacticmenu.rml ingame_bottacticmenu passthrough  // ROCKETMENU_BOTTACTIC
+		ui/ingame_vsaymenu.rml ingame_vsaymenu passthrough  // ROCKETMENU_VSAY
 	}
 	misc
 	{

@@ -1516,6 +1516,41 @@ static void CG_Rocket_BuildBotTacticList( const char *table )
 	}
 }
 
+static void CG_Rocket_BuildVsayList( const char *table )
+{
+	static char buf[ MAX_STRING_CHARS ];
+
+	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
+	{
+		return;
+	}
+
+	if ( !Q_stricmp( table, "default" ) )
+	{
+		Rocket_DSClearTable( "VsayList", "default" );
+
+		auto setCommand = [&]( std::string num, std::string name, std::string title, std::string desc, std::string icon )
+		{
+			buf[ 0 ] = '\0';
+
+			Info_SetValueForKey( buf, "num", num.c_str(), false );
+			Info_SetValueForKey( buf, "name", name.c_str(), false );
+			Info_SetValueForKey( buf, "title", title.c_str(), false );
+			Info_SetValueForKey( buf, "desc", desc.c_str(), false );
+			Info_SetValueForKey( buf, "icon", icon.c_str(), false );
+
+			Rocket_DSAddRow( "VsayList", "default", buf );
+		};
+
+		setCommand( "0", "defend", N_( "Defend" ), N_( "Defend our base!!" ), "gfx/feedback/vsay/defend" );
+		setCommand( "2", "attack", N_( "Attack" ), N_( "Attack!" ), "gfx/feedback/vsay/attack" );
+		setCommand( "1", "followme", N_( "Follow" ), N_( "Follow me!" ), "gfx/feedback/vsay/follow" );
+		setCommand( "3", "no", N_( "No" ), N_( "No." ), "gfx/feedback/vsay/no" );
+		setCommand( "4", "yes", N_( "Yes" ), N_( "Yes." ), "gfx/feedback/vsay/yes" );
+		setCommand( "5", "flank", N_( "Flank" ), N_( "Flank, behind you!" ), "gfx/feedback/vsay/flank" );
+	}
+}
+
 static void nullSortFunc( const char*, const char* )
 {
 }
@@ -1568,6 +1603,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList, &nullGetFunc },
+	{ "VsayList", &CG_Rocket_BuildVsayList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 };
 
 static const size_t dataSourceCmdListCount = ARRAY_LEN( dataSourceCmdList );

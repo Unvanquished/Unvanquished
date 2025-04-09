@@ -8,181 +8,185 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-09 17:47+0200\n"
-"PO-Revision-Date: 2024-10-26 08:37+0000\n"
-"Last-Translator: NaitLee <naitli@foxmail.com>\n"
-"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
-"projects/unvanquished/unvanquished/zh_Hans/>\n"
-"Language: zh_Hans\n"
+"PO-Revision-Date: 2025-03-17 15:16+0000\n"
+"Last-Translator: Couvez <ccouvez@free.fr>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr "建造"
+msgstr "ビルド"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr "价格:"
+msgstr "値段："
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr "进化"
+msgstr ""
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "进化点"
+msgstr ""
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "选择你的开场形态:"
+msgstr ""
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr "潜伏者"
+msgstr ""
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr "守卫者"
+msgstr "グレンジャー"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr "〔潜伏者〕是攻击形态，悄然近敌；〔守卫者〕是建造形态，维护基地。"
+msgstr ""
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "返回阵营选择"
+msgstr "チーム選択に戻る"
 
 #: ui/callvote_draw.rml:7
+#, fuzzy
 msgid "Call a vote for a draw"
-msgstr "投票: 和解"
+msgstr "引き分けの投票を呼びかけ"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr "理由"
+msgstr "里油"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "发起投票"
+msgstr "投票を呼びかける"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr "添加人机"
+msgstr "ボットで満たす"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "チームには何人のプレイヤー（ユーザーとボット）が必要ですか？"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr "双方"
+msgstr "両方のチーム"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:106
 msgid "Aliens"
-msgstr "异形"
+msgstr "エイリアン"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr "人类"
+msgstr "人間"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr "阵营"
+msgstr "チーム"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr "数量"
+msgstr ""
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr "更换地图"
+msgstr "地図を変更"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "投票: 约定下一张地图"
+msgstr "投票：次のマップへ移動"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "投票: 更换当前地图"
+msgstr "投票：現在のマップを設定する"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "设置当前地图 (服务端)"
+msgstr "現在のマップを設定する（ホスト）"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr "方法"
+msgstr "メソッド"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr "地图"
+msgstr "マップ"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr "执行操作"
+msgstr "アクションを実行する"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr "错误！"
+msgstr "エラー！"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr "确定"
+msgstr "OK"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "ゲームプレイガイド"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr "欢迎"
+msgstr "ようこそ"
 
 #: ui/help_gameplay.rml:20
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
-msgstr "在这一节，你会了解游戏包含的主要元素，并学到如何在游戏中成长。"
+msgstr ""
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr "可以在我们的网站和社区了解更多！"
+msgstr ""
+"詳細については、当方の Web サイトやその他のコミュニティの場所でご覧ください！"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"在 Libera.Chat IRC、Matrix 或 Discord 与各位玩家和开发者聊天: <web "
+"Libera.Chat IRC、Matrix、または Discord でプレイヤーや開発者とチャット：<web "
 "dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr "在论坛讨论新闻: <web dest=\"forums\" />"
+msgstr "フォーラムでニュースについて議論してください：<web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr "在百科页面发现游戏的更多精彩: <web dest=\"wiki\" />"
+msgstr "ゲームの詳細については、Wiki をご覧ください：<web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "请在这里报告游戏问题: <web dest=\"bugs\" />"
+msgstr "バグは <web dest=\"bugs\" /> に報告してください。"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
-msgstr "成长与进化"
+msgstr "収入と進化"
 
 #: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
-msgstr "异形击杀人类，得到进化点。进化点可使它们进化成为 [dragoon] 高级形态。"
+msgstr ""
+"エイリアンは人間を殺すことで進化ポイントを獲得できます。そして、その進化ポイ"
+"ントを使って、より高度な形態の[dragoon]に進化することができます。"
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -190,15 +194,12 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"当异形不在人类视野或人类建筑范围内时，可以开始进化。在 [overmind]〔主脑〕旁"
-"时，也可以退化为 [granger] 低级形态。"
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"若主脑被摧毁，[granger]〔守卫者〕可负责再构造一只。只有主脑存在时才可以进化！"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -206,20 +207,16 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
-"人类击杀异形、摧毁异形建筑，获得点数。使用点数可以购买 [lcannon] 新武器、铠"
-"甲、[bsuit] 战斗服，以及雷达、喷气背包等装备。"
 
 #: ui/help_gameplay.rml:50
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"人类在 [armoury]〔武器中心〕购买或卖出武器。确保武器中心存在！如果没有了武器"
-"中心，可以使用建造器再次建造。"
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
-msgstr "供能设施"
+msgstr ""
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -229,9 +226,6 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"建造设施需要建筑点。双方阵营开局有少量建筑点，若计划建造很多设施，可以先建造 "
-"[leech]〔采掘设施〕，增加供能、获得更多建筑点。请留意，在采掘设备被摧毁后，建"
-"筑点会被扣除。"
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -240,8 +234,6 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
-"建造点由 [leech]〔蛭〕或 [drill]〔钻井〕供应，同时可缓慢恢复。当现有的建筑点"
-"不能满足新的建筑需求时，新设施会停止运作，当供能充足时才会恢复。"
 
 #: ui/help_gameplay.rml:61
 msgid ""
@@ -249,13 +241,10 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"以下设施【不受】建筑点缺失影响: 重生设施 — [egg]〔卵〕、[telenode]〔传送"
-"点〕；采掘设施 — 蛭、钻井；特殊设施 — [overmind]〔主脑〕、[reactor]〔反应"
-"机〕。"
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
-msgstr "采掘设施"
+msgstr "鉱山構造物"
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -263,13 +252,12 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
-"建筑点由两种采掘设施供给: 人类的 [drill]〔钻井〕和异形的 [leech]〔蛭〕。"
 
 #: ui/help_gameplay.rml:71
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
-msgstr "请勿让采掘设施挨得太近，否则它们的效率会下降、甚至消耗建造点！"
+msgstr ""
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -279,9 +267,6 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
-"建造者能在资源设施的生命槽上方观察到它的效率值。建造时可预览设施的摆放位置。"
-"当采掘设施建造完毕后，所得建筑点立即可用，而当采掘设施被摧毁时建筑点会损失。"
-"不要忘记保护钻井！"
 
 #: ui/help_gameplay.rml:77
 msgid ""
@@ -290,13 +275,10 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"当设施被摧毁时，采掘设施会缓慢地恢复损失的建筑点。恢复的速度在一场游戏中会逐"
-"渐降低，这样随着游戏进程的发展，重建设施会越来越难。这样的特性替代了常见的“决"
-"胜时刻”。"
 
 #: ui/help_gameplay.rml:81
 msgid "Stages &amp; Momentum"
-msgstr "阶段与势力"
+msgstr ""
 
 #: ui/help_gameplay.rml:84
 msgid ""
@@ -304,50 +286,44 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
-"建造或摧毁设施、击杀敌人可以为你的阵营增强“势力”。当你得到充分的势力时，会解"
-"锁新的武器、设施或职业。"
 
 #: ui/help_gameplay.rml:87
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"势力会随时间指数下降。如果你的阵营不活动，升级得到的能力会被重新锁定。现有的"
-"高级物品仍然可用。"
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
-msgstr "火焰"
+msgstr "火事"
 
 #: ui/help_gameplay.rml:94
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
-msgstr "异形的设施会被 [flamer]〔喷火器〕或 [firebomb]〔烈焰弹〕引燃。"
+msgstr ""
 
 #: ui/help_gameplay.rml:97
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
-msgstr "若设施挨得太近，火焰会传播到临近的设施。"
+msgstr ""
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
-"小范围的 [fire]〔火焰〕在过一会后能熄灭，而一组设施燃烧起来并不会轻易熄灭，导"
-"致更糟糕的情况。"
 
 #: ui/help_gameplay.rml:103
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
-msgstr "[advgranger]〔高级守卫者〕的唾液攻击可以扑灭火焰、拖慢进犯者的移动！"
+msgstr ""
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
-msgstr "遭受攻击"
+msgstr "攻撃中"
 
 #: ui/help_gameplay.rml:110
 msgid ""
@@ -356,16 +332,14 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"[reactor]〔反应机〕和 [overmind]〔主脑〕会在剩余 75%、50%、25% 生命值以及被摧"
-"毁时分别发出警告。其他设施被摧毁时会提示己方阵营正“遭受攻击”。"
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
-msgstr "治疗"
+msgstr "治癒"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr "被击杀会增强敌人的实力。尽量不要死亡！"
+msgstr "死ぬと敵に餌を与えるので、自分の命を救いたいかもしれません！"
 
 #: ui/help_gameplay.rml:121
 msgid ""
@@ -374,9 +348,6 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
-"异形会一直缓慢恢复生命，而当异形扎堆或位于异形设施旁时会更快地恢复生命。将设"
-"施建在前线，会有好处的！任何形式的恢复生命都会促使 [advdragoon]〔高级守卫者〕"
-"的射弹恢复。"
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -384,8 +355,6 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"“助力者”可给予身旁的异形极快的生命恢复效果，请趁早解锁它并构造一只。“助力"
-"者”也会赋予你毒性，让你对敌人的攻击更致命。"
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -393,8 +362,6 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
-"在 [overmind]〔主脑〕或 [egg]〔卵〕附近时会得到稍快的生命恢复效果，在“爬虫”旁"
-"的恢复效果更佳。这样的特性有利于保护基地。"
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -403,116 +370,107 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"异形还有另一种加成方式: 扎堆。若你靠近一位队友，你的生命恢复会稍微加快，靠近"
-"两位队友时，恢复效果与在设施旁相当。加上团队合作，可以很有效地围攻敌人！"
 
 #: ui/help_gameplay.rml:135
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
-"人类会携带一个医疗包，用于即时治疗。在使用过一次医疗包后，再次治疗需要返回 "
-"[medstat]〔医疗中心〕恢复生命，同时拿取医疗包。"
+"人間は、一度だけ治療に使用できる医療キットを携帯しており、その後は [medstat] "
+"医療ステーションに戻って治療し、医療キットを補充する必要があります。"
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
-msgstr "爬墙"
+msgstr "壁歩き"
 
 #: ui/help_gameplay.rml:142
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
-"诸如 [dretch]〔潜伏者〕、[mantis]〔螳螂〕和 [advgranger]〔高级守卫者〕等形式"
-"的异形可以在墙上行走！"
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
-msgstr "利用这一点可以潜伏在特别的地方，或者走捷径。"
+msgstr ""
+"これを使用して特別な場所に到達したり、通気口を通る近道を使用したりします。"
 
 #: ui/help_gameplay.rml:148
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
-"异形的防御设施，如陷阱、刺头，在墙上会更有效。把它们建在天花板可以避免手雷伤"
-"害。"
 
 #: ui/help_gameplay.rml:151
 msgid "The advanced granger can be unlocked with momentum."
-msgstr "高级守卫者会在势力增长到一定阶段时解锁。"
+msgstr ""
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
-msgstr "Tremulous 的发展"
+msgstr ""
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "与 Tremulous 中相比，人类和异形的体力得到提升。"
+msgstr ""
 
 #: ui/help_gameplay.rml:161
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
-msgstr "异形的进化成本与效力翻倍。异形可持有的最大进化点从 9 增加到 20。"
+msgstr ""
 
 #: ui/help_gameplay.rml:164
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
-msgstr "“阶段”的概念由“势力”取代。建造点的多少现在直接依赖于建造的钻井数。"
+msgstr ""
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
-msgstr "人类没有了特斯拉防御塔和防御电脑，但可以建造“火箭发射器”。"
+msgstr ""
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"异形可以建造“刺头”，重伤无所防备的人类。但注意刺头非常容易被摧毁，不要放在轻"
-"易能看见的地方！"
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
-"Basilisk 由“螳螂”取代。螳螂不能抓东西，但螳螂咬嗜可减缓敌人行动速度，螳螂扑击"
-"也更加迅捷。"
 
 #: ui/help_gameplay.rml:176
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
-msgstr "异形可以在主脑旁退化。高级守卫者的唾液有奇效，可以试着对付火焰或人类！"
+msgstr ""
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr "游戏时长"
+msgstr "ゲーム"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr "生命"
+msgstr "ライフ"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr "fps"
+msgstr "フレームレート"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr "ms"
+msgstr ""
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "建筑点"
+msgstr "ビルドポイント"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr "点数"
+msgstr "クレジット"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
@@ -520,47 +478,45 @@ msgstr "武器"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr "Tab"
+msgstr "TAB"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr "范围:"
+msgstr "範囲："
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr "伤害:"
+msgstr "ダメージ："
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
-msgstr "火力:"
+msgstr "発射速度："
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr "升级"
+msgstr "アップグレード"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr "选择你的开场装备:"
+msgstr "初期装備を選択してください:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr "冲锋枪"
+msgstr ""
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "构建器"
+msgstr "構築キット"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
-"冲锋枪是开火迅速的初始武器，构建器则用于建造并修复人类的设施。所有装备都可在"
-"武器中心更换。"
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr "信标"
+msgstr "ビーコン"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
@@ -568,52 +524,48 @@ msgstr ""
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr "观察者"
+msgstr "観客"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr "地图:"
+msgstr "マップ："
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr "时间:"
+msgstr "時間："
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr "自动选择阵营"
+msgstr "チームを自動選択"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
-"异形动作迅捷，有许多近身攻击方式。它们可以变得很强壮，但必须潜伏行动、善于退"
-"避。"
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
-"人类可以带上各种武器和装备。他们行动灵活，可远距离杀伤对手，但在异形面前很脆"
-"弱。"
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr "加入异形"
+msgstr "エイリアンに加わる"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
-msgstr "加入人类"
+msgstr "人間に加わる"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr "或者，你可以观战、不参与游戏。"
+msgstr "あるいは、ゲームをプレイせずに観戦することもできます。"
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr "观战"
+msgstr "観戦する"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
@@ -624,144 +576,142 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"这是 Unvanquished 的一个测试版本。请将你发现的任何问题报告至 <web "
-"dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr "竞赛"
+msgstr "試合"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr "离开游戏"
+msgstr "試合を離れる"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
-msgstr "返回游戏"
+msgstr "アクションを再開する"
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr "民主"
+msgstr "民主主義"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr "服务器菜单"
+msgstr "ホストメニュー"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr "服务器配置"
+msgstr "サーバー設定"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr "停止服务器"
+msgstr "サーバーを停止"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr "暂停服务器"
+msgstr "サーバーを一時停止"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr "人机"
+msgstr "ボット"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr "主菜单"
+msgstr "メインメニュー"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr "服务器列表"
+msgstr "サーバー一覧"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr "开始本地局域网游戏"
+msgstr "ローカル/LANゲームを開始する"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr "选项"
+msgstr "オプション"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
-msgstr "游戏指南"
+msgstr "ゲームプレイガイド"
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
-msgstr "退出游戏"
+msgstr "ゲームを終了する"
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr "测试版"
+msgstr "ベータ"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr "视场角"
+msgstr "視野"
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr "添加一个异形人机"
+msgstr "エイリアンボットを追加する"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr "添加一个人类人机"
+msgstr "人間ボットを追加する"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr "移除所有人机"
+msgstr "全てのボットを削除"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
-msgstr "全局投票:"
+msgstr "グローバル投票："
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr "赞成"
+msgstr "はい"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr "或"
+msgstr "または"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr "反对"
+msgstr "いいえ"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
-msgstr "阵营投票:"
+msgstr "チーム投票："
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr "踢出人机"
+msgstr "ロボットを追い出す"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr "延长倒计时"
+msgstr "制限時間を延長する"
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
-msgstr "和解"
+msgstr ""
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr "认输"
+msgstr "負けを認める"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr "视场角"
+msgstr "視野角"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr "视场角 (FOV): 玩家视野宽窄，以度计量。"
+msgstr "FOV = プレイヤーの視野の広さ（角度で測定）。"
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
-msgstr "许多玩家游玩第一人称射击游戏时有轻微晕感。调高视场角可以缓解。"
+msgstr ""
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr "度"
+msgstr "角度"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -770,68 +720,68 @@ msgstr "度"
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr "重置"
+msgstr "リセット"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr "螳螂"
+msgstr ""
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr "狩猎者"
+msgstr ""
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
-msgstr "龙骑士"
+msgstr ""
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
-msgstr "暴君"
+msgstr ""
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr "视野干扰效果"
+msgstr ""
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr "镜头倾斜"
+msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr "禁用"
+msgstr "無効"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr "较小"
+msgstr "軽度"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "Default"
-msgstr "默认"
+msgstr "デフォルト"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr "很大"
+msgstr ""
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr "上下移动"
+msgstr "上下の動き"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr "镜头翻转"
+msgstr ""
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr "螺旋移动"
+msgstr "ねじる動き"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr "图像"
+msgstr "グラフィックス"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr "预设"
+msgstr ""
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
@@ -841,89 +791,89 @@ msgstr "最低"
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
-msgstr "低细分，无天空，无阴影，无弹跳粒子，16 位贴图…"
+msgstr ""
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
 msgid "Low"
-msgstr "低"
+msgstr "低い"
 
 #: ui/options_graphics.rml:32
 msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
-msgstr "多重采样，各向异性 Mip-map，有阴影，弹跳粒子，256 像素贴图…"
+msgstr ""
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr "中"
+msgstr ""
 
 #: ui/options_graphics.rml:36
 msgid ""
 "Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
 "textures…"
-msgstr "基本、镜面与物理映射，亮光，三线性过滤，512 像素贴图…"
+msgstr ""
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:255
 #: ui/options_graphics.rml:367 ui/options_graphics.rml:375
 msgid "High"
-msgstr "高"
+msgstr ""
 
 #: ui/options_graphics.rml:40
 msgid ""
 "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
 "pixel textures…"
-msgstr "动态光照，热力波，动态模糊，更好的多同采样，最大 2048 像素贴图…"
+msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr "极高"
+msgstr ""
 
 #: ui/options_graphics.rml:44
 msgid ""
 "Relief mapping and other features and effects enabled, up to 4096-pixel "
 "textures…"
-msgstr "交替映射，其他特性和特效，最大 4096 像素贴图…"
+msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr "视频"
+msgstr "ビデオ"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr "亮度"
+msgstr "輝度"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
-msgstr "伽玛值:"
+msgstr ""
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr "屏幕分辨率"
+msgstr "画面解像度"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
-msgstr "无边框窗口"
+msgstr ""
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr "全屏"
+msgstr "全画面表示"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
-msgstr "关"
+msgstr "オフ"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
-msgstr "灵活垂直同步"
+msgstr ""
 
 #: ui/options_graphics.rml:76
 msgid "Full Vsync"
-msgstr "完全垂直同步"
+msgstr ""
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr "垂直同步"
+msgstr ""
 
 #: ui/options_graphics.rml:79
 msgid ""
@@ -931,574 +881,567 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
-"垂直同步可避免视觉撕裂，但会略微增加输入延迟。灵活垂直同步只在帧率超过屏幕刷"
-"新率时启用垂直同步，可避免掉帧时的卡顿。"
 
 #: ui/options_graphics.rml:84
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr "快速近似抗锯齿 (FXAA)"
+msgstr ""
 
 #: ui/options_graphics.rml:88 ui/options_graphics.rml:135
 #: ui/options_graphics.rml:199 ui/options_graphics.rml:238
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr "立即应用"
+msgstr "適用"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr "光照"
+msgstr "点灯"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr "光"
+msgstr ""
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
-msgstr "光照贴图"
+msgstr ""
 
 #: ui/options_graphics.rml:97
 msgid "normal"
-msgstr "中等质量"
+msgstr ""
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
-msgstr "顶点照明"
+msgstr ""
 
 #: ui/options_graphics.rml:98
 msgid "low, ugly"
-msgstr "低质量，简陋"
+msgstr ""
 
 #: ui/options_graphics.rml:100
 msgid "Lighting system"
-msgstr "光照系统"
+msgstr ""
 
 #: ui/options_graphics.rml:103
 msgid "Brightness clamping"
-msgstr "亮度截断"
+msgstr ""
 
 #: ui/options_graphics.rml:105
 msgid ""
 "Old brightness limit of map lighting of world surfaces and models (the way "
 "legacy maps looked before)"
-msgstr "用在地图世界平面和模型的旧光照限制 (可用于恢复到旧的光照效果)"
+msgstr ""
 
 #: ui/options_graphics.rml:108
 msgid "Light styles"
-msgstr "光照风格"
+msgstr ""
 
 #: ui/options_graphics.rml:110
 msgid "Precomputed dynamic lights emitted by static map objects."
-msgstr "由静态的地图物件预计算生成的动态光照。"
+msgstr ""
 
 #: ui/options_graphics.rml:113
 msgid "Dynamic lights"
-msgstr "动态光照"
+msgstr ""
 
 #: ui/options_graphics.rml:115
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
-msgstr "由枪、建筑等移动物件发出的实时动态光照。"
+msgstr ""
 
 #: ui/options_graphics.rml:118
 msgid "Rim lighting"
-msgstr "Rim 光照"
+msgstr ""
 
 #: ui/options_graphics.rml:120
 msgid "Light the edges of models from behind."
-msgstr "从后方照亮模型的边缘。"
+msgstr ""
 
 #: ui/options_graphics.rml:123
 msgid "Half Lambert lighting"
-msgstr "半 Lambert 光照"
+msgstr ""
 
 #: ui/options_graphics.rml:125
 msgid "Non-physical lighting technique to make models less dark."
-msgstr "非物理的光照方式，使模型不会过暗。"
+msgstr ""
 
 #: ui/options_graphics.rml:129
 msgid "Blobs"
-msgstr "圆状"
+msgstr ""
 
 #: ui/options_graphics.rml:129
 msgid "low"
-msgstr "低质量"
+msgstr ""
 
 #: ui/options_graphics.rml:130 ui/options_graphics.rml:351
 #: ui/options_ui.rml:177
 msgid "None"
-msgstr "无"
+msgstr ""
 
 #: ui/options_graphics.rml:132
 msgid "Shadows"
-msgstr "阴影"
+msgstr "影"
 
 #: ui/options_graphics.rml:139
 msgid "Textures"
-msgstr "贴图"
+msgstr ""
 
 #: ui/options_graphics.rml:141 ui/server_setup.rml:13
 msgid "General"
-msgstr "通用"
+msgstr "一般"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:157
 msgid "No limit"
-msgstr "无限制"
+msgstr "無制限"
 
 #: ui/options_graphics.rml:145
 msgid "(ultra)"
-msgstr "(超级)"
+msgstr ""
 
 #: ui/options_graphics.rml:146
 msgid "(high)"
-msgstr "(高)"
+msgstr ""
 
 #: ui/options_graphics.rml:147
 msgid "(medium)"
-msgstr "(中)"
+msgstr ""
 
 #: ui/options_graphics.rml:148
 msgid "(low)"
-msgstr "(低)"
+msgstr ""
 
 #: ui/options_graphics.rml:149
 msgid "(lowest)"
-msgstr "(最低)"
+msgstr ""
 
 #: ui/options_graphics.rml:151
 msgid "Image size limit"
-msgstr "图像大小限制"
+msgstr "画像サイズの制限"
 
 #: ui/options_graphics.rml:152
 msgid "Limit image size to save on memory."
-msgstr "限制图像大小以节省内存。"
+msgstr ""
 
 #: ui/options_graphics.rml:158
 msgid "No smaller than screen"
-msgstr "大于屏幕大小"
+msgstr "画面より小さくない"
 
 #: ui/options_graphics.rml:159
 msgid "No larger than screen"
-msgstr "小于屏幕大小"
+msgstr "画面より大きくない"
 
 #: ui/options_graphics.rml:161
 msgid "Menu image size limit"
-msgstr "菜单图像大小限制"
+msgstr "メニュー画像のサイズ制限"
 
 #: ui/options_graphics.rml:162
 msgid "Limit menu image size to save on memory."
-msgstr "限制菜单图像大小以节省内存。"
+msgstr ""
 
 #: ui/options_graphics.rml:167
 msgid "High-precision rendering"
-msgstr "高精度渲染"
+msgstr ""
 
 #: ui/options_graphics.rml:168
 msgid "Use high-precision pixel buffers, which reduce color banding."
-msgstr "使用高精度像素缓冲，可以减少颜色分层。"
+msgstr ""
 
 #: ui/options_graphics.rml:172
 msgid "Use bindless textures if possible"
-msgstr "尝试使用无绑定贴图"
+msgstr ""
 
 #: ui/options_graphics.rml:174
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
-msgstr "若硬件或驱动支持，使用无绑定贴图。可能提升性能。"
+msgstr ""
 
 #: ui/options_graphics.rml:174 ui/options_graphics.rml:224
 #: ui/options_graphics.rml:248 ui/options_graphics.rml:329
 #: ui/options_graphics.rml:334 ui/options_graphics.rml:339
 msgid "Experimental."
-msgstr "实验性的。"
+msgstr ""
 
 #: ui/options_graphics.rml:177
 msgid "Mip-mapping"
-msgstr "Mip-map"
+msgstr ""
 
 #: ui/options_graphics.rml:178
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
-"Mip-map 通过为远处的平面使用低分辨率贴图以取得更好的视觉效果。这通常不影响性"
-"能。"
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
-msgstr "无"
+msgstr ""
 
 #: ui/options_graphics.rml:187
 msgid "Anisotropic mip-mapping"
-msgstr "各向异性 Mip-map"
+msgstr ""
 
 #: ui/options_graphics.rml:188
 msgid "Better interpretation of mip-maps on angled surfaces."
-msgstr "对有角度的平面实现的更好的 Mip-map。"
+msgstr ""
 
 #: ui/options_graphics.rml:192
 msgid "Trilinear"
-msgstr "三线性"
+msgstr ""
 
 #: ui/options_graphics.rml:192
 msgid "better"
-msgstr "更好"
+msgstr ""
 
 #: ui/options_graphics.rml:193
 msgid "Bilinear"
-msgstr "双线性"
+msgstr ""
 
 #: ui/options_graphics.rml:195
 msgid "Texture scaling filter"
-msgstr "贴图缩放过滤"
+msgstr ""
 
 #: ui/options_graphics.rml:203 ui/options_graphics.rml:205
 msgid "Materials"
-msgstr "材质"
+msgstr ""
 
 #: ui/options_graphics.rml:207
 msgid "Sky"
-msgstr "天空"
+msgstr "空"
 
 #: ui/options_graphics.rml:209
 msgid "Draw the sky."
-msgstr "绘制天空。"
+msgstr "空を描く。"
 
 #: ui/options_graphics.rml:212
 msgid "Normal mapping"
-msgstr "一般映射"
+msgstr ""
 
 #: ui/options_graphics.rml:214
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr "在平坦的平面上模拟更强的光照。"
+msgstr ""
 
 #: ui/options_graphics.rml:217
 msgid "Deluxe mapping"
-msgstr "高级映射"
+msgstr ""
 
 #: ui/options_graphics.rml:219
 msgid "Light direction based on baked textures."
-msgstr "基于处理后贴图的光照方向。"
+msgstr ""
 
 #: ui/options_graphics.rml:222
 msgid "Relief mapping"
-msgstr "交替映射"
+msgstr ""
 
 #: ui/options_graphics.rml:224
 msgid "Adds bumps on supported surfaces."
-msgstr "在有支撑的平面上添加突起。"
+msgstr ""
 
 #: ui/options_graphics.rml:227
 msgid "Specular mapping"
-msgstr "镜面映射"
+msgstr ""
 
 #: ui/options_graphics.rml:229
 msgid "Simulate light specularity."
-msgstr "模拟光的反射。"
+msgstr ""
 
 #: ui/options_graphics.rml:232
 msgid "Physical mapping"
-msgstr "物理映射"
+msgstr ""
 
 #: ui/options_graphics.rml:234
 msgid "Material appearance based on physical approximations."
-msgstr "基于物理估量的材质外观。"
+msgstr ""
 
 #: ui/options_graphics.rml:242 ui/options_graphics.rml:244
 msgid "Reflections"
-msgstr "倒影"
+msgstr ""
 
 #: ui/options_graphics.rml:246
 msgid "Static reflections"
-msgstr "静态倒影"
+msgstr ""
 
 #: ui/options_graphics.rml:248
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
-"在支持的平面添加静态立方贴图倒影。需要一般、镜面与高级映射。目前不支持与物理"
-"映射同时使用。"
 
 #: ui/options_graphics.rml:252
 msgid "Very low"
-msgstr "极低"
+msgstr ""
 
 #: ui/options_graphics.rml:254 ui/options_graphics.rml:376
 msgid "Moderate"
-msgstr "少量"
+msgstr ""
 
 #: ui/options_graphics.rml:256
 msgid "Very high"
-msgstr "极高"
+msgstr ""
 
 #: ui/options_graphics.rml:258 ui/options_graphics.rml:370
 msgid "Quality"
-msgstr "质量"
+msgstr ""
 
 #: ui/options_graphics.rml:259
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
-msgstr "静态倒影立方贴图的质量。较高的质量会占用很多磁盘空间。"
+msgstr ""
 
 #: ui/options_graphics.rml:262
 msgid "Cubemap grid spacing"
-msgstr "立方贴图网格间隔"
+msgstr ""
 
 #: ui/options_graphics.rml:266 ui/options_graphics.rml:388
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr "当前:"
+msgstr ""
 
 #: ui/options_graphics.rml:272 ui/options_ui.rml:129
 msgid "Never"
-msgstr "无准星"
+msgstr ""
 
 #: ui/options_graphics.rml:273
 msgid "Cache on disk"
-msgstr "磁盘缓存"
+msgstr ""
 
 #: ui/options_graphics.rml:274
 msgid "Always rebuild"
-msgstr "总是重构建"
+msgstr ""
 
 #: ui/options_graphics.rml:276
 msgid "Static reflection cubemaps autobuild"
-msgstr "重新构建静态倒影立方贴图"
+msgstr ""
 
 #: ui/options_graphics.rml:277
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr "自动重新构建、加载、保存静态倒影立方贴图。"
+msgstr ""
 
 #: ui/options_graphics.rml:285 ui/options_graphics.rml:287
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr "特效"
+msgstr ""
 
 #: ui/options_graphics.rml:289
 msgid "Bloom"
-msgstr "闪光"
+msgstr ""
 
 #: ui/options_graphics.rml:291
 msgid "Makes bright areas on your screen glow."
-msgstr "让屏幕上可见的光照发光。"
+msgstr ""
 
 #: ui/options_graphics.rml:294
 msgid "Color grading"
-msgstr "颜色分级"
+msgstr ""
 
 #: ui/options_graphics.rml:296
 msgid "Alter colors to create specific ambiences."
-msgstr "变更颜色以创造出特殊的环境效果。"
+msgstr ""
 
 #: ui/options_graphics.rml:299
 msgid "Heat-haze"
-msgstr "热力波"
+msgstr ""
 
 #: ui/options_graphics.rml:301
 msgid "Simulate air refraction in severe heat."
-msgstr "模拟高温环境下的空气折射。"
+msgstr ""
 
 #: ui/options_graphics.rml:304
 msgid "Screen space ambient occlusion (SSAO)"
-msgstr "屏幕空间环境光遮蔽 (SSAO)"
+msgstr ""
 
 #: ui/options_graphics.rml:306
 msgid "Simulate dark corners."
-msgstr "模拟阴暗的角落。"
+msgstr ""
 
 #: ui/options_graphics.rml:309
 msgid "Marks"
-msgstr "印记"
+msgstr ""
 
 #: ui/options_graphics.rml:311
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
-msgstr "在平面上绘制印记 (如弹孔和爪印)"
+msgstr ""
 
 #: ui/options_graphics.rml:314
 msgid "Particle physics"
-msgstr "粒子物理"
+msgstr ""
 
 #: ui/options_graphics.rml:316
 msgid "Allow particles to bounce off surfaces."
-msgstr "允许粒子在平面弹跳。"
+msgstr ""
 
 #: ui/options_graphics.rml:323
 msgid "Renderer"
-msgstr "渲染器"
+msgstr ""
 
 #: ui/options_graphics.rml:325 ui/options_graphics.rml:327
 msgid "Material system"
-msgstr "物质系统"
+msgstr ""
 
 #: ui/options_graphics.rml:329
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
-"使用能够极度增强性能的系统。一些驱动可能不支持 (如 Mesa 和 AMD 专有驱动) 。"
 
 #: ui/options_graphics.rml:332
 msgid "GPU frustum culling"
-msgstr "GPU 视锥体剔除"
+msgstr ""
 
 #: ui/options_graphics.rml:334
 msgid "Cull surfaces that are out of view."
-msgstr "剔除不在视野内的平面。"
+msgstr ""
 
 #: ui/options_graphics.rml:337
 msgid "GPU occlusion culling"
-msgstr "GPU 遮挡剔除"
+msgstr ""
 
 #: ui/options_graphics.rml:339
 msgid "Cull hidden surfaces."
-msgstr "剔除隐藏的平面。"
+msgstr ""
 
 #: ui/options_graphics.rml:346
 msgid "Gameplay"
-msgstr "游戏"
+msgstr ""
 
 #: ui/options_graphics.rml:348
 msgid "Building markers"
-msgstr "建筑标识"
+msgstr ""
 
 #: ui/options_graphics.rml:351
 msgid "disabled"
-msgstr "禁用"
+msgstr "無効"
 
 #: ui/options_graphics.rml:352
 msgid "All structures"
-msgstr "所有设施"
+msgstr ""
 
 #: ui/options_graphics.rml:353
 msgid "Support structures"
-msgstr "支援设施"
+msgstr ""
 
 #: ui/options_graphics.rml:354
 msgid "Offensive structures"
-msgstr "攻击设施"
+msgstr ""
 
 #: ui/options_graphics.rml:355
 msgid "Alien structures"
-msgstr "异形设施"
+msgstr ""
 
 #: ui/options_graphics.rml:356
 msgid "Human structures"
-msgstr "人类设施"
+msgstr ""
 
 #: ui/options_graphics.rml:357
 msgid "Alien support structures"
-msgstr "异形支援设施"
+msgstr ""
 
 #: ui/options_graphics.rml:358
 msgid "Human support structures"
-msgstr "人类支援设施"
+msgstr ""
 
 #: ui/options_graphics.rml:359
 msgid "Offensive alien structures"
-msgstr "异形攻击设施"
+msgstr ""
 
 #: ui/options_graphics.rml:360
 msgid "Offensive human structures"
-msgstr "人类攻击设施"
+msgstr ""
 
 #: ui/options_graphics.rml:362
 msgid "Building ranges"
-msgstr "建筑范围"
+msgstr ""
 
 #: ui/options_graphics.rml:364
 msgid "Models"
-msgstr "模型"
+msgstr ""
 
 #: ui/options_graphics.rml:372
 msgid "Motion blur"
-msgstr "动态模糊"
+msgstr ""
 
 #: ui/options_graphics.rml:380
 msgid "Intensity"
-msgstr "密集度"
+msgstr ""
 
 #: ui/options_graphics.rml:381
 msgid "Level of motion-blur."
-msgstr "动态模糊等级。"
+msgstr ""
 
 #: ui/options_graphics.rml:384
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr "激活动态模糊的最小移动速度"
+msgstr ""
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
-msgstr "按键绑定"
+msgstr "キーバインド"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr "按 Esc 以取消按键绑定。"
+msgstr "Esc キーを押すと、キー バインドの変更がキャンセルされます。"
 
 #: ui/options_keys.rml:16
 msgid ""
 "Classic First Person Shooter binds,<br />keys will be adjusted to your "
 "layout."
-msgstr "经典的第一人称射击游戏按键，<br />按键会根据你的键盘布局调整。"
+msgstr ""
 
 #: ui/options_keys.rml:20
 msgid ""
 "One column shifted to the right,<br />keys will be adjusted to your layout."
-msgstr "将按键右移一列，<br />按键会根据你的键盘布局调整。"
+msgstr ""
 
 #: ui/options_keys.rml:24
 msgid "Special binds for left-handed,<br />touchpad users."
-msgstr "为惯用左手、触摸板用户准备的<br />特殊按键。"
+msgstr ""
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
-msgstr "游戏控制器"
+msgstr ""
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
-msgstr "尚不能用于控制菜单，<br />&nbsp;实验性的。"
+msgstr ""
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr "移动"
+msgstr ""
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr "跑 / 走:"
+msgstr "走る/歩く："
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr "冲刺:"
+msgstr "スプリント："
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr "前进:"
+msgstr "前進："
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr "后退:"
+msgstr "後退："
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr "左移:"
+msgstr "左に移動："
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr "右移:"
+msgstr "右に移動："
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr "跳跃:"
+msgstr ""
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr "蹲下:"
+msgstr "しゃがむ："
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr "爬墙:"
+msgstr "壁歩き："
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
@@ -1506,91 +1449,91 @@ msgstr "能力"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr "主火力:"
+msgstr ""
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr "副火力:"
+msgstr ""
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
-msgstr "发射钩爪:"
+msgstr ""
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr "扔手榴弹:"
+msgstr ""
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr "换弹:"
+msgstr "リロード："
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr "使用医疗包:"
+msgstr "医療キットを使用する："
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr "使用设施:"
+msgstr ""
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr "进化:"
+msgstr ""
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr "聊天/投票"
+msgstr ""
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr "手势:"
+msgstr ""
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr "公开聊天:"
+msgstr ""
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr "团队聊天:"
+msgstr "チームチャット："
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr "管理员聊天:"
+msgstr "管理者チャット："
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr "投赞成票:"
+msgstr ""
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr "投反对票:"
+msgstr ""
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr "为阵营投赞成票:"
+msgstr ""
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr "为阵营投反对票:"
+msgstr ""
 
 #: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
-msgstr "杂项"
+msgstr "その他"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr "显示分数:"
+msgstr "スコアを表示："
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
-msgstr "将设施标记重建:"
+msgstr ""
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
-msgstr "按住此按键以拆除设施。"
+msgstr ""
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr "信标菜单:"
+msgstr "ビーコンメニュー："
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
@@ -1602,191 +1545,191 @@ msgstr ""
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
-msgstr "切换控制台:"
+msgstr ""
 
 #: ui/options_keys.rml:171
 msgid "Screenshot:"
-msgstr "截图:"
+msgstr "スクリーンショット："
 
 #: ui/options_keys.rml:173
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
-msgstr "按住 Shift 以将截图保存为 PNG。默认会保存为 JPEG。"
+msgstr ""
 
 #: ui/options_keys.rml:175
 msgid "Quake-look"
-msgstr "Quake 视角"
+msgstr ""
 
 #: ui/options_keys.rml:179
 msgid "Look up:"
-msgstr "向上看:"
+msgstr "上を見る："
 
 #: ui/options_keys.rml:183
 msgid "Look down:"
-msgstr "向下看:"
+msgstr "下を見る："
 
 #: ui/options_keys.rml:187
 msgid "Turn left:"
-msgstr "左转:"
+msgstr ""
 
 #: ui/options_keys.rml:191
 msgid "Turn right:"
-msgstr "右转:"
+msgstr ""
 
 #: ui/options_keys.rml:195
 msgid "Mouse look:"
-msgstr "鼠标视角:"
+msgstr ""
 
 #: ui/options_keys.rml:199
 msgid "Centerview:"
-msgstr "中心视角:"
+msgstr ""
 
 #: ui/options_mouse.rml:7 ui/options.rml:19
 msgid "Mouse and Aiming"
-msgstr "鼠标与瞄准"
+msgstr ""
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr "Y 轴"
+msgstr "Y 軸"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr "正常"
+msgstr ""
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr "反转"
+msgstr ""
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
-msgstr "垂直移动鼠标的行为。"
+msgstr ""
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr "鼠标灵敏度"
+msgstr ""
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
-msgstr "鼠标过滤"
+msgstr ""
 
 #: ui/options_mouse.rml:27
 msgid "Smooth out sudden mouse movements."
-msgstr "平滑瞬间的鼠标移动。"
+msgstr ""
 
 #: ui/options_mouse.rml:30
 msgid "Free look"
-msgstr "自由视角"
+msgstr ""
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr "请仅在你是 Quake 高手时关闭。"
+msgstr ""
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr "环形菜单捕捉鼠标"
+msgstr ""
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
-msgstr "环形菜单可接受鼠标输入 (装备菜单除外)"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr "动作与特效"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
-msgstr "动作"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
-msgstr "爬墙视角调节"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:12
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
-msgstr "当你爬到墙上时自动旋转视角。"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:21
 msgid "Wall-walking pitch-speed"
-msgstr "爬墙视角调节速度"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:22
 msgid "How fast your view rotates and twists as you wall-walk."
-msgstr "爬墙时视角旋转调节的速度。"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:25
 msgid "Wall-walking toggles"
-msgstr "爬墙切换"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:27 ui/options_movements_cosmetic.rml:32
 msgid "Tap key instead of hold key to activate."
-msgstr "按爬墙键以切换爬墙状态，而非按住爬墙。"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:30
 msgid "Sprint toggles"
-msgstr "冲刺切换"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
-msgstr "特效"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr "关闭"
+msgstr "無効する"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
-msgstr "仅人类"
+msgstr "人間のみ"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr "人类与异形"
+msgstr "人間とエイリアン"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr "人类 (半透明)"
+msgstr "人間（半透明）"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr "人类与异形 (半透明)"
+msgstr "人間とエイリアン（半透明）"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
-msgstr "第一人称武器"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:45
 msgid "Show gun, pincer, hand and mandible models in first-person."
-msgstr "在第一人称显示武器、夹钳、手及颚骨模型。"
+msgstr ""
 
 #: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
-msgstr "左手模式"
+msgstr "左利きモード"
 
 #: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
-msgstr "左手持枪。"
+msgstr ""
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr "玩家配置"
+msgstr "プレーヤーの設定"
 
 #: ui/options_player.rml:20
 msgid "Personal"
-msgstr "个人"
+msgstr ""
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr "昵称"
+msgstr "ニックネーム"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr "显示给其他玩家的名字。"
+msgstr ""
 
 #: ui/options_player.rml:26
 msgid "Colour codes and symbols"
-msgstr "颜色码和符号"
+msgstr ""
 
 #: ui/options_player.rml:29
 msgid ""
@@ -1794,473 +1737,471 @@ msgid ""
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
-"可以使用 ^ 符号加颜色代码为文字染色。使用 ^* 重置颜色。使用 ^^ 表示通常的 ^ "
-"符号。"
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr "表情符号"
+msgstr ""
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr "也可以在玩家昵称中使用表情符号。"
+msgstr ""
 
 #: ui/options_player.rml:70
 msgid ""
 "Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
-msgstr "例如: ^7^^3Fred^^1Baggins[^7grenade]^* 即成 ^3Fred^1Baggins[grenade]"
+msgstr ""
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr "可用的表情符号:"
+msgstr ""
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
-msgstr "人类设施"
+msgstr ""
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
-msgstr "异形设施"
+msgstr ""
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr "其他"
+msgstr ""
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
-msgstr "教程模式"
+msgstr ""
 
 #: ui/options_player.rml:216
 msgid "Display hints for key bindings on-screen."
-msgstr "在屏幕提示操作相关按键。"
+msgstr ""
 
 #: ui/options_player.rml:220
 msgid "Show only team chat"
-msgstr "仅显示团队聊天"
+msgstr ""
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr "显示死亡消息"
+msgstr ""
 
 #: ui/options.rml:11
 msgid "Player"
-msgstr "玩家"
+msgstr ""
 
 #: ui/options.rml:21 ui/options_sound.rml:7
 msgid "Sound"
-msgstr "音效"
+msgstr ""
 
 #: ui/options.rml:23
 msgid "User interface and HUD"
-msgstr "用户界面与 HUD"
+msgstr ""
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr "全局音量"
+msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr "音乐"
+msgstr ""
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
-msgstr "回声密集度"
+msgstr ""
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr "回响效果"
+msgstr ""
 
 #: ui/options_sound.rml:26
 msgid "Doppler intensity"
-msgstr "多普勒效应密集度"
+msgstr ""
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr "当朝向或背对声音移动时的音调变化。"
+msgstr ""
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr "OpenAL 设备"
+msgstr ""
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr "声音输出设备/卡"
+msgstr ""
 
 #: ui/options_ui.rml:18
 msgid "User interface"
-msgstr "用户界面"
+msgstr ""
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr "主要"
+msgstr ""
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr "语言"
+msgstr ""
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr "一些语言的翻译尚未完成。"
+msgstr ""
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr "更改语言"
+msgstr ""
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
-msgstr "时钟"
+msgstr ""
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr "12 小时制"
+msgstr ""
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr "24 小时制"
+msgstr ""
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
-msgstr "显示现实时间。"
+msgstr ""
 
 #: ui/options_ui.rml:54
 msgid "Game-time clock"
-msgstr "游戏时间"
+msgstr ""
 
 #: ui/options_ui.rml:56
 msgid "Show how long a match has lasted."
-msgstr "显示游戏耗时。"
+msgstr ""
 
 #: ui/options_ui.rml:60
 msgid "Show ping"
-msgstr "显示网络延迟"
+msgstr ""
 
 #: ui/options_ui.rml:62
 msgid "Time that information takes to get to the server and back."
-msgstr "信息传输到服务器再返回所需要的时间。"
+msgstr ""
 
 #: ui/options_ui.rml:65
 msgid "Show movement speed"
-msgstr "显示移动速度"
+msgstr ""
 
 #: ui/options_ui.rml:67
 msgid "Current, maximum and graph of movement-speed."
-msgstr "目前有最大速度和速度图表。"
+msgstr ""
 
 #: ui/options_ui.rml:70
 msgid "Show FPS"
-msgstr "显示 FPS"
+msgstr ""
 
 #: ui/options_ui.rml:72
 msgid "Frames per second."
-msgstr "每秒帧数。"
+msgstr ""
 
 #: ui/options_ui.rml:75
 msgid "Console colors"
-msgstr "控制台颜色"
+msgstr ""
 
 #: ui/options_ui.rml:79 ui/options_ui.rml:158 ui/options_ui.rml:202
 msgid "Red:"
-msgstr "红:"
+msgstr ""
 
 #: ui/options_ui.rml:83 ui/options_ui.rml:162 ui/options_ui.rml:206
 msgid "Green:"
-msgstr "绿:"
+msgstr ""
 
 #: ui/options_ui.rml:87 ui/options_ui.rml:166 ui/options_ui.rml:210
 msgid "Blue:"
-msgstr "蓝:"
+msgstr ""
 
 #: ui/options_ui.rml:91 ui/options_ui.rml:170 ui/options_ui.rml:214
 msgid "Alpha:"
-msgstr "透明:"
+msgstr ""
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
-msgstr "准星"
+msgstr ""
 
 #: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
-msgstr "注意: 预览效果在游戏中途可见。"
+msgstr ""
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr "武器"
+msgstr ""
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
-msgstr "冲击枪"
+msgstr ""
 
 #: ui/options_ui.rml:108
 msgid "Rifle"
-msgstr "步枪"
+msgstr ""
 
 #: ui/options_ui.rml:109
 msgid "Pain Saw"
-msgstr "痛苦电锯"
+msgstr ""
 
 #: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
-msgstr "霰弹枪"
+msgstr ""
 
 #: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
-msgstr "激光枪"
+msgstr ""
 
 #: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
-msgstr "质量驱动器"
+msgstr ""
 
 #: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr "链式机枪"
+msgstr ""
 
 #: ui/options_ui.rml:114
 msgid "Flamer"
-msgstr "喷火器"
+msgstr ""
 
 #: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
-msgstr "脉冲步枪"
+msgstr ""
 
 #: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
-msgstr "星神炮"
+msgstr ""
 
 #: ui/options_ui.rml:127
 msgid "Crosshair visiblity"
-msgstr "准星可见性"
+msgstr ""
 
 #: ui/options_ui.rml:130
 msgid "Ranged weapons only"
-msgstr "仅远程武器"
+msgstr ""
 
 #: ui/options_ui.rml:131
 msgid "Always"
-msgstr "总是显示"
+msgstr ""
 
 #: ui/options_ui.rml:136
 msgid "Crosshair size"
-msgstr "准星大小"
+msgstr ""
 
 #: ui/options_ui.rml:138
 msgid "Tiny"
-msgstr "很小"
+msgstr ""
 
 #: ui/options_ui.rml:139
 msgid "Small"
-msgstr "小"
+msgstr ""
 
 #: ui/options_ui.rml:140
 msgid "Regular"
-msgstr "中"
+msgstr ""
 
 #: ui/options_ui.rml:141
 msgid "Huge"
-msgstr "大"
+msgstr ""
 
 #: ui/options_ui.rml:146
 msgid "Crosshair colour"
-msgstr "准星颜色"
+msgstr ""
 
 #: ui/options_ui.rml:148
 msgid "Image colour"
-msgstr "预设颜色"
+msgstr ""
 
 #: ui/options_ui.rml:149 ui/options_ui.rml:179
 msgid "Custom colour"
-msgstr "自定义颜色"
+msgstr ""
 
 #: ui/options_ui.rml:154
 msgid "Crosshair colours"
-msgstr "准星颜色"
+msgstr ""
 
 #: ui/options_ui.rml:175
 msgid "Crosshair outline colour"
-msgstr "准星轮廓颜色"
+msgstr ""
 
 #: ui/options_ui.rml:178
 msgid "Auto colour"
-msgstr "自动"
+msgstr ""
 
 #: ui/options_ui.rml:184
 msgid "Crosshair outline scale"
-msgstr "准星轮廓大小"
+msgstr ""
 
 #: ui/options_ui.rml:186
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr "负值会使轮廓位于准星内部。"
+msgstr ""
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr "大小:"
+msgstr ""
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
-msgstr "偏移:"
+msgstr ""
 
 #: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
-msgstr "准星轮廓颜色"
+msgstr ""
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr "你好！"
+msgstr ""
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr "我们该如何称呼你？"
+msgstr ""
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr "可以使用颜色和符号。"
+msgstr ""
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr "你可以在选项中随时更改名称。"
+msgstr ""
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr "你想使用哪种语言？"
+msgstr ""
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
-msgstr "选择战场"
+msgstr ""
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr "服务器列表"
+msgstr ""
 
 #: ui/server_browser.rml:39
 msgid "Internet"
-msgstr "互联网"
+msgstr ""
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr "名称:"
+msgstr ""
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr "玩家 (人机)"
+msgstr ""
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
-msgstr "延迟"
+msgstr ""
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr "连接"
+msgstr ""
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
-msgstr "刷新"
+msgstr ""
 
 #: ui/server_browser.rml:55
 msgid "LAN"
-msgstr "局域网"
+msgstr ""
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr "主机名"
+msgstr ""
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr "密码"
+msgstr ""
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr "开发者模式 (启用作弊)"
+msgstr ""
 
 #: ui/server_create.rml:54
 msgid "Building layout to use"
-msgstr "要使用的建筑布局"
+msgstr ""
 
 #: ui/server_create.rml:62
 msgid "Start"
-msgstr "开始"
+msgstr ""
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
-msgstr "资助频率"
+msgstr ""
 
 #: ui/server_setup.rml:17
 msgid "Every X seconds the player is alive, they will receive free funds."
-msgstr "每隔一段指定时长，玩家在存活时免费获得资源。"
+msgstr ""
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr "秒"
+msgstr ""
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
-msgstr "友伤乘数"
+msgstr ""
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
-msgstr "来自友方伤害的倍数 (不包括建筑或自伤)"
+msgstr ""
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr "异形:"
+msgstr ""
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr "人类:"
+msgstr ""
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
-msgstr "设施友伤"
+msgstr ""
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr "允许投票"
+msgstr ""
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
-msgstr "热身"
+msgstr ""
 
 #: ui/server_setup.rml:48
 msgid "Do warmups at every game start"
-msgstr "游戏正式开始前的热身阶段"
+msgstr ""
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
-msgstr "可以让性能不足的玩家准备充分。"
+msgstr ""
 
 #: ui/server_setup.rml:57
 msgid "Teams"
-msgstr "阵营"
+msgstr ""
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
-msgstr "允许异形建造"
+msgstr ""
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr "允许人类建造"
+msgstr ""
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr "物理"
+msgstr ""
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr "重力"
+msgstr ""
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr "推让潜伏者"
+msgstr ""
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr "击打潜伏者可以移开它们。"
+msgstr ""
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
-msgstr "防止阻拦重生"
+msgstr ""
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
-msgstr "将玩家从重生点移开，避免阻挡。"
+msgstr ""
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
@@ -2268,63 +2209,63 @@ msgstr ""
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
-msgstr "半衰期"
+msgstr ""
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
-msgstr "每隔一段半衰期，势力减少 50%。填 0 禁用此特性。"
+msgstr ""
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr "分钟"
+msgstr ""
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
-msgstr "双倍收益延时"
+msgstr ""
 
 #: ui/server_setup.rml:105
 msgid "Time after which some momentum rewards double"
-msgstr "延时后的势力收益加倍"
+msgstr ""
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
-msgstr "势力乘数"
+msgstr ""
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr "势力收益的乘数"
+msgstr ""
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
-msgstr "击杀收益乘数"
+msgstr ""
 
 #: ui/server_setup.rml:121
 msgid "Momentum reward multiplier for kills"
-msgstr "击杀敌人获得的势力乘数"
+msgstr ""
 
 #: ui/server_setup.rml:128
 msgid "Building reward multiplier"
-msgstr "建造收益乘数"
+msgstr ""
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr "建造设施获得的势力乘数"
+msgstr ""
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
-msgstr "设施失守惩罚乘数"
+msgstr ""
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr "设施遭摧毁时减少的势力乘数"
+msgstr ""
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
-msgstr "设施摧毁收益乘数"
+msgstr ""
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr "摧毁设施奖励的势力乘数"
+msgstr ""
 
 #: ui/server_setup.rml:153
 msgid "Build system"
@@ -2332,35 +2273,35 @@ msgstr ""
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr "起始建筑点"
+msgstr ""
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr "开局拥有的建筑点"
+msgstr ""
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
-msgstr "挖掘奖励"
+msgstr ""
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
-msgstr "每台挖掘设备可提供的建筑点"
+msgstr ""
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr "初始恢复速度"
+msgstr ""
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
-msgstr "恢复损失建筑点的初始速度 (每分钟)"
+msgstr ""
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
-msgstr "恢复半衰期"
+msgstr ""
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
-msgstr "建筑点恢复速度减半周期"
+msgstr ""
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
@@ -2368,23 +2309,23 @@ msgstr ""
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr "最少玩家"
+msgstr ""
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr "当玩家不足时，添加足够的人机"
+msgstr ""
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr "人机"
+msgstr ""
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr "默认水平"
+msgstr ""
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr "只对新加入的人机有效。"
+msgstr ""
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
@@ -2508,1607 +2449,1607 @@ msgstr ""
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
-msgstr "断开连接"
+msgstr ""
 
 #: ui/transition_downloading.rml:58
 msgid "Additional files are required. Please be patient while they download."
-msgstr "游戏需要额外的文件。正在下载，请耐心等待。"
+msgstr ""
 
 #: ui/transition_downloading.rml:59
 msgid "Time left:"
-msgstr "剩余时间:"
+msgstr ""
 
 #: ui/transition_downloading.rml:60
 msgid "Download rate:"
-msgstr "下载速度:"
+msgstr ""
 
 #: ui/transition_downloading.rml:61
 msgid "Size:"
-msgstr "大小:"
+msgstr ""
 
 #: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr "欢迎来到 Unvanquished"
+msgstr ""
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
-msgstr "关闭此菜单，点击屏幕加入任一阵营，开始游戏！"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr "%s%s ^*跌倒在地"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr "%s%s ^*跌倒在地"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr "%s%s ^*跌倒在地"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^*被压扁了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^*被压扁了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^*被压扁了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr "%s%s ^*无法呼吸"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr "%s%s ^*无法呼吸"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr "%s%s ^*无法呼吸"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "male"
 msgid "%s%s ^*melted"
-msgstr "%s%s ^*被熔化了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "female"
 msgid "%s%s ^*melted"
-msgstr "%s%s ^*被熔化了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "neuter"
 msgid "%s%s ^*melted"
-msgstr "%s%s ^*被熔化了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
-msgstr "%s%s ^*蘸了一下熔岩"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr "%s%s ^*蘸了一下熔岩"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
-msgstr "%s%s ^*蘸了一下熔岩"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr "%s%s ^*迷失了自我"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr "%s%s ^*迷失了自我"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr "%s%s ^*迷失了自我"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
-msgstr "%s%s ^*被爆炸吞噬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr "%s%s ^*被爆炸吞噬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
-msgstr "%s%s ^*被爆炸吞噬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*被酸性物质腐蚀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*被酸性物质腐蚀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*被酸性物质腐蚀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^*被炮台击杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^*被炮台击杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^*被炮台击杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr "%s%s ^*被炮台击杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr "%s%s ^*被炮台击杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr "%s%s ^*被炮台击杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*被火箭击中"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*被火箭击中"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*被火箭击中"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr "%s%s ^*被火箭击中；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr "%s%s ^*被火箭击中；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr "%s%s ^*被火箭击中；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr "%s%s ^*被酸管腐化"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr "%s%s ^*被酸管腐化"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr "%s%s ^*被酸管腐化"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr "%s%s ^*被酸管腐化；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr "%s%s ^*被酸管腐化；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr "%s%s ^*被酸管腐化；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr "%s%s ^*被刺头刺满了孔"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr "%s%s ^*被刺头刺满了孔"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr "%s%s ^*被刺头刺满了孔"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr "%s%s ^*被刺头刺满了孔；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr "%s%s ^*被刺头刺满了孔；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr "%s%s ^*被刺头刺满了孔；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr "%s%s ^*被主脑鞭笞"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr "%s%s ^*被主脑鞭笞"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr "%s%s ^*被主脑鞭笞"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr "%s%s ^*被主脑鞭笞；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr "%s%s ^*被主脑鞭笞；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr "%s%s ^*被主脑鞭笞；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
-msgstr "%s%s ^*被反应机烤焦"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
-msgstr "%s%s ^*被反应机烤焦"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
-msgstr "%s%s ^*被反应机烤焦"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr "%s%s ^*被反应机烤焦；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr "%s%s ^*被反应机烤焦；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr "%s%s ^*被反应机烤焦；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr "%s%s ^*没能逃离守卫者"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr "%s%s ^*没能逃离守卫者"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr "%s%s ^*没能逃离守卫者"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr "%s%s ^*没能逃离守卫者；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr "%s%s ^*没能逃离守卫者；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr "%s%s ^*没能逃离守卫者；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr "%s%s ^*被虫群吞噬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr "%s%s ^*被虫群吞噬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr "%s%s ^*被虫群吞噬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr "%s%s ^*被虫群吞噬；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr "%s%s ^*被虫群吞噬；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr "%s%s ^*被虫群吞噬；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*saw the light"
-msgstr "%s%s ^*看到了光"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*saw the light"
-msgstr "%s%s ^*看到了光"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
-msgstr "%s%s ^*看到了光"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr "%s%s ^*看到了光；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr "%s%s ^*看到了光；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr "%s%s ^*看到了光；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 锯了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 锯了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 锯了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 锯了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 锯了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 锯了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 冲击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 冲击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 冲击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 冲击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 冲击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 冲击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 用冲锋枪扫射"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 用冲锋枪扫射"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 用冲锋枪扫射"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 用冲锋枪扫射；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 用冲锋枪扫射；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 用冲锋枪扫射；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 压扁"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 压扁"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 压扁"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 压扁；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 压扁；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 压扁；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 击杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 击杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 击杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 击杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 击杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 击杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*被 %s%s%s^* 的脉冲波烤熟"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*被 %s%s%s^* 的脉冲波烤熟"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*被 %s%s%s^* 的脉冲波烤熟"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的脉冲波烤熟；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的脉冲波烤熟；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的脉冲波烤熟；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 狙击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 狙击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 狙击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 狙击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 狙击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 狙击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 的激光切割"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 的激光切割"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 的激光切割"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的激光切割；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的激光切割；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的激光切割；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
-msgstr "%s%s ^*被烤得酥脆"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
-msgstr "%s%s ^*被烤得酥脆"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
-msgstr "%s%s ^*被烤得酥脆"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr "%s%s ^*被 %s%s%s^* 的火焰点燃"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr "%s%s ^*被 %s%s%s^* 的火焰点燃"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr "%s%s ^*被 %s%s%s^* 的火焰点燃"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火焰点燃；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火焰点燃；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火焰点燃；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*被点燃了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*被点燃了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*被点燃了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波消灭"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波消灭"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波消灭"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波消灭；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波消灭；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波消灭；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波照射"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波照射"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波照射"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波照射；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波照射；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等离子波照射；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "male"
 msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*遭到辐照"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "female"
 msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*遭到辐照"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*遭到辐照"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飞了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飞了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飞了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飞了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飞了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飞了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "male"
 msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*爆炸了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "female"
 msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*爆炸了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*爆炸了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴弹焚烧"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴弹焚烧"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴弹焚烧"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴弹焚烧；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴弹焚烧；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴弹焚烧；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "male"
 msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*烧成了灰"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "female"
 msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*烧成了灰"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*烧成了灰"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*被 %s%s%s 的守卫者慢慢啃咬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*被 %s%s%s 的守卫者慢慢啃咬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*被 %s%s%s 的守卫者慢慢啃咬"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s 的守卫者慢慢啃咬；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s 的守卫者慢慢啃咬；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s 的守卫者慢慢啃咬；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 咬了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 咬了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 咬了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 咬了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 咬了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* 被 %s%s%s^* 咬了；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切开"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切开"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切开"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切开；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切开；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切开；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 撕碎"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 撕碎"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 撕碎"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 撕碎；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 撕碎；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 撕碎；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 电击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 电击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 电击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 电击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 电击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔狩猎者〕%s%s%s^* 电击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 解剖"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 解剖"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 解剖"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 解剖；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 解剖；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 解剖；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 扑杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 扑杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 扑杀"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 扑杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 扑杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 扑杀；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 穿插"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 穿插"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 穿插"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 穿插；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 穿插；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔龙骑士〕%s%s%s^* 穿插；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "male"
 msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*被刺穿了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "female"
 msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*被刺穿了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*被刺穿了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr "%s%s ^*被〔暴君〕%s%s%s^* 袭击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr "%s%s ^*被〔暴君〕%s%s%s^* 袭击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr "%s%s ^*被〔暴君〕%s%s%s^* 袭击"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔暴君〕%s%s%s^* 袭击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔暴君〕%s%s%s^* 袭击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr "%s%s ^*被〔暴君〕%s%s%s^* 袭击；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr "%s%s ^*本应躲过〔暴君〕%s%s%s^*"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr "%s%s ^*本应躲过〔暴君〕%s%s%s^*"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr "%s%s ^*本应躲过〔暴君〕%s%s%s^*"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "male"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr "%s%s ^*本应躲过〔暴君〕%s%s%s^*；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "female"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr "%s%s ^*本应躲过〔暴君〕%s%s%s^*；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr "%s%s ^*本应躲过〔暴君〕%s%s%s^*；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr "%s%s ^*被 %s%s%s^* 的重量压垮"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr "%s%s ^*被 %s%s%s^* 的重量压垮"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr "%s%s ^*被 %s%s%s^* 的重量压垮"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的重量压垮；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的重量压垮；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的重量压垮；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr "%s%s ^*本该用医疗包缓解 %s%s%s^* 的毒"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr "%s%s ^*本该用医疗包缓解 %s%s%s^* 的毒"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr "%s%s ^*本该用医疗包缓解 %s%s%s^* 的毒"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
-msgstr "%s%s ^*本该用医疗包缓解 %s%s%s^* 的毒；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
-msgstr "%s%s ^*本该用医疗包缓解 %s%s%s^* 的毒；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
-msgstr "%s%s ^*本该用医疗包缓解 %s%s%s^* 的毒；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr "%s%s ^*试图闯入 %s%s%s^* 的个人空间"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr "%s%s ^*试图闯入 %s%s%s^* 的个人空间"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr "%s%s ^*试图闯入 %s%s%s^* 的个人空间"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
-msgstr "%s%s ^*失落在虚空"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
-msgstr "%s%s ^*失落在虚空"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
-msgstr "%s%s ^*失落在虚空"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr "%s%s ^*感受到 %s%s%s^* 的权威"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr "%s%s ^*感受到 %s%s%s^* 的权威"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr "%s%s ^*感受到 %s%s%s^* 的权威"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr "%s%s ^*感受到 %s%s%s^* 的权威；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr "%s%s ^*感受到 %s%s%s^* 的权威；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr "%s%s ^*感受到 %s%s%s^* 的权威；%s%s%s^* 助攻"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 杀死了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 杀死了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 杀死了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 和 %s%s%s^* 杀死了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 和 %s%s%s^* 杀死了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 和 %s%s%s^* 杀死了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
-msgstr "%s%s ^*自杀了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
-msgstr "%s%s ^*自杀了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
-msgstr "%s%s ^*自杀了"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "male"
 msgid "%s%s^* died"
-msgstr "%s%s^* 死亡"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "female"
 msgid "%s%s^* died"
-msgstr "%s%s^* 死亡"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "neuter"
 msgid "%s%s^* died"
-msgstr "%s%s^* 死亡"
+msgstr ""
 
 #: src/cgame/cg_consolecmds.cpp:130
 #, c-format
 msgid "Listed %2d clients"
-msgstr "列出了 %2d 个客户端"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
-msgstr "你杀死了^1队友^* %s"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1218
 msgid "The Overmind is under attack!"
-msgstr "主脑正遭受攻击！"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
-msgstr "反应机整遭受攻击！"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1240
 msgid "The Overmind is dying!"
-msgstr "主脑即将死亡！"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is going down!"
-msgstr "反应机即将损坏！"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
 msgid "Our base is under attack!"
-msgstr "我方基地遭受攻击！"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1269
 #, c-format
 msgid "%s under attack – %s"
-msgstr "%s 遭受攻击——%s"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:1273
 #, c-format
 msgid "%s under attack"
-msgstr "%s 遭受攻击"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:472
 msgid "Calling home…"
-msgstr "告别故乡…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:472
 msgid "Sending to the front…"
-msgstr "分配到前线…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:477
 msgid "Tracking your movements…"
-msgstr "追踪移动轨迹…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:477
 msgid "Letting out the magic smoke…"
-msgstr "释放魔法烟雾…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:481
 msgid "Collecting bees for the hives…"
-msgstr "为蜂窝收集蜜蜂…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:481
 msgid "Initialising fireworks…"
-msgstr "初始化烟花…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:481
 msgid "Causing electrical faults…"
-msgstr "使电子产品失灵…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:485
 msgid "Reading the manual…"
-msgstr "阅读手册…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:485
 msgid "Looking at blueprints…"
-msgstr "观察蓝图…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:489
 msgid "Generating annoying noises…"
-msgstr "生成烦人的噪音…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:489
 msgid "Recording granger purring…"
-msgstr "录制守卫者叫声…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:493
 msgid "Hello World!"
-msgstr "你好，世界！"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:493
 msgid "Making a scene…"
-msgstr "制作场景…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:497
 msgid "Taking pictures of the world…"
-msgstr "给世界拍照…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:497
 msgid "Drawing smiley faces…"
-msgstr "画笑脸…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:501
 msgid "Sharpening the aliens' claws…"
-msgstr "异形磨爪…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:501
 msgid "Overloading lucifer cannons…"
-msgstr "重载星神炮…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:505
 msgid "Unwrapping jetpacks…"
-msgstr "解开喷气背包…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:505
 msgid "Spinning silk for reticles…"
-msgstr "纺织丝绸细节…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:509
 msgid "Adding turret spam…"
-msgstr "装载炮台弹药…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:509
 msgid "Awakening the overmind…"
-msgstr "唤醒主脑…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:513
 msgid "Teleporting soldiers…"
-msgstr "传送士兵…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:513
 msgid "Replicating alien DNA…"
-msgstr "复制异形 DNA…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:517
 msgid "Customizing helmets…"
-msgstr "定制头盔…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:521
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr "编译 GLSL 着色器 (请耐心等待) …"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:525
 msgid "Surveying the map…"
-msgstr "探访地图…"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:529
 msgid "Done!"
-msgstr "完成！"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:1144
 msgid "Generating bot navigation meshes"
-msgstr "生成人机寻路网"
+msgstr ""
 
 #: src/cgame/cg_main.cpp:1188
 #, c-format
 msgid "by %s"
-msgstr "作者: %s"
+msgstr ""
 
 #: src/cgame/cg_players.cpp:1436
 #, c-format
 msgid "%s^* renamed to %s"
-msgstr "%s^* 更名为 %s"
+msgstr ""
 
 #: src/cgame/cg_players.cpp:1443
 #, c-format
 msgid "%s^* left the %s"
-msgstr "%s^* 离开了%s"
+msgstr ""
 
 #: src/cgame/cg_players.cpp:1448
 #, c-format
 msgid "%s^* joined the %s"
-msgstr "%s^* 加入了%s"
+msgstr ""
 
 #: src/cgame/cg_players.cpp:1453
 #, c-format
 msgid "%s^* left the %s and joined the %s"
-msgstr "%s^* 离开了%s并加入%s"
+msgstr ""
 
 #: src/cgame/cg_rocket_dataformatter.cpp:77
 #, c-format
 msgid "Custom: %dx%d"
-msgstr "自定义: %dx%d"
+msgstr ""
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 #, c-format
 msgid "Same as screen (%dx%d)"
-msgstr "与屏幕相同 (%dx%d)"
+msgstr ""
 
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "The default behavior. This is what bots do when the game starts."
@@ -4183,451 +4124,452 @@ msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2632
 msgid "You are at the front of the spawn queue"
-msgstr "你即将重生"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2636
 #, c-format
 msgid "You are at position %d in the spawn queue"
-msgstr "你会在 %d 位玩家之后重生"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2676
 msgid "There are no spawns remaining"
-msgstr "没有剩余的重生点了"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2680
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
-msgstr[0] "还剩 %d 个重生点"
+msgstr[0] ""
+msgstr[1] ""
 
 #: src/cgame/cg_rocket_draw.cpp:3229
 #, c-format
 msgid "Awaiting connection…%i"
-msgstr "等待连接…%i"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3233
 #, c-format
 msgid "Awaiting challenge…%i"
-msgstr "等待验证…%i"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3237
 msgid "Awaiting gamestate…"
-msgstr "接收游戏状态…"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3319
 msgid "Say:"
-msgstr "发言:"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3320
 msgid "Team Say:"
-msgstr "阵营发言:"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3321
 msgid "Admin Say:"
-msgstr "管理员发言:"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3322
 msgid "Command:"
-msgstr "指令:"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3672
 msgid "FIGHT!"
-msgstr "开始战斗！"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3766
 msgid "estimating"
-msgstr "大约"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:471
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
-msgstr "异形阵营玩家过多。请等待玩家数量平衡，或加入人类阵营。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:473
 msgid "The alien team has too many players"
-msgstr "异形阵营玩家过多"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:477
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
-msgstr "人类阵营玩家过多。请等待玩家数量平衡，或加入异形阵营。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:479
 msgid "The human team has too many players"
-msgstr "人类阵营玩家过多"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:483
 msgid "The alien team is locked. You cannot join the aliens at this time."
-msgstr "异形阵营被锁定。目前不能加入。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:485
 msgid "The alien team is locked"
-msgstr "异形阵营被锁定"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:489
 msgid "The human team is locked. You cannot join the humans at this time."
-msgstr "人类阵营被锁定。目前不能加入。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:491
 msgid "The human team is locked"
-msgstr "人类阵营被锁定"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:495
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
-msgstr "服务器已满。请等待玩家位置空余。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:497
 msgid "No free player slots"
-msgstr "没有空余的玩家位置"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:501
 msgid "You must wait until the warmup time is finished before joining a team."
-msgstr "请在热身结束后加入阵营。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:503
 msgid "You cannot join a team during warmup."
-msgstr "在热身时不允许加入阵营。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:511
 msgid "Cheats are not enabled on this server"
-msgstr "此服务器未启用作弊"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:515
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
-msgstr "此服务器未启用作弊，在参与游戏时不可使用此指令"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:522
 msgid "Join a team first"
-msgstr "请先加入阵营"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:528
 msgid "You can only use this command when spectating"
-msgstr "只能在旁观时使用此指令"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:533
 msgid "Must be alien to use this command"
-msgstr "异形才能使用此指令"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:538
 msgid "Must be human to use this command"
-msgstr "人类才能使用此指令"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:543
 msgid "Must be alive to use this command"
-msgstr "只能在存活时使用此指令"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:549
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
-msgstr "这里没有建造空间。当建造预览为绿色时，代表有空间建造。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:551
 msgid "There is no room to build here"
-msgstr "这里没有建造空间"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:555
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
-msgstr "不能在此平面建造。这里太陡峭，或不适宜建造。请另寻建造地点。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:558
 msgid "Cannot build on this surface"
-msgstr "不能在此平面建造"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:563
 msgid "You cannot build that structure"
-msgstr "你不可以建造此设施"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:567
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
-msgstr "这会拆除我方唯一的重生点，通常会导致游戏很快失败。请先建造更多重生点。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:570
 msgid "You may not deconstruct the last spawn"
-msgstr "不可以拆除最后的重生点"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:574
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
-msgstr "不能直接拆除主要设施。标记主要设施后，可以在别处建造以移动之。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:577
 msgid "You may not deconstruct this structure"
-msgstr "不可以拆除此设施"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:581
 msgid "Building has been disabled on the server for your team."
-msgstr "我方建造能力被服务器关闭。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:582
 msgid "Building has been disabled for your team"
-msgstr "我方建造能力被关闭"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:586
 msgid "You are no longer permitted to build."
-msgstr "你不再有建造的许可。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:587
 msgid "You are no longer permitted to build"
-msgstr "你不再有建造的许可"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:591
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
-msgstr "我方已认输败退: 已经没有建造设施的必要了。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:593
 msgid "Cannot build after admitting defeat"
-msgstr "认输后不可建造"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:597
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
-msgstr "没有空余的资源了。可将现有的设施标记拆除，腾出一些资源。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:599
 msgid "There are no resources remaining"
-msgstr "没有空余资源"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:603
 msgid "This buildable is not powered."
-msgstr "此设施无能源供应。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:604
 msgid "This buildable is not powered"
-msgstr "此设施无能源供应"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:608
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
-msgstr "反应机不存在。需要先建造反应机才能建造其他设施。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:610
 msgid "There is no reactor"
-msgstr "反应机不存在"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:614
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
-msgstr "只能有一台反应机。若需移动现有的反应机，请先标记之。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:616
 msgid "There can only be one Reactor"
-msgstr "只能有一台反应机"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:621
 msgid "Your team cannot have any more drills"
-msgstr "我方钻井数已达上限"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:625
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
-msgstr "背包空间不足。请卖掉冲突的升级，再购买此物品。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:627
 msgid "You have no room to carry this"
-msgstr "背包空间不足"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:631
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
-msgstr "点数不足。你的点数不足以支持此操作。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:633
 msgid "Insufficient funds"
-msgstr "点数不足"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:637
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
-msgstr "你已持有此物品。不可以持有多件同样的物品。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:639
 msgid "You already hold this item"
-msgstr "你已持有此物品"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:643
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
-msgstr "必须在武器中心旁购买武器、升级和弹药。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:645
 msgid "You must be near a powered Armoury"
-msgstr "必须在武器中心旁"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:649
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
-msgstr "必须在反应机、钻井或供能的武器中心旁购买能量弹药。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:651
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
-msgstr "必须在反应机、钻井或供能的武器中心旁"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:655
 msgid "There is not enough room here to change armour."
-msgstr "此处空间不足，不能更换盔甲。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:656
 msgid "Not enough room here to change armour."
-msgstr "空间不足，不能更换盔甲。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:660
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
-msgstr "在建造计时完成后，方可更换武器。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:662
 msgid "You can not buy or sell weapons until your build timer expires"
-msgstr "在建造计时完成后才能更换武器"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:667
 msgid "You must be dead to use the class command"
-msgstr "必须在死亡时才能使用此指令"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:671
 msgid "Unknown starting item"
-msgstr "未知的起始物品"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:675
 msgid "Starting item not allowed"
-msgstr "不允许携带起始物品"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:681
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
-msgstr "主脑不存在。必须首先建造主脑，才能建造其他设施。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:683 src/cgame/cg_servercmds.cpp:723
 msgid "There is no Overmind"
-msgstr "主脑不存在"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:687
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
-msgstr "只能有一只主脑。若需要移动主脑，请标记现有的主脑，再建造以移动之。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:689
 msgid "There can only be one Overmind"
-msgstr "只能有一只主脑"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:694
 msgid "Your team cannot have any more leeches"
-msgstr "蛭的建造数已达上限"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:698
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
-msgstr "主脑不能控制更多设施。请先拆除一些现有的设施，再建造新设施。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:700
 msgid "The Overmind cannot control any more structures"
-msgstr "主脑不能控制更多设施"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:704
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
-msgstr "这里没有进化的空间。请离墙壁和物件远一些，再试着进化。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:706
 msgid "There is no room to evolve here"
-msgstr "这里没有进化的空间"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:710
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
-msgstr "这里离敌人太近。离开敌人的视线，再试着进化。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:712
 msgid "This location is too close to the enemy to evolve"
-msgstr "这里离敌人太近"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:716 src/cgame/cg_servercmds.cpp:717
 msgid "The Overmind is too far away to devolve."
-msgstr "主脑离得太远，不能退化。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:721
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
-msgstr "主脑不存在。建造主脑之后才能升级。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:727
 msgid "You cannot evolve until your build timer has expired."
-msgstr "在建造计时完成后才能进化。"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:728
 msgid "You cannot evolve until your build timer expires"
-msgstr "在建造计时完成后才能进化"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:732
 msgid "Wait a second after attacking or evolving"
-msgstr "在攻击或进化之后，请稍等片刻"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:740
 #, c-format
 msgid "You cannot evolve into a %s"
-msgstr "你不能进化成为%s"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:745
 msgid "You cannot evolve while wallwalking"
-msgstr "不能在爬墙时进化"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:749
 msgid "Unknown class"
-msgstr "未知的类"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:753
 #, c-format
 msgid "You cannot spawn as a %s"
-msgstr "你不能以%s的形态生成"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:758
 #, c-format
 msgid "The %s is not allowed"
-msgstr "%s不可用"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:763
 #, c-format
 msgid "The %s has not been unlocked yet"
-msgstr "%s尚未解锁"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:768
 #, c-format
 msgid "cgame: debug: no such menu %d"
-msgstr "客户端游戏 (cgame): 调试: 此菜单不存在: %d"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:871
 msgid "^1*DEAD*^*"
-msgstr "^1*死亡*^*"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:932
 #, c-format
 msgid "%sPrivate message from: ^7%s"
-msgstr "%s来自 ^7%s 的私密消息"
+msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:940
 #, c-format
@@ -4637,59 +4579,59 @@ msgstr ""
 #: src/cgame/cg_servercmds.cpp:1430
 #, c-format
 msgid "Unknown client game command: %s"
-msgstr "未知的客户端游戏指令: %s"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:45
 msgid "Sprint"
-msgstr "冲刺"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:46
 msgid "Jump"
-msgstr "跳跃"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:47
 msgid "Crouch"
-msgstr "蹲伏"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:48
 msgid "Primary Attack"
-msgstr "主攻击"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:49
 msgid "Secondary Attack"
-msgstr "副攻击"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
-msgstr "第三攻击"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
-msgstr "换弹"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:52
 msgid "Use Medkit"
-msgstr "使用医疗包"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:53
 msgid "Use Structure/Evolve"
-msgstr "使用设施/进化"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:54
 msgid "Deconstruct Structure"
-msgstr "拆除设施"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:55
 msgid "Next Weapon"
-msgstr "下一武器"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:56
 msgid "Global chat"
-msgstr "广播聊天"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Team chat"
-msgstr "团队聊天"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Bot tactic menu"
@@ -4697,128 +4639,128 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
-msgstr "切换控制台"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
-msgstr "切换菜单"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
-msgstr "投掷手榴弹"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
-msgstr "Shift+Esc"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
-msgstr "Esc"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
 #, c-format
 msgid "%s or %s"
-msgstr "%s 或 %s"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
-msgstr "%s, %s"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
-msgstr "\"%s\" (未绑定)"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
-msgstr "按 %s 放置%s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
-msgstr "按 %s 取消放置%s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
-msgstr "按 %s 建造设施。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
-msgstr "按 %s 取消标记设施为转移。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
-msgstr "按 %s 将设施标记为转移。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
-msgstr "按住 %s 拆除此设施。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
 #: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
-msgstr "按 %s 切击。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
-msgstr "按 %s 吐出唾液。唾液可以拖住人类、扑灭火焰。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
 #: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
-msgstr "按 %s 爬墙。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
-msgstr "触摸人类来攻击他们。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
-msgstr "瞄准他们的头以造成更多伤害。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
-msgstr "按 %s 穿刺。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
-msgstr "按 %s 咬嗜。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
-msgstr "按 %s 触发电子攻击。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr "按住 %s 并走到墙上以爬墙。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr "按 %s 发射钩爪。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
-msgstr "按 %s 猛扑。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
-msgstr "按住 %s 并前行以踩踏。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
 #, c-format
@@ -4827,759 +4769,500 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
-msgstr "在武器中心、钻井或反应机拿取弹药。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:357
 msgid "Find an Armoury for more ammo."
-msgstr "回到武器中心拿取弹药。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:372 src/cgame/cg_tutorial.cpp:377
 #: src/cgame/cg_tutorial.cpp:393
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr "按 %s 使用%s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:380
 #, c-format
 msgid "Hold %s to zoom."
-msgstr "按住 %s 瞄准。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:385
 #, c-format
 msgid "Hold %s to activate the %s."
-msgstr "按住 %s 激活%s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:390
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
-msgstr "按住 %s 蓄力发射充能子弹。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:417
 #, c-format
 msgid "Press %s to throw the %s."
-msgstr "按 %s 投掷%s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:426 src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to use the %s."
-msgstr "按 %s 使用%s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:432
 #, c-format
 msgid "Hold %s to use the Jetpack."
-msgstr "按住 %s 使用喷气背包。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:440
 #, c-format
 msgid "Press %s to use your Medkit."
-msgstr "按 %s 使用医疗包。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:447
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
-msgstr "在武器中心可按 %s 购买装备升级。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:460
 #, c-format
 msgid "Press %s and any direction to sprint."
-msgstr "按 %s 和任意方向键以冲刺。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:463
 #, c-format
 msgid "Press %s to crouch."
-msgstr "按 %s 蹲下。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:478
 #, c-format
 msgid "Press %s to leave spawn queue."
-msgstr "按 %s 离开重生队列。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:483
 #, c-format
 msgid "Press %s to spawn."
-msgstr "按 %s 重生。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:489
 #, c-format
 msgid "Press %s to join a team."
-msgstr "按 %s 加入阵营。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:495
 #, c-format
 msgid "Press %s to stop following."
-msgstr "按 %s 停止跟随。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:500
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
-msgstr "按 %s 切换到跟随观察模式。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:505
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
-msgstr "按 %s 切换到第一人称观察模式。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:509
 #, c-format
 msgid "Press %s to follow the next player."
-msgstr "按 %s 切换到下一位玩家。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:514
 #, c-format
 msgid "Press %s to follow a player."
-msgstr "按 %s 跟随一位玩家。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:595
 #, c-format
 msgid "Press %s to evolve."
-msgstr "按 %s 进化。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:606
 #, c-format
 msgid "Press %s when ready to continue."
-msgstr "当准备就绪后请按 %s。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:610
 msgid "Waiting for other players to be ready."
-msgstr "等待其他玩家准备就绪。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr "按 %s 与所有玩家聊天。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr "按 %s 与你的阵营聊天。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:622
 #, c-format
 msgid "Press %s to open the console."
-msgstr "按 %s 打开控制台。"
+msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:624
 #, c-format
 msgid "Press %s for the menu."
-msgstr "按 %s 打开菜单。"
+msgstr ""
 
 #: src/cgame/rocket/rocket_keys.cpp:343
 msgid "Unbound"
-msgstr "取消绑定"
+msgstr ""
 
 #: src/sgame/sg_active.cpp:730
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
-msgstr "由于长时间不活动，$1$^* 被从$2$移到旁观者"
+msgstr ""
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity spectate!"
-msgstr "10 秒钟内不活动将转为旁观者！"
+msgstr ""
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity drop!"
-msgstr "10 秒钟内不活动将掉线！"
+msgstr ""
 
 #: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
-msgstr "^3异形人机名称:"
+msgstr ""
 
 #: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
-msgstr "^3人类人机名称:"
+msgstr ""
 
 #: src/sgame/sg_bot.cpp:343
 msgid "$1$^* disconnected"
-msgstr "$1$^* 已下线"
+msgstr ""
 
 #: src/sgame/sg_bot_nav.cpp:160
 msgid "^1Bot navmesh generation failed!"
-msgstr "^1电脑寻路网生成失败！"
+msgstr ""
 
 #: src/sgame/sg_bot_nav.cpp:173
 msgid "Server: generating bot navigation meshes... $1$%"
-msgstr "服务器: 生成人机导航网络… $1$%"
+msgstr ""
 
 #: src/sgame/sg_buildable.cpp:1697
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
-msgstr "$2$^2 建造了$1$^*，^3替换了^*$3$"
+msgstr ""
 
 #: src/sgame/sg_buildable.cpp:1698
 msgid "$1$ ^2built^* by $2$$3$"
-msgstr "$2$^2 建造了^*$1$$3$"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:846
 msgid "Name change spam protection ($1$ = $2$)"
-msgstr "制止了频繁更名 ($1$ = $2$)"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:855
 msgid "Maximum name changes reached ($1$ = $2$)"
-msgstr "已达到更名的最大次数 ($1$ = $2$)"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:863
 msgid "You cannot change your name while you are muted"
-msgstr "当你被禁言时不可更名"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:875
 msgid "Name is too long! Must be less than $1$ characters or color codes."
-msgstr "名称过长！必须少于 $1$ 个字符或颜色码。"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:1156
 msgid "Your GUID is not secure"
-msgstr "你的 GUID 不安全"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:1197
 msgid "$1$^* connected"
-msgstr "$1$^* 已连接"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:1266
 msgid "$1$^* is connecting…"
-msgstr "$1$^* 正在连接…"
+msgstr ""
 
 #: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
-msgstr "$1$^* 加入了游戏"
+msgstr ""
 
 #: src/sgame/sg_combat.cpp:629
 msgid "Your killer, $1$^*, had $2$ HP."
-msgstr "你的对手 $1$^* 剩余血量 $2$。"
+msgstr ""
 
 #: src/sgame/sg_combat.cpp:1213
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
-msgstr "$2$^3 拆除了^* $1$"
+msgstr ""
 
 #: src/sgame/sg_combat.cpp:1214
 msgid "$1$ ^3DESTROYED^* by $2$"
-msgstr "$2$^3 摧毁了^* $1$"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:1994
 msgid "Timelimit hit"
-msgstr "时间到"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2005
 msgid "$1$ minutes remaining!"
-msgstr "剩余 $1$ 分钟！"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2013
 msgid "1 minute remaining!"
-msgstr "剩余 1 分钟！"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2026
 msgid "Humans win"
-msgstr "人类获胜"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2040
 msgid "Aliens win"
-msgstr "异形获胜"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2054
 msgid "Empty teams skip map time exceeded."
-msgstr "指定时间内无活跃玩家，跳过此地图。"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2220
 msgid "The game has been paused. Please wait."
-msgstr "游戏已暂停。请等候。"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2224
 msgid "Server: Game will auto-unpause in $1$ seconds"
-msgstr "服务器: 游戏将在 $1$ 秒后继续"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2243
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
-msgstr "服务器: 游戏继续 (至多暂停 $1$ 分钟)"
+msgstr ""
 
 #: src/sgame/sg_main.cpp:2246
 msgid "The game has been unpaused!"
-msgstr "游戏继续！"
+msgstr ""
 
 #: src/sgame/sg_spawn_mover.cpp:1078
 msgid "^1This door is locked!"
-msgstr "^1此门已锁！"
+msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:539
 msgid "Alien team has admitted defeat"
-msgstr "异形已认输"
+msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:544
 msgid "Human team has admitted defeat"
-msgstr "人类以认输"
+msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:577
 msgid "Evacuation ordered"
-msgstr "预订了清理"
+msgstr ""
 
 #: src/sgame/sg_team.cpp:604
 msgid "Teams are imbalanced. Humans have more players."
-msgstr "阵营双方不平衡。人类玩家更多。"
+msgstr ""
 
 #: src/sgame/sg_team.cpp:611
 msgid "Teams are imbalanced. Aliens have more players."
-msgstr "阵营双方不平衡。异形玩家更多。"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:59
 #, c-format
 msgid "Kick player '%s'"
-msgstr "踢出玩家 ‘%s’"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:71
 #, c-format
 msgid "Move player '%s' to spectators"
-msgstr "将玩家 ‘%s’ 移到观察者"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:82
 msgid "$1$: player is already muted"
-msgstr "$1$: 玩家已被禁言"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:89
 #, c-format
 msgid "Mute player '%s'"
-msgstr "禁言玩家 ‘%s’"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:101
 msgid "$1$: player is not currently muted"
-msgstr "$1$: 玩家未被禁言"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:108
 #, c-format
 msgid "Unmute player '%s'"
-msgstr "取消禁言玩家 ‘%s’"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:120
 msgid "$1$: player already lost building rights"
-msgstr "$1$: 玩家已无建造权限"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:138
 msgid "$1$: player already has building rights"
-msgstr "$1$: 玩家已拥有建造权限"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:197 src/sgame/sg_votes.cpp:263
 msgid "$1$: map name not specified"
-msgstr "$1$: 未指定地图名称"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
-msgstr "$1$: 服务器上无此地图: ‘maps/$2$.bsp’"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"
-msgstr "投票: 服务器上无此布局: ‘$1$’"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:271
 msgid "$1$: the next map is already set to '$2$'"
-msgstr "$1$: 下一张地图已设为 ‘$2$’"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:330
 msgid "$1$: there are no active bots"
-msgstr "$1$: 无活跃人机"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:349 src/sgame/sg_votes.cpp:371
 #: src/sgame/sg_votes.cpp:393
 msgid "$1$: number must be non-negative and smaller than $2$"
-msgstr "$1$: 参数值必须非负且小于 $2$"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:358
 #, c-format
 msgid "Fill each team with bots to %d"
-msgstr "为阵营双方添加人机，满足至少 %d 位玩家"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:380
 #, c-format
 msgid "Fill the human team with bots to %d"
-msgstr "为人类阵营添加人机，满足至少 %d 位玩家"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:402
 #, c-format
 msgid "Fill the alien team with bots to %d"
-msgstr "为异形阵营添加人机，满足至少 %d 位玩家"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:477
 msgid "$1$: voting not allowed here"
-msgstr "$1$: 此服务器未启用投票"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:486
 msgid "$1$: you are not permitted to call $2$ votes"
-msgstr "$1$: 不允许发起$2$投票"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:495
 msgid "$1$: a vote is already in progress"
-msgstr "$1$: 已有一轮活跃投票"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:516
 msgid "Invalid vote string"
-msgstr "无效的投票指令"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:519
 msgid "Valid vote commands are: "
-msgstr "有效的投票： "
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:520
 msgid "Valid team-vote commands are: "
-msgstr "有效的团队投票： "
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:551
 msgid "$1$: you have already called the maximum number of votes ($2$)"
-msgstr "$1$: 你发起的投票已达最大数量 ($2$)"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:561
 msgid "'$1$' votes have been disabled"
-msgstr "投票命令 ‘$1$’ 不可用"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:582
 msgid "'$1$' votes are not allowed once $2$ minutes have passed"
-msgstr "在游戏 $2$ 分钟后，不可发起 ‘$1$’ 投票"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:596
 msgid "'$1$' votes are not allowed until $2$ minutes have passed"
-msgstr "在游戏 $2$ 分钟前，不可发起 ‘$1$’ 投票"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:611
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining"
-msgstr "只能在游戏剩余最多 $2$ 分钟时发起 ‘$1$’ 投票"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:655
 msgid "$1$: no target"
-msgstr "$1$: 目标不存在"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:672
 msgid "$1$: player is a bot"
-msgstr "$1$: 玩家为人机"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:684 src/sgame/sg_votes.cpp:698
 msgid "$1$: admin is immune"
-msgstr "$1$: 管理员免疫"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:705
 msgid "$1$: player is not on your team"
-msgstr "$1$: 玩家不在我方团队"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:717
 msgid "$1$: You must provide a reason"
-msgstr "$1$: 必须给出理由"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:739
 msgid "$1$^* called a vote: $2$"
-msgstr "$1$^* 发起投票: $2$"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:743
 msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
-"$1$^7 发起投票: \n"
-"^7$2$"
 
 #: src/sgame/sg_votes.cpp:760
 msgid "$1$^* called a team vote: $2t$"
-msgstr "$1$^* 发起团队投票: $2t$"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:765
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
-"$1$^7 发起团队投票: \n"
-"^7$2$"
 
 #: src/sgame/sg_votes.cpp:878
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr "投票未通过 ($2$ 人中有 $1$ 人投票，人数不足)"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:879
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr "团队投票未通过 ($2$ 人中有 $1$ 人投票，人数不足)"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:885
 msgid "Vote passed ($1$ — $2$)"
-msgstr "投票通过 ($1$ — $2$)"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:886
 msgid "Team vote passed ($1$ — $2$)"
-msgstr "团队投票通过 ($1$ — $2$)"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr "投票被驳回 ($1$ — $2$，需要 $3$%)"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr "团队投票被驳回 ($1$ — $2$，需要 $3$%)"
+msgstr ""
 
 #: src/shared/bg_misc.cpp:2483
 msgid "spectator"
-msgstr "观察者"
+msgstr ""
 
 #: src/shared/bg_misc.cpp:2488
 msgid "alien"
-msgstr "异形"
+msgstr ""
 
 #: src/shared/bg_misc.cpp:2493
 msgid "human"
-msgstr "人类"
+msgstr ""
 
 #: src/shared/bg_misc.cpp:2503
 msgid "spectators"
-msgstr "观察者"
+msgstr ""
 
 #: src/shared/bg_misc.cpp:2508
 msgid "aliens"
-msgstr "异形"
+msgstr ""
 
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
-msgstr "人类"
-
-#~ msgid "Run/Walk"
-#~ msgstr "跑/走"
-
-#~ msgid "Previous Weapon"
-#~ msgstr "上一武器"
-
-#, c-format
-#~ msgid ">> to reply, say: /m %d [your message] <<"
-#~ msgstr ">> 若需回复，请在聊天框输入: /m %d [你要回复的消息]"
-
-#~ msgid "Loading"
-#~ msgstr "加载中"
-
-#~ msgid "Extra packages to load"
-#~ msgstr "要加载的其他资源包"
-
-#~ msgid ""
-#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "
-#~ "textures…"
-#~ msgstr "低细分，无天空，无阴影，没有粒子弹跳，64 像素材质……"
-
-#~ msgid "Grid lighting"
-#~ msgstr "网格光照"
-
-#~ msgid "Exponential mapping"
-#~ msgstr "指数映射"
-
-#~ msgid "Variance mapping"
-#~ msgstr "可变映射"
-
-#~ msgid "Exponential + variance"
-#~ msgstr "指数 + 可变"
-
-#~ msgid "high"
-#~ msgstr "高质量"
-
-#~ msgid "Full"
-#~ msgstr "完整"
-
-#~ msgid "Texture size"
-#~ msgstr "材质大小"
-
-#~ msgid ""
-#~ "Lower texture size is useful for cards with limited video memory (VRAM)."
-#~ msgstr "低材质大小对低显存设备有用。"
-
-#, c-format
-#~ msgid "Press %s to chat."
-#~ msgstr "按 %s 聊天。"
-
-#, c-format
-#~ msgid "Press %s to chat or %s to chat to your team."
-#~ msgstr "按 %s 聊天，或 %s 与团队聊天。"
-
-#~ msgid "Server: generating bot navigation mesh for $1$... $2$%"
-#~ msgstr "服务器：为$1$生成电脑寻路网…… $2$%"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 切开"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 切开"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 切开"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 切开；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 切开；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 切开；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 撕碎"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 撕碎"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 撕碎"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 撕碎；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 撕碎；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 撕碎；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 电击"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 电击"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 电击"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 电击；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 电击；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 电击；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 解剖"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 解剖"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 解剖"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 解剖；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 解剖；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 解剖；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 扑杀"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 扑杀"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 扑杀"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 扑杀；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 扑杀；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 扑杀；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 穿插"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 穿插"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 穿插"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 穿插；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 穿插；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 穿插；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 袭击"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 袭击"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 袭击"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 袭击；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 袭击；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-#~ msgstr "%s%s ^*被 %s%s%s^* 的 %s 袭击；%s%s%s^* 支援"
-
-#~ msgctxt "male"
-#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*本应躲过 %s%s%s^* 的 %s"
-
-#~ msgctxt "female"
-#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*本应躲过 %s%s%s^* 的 %s"
-
-#~ msgctxt "neuter"
-#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-#~ msgstr "%s%s ^*本应躲过 %s%s%s^* 的 %s"
-
-#~ msgctxt "male"
-#~ msgid ""
-#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-#~ "assisted"
-#~ msgstr "%s%s ^*本应躲过 %s%s%s^* 的 %s；%s%s%s^* 支援"
-
-#~ msgctxt "female"
-#~ msgid ""
-#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-#~ "assisted"
-#~ msgstr "%s%s ^*本应躲过 %s%s%s^* 的 %s；%s%s%s^* 支援"
-
-#~ msgctxt "neuter"
-#~ msgid ""
-#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-#~ "assisted"
-#~ msgstr "%s%s ^*本应躲过 %s%s%s^* 的 %s；%s%s%s^* 支援"
+msgstr ""

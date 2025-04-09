@@ -42,7 +42,6 @@ static const char* const OPEN_MENU_CMD = "toggleMenu";
 
 static bind_t bindings[] =
 {
-	{ "+speed",         N_( "Run/Walk" ),                              {} },
 	{ "+sprint",        N_( "Sprint" ),                                {} },
 	{ "+moveup",        N_( "Jump" ),                                  {} },
 	{ "+movedown",      N_( "Crouch" ),                                {} },
@@ -53,11 +52,10 @@ static bind_t bindings[] =
 	{ "itemact medkit", N_( "Use Medkit" ),                            {} },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  {} },
 	{ "+deconstruct",   N_( "Deconstruct Structure" ),                 {} },
-	{ "weapprev",       N_( "Previous Weapon" ),                       {} },
 	{ "weapnext",       N_( "Next Weapon" ),                           {} },
 	{ "message_public", N_( "Global chat" ),                           {} },
 	{ "message_team",   N_( "Team chat" ),                             {} },
-	{ "botTacticMenu",  N_( "Tactic bot menu" ),                       {} },
+	{ "botTacticMenu",  N_( "Bot tactic menu" ),                       {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
 	{ OPEN_MENU_CMD,    N_( "Toggle Menu" ),                           {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
@@ -343,7 +341,7 @@ CG_HumanText
 */
 static void CG_HumanText( std::string& text, playerState_t *ps )
 {
-	text += va( _( "Press %s to show the tactic bot menu." ), CG_KeyNameForCommand( "botTacticMenu" ) );
+	text += va( _( "Press %s to show the bot tactic menu." ), CG_KeyNameForCommand( "botTacticMenu" ) );
 	text += '\n';
 	if ( !ps->ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
@@ -596,7 +594,7 @@ const std::string& CG_TutorialText()
 			{
 				text += va( _( "Press %s to evolve." ), CG_KeyNameForCommand( "+activate" ) );
 				text += '\n';
-				text += va( _( "Press %s to show the tactic bot menu." ), CG_KeyNameForCommand( "botTacticMenu" ) );
+				text += va( _( "Press %s to show the bot tactic menu." ), CG_KeyNameForCommand( "botTacticMenu" ) );
 				text += '\n';
 			}
 		}
@@ -621,9 +619,9 @@ const std::string& CG_TutorialText()
 		text += '\n';
 		text += va( _( "Press %s to chat with your team." ), CG_KeyNameForCommand( "message_team" ) );
 		text += '\n';
-		text += va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleConsole" ) );
+		text += va( _( "Press %s to open the console." ), CG_KeyNameForCommand( OPEN_CONSOLE_CMD ) );
 		text += '\n';
-		text += va( _( "Press %s for the menu." ), CG_KeyNameForCommand( "toggleMenu" ) );
+		text += va( _( "Press %s for the menu." ), CG_KeyNameForCommand( OPEN_MENU_CMD ) );
 	}
 
 	return text;

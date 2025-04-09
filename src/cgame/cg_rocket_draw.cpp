@@ -2013,8 +2013,13 @@ public:
 	BPVampireElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
-	void DoOnUpdate() override
+	void DoOnRender() override
 	{
+		if ( !cg.bpVampireTime )
+		{
+			return; // bp vampire mode not enabled
+		}
+
 		rectDef_t rect;
 		CG_GetRocketElementRect( &rect );
 
@@ -2029,13 +2034,20 @@ public:
 		float w = 160;
 		float h = 15;
 
-		const float percentage = ( float ) cg.bpVampire[TEAM_ALIENS] / ( cg.bpVampire[TEAM_HUMANS] + cg.bpVampire[TEAM_ALIENS] );
+		// Avoid negative numbers (can't be displayed) and 0 (causes division by zero)
+		float alienBPClamped = std::max( float( cg.bpVampire[ TEAM_ALIENS ] ), 0.1f );
+		float humanBPClamped = std::max( float( cg.bpVampire[ TEAM_HUMANS ] ), 0.1f );
+
+		const float percentage = alienBPClamped / ( alienBPClamped + humanBPClamped );
 		CG_FillRect( x, y, w * percentage, h, aBlink ? blinkBPColor : alienBPColor );
 		CG_FillRect( x + w * percentage, y, w * ( 1 - percentage ), h, hBlink ? blinkBPColor : humanBPColor );
+	}
 
-		if ( !cg.bpVampire[ TEAM_ALIENS ] || !cg.bpVampire[ TEAM_HUMANS ] )
+	void DoOnUpdate() override
+	{
+		if ( !cg.bpVampireTime )
 		{
-			return;
+			return; // bp vampire mode not enabled
 		}
 
 		Blink();
