@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 19:09+0100\n"
+"POT-Creation-Date: 2025-04-09 17:47+0200\n"
 "PO-Revision-Date: 2025-03-23 21:55+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -613,6 +613,10 @@ msgstr ""
 msgid "Beacons"
 msgstr "Majakat"
 
+#: ui/ingame_bottacticmenu.rml:78
+msgid "Bot Tactic"
+msgstr ""
+
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
 msgstr "Katsojat"
@@ -662,6 +666,10 @@ msgstr "Vaihtoehtoisesti voit seurata peliä osallistumatta peliin."
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
 msgstr "Katsele"
+
+#: ui/ingame_vsaymenu.rml:78
+msgid "Vsay"
+msgstr ""
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -851,6 +859,7 @@ msgid "Mild"
 msgstr "Kevyt"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
+#: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "Default"
 msgstr "Normaali"
 
@@ -1193,6 +1202,7 @@ msgstr ""
 "suorituskykyyn."
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Ei"
 
@@ -1668,14 +1678,22 @@ msgid "Beacon menu:"
 msgstr "Majakkavalikko:"
 
 #: ui/options_keys.rml:159
+msgid "Vsays menu:"
+msgstr ""
+
+#: ui/options_keys.rml:163
+msgid "Bot tactic menu:"
+msgstr ""
+
+#: ui/options_keys.rml:167
 msgid "Toggle console:"
 msgstr "Avaa/sulje konsoli:"
 
-#: ui/options_keys.rml:163
+#: ui/options_keys.rml:171
 msgid "Screenshot:"
 msgstr "Kuvakaappaus:"
 
-#: ui/options_keys.rml:165
+#: ui/options_keys.rml:173
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
@@ -1683,31 +1701,31 @@ msgstr ""
 "Paina VAIHTO (SHIFT)‐näppäintä pohjassa tehdäksesi PNG‐muotoisen "
 "kuvakaappauksen. Muussa tapauksessa kuvakaappaus on JPEG‐muodossa."
 
-#: ui/options_keys.rml:167
+#: ui/options_keys.rml:175
 msgid "Quake-look"
 msgstr "Quake‐katselu"
 
-#: ui/options_keys.rml:171
+#: ui/options_keys.rml:179
 msgid "Look up:"
 msgstr "Katso ylös:"
 
-#: ui/options_keys.rml:175
+#: ui/options_keys.rml:183
 msgid "Look down:"
 msgstr "Katso alas:"
 
-#: ui/options_keys.rml:179
+#: ui/options_keys.rml:187
 msgid "Turn left:"
 msgstr "Käänny vasemmalle:"
 
-#: ui/options_keys.rml:183
+#: ui/options_keys.rml:191
 msgid "Turn right:"
 msgstr "Käänny oikealle:"
 
-#: ui/options_keys.rml:187
+#: ui/options_keys.rml:195
 msgid "Mouse look:"
 msgstr "Hiirellä katselu:"
 
-#: ui/options_keys.rml:191
+#: ui/options_keys.rml:199
 msgid "Centerview:"
 msgstr "Keskitä näkymä:"
 
@@ -4163,11 +4181,11 @@ msgstr "Tähyillään kenttää…"
 msgid "Done!"
 msgstr "Valmis!"
 
-#: src/cgame/cg_main.cpp:1136
+#: src/cgame/cg_main.cpp:1144
 msgid "Generating bot navigation meshes"
 msgstr "Generoidaan bottien navigaatiokaaviot"
 
-#: src/cgame/cg_main.cpp:1180
+#: src/cgame/cg_main.cpp:1188
 #, c-format
 msgid "by %s"
 msgstr "%s:lta / -ltä"
@@ -4201,6 +4219,77 @@ msgstr "Kustomoitu: %dx%d"
 #, c-format
 msgid "Same as screen (%dx%d)"
 msgstr "Sama kuin näyttöruutu (%dx%d)"
+
+#: src/cgame/cg_rocket_datasource.cpp:1474
+msgid "The default behavior. This is what bots do when the game starts."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1475
+#: src/cgame/cg_rocket_datasource.cpp:1508
+msgid "Defend"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1475
+msgid "The bots stay in the base."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1476
+#: src/cgame/cg_rocket_datasource.cpp:1509
+msgid "Attack"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1476
+msgid "The bots attack the enemy base."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1477
+msgid "Stay Here"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1477
+msgid "The bots stay where you are currently."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1478
+#: src/cgame/cg_rocket_datasource.cpp:1510
+msgid "Follow"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1478
+msgid "The bots follow you wherever you go."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1508
+msgid "Defend our base!!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1509
+msgid "Attack!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1510
+msgid "Follow me!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1511
+msgid "No."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1512
+msgid "Yes"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1512
+msgid "Yes."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1513
+msgid "Flank"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1513
+msgid "Flank, behind you!"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2632
 msgid "You are at the front of the spawn queue"
@@ -4708,324 +4797,325 @@ msgid "Unknown client game command: %s"
 msgstr "Tuntematon pelaajan pelikomento: %s"
 
 #: src/cgame/cg_tutorial.cpp:45
-msgid "Run/Walk"
-msgstr "Juokse/Kävele"
-
-#: src/cgame/cg_tutorial.cpp:46
 msgid "Sprint"
 msgstr "Sprinttaa"
 
-#: src/cgame/cg_tutorial.cpp:47
+#: src/cgame/cg_tutorial.cpp:46
 msgid "Jump"
 msgstr "Hyppää"
 
-#: src/cgame/cg_tutorial.cpp:48
+#: src/cgame/cg_tutorial.cpp:47
 msgid "Crouch"
 msgstr "Kyykisty"
 
-#: src/cgame/cg_tutorial.cpp:49
+#: src/cgame/cg_tutorial.cpp:48
 msgid "Primary Attack"
 msgstr "Päähyökkäys"
 
-#: src/cgame/cg_tutorial.cpp:50
+#: src/cgame/cg_tutorial.cpp:49
 msgid "Secondary Attack"
 msgstr "Oheishyökkäys"
 
-#: src/cgame/cg_tutorial.cpp:51
+#: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
 msgstr "Kolmas hyökkäys"
 
-#: src/cgame/cg_tutorial.cpp:52
+#: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
 msgstr "Vaihda lipas"
 
-#: src/cgame/cg_tutorial.cpp:53
+#: src/cgame/cg_tutorial.cpp:52
 msgid "Use Medkit"
 msgstr "Käytä lääkepakki"
 
-#: src/cgame/cg_tutorial.cpp:54
+#: src/cgame/cg_tutorial.cpp:53
 msgid "Use Structure/Evolve"
 msgstr "Käytä rakennelmaa/kehity"
 
-#: src/cgame/cg_tutorial.cpp:55
+#: src/cgame/cg_tutorial.cpp:54
 msgid "Deconstruct Structure"
 msgstr "Pura rakennelma"
 
-#: src/cgame/cg_tutorial.cpp:56
-msgid "Previous Weapon"
-msgstr "Edellinen ase"
-
-#: src/cgame/cg_tutorial.cpp:57
+#: src/cgame/cg_tutorial.cpp:55
 msgid "Next Weapon"
 msgstr "Seuraava ase"
 
-#: src/cgame/cg_tutorial.cpp:58
+#: src/cgame/cg_tutorial.cpp:56
 msgid "Global chat"
 msgstr "Yleiskeskustelu"
 
-#: src/cgame/cg_tutorial.cpp:59
+#: src/cgame/cg_tutorial.cpp:57
 msgid "Team chat"
 msgstr "Joukkuekeskustelu"
 
-#: src/cgame/cg_tutorial.cpp:60
+#: src/cgame/cg_tutorial.cpp:58
+msgid "Bot tactic menu"
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
 msgstr "Avaa/sulje konsoli"
 
-#: src/cgame/cg_tutorial.cpp:61
+#: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
 msgstr "Avaa/sulje valikko"
 
-#: src/cgame/cg_tutorial.cpp:62
+#: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
 msgstr "Heitä kranaatti"
 
-#: src/cgame/cg_tutorial.cpp:107
+#: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
 msgstr "VAIHTO-ESC"
 
-#: src/cgame/cg_tutorial.cpp:114
+#: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
 msgstr "ESC"
 
-#: src/cgame/cg_tutorial.cpp:125 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
 #, c-format
 msgid "%s or %s"
 msgstr "%s tai %s"
 
-#: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: src/cgame/cg_tutorial.cpp:135
+#: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
 msgstr "\"%s\" (asettamaton)"
 
-#: src/cgame/cg_tutorial.cpp:179
+#: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
 msgstr "Paina %s laittaaksesi rakennelman: %s."
 
-#: src/cgame/cg_tutorial.cpp:182
+#: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
 msgstr "Paina %s peruaksesi asettamisen rakennelmalle: %s."
 
-#: src/cgame/cg_tutorial.cpp:187
+#: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
 msgstr "Paina %s tehdäksesi rakennelman."
 
-#: src/cgame/cg_tutorial.cpp:197
+#: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
 msgstr "Paina %s poistaaksesi merkinnän tämän rakennelman korvaamisesta."
 
-#: src/cgame/cg_tutorial.cpp:202
+#: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
 msgstr "Paina %s merkataksesi tämän rakennelman korvattavaksi."
 
-#: src/cgame/cg_tutorial.cpp:206
+#: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
 msgstr "Pidä pohjassa %s purkaaksesi tämän rakennelman."
 
-#: src/cgame/cg_tutorial.cpp:222 src/cgame/cg_tutorial.cpp:262
-#: src/cgame/cg_tutorial.cpp:321
+#: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
+#: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
 msgstr "Paina %s huitaistaksesi."
 
-#: src/cgame/cg_tutorial.cpp:228
+#: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr "Paina %s sylkeäksesi. Sylki voi hidastaa ihmisiä ja torjua tulipaloja."
 
-#: src/cgame/cg_tutorial.cpp:231 src/cgame/cg_tutorial.cpp:251
-#: src/cgame/cg_tutorial.cpp:268
+#: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
+#: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
 msgstr "Paina %s kävelläksesi seinillä."
 
-#: src/cgame/cg_tutorial.cpp:245
+#: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
 msgstr "Kosketa ihmisiä satuttaaksesi niitä."
 
-#: src/cgame/cg_tutorial.cpp:248
+#: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
 msgstr "Tähtää heidän päihin tehdäksesi enemmän vahinkoa."
 
-#: src/cgame/cg_tutorial.cpp:265
+#: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
 msgstr "Paina %s loikataksesi."
 
-#: src/cgame/cg_tutorial.cpp:279 src/cgame/cg_tutorial.cpp:299
+#: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
 msgstr "Paina %s purraksesi."
 
-#: src/cgame/cg_tutorial.cpp:284
+#: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
 msgstr "Paina %s antaaksesi sähköiskuja."
 
-#: src/cgame/cg_tutorial.cpp:288
+#: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
 msgstr "Pidä pohjassa %s ja nojaa seinään hyppiäksesi seinillä."
 
-#: src/cgame/cg_tutorial.cpp:304
+#: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
 msgstr "Paina %s ampuaksesi piikkipallon."
 
-#: src/cgame/cg_tutorial.cpp:308
+#: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
 msgstr "Pidä pohjassa ja vapauta %s syöksyäksesi."
 
-#: src/cgame/cg_tutorial.cpp:324
+#: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
 msgstr "Pidä pohjassa %s samalla, kun liikut eteenpäin talloaksesi."
 
-#: src/cgame/cg_tutorial.cpp:351
+#: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
+#, c-format
+msgid "Press %s to show the bot tactic menu."
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr "Etsi asevarikko, pora tai reaktori saadaksesi lisää ammuksia."
 
-#: src/cgame/cg_tutorial.cpp:356
+#: src/cgame/cg_tutorial.cpp:357
 msgid "Find an Armoury for more ammo."
 msgstr "Etsi asevarikko saadaksesi lisää ammuksia."
 
-#: src/cgame/cg_tutorial.cpp:371 src/cgame/cg_tutorial.cpp:376
-#: src/cgame/cg_tutorial.cpp:392
+#: src/cgame/cg_tutorial.cpp:372 src/cgame/cg_tutorial.cpp:377
+#: src/cgame/cg_tutorial.cpp:393
 #, c-format
 msgid "Press %s to fire the %s."
 msgstr "Paina %s ampuaksesi aseella: %s."
 
-#: src/cgame/cg_tutorial.cpp:379
+#: src/cgame/cg_tutorial.cpp:380
 #, c-format
 msgid "Hold %s to zoom."
 msgstr "Pidä pohjassa %s katsoaksesi kiikaritähtäimellä."
 
-#: src/cgame/cg_tutorial.cpp:384
+#: src/cgame/cg_tutorial.cpp:385
 #, c-format
 msgid "Hold %s to activate the %s."
 msgstr "Pidä pohjassa %s aktivoidaksesi kohteen: %s."
 
-#: src/cgame/cg_tutorial.cpp:389
+#: src/cgame/cg_tutorial.cpp:390
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
 msgstr "Pidä pohjassa ja vapauta %s ampuaksesi latingin."
 
-#: src/cgame/cg_tutorial.cpp:416
+#: src/cgame/cg_tutorial.cpp:417
 #, c-format
 msgid "Press %s to throw the %s."
 msgstr "Paina %s heittääksesi heitteen: %s."
 
-#: src/cgame/cg_tutorial.cpp:425 src/cgame/cg_tutorial.cpp:454
+#: src/cgame/cg_tutorial.cpp:426 src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to use the %s."
 msgstr "Paina %s käyttääksesi kohdetta: %s."
 
-#: src/cgame/cg_tutorial.cpp:431
+#: src/cgame/cg_tutorial.cpp:432
 #, c-format
 msgid "Hold %s to use the Jetpack."
 msgstr "Pidä pohjassa %s käyttääksesi rakettireppua."
 
-#: src/cgame/cg_tutorial.cpp:439
+#: src/cgame/cg_tutorial.cpp:440
 #, c-format
 msgid "Press %s to use your Medkit."
 msgstr "Paina %s käyttääksesi lääkepakkisi."
 
-#: src/cgame/cg_tutorial.cpp:446
+#: src/cgame/cg_tutorial.cpp:447
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
 msgstr "Paina %s ostaaksesi tarvikepäivityksiä asevarikolla."
 
-#: src/cgame/cg_tutorial.cpp:459
+#: src/cgame/cg_tutorial.cpp:460
 #, c-format
 msgid "Press %s and any direction to sprint."
 msgstr "Paina %s ja liiku mihin tahansa suuntaan sprintataksesi."
 
-#: src/cgame/cg_tutorial.cpp:462
+#: src/cgame/cg_tutorial.cpp:463
 #, c-format
 msgid "Press %s to crouch."
 msgstr "Paina %s kyykistyäksesi."
 
-#: src/cgame/cg_tutorial.cpp:477
+#: src/cgame/cg_tutorial.cpp:478
 #, c-format
 msgid "Press %s to leave spawn queue."
 msgstr "Paina %s poistuaksesi tukijoukkojonosta."
 
-#: src/cgame/cg_tutorial.cpp:482
+#: src/cgame/cg_tutorial.cpp:483
 #, c-format
 msgid "Press %s to spawn."
 msgstr "Paina %s liittyäksesi kentälle."
 
-#: src/cgame/cg_tutorial.cpp:488
+#: src/cgame/cg_tutorial.cpp:489
 #, c-format
 msgid "Press %s to join a team."
 msgstr "Paina %s liittyäksesi joukkueeseen."
 
-#: src/cgame/cg_tutorial.cpp:494
+#: src/cgame/cg_tutorial.cpp:495
 #, c-format
 msgid "Press %s to stop following."
 msgstr "Paina %s lopettaaksesi seuraamisen."
 
-#: src/cgame/cg_tutorial.cpp:499
+#: src/cgame/cg_tutorial.cpp:500
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
 msgstr "Paina %s katsoaksesi jahtikameralla."
 
-#: src/cgame/cg_tutorial.cpp:504
+#: src/cgame/cg_tutorial.cpp:505
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
 msgstr "Paina %s palataksesi katsomaan ensimmäisessä persoonassa."
 
-#: src/cgame/cg_tutorial.cpp:508
+#: src/cgame/cg_tutorial.cpp:509
 #, c-format
 msgid "Press %s to follow the next player."
 msgstr "Paina %s seurataksesi seuraavaa pelaajaa."
 
-#: src/cgame/cg_tutorial.cpp:513
+#: src/cgame/cg_tutorial.cpp:514
 #, c-format
 msgid "Press %s to follow a player."
 msgstr "Paina %s seurataksesi pelaajaa."
 
-#: src/cgame/cg_tutorial.cpp:594
+#: src/cgame/cg_tutorial.cpp:595
 #, c-format
 msgid "Press %s to evolve."
 msgstr "Paina %s kehittyäksesi."
 
-#: src/cgame/cg_tutorial.cpp:603
+#: src/cgame/cg_tutorial.cpp:606
 #, c-format
 msgid "Press %s when ready to continue."
 msgstr "Paina %s kun olet valmis jatkamaan."
 
-#: src/cgame/cg_tutorial.cpp:607
+#: src/cgame/cg_tutorial.cpp:610
 msgid "Waiting for other players to be ready."
 msgstr "Odotetaan muiden pelaajien valmistautumista."
 
-#: src/cgame/cg_tutorial.cpp:615
+#: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to chat with all players."
 msgstr "Paina %s jutellaksesi kaikille pelaajille."
 
-#: src/cgame/cg_tutorial.cpp:617
+#: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s to chat with your team."
 msgstr "Paina %s jutellaksesi joukkueellesi."
 
-#: src/cgame/cg_tutorial.cpp:619
+#: src/cgame/cg_tutorial.cpp:622
 #, c-format
 msgid "Press %s to open the console."
 msgstr "Paina %s avataksesi konsolin."
 
-#: src/cgame/cg_tutorial.cpp:621
+#: src/cgame/cg_tutorial.cpp:624
 #, c-format
 msgid "Press %s for the menu."
 msgstr "Paina %s avataksesi valikon."
@@ -5054,7 +5144,7 @@ msgstr "^3Alienibottien nimet:"
 msgid "^3Human bot names:"
 msgstr "^3Ihmisbottien nimet:"
 
-#: src/sgame/sg_bot.cpp:368
+#: src/sgame/sg_bot.cpp:343
 msgid "$1$^* disconnected"
 msgstr "$1$^* katkaisi yhteytensä"
 
@@ -5099,11 +5189,11 @@ msgstr "Sinun GUID ei ole turvallinen"
 msgid "$1$^* connected"
 msgstr "$1$^* yhdisti"
 
-#: src/sgame/sg_client.cpp:1267
+#: src/sgame/sg_client.cpp:1266
 msgid "$1$^* is connecting…"
 msgstr "$1$^* on yhdistämässä…"
 
-#: src/sgame/sg_client.cpp:1334
+#: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
 msgstr "$1$^* saapui peliin"
 
@@ -5119,45 +5209,45 @@ msgstr "$2$ ^3PURKI RAKENNELMAN^* $1$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$2$ ^3TUHOSI RAKENNELMAN^* $1$"
 
-#: src/sgame/sg_main.cpp:1995
+#: src/sgame/sg_main.cpp:1994
 msgid "Timelimit hit"
 msgstr "Aikaraja tullut vastaan"
 
-#: src/sgame/sg_main.cpp:2006
+#: src/sgame/sg_main.cpp:2005
 msgid "$1$ minutes remaining!"
 msgstr "$1$ minuuttia jäljellä!"
 
-#: src/sgame/sg_main.cpp:2014
+#: src/sgame/sg_main.cpp:2013
 msgid "1 minute remaining!"
 msgstr "1 minuutti jäljellä!"
 
-#: src/sgame/sg_main.cpp:2027
+#: src/sgame/sg_main.cpp:2026
 msgid "Humans win"
 msgstr "Ihmiset voitti"
 
-#: src/sgame/sg_main.cpp:2041
+#: src/sgame/sg_main.cpp:2040
 msgid "Aliens win"
 msgstr "Alienit voitti"
 
-#: src/sgame/sg_main.cpp:2055
+#: src/sgame/sg_main.cpp:2054
 msgid "Empty teams skip map time exceeded."
 msgstr "Kentän ohitus tyhjillä joukkueilla -aikaraja ylitetty."
 
-#: src/sgame/sg_main.cpp:2221
+#: src/sgame/sg_main.cpp:2220
 msgid "The game has been paused. Please wait."
 msgstr "Erä on keskeytetty. Ole hyvä ja odota."
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2224
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Palvelin: Erä jatkuu automaattisesti $1$ sekunnin kuluttua"
 
-#: src/sgame/sg_main.cpp:2244
+#: src/sgame/sg_main.cpp:2243
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 "Palvelin: Erä on laitettu jatkumaan automaattisesti ($1$ minuutin "
 "taukorajoitus)"
 
-#: src/sgame/sg_main.cpp:2247
+#: src/sgame/sg_main.cpp:2246
 msgid "The game has been unpaused!"
 msgstr "Erä jatkuu!"
 
@@ -5165,15 +5255,15 @@ msgstr "Erä jatkuu!"
 msgid "^1This door is locked!"
 msgstr "^1Tämä ovi on lukossa!"
 
-#: src/sgame/sg_svcmds.cpp:527
+#: src/sgame/sg_svcmds.cpp:539
 msgid "Alien team has admitted defeat"
 msgstr "Alienien joukkue myönsi tappion"
 
-#: src/sgame/sg_svcmds.cpp:532
+#: src/sgame/sg_svcmds.cpp:544
 msgid "Human team has admitted defeat"
 msgstr "Ihmisten joukkue myönsi tappion"
 
-#: src/sgame/sg_svcmds.cpp:565
+#: src/sgame/sg_svcmds.cpp:577
 msgid "Evacuation ordered"
 msgstr "Evakuaatio käsketty"
 
@@ -5311,27 +5401,27 @@ msgstr ""
 msgid "$1$: no target"
 msgstr "$1$: kohde puuttuu"
 
-#: src/sgame/sg_votes.cpp:675
+#: src/sgame/sg_votes.cpp:672
 msgid "$1$: player is a bot"
 msgstr "$1$: kohde on botti"
 
-#: src/sgame/sg_votes.cpp:683 src/sgame/sg_votes.cpp:697
+#: src/sgame/sg_votes.cpp:684 src/sgame/sg_votes.cpp:698
 msgid "$1$: admin is immune"
 msgstr "$1$: valvoja on immuuni"
 
-#: src/sgame/sg_votes.cpp:704
+#: src/sgame/sg_votes.cpp:705
 msgid "$1$: player is not on your team"
 msgstr "$1$: pelaaja ei ole joukkueessasi"
 
-#: src/sgame/sg_votes.cpp:716
+#: src/sgame/sg_votes.cpp:717
 msgid "$1$: You must provide a reason"
 msgstr "$1$: Sinun täytyy antaa syy"
 
-#: src/sgame/sg_votes.cpp:738
+#: src/sgame/sg_votes.cpp:739
 msgid "$1$^* called a vote: $2$"
 msgstr "$1$^* aloitti äänestyksen: $2$"
 
-#: src/sgame/sg_votes.cpp:742
+#: src/sgame/sg_votes.cpp:743
 msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
@@ -5339,11 +5429,11 @@ msgstr ""
 "$1$^7 aloitti äänestyksen:\n"
 "^7$2$"
 
-#: src/sgame/sg_votes.cpp:759
+#: src/sgame/sg_votes.cpp:760
 msgid "$1$^* called a team vote: $2t$"
 msgstr "$1$^* aloitti joukkueäänestyksen: $2t$"
 
-#: src/sgame/sg_votes.cpp:764
+#: src/sgame/sg_votes.cpp:765
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
@@ -5351,28 +5441,28 @@ msgstr ""
 "$1$^7 aloitti joukkueäänestyksen:\n"
 "^7$2t$"
 
-#: src/sgame/sg_votes.cpp:877
+#: src/sgame/sg_votes.cpp:878
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Äänestys hylätty ($1$/$2$; päätösvaltaisuutta ei saavutettu)"
 
-#: src/sgame/sg_votes.cpp:878
+#: src/sgame/sg_votes.cpp:879
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Joukkueäänestys hylätty ($1$/$2$; päätösvaltaisuutta ei saavutettu)"
 
-#: src/sgame/sg_votes.cpp:884
+#: src/sgame/sg_votes.cpp:885
 msgid "Vote passed ($1$ — $2$)"
 msgstr "Äänestys hyväksytty ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:885
+#: src/sgame/sg_votes.cpp:886
 msgid "Team vote passed ($1$ — $2$)"
 msgstr "Joukkueäänestys hyväksytty ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:891
+#: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Äänestys epäonnistui ($1$ – $2$; tarvitaan $3$ %)"
 
-#: src/sgame/sg_votes.cpp:892
+#: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Joukkueen äänestys epäonnistui ($1$ — $2$; $3$ % tarvitaan)"
@@ -5400,6 +5490,12 @@ msgstr "alienit"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid "Run/Walk"
+#~ msgstr "Juokse/Kävele"
+
+#~ msgid "Previous Weapon"
+#~ msgstr "Edellinen ase"
 
 #, c-format
 #~ msgid ">> to reply, say: /m %d [your message] <<"

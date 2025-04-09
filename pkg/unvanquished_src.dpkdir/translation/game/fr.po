@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-12 19:09+0100\n"
+"POT-Creation-Date: 2025-04-09 17:47+0200\n"
 "PO-Revision-Date: 2025-03-16 23:43+0000\n"
 "Last-Translator: Couvez <ccouvez@free.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -632,6 +632,10 @@ msgstr ""
 msgid "Beacons"
 msgstr "Balises"
 
+#: ui/ingame_bottacticmenu.rml:78
+msgid "Bot Tactic"
+msgstr ""
+
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
 msgstr "Spectateurs"
@@ -681,6 +685,10 @@ msgstr "Alternativement, vous pouvez regarder le match sans jouer."
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
 msgstr "Spectateur"
+
+#: ui/ingame_vsaymenu.rml:78
+msgid "Vsay"
+msgstr ""
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -870,6 +878,7 @@ msgid "Mild"
 msgstr "Léger"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
+#: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "Default"
 msgstr "Par défaut"
 
@@ -1215,6 +1224,7 @@ msgstr ""
 "résolution inférieure. Cela n'affecte généralement pas les performances."
 
 #: ui/options_graphics.rml:185 ui/options_ui.rml:47
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Non"
 
@@ -1695,14 +1705,22 @@ msgid "Beacon menu:"
 msgstr "Menu balise :"
 
 #: ui/options_keys.rml:159
+msgid "Vsays menu:"
+msgstr ""
+
+#: ui/options_keys.rml:163
+msgid "Bot tactic menu:"
+msgstr ""
+
+#: ui/options_keys.rml:167
 msgid "Toggle console:"
 msgstr "Alterner la console :"
 
-#: ui/options_keys.rml:163
+#: ui/options_keys.rml:171
 msgid "Screenshot:"
 msgstr "Capture d’écran :"
 
-#: ui/options_keys.rml:165
+#: ui/options_keys.rml:173
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
@@ -1710,31 +1728,31 @@ msgstr ""
 "Maintenir SHIFT lorsque vous prenez une capture d'écran pour enregistrer en "
 "PNG, sinon les captures sont en JPEG."
 
-#: ui/options_keys.rml:167
+#: ui/options_keys.rml:175
 msgid "Quake-look"
 msgstr "Visée à la Quake"
 
-#: ui/options_keys.rml:171
+#: ui/options_keys.rml:179
 msgid "Look up:"
 msgstr "Regarder vers le haut :"
 
-#: ui/options_keys.rml:175
+#: ui/options_keys.rml:183
 msgid "Look down:"
 msgstr "Regarder vers le bas :"
 
-#: ui/options_keys.rml:179
+#: ui/options_keys.rml:187
 msgid "Turn left:"
 msgstr "Tourner à gauche :"
 
-#: ui/options_keys.rml:183
+#: ui/options_keys.rml:191
 msgid "Turn right:"
 msgstr "Tourner à droite :"
 
-#: ui/options_keys.rml:187
+#: ui/options_keys.rml:195
 msgid "Mouse look:"
 msgstr "Viser à la souris :"
 
-#: ui/options_keys.rml:191
+#: ui/options_keys.rml:199
 msgid "Centerview:"
 msgstr "Centrer la vue :"
 
@@ -4229,11 +4247,11 @@ msgstr "Arpenter la carte…"
 msgid "Done!"
 msgstr "Terminé !"
 
-#: src/cgame/cg_main.cpp:1136
+#: src/cgame/cg_main.cpp:1144
 msgid "Generating bot navigation meshes"
 msgstr "Génération du maillages de navigation des Robots"
 
-#: src/cgame/cg_main.cpp:1180
+#: src/cgame/cg_main.cpp:1188
 #, c-format
 msgid "by %s"
 msgstr "par %s"
@@ -4267,6 +4285,77 @@ msgstr "Personalisée : %dx%d"
 #, c-format
 msgid "Same as screen (%dx%d)"
 msgstr "Identique à l'écran (%dx%d)"
+
+#: src/cgame/cg_rocket_datasource.cpp:1474
+msgid "The default behavior. This is what bots do when the game starts."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1475
+#: src/cgame/cg_rocket_datasource.cpp:1508
+msgid "Defend"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1475
+msgid "The bots stay in the base."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1476
+#: src/cgame/cg_rocket_datasource.cpp:1509
+msgid "Attack"
+msgstr "Attaque"
+
+#: src/cgame/cg_rocket_datasource.cpp:1476
+msgid "The bots attack the enemy base."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1477
+msgid "Stay Here"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1477
+msgid "The bots stay where you are currently."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1478
+#: src/cgame/cg_rocket_datasource.cpp:1510
+msgid "Follow"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1478
+msgid "The bots follow you wherever you go."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1508
+msgid "Defend our base!!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1509
+msgid "Attack!"
+msgstr "À l’attaque !"
+
+#: src/cgame/cg_rocket_datasource.cpp:1510
+msgid "Follow me!"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1511
+msgid "No."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1512
+msgid "Yes"
+msgstr "Oui"
+
+#: src/cgame/cg_rocket_datasource.cpp:1512
+msgid "Yes."
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1513
+msgid "Flank"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1513
+msgid "Flank, behind you!"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:2632
 msgid "You are at the front of the spawn queue"
@@ -4801,327 +4890,328 @@ msgid "Unknown client game command: %s"
 msgstr "Commande de jeu client inconnue : %s"
 
 #: src/cgame/cg_tutorial.cpp:45
-msgid "Run/Walk"
-msgstr "Courir/Marcher"
-
-#: src/cgame/cg_tutorial.cpp:46
 msgid "Sprint"
 msgstr "Sprinter"
 
-#: src/cgame/cg_tutorial.cpp:47
+#: src/cgame/cg_tutorial.cpp:46
 msgid "Jump"
 msgstr "Sauter"
 
-#: src/cgame/cg_tutorial.cpp:48
+#: src/cgame/cg_tutorial.cpp:47
 msgid "Crouch"
 msgstr "S’accroupir"
 
-#: src/cgame/cg_tutorial.cpp:49
+#: src/cgame/cg_tutorial.cpp:48
 msgid "Primary Attack"
 msgstr "Attaque principale"
 
-#: src/cgame/cg_tutorial.cpp:50
+#: src/cgame/cg_tutorial.cpp:49
 msgid "Secondary Attack"
 msgstr "Attaque secondaire"
 
-#: src/cgame/cg_tutorial.cpp:51
+#: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
 msgstr "Attaque tertiaire"
 
-#: src/cgame/cg_tutorial.cpp:52
+#: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
 msgstr "Recharger"
 
-#: src/cgame/cg_tutorial.cpp:53
+#: src/cgame/cg_tutorial.cpp:52
 msgid "Use Medkit"
 msgstr "Se soigner"
 
-#: src/cgame/cg_tutorial.cpp:54
+#: src/cgame/cg_tutorial.cpp:53
 msgid "Use Structure/Evolve"
 msgstr "Utiliser une structure/Évoluer"
 
-#: src/cgame/cg_tutorial.cpp:55
+#: src/cgame/cg_tutorial.cpp:54
 msgid "Deconstruct Structure"
 msgstr "Déconstruire une structure"
 
-#: src/cgame/cg_tutorial.cpp:56
-msgid "Previous Weapon"
-msgstr "Arme précédente"
-
-#: src/cgame/cg_tutorial.cpp:57
+#: src/cgame/cg_tutorial.cpp:55
 msgid "Next Weapon"
 msgstr "arme suivante"
 
-#: src/cgame/cg_tutorial.cpp:58
+#: src/cgame/cg_tutorial.cpp:56
 msgid "Global chat"
 msgstr "Discussion global"
 
-#: src/cgame/cg_tutorial.cpp:59
+#: src/cgame/cg_tutorial.cpp:57
 msgid "Team chat"
 msgstr "Discussion d'équipe"
 
-#: src/cgame/cg_tutorial.cpp:60
+#: src/cgame/cg_tutorial.cpp:58
+msgid "Bot tactic menu"
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
 msgstr "Ouvrir / fermer la console"
 
-#: src/cgame/cg_tutorial.cpp:61
+#: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
 msgstr "afficher le menu"
 
-#: src/cgame/cg_tutorial.cpp:62
+#: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
 msgstr "Lancer une grenade"
 
-#: src/cgame/cg_tutorial.cpp:107
+#: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
 msgstr "SHIFT-ECHAP"
 
-#: src/cgame/cg_tutorial.cpp:114
+#: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
 msgstr "ECHAP"
 
-#: src/cgame/cg_tutorial.cpp:125 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
 #, c-format
 msgid "%s or %s"
 msgstr "%s ou %s"
 
-#: src/cgame/cg_tutorial.cpp:129 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: src/cgame/cg_tutorial.cpp:135
+#: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
 msgstr "« %s » (non affecté)"
 
-#: src/cgame/cg_tutorial.cpp:179
+#: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
 msgstr "Appuyez sur %s pour placer l'élément \" %s \"."
 
-#: src/cgame/cg_tutorial.cpp:182
+#: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
 msgstr "Appuyez sur %s pour annuler le placement de l'élément \" %s \"."
 
-#: src/cgame/cg_tutorial.cpp:187
+#: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
 msgstr "Appuyez sur %s pour construire une structure."
 
-#: src/cgame/cg_tutorial.cpp:197
+#: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
 msgstr "Appuyez sur %s pour décocher cette structure pour le remplacement."
 
-#: src/cgame/cg_tutorial.cpp:202
+#: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
 msgstr "Appuyez sur %s pour marquer cette structure pour le remplacement."
 
-#: src/cgame/cg_tutorial.cpp:206
+#: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
 msgstr "Maintenez %s pour déconstruire cette structure."
 
-#: src/cgame/cg_tutorial.cpp:222 src/cgame/cg_tutorial.cpp:262
-#: src/cgame/cg_tutorial.cpp:321
+#: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
+#: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
 msgstr "Appuyez sur %s pour glisser."
 
-#: src/cgame/cg_tutorial.cpp:228
+#: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
 "Appuyez sur %s pour cracher. Le crachat peut ralentir les humains et "
 "éliminer le feu."
 
-#: src/cgame/cg_tutorial.cpp:231 src/cgame/cg_tutorial.cpp:251
-#: src/cgame/cg_tutorial.cpp:268
+#: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
+#: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
 msgstr "Appuyez sur %s pour marcher sur les murs."
 
-#: src/cgame/cg_tutorial.cpp:245
+#: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
 msgstr "Touchez les humains pour les blesser."
 
-#: src/cgame/cg_tutorial.cpp:248
+#: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
 msgstr "Visez leur tête pour causer plus de dégâts."
 
-#: src/cgame/cg_tutorial.cpp:265
+#: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
 msgstr "Appuyez sur %s pour courir."
 
-#: src/cgame/cg_tutorial.cpp:279 src/cgame/cg_tutorial.cpp:299
+#: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
 msgstr "Appuyez sur %s pour mordre."
 
-#: src/cgame/cg_tutorial.cpp:284
+#: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
 msgstr "Appuyez sur %s pour faire une attaque électrique."
 
-#: src/cgame/cg_tutorial.cpp:288
+#: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
 msgstr "Maintenez %s enfoncé puis touchez un mur pour faire un saut mural."
 
-#: src/cgame/cg_tutorial.cpp:304
+#: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
 msgstr "Appuyez sur %s pour lancer une pique."
 
-#: src/cgame/cg_tutorial.cpp:308
+#: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
 msgstr "Maintenez enfoncé %s et relâchez pour bondir."
 
-#: src/cgame/cg_tutorial.cpp:324
+#: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
 msgstr "Maintenez %s enfoncé tout en avançant pour piétiner."
 
-#: src/cgame/cg_tutorial.cpp:351
+#: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
+#, c-format
+msgid "Press %s to show the bot tactic menu."
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr "Trouvez une armurerie, un drill ou un réacteur pour plus de munitions."
 
-#: src/cgame/cg_tutorial.cpp:356
+#: src/cgame/cg_tutorial.cpp:357
 msgid "Find an Armoury for more ammo."
 msgstr "Trouvez une armurerie pour plus de munitions."
 
-#: src/cgame/cg_tutorial.cpp:371 src/cgame/cg_tutorial.cpp:376
-#: src/cgame/cg_tutorial.cpp:392
+#: src/cgame/cg_tutorial.cpp:372 src/cgame/cg_tutorial.cpp:377
+#: src/cgame/cg_tutorial.cpp:393
 #, c-format
 msgid "Press %s to fire the %s."
 msgstr "Appuyez sur %s pour tirer le %s."
 
-#: src/cgame/cg_tutorial.cpp:379
+#: src/cgame/cg_tutorial.cpp:380
 #, c-format
 msgid "Hold %s to zoom."
 msgstr "Maintenez %s pour zoomer."
 
-#: src/cgame/cg_tutorial.cpp:384
+#: src/cgame/cg_tutorial.cpp:385
 #, c-format
 msgid "Hold %s to activate the %s."
 msgstr "Maintenez %s pour activer le %s."
 
-#: src/cgame/cg_tutorial.cpp:389
+#: src/cgame/cg_tutorial.cpp:390
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
 msgstr "Maintenez %s et relâchez pour tirer un coup chargé."
 
-#: src/cgame/cg_tutorial.cpp:416
+#: src/cgame/cg_tutorial.cpp:417
 #, c-format
 msgid "Press %s to throw the %s."
 msgstr "Appuyez sur %s pour lancer la %s."
 
-#: src/cgame/cg_tutorial.cpp:425 src/cgame/cg_tutorial.cpp:454
+#: src/cgame/cg_tutorial.cpp:426 src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to use the %s."
 msgstr "Appuyez sur %s pour utiliser %s."
 
-#: src/cgame/cg_tutorial.cpp:431
+#: src/cgame/cg_tutorial.cpp:432
 #, c-format
 msgid "Hold %s to use the Jetpack."
 msgstr "Maintenez %s pour utiliser le Jetpack."
 
-#: src/cgame/cg_tutorial.cpp:439
+#: src/cgame/cg_tutorial.cpp:440
 #, c-format
 msgid "Press %s to use your Medkit."
 msgstr "Appuyez sur %s pour utiliser votre Medkit."
 
-#: src/cgame/cg_tutorial.cpp:446
+#: src/cgame/cg_tutorial.cpp:447
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
 msgstr ""
 "Appuyez sur %s pour acheter des améliorations d'équipement à l'Armurerie."
 
-#: src/cgame/cg_tutorial.cpp:459
+#: src/cgame/cg_tutorial.cpp:460
 #, c-format
 msgid "Press %s and any direction to sprint."
 msgstr "Appuyez sur %s et dans n'importe quelle direction pour sprinter."
 
-#: src/cgame/cg_tutorial.cpp:462
+#: src/cgame/cg_tutorial.cpp:463
 #, c-format
 msgid "Press %s to crouch."
 msgstr "Appuyez sur %s pour vous accroupir."
 
-#: src/cgame/cg_tutorial.cpp:477
+#: src/cgame/cg_tutorial.cpp:478
 #, c-format
 msgid "Press %s to leave spawn queue."
 msgstr "Appuyez sur %s pour quitter la file d'attente d'apparition."
 
-#: src/cgame/cg_tutorial.cpp:482
+#: src/cgame/cg_tutorial.cpp:483
 #, c-format
 msgid "Press %s to spawn."
 msgstr "Appuyez sur %s pour apparaître."
 
-#: src/cgame/cg_tutorial.cpp:488
+#: src/cgame/cg_tutorial.cpp:489
 #, c-format
 msgid "Press %s to join a team."
 msgstr "Appuyez sur %s pour rejoindre une équipe."
 
-#: src/cgame/cg_tutorial.cpp:494
+#: src/cgame/cg_tutorial.cpp:495
 #, c-format
 msgid "Press %s to stop following."
 msgstr "Appuyez sur %s pour arrêter de suivre."
 
-#: src/cgame/cg_tutorial.cpp:499
+#: src/cgame/cg_tutorial.cpp:500
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
 msgstr "Appuyez sur %s pour passer en mode spectateur."
 
-#: src/cgame/cg_tutorial.cpp:504
+#: src/cgame/cg_tutorial.cpp:505
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
 msgstr "Appuyez sur %s pour revenir au mode spectateur à la première personne."
 
-#: src/cgame/cg_tutorial.cpp:508
+#: src/cgame/cg_tutorial.cpp:509
 #, c-format
 msgid "Press %s to follow the next player."
 msgstr "Appuyez sur %s pour suivre le joueur suivant."
 
-#: src/cgame/cg_tutorial.cpp:513
+#: src/cgame/cg_tutorial.cpp:514
 #, c-format
 msgid "Press %s to follow a player."
 msgstr "Appuyez sur %s pour suivre un joueur."
 
-#: src/cgame/cg_tutorial.cpp:594
+#: src/cgame/cg_tutorial.cpp:595
 #, c-format
 msgid "Press %s to evolve."
 msgstr "Appuyez sur %s pour évoluer."
 
-#: src/cgame/cg_tutorial.cpp:603
+#: src/cgame/cg_tutorial.cpp:606
 #, c-format
 msgid "Press %s when ready to continue."
 msgstr "Appuyez sur %s lorsque vous êtes prêt à continuer."
 
-#: src/cgame/cg_tutorial.cpp:607
+#: src/cgame/cg_tutorial.cpp:610
 msgid "Waiting for other players to be ready."
 msgstr "Attendre que les autres joueurs soient prêts."
 
-#: src/cgame/cg_tutorial.cpp:615
+#: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to chat with all players."
 msgstr "Appuyez sur %s pour parler à tout les joueurs."
 
-#: src/cgame/cg_tutorial.cpp:617
+#: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s to chat with your team."
 msgstr "Appuyez sur %s pour parler à ton équipe."
 
-#: src/cgame/cg_tutorial.cpp:619
+#: src/cgame/cg_tutorial.cpp:622
 #, c-format
 msgid "Press %s to open the console."
 msgstr "Appuyez sur %s pour ouvrir la console."
 
-#: src/cgame/cg_tutorial.cpp:621
+#: src/cgame/cg_tutorial.cpp:624
 #, c-format
 msgid "Press %s for the menu."
 msgstr "Appuyez sur %s pour voir le menu."
@@ -5152,7 +5242,7 @@ msgstr "^3Noms des extraterrestres :"
 msgid "^3Human bot names:"
 msgstr "^3Nom des bots humains :"
 
-#: src/sgame/sg_bot.cpp:368
+#: src/sgame/sg_bot.cpp:343
 msgid "$1$^* disconnected"
 msgstr "$1$ ^* s'est déconnecté"
 
@@ -5198,11 +5288,11 @@ msgstr "Votre GUID n'est pas sécurisé"
 msgid "$1$^* connected"
 msgstr "$1$^* s’est connecté"
 
-#: src/sgame/sg_client.cpp:1267
+#: src/sgame/sg_client.cpp:1266
 msgid "$1$^* is connecting…"
 msgstr "$1$^* se connecte…"
 
-#: src/sgame/sg_client.cpp:1334
+#: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
 msgstr "$1$ ^* a rejoint la partie"
 
@@ -5218,43 +5308,43 @@ msgstr "$1$ ^3DÉMONTÉ^* par $2$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3DÉTRUIT^* par $2$"
 
-#: src/sgame/sg_main.cpp:1995
+#: src/sgame/sg_main.cpp:1994
 msgid "Timelimit hit"
 msgstr "Temps dépassé"
 
-#: src/sgame/sg_main.cpp:2006
+#: src/sgame/sg_main.cpp:2005
 msgid "$1$ minutes remaining!"
 msgstr "il reste $1$ minutes !"
 
-#: src/sgame/sg_main.cpp:2014
+#: src/sgame/sg_main.cpp:2013
 msgid "1 minute remaining!"
 msgstr "il ne reste plus qu'une minute !"
 
-#: src/sgame/sg_main.cpp:2027
+#: src/sgame/sg_main.cpp:2026
 msgid "Humans win"
 msgstr "Victoire des humains"
 
-#: src/sgame/sg_main.cpp:2041
+#: src/sgame/sg_main.cpp:2040
 msgid "Aliens win"
 msgstr "Victoire des extraterrestres"
 
-#: src/sgame/sg_main.cpp:2055
+#: src/sgame/sg_main.cpp:2054
 msgid "Empty teams skip map time exceeded."
 msgstr "Les équipes vides sautent le temps de carte dépassé."
 
-#: src/sgame/sg_main.cpp:2221
+#: src/sgame/sg_main.cpp:2220
 msgid "The game has been paused. Please wait."
 msgstr "Le jeu à été mis en pause. Merci de patienter."
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2224
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
 
-#: src/sgame/sg_main.cpp:2244
+#: src/sgame/sg_main.cpp:2243
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Serveur : La pause à été automatiquement anulée ($1$ minutes max)"
 
-#: src/sgame/sg_main.cpp:2247
+#: src/sgame/sg_main.cpp:2246
 msgid "The game has been unpaused!"
 msgstr "Le jeu reprends !"
 
@@ -5262,15 +5352,15 @@ msgstr "Le jeu reprends !"
 msgid "^1This door is locked!"
 msgstr "^1Cette porte est bloquée !"
 
-#: src/sgame/sg_svcmds.cpp:527
+#: src/sgame/sg_svcmds.cpp:539
 msgid "Alien team has admitted defeat"
 msgstr "L’équipe extraterrestre a reconnu sa défaite"
 
-#: src/sgame/sg_svcmds.cpp:532
+#: src/sgame/sg_svcmds.cpp:544
 msgid "Human team has admitted defeat"
 msgstr "L’équipe humaine a reconnu sa défaite"
 
-#: src/sgame/sg_svcmds.cpp:565
+#: src/sgame/sg_svcmds.cpp:577
 msgid "Evacuation ordered"
 msgstr "Évacuation demandée"
 
@@ -5412,27 +5502,27 @@ msgstr ""
 msgid "$1$: no target"
 msgstr "$1$ : pas de cible"
 
-#: src/sgame/sg_votes.cpp:675
+#: src/sgame/sg_votes.cpp:672
 msgid "$1$: player is a bot"
 msgstr "$1$ : ce joueur est un robot"
 
-#: src/sgame/sg_votes.cpp:683 src/sgame/sg_votes.cpp:697
+#: src/sgame/sg_votes.cpp:684 src/sgame/sg_votes.cpp:698
 msgid "$1$: admin is immune"
 msgstr "$1$ : l'administrateur est immunisé"
 
-#: src/sgame/sg_votes.cpp:704
+#: src/sgame/sg_votes.cpp:705
 msgid "$1$: player is not on your team"
 msgstr "le joueur : $1$ n'est pas dans votre équipe"
 
-#: src/sgame/sg_votes.cpp:716
+#: src/sgame/sg_votes.cpp:717
 msgid "$1$: You must provide a reason"
 msgstr "$1$ : vous devez fournir une raison"
 
-#: src/sgame/sg_votes.cpp:738
+#: src/sgame/sg_votes.cpp:739
 msgid "$1$^* called a vote: $2$"
 msgstr "$1$^* a mis un vote : $2$"
 
-#: src/sgame/sg_votes.cpp:742
+#: src/sgame/sg_votes.cpp:743
 msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
@@ -5440,11 +5530,11 @@ msgstr ""
 "$1$^7 a appelé à un vote :\n"
 "^7$2$"
 
-#: src/sgame/sg_votes.cpp:759
+#: src/sgame/sg_votes.cpp:760
 msgid "$1$^* called a team vote: $2t$"
 msgstr "$1$^* a demandé un vote d'équipe : $2t$"
 
-#: src/sgame/sg_votes.cpp:764
+#: src/sgame/sg_votes.cpp:765
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
@@ -5452,28 +5542,28 @@ msgstr ""
 "$1$^7 a appélé à un vote d'équipe :\n"
 "^7$2t$"
 
-#: src/sgame/sg_votes.cpp:877
+#: src/sgame/sg_votes.cpp:878
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Échec du vote ($1$ sur $2$ ; quorum non atteint)"
 
-#: src/sgame/sg_votes.cpp:878
+#: src/sgame/sg_votes.cpp:879
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Échec du vote d’équipe ($1$ sur $2$ ; quorum non atteint)"
 
-#: src/sgame/sg_votes.cpp:884
+#: src/sgame/sg_votes.cpp:885
 msgid "Vote passed ($1$ — $2$)"
 msgstr "Vote passé ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:885
+#: src/sgame/sg_votes.cpp:886
 msgid "Team vote passed ($1$ — $2$)"
 msgstr "Vote d'équipe passé ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:891
+#: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Échec du vote ($1$ — $2$ ; $3$% requis)"
 
-#: src/sgame/sg_votes.cpp:892
+#: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Échec du vote d’équipe ($1$ - $2$ ; $3$ % requis)"
@@ -5501,6 +5591,12 @@ msgstr "extraterrestres"
 #: src/shared/bg_misc.cpp:2513
 msgid "humans"
 msgstr "humains"
+
+#~ msgid "Run/Walk"
+#~ msgstr "Courir/Marcher"
+
+#~ msgid "Previous Weapon"
+#~ msgstr "Arme précédente"
 
 #, c-format
 #~ msgid ">> to reply, say: /m %d [your message] <<"
@@ -6104,9 +6200,6 @@ msgstr "humains"
 
 #~ msgid "Return To Main Menu?"
 #~ msgstr "Retourner au menu principal ?"
-
-#~ msgid "Yes"
-#~ msgstr "Oui"
 
 #~ msgid "Want To Quit Game?"
 #~ msgstr "Quitter le jeu ?"
@@ -9350,9 +9443,6 @@ msgstr "humains"
 #~ msgid "Command"
 #~ msgstr "Commande"
 
-#~ msgid "Attack"
-#~ msgstr "Attaque"
-
 #~ msgid "Defense"
 #~ msgstr "Défense"
 
@@ -9364,9 +9454,6 @@ msgstr "humains"
 
 #~ msgid "I'm Attacking"
 #~ msgstr "J’attaque"
-
-#~ msgid "Attack!"
-#~ msgstr "À l’attaque !"
 
 #~ msgid "I need backup!"
 #~ msgstr "J’ai besoin de renforts !"
