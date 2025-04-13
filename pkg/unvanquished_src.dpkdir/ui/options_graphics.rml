@@ -100,11 +100,6 @@
 					<h3><translate>Lighting system</translate></h3>
 				</row>
 				<row>
-					<h3><translate>Brightness clamping</translate></h3>
-					<input cvar="r_overbrightDefaultClamp" type="checkbox" />
-					<p><translate>Old brightness limit of map lighting of world surfaces and models (the way legacy maps looked before)</translate></p>
-				</row>
-				<row>
 					<h3><translate>Light styles</translate></h3>
 					<input cvar="r_lightStyles" type="checkbox" />
 					<p><translate>Precomputed dynamic lights emitted by static map objects.</translate></p>
