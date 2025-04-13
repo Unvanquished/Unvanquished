@@ -48,15 +48,6 @@
 			<panel>
 				<h2><translate>Video</translate></h2>
 				<row>
-					<h3><translate>Brightness</translate></h3>
-					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
-					<p class="inline">
-						<translate>Gamma:</translate>&nbsp;<inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
-						&nbsp;<ilink onclick='Cmd.exec("reset r_gamma")'>(<translate>reset</translate>)</ilink>
-					</p>
-				</row>
-
-				<row>
 					<dataselect class="resolutions" source="resolutions.default" fields="width,height" formatter="Resolution" />
 					<h3><translate>Screen Resolution</translate></h3>
 				</row>
@@ -87,6 +78,30 @@
 				<buttonbar>
 					<button onclick='Cmd.exec("vid_restart")'><translate>Apply now</translate></button>
 				</buttonbar>
+			</panel>
+
+			<tab><translate>Brightness</translate></tab>
+			<panel>
+				<row>
+					<h3><translate>Gamma</translate></h3>
+					<p><translate>Ugly method for increasing brightness. (Consider resetting and using tone mapping instead.)</translate></p>
+					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
+					<p class="inline">
+						<translate>Gamma:</translate>&nbsp;<inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
+						&nbsp;<ilink onclick='Cmd.exec("reset r_gamma")'>(<translate>reset</translate>)</ilink>
+					</p>
+				</row>
+				<h2><translate>Tone mapping</translate></h2>
+				<p><translate>Manage dynamic range to alleviate washed-out or too-dark areas.</translate></p>
+				<row>
+					<input cvar="r_toneMapping" type="checkbox"/>
+					<h3><translate>Enable tone mapping</translate></h3>
+				</row>
+				<row>
+					<h3><translate>Exposure</translate></h3>
+					<input type="range" min="0.3" max="2.5" step="0.01" cvar="r_toneMappingExposure"/>
+					<p><translate>Tone mapping brightness level</translate></p>
+				</row>
 			</panel>
 
 			<tab><translate>Lighting</translate></tab>
