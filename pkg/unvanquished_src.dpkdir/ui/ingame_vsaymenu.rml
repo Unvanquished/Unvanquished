@@ -59,8 +59,8 @@
 			function BuildVsayMenu(document)
 				ClearVsayInfo(document)
 				if Vsays == nil then
-					CDataSource.Build("VsayList", "default")
-					Vsays = CDataSource.Read("VsayList", "default", "icon,name,title,desc")
+					CDataSource.Build("vsayList", "default")
+					Vsays = CDataSource.Read("vsayList", "default", "icon,name,title,desc")
 				end
 				local circlemenu = document:GetElementById("vsayMenu")
 				circlemenu.inner_rml = CirclemenuSkeleton(#Vsays)

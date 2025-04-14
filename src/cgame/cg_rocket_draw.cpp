@@ -1843,7 +1843,7 @@ public:
 		if ( cg_drawEntityInfo.Get() )
 		{
 			name = va( "(^5%s^7|^5#%d^7)",
-					   Com_EntityTypeName( cg_entities[cg.crosshairEntityNum].currentState.eType ), cg.crosshairEntityNum );
+					   Com_EntityTypeName( static_cast<entityType_t>( cg_entities[cg.crosshairEntityNum].currentState.eType ) ), cg.crosshairEntityNum );
 		}
 
 		else if ( cg.crosshairEntityNum < MAX_CLIENTS )

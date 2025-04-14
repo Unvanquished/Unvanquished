@@ -1527,7 +1527,7 @@ static void CG_Rocket_BuildVsayList( const char *table )
 
 	if ( !Q_stricmp( table, "default" ) )
 	{
-		Rocket_DSClearTable( "VsayList", "default" );
+		Rocket_DSClearTable( "vsayList", "default" );
 
 		auto setCommand = [&]( std::string num, std::string name, std::string title, std::string desc, std::string icon )
 		{
@@ -1539,7 +1539,7 @@ static void CG_Rocket_BuildVsayList( const char *table )
 			Info_SetValueForKey( buf, "desc", desc.c_str(), false );
 			Info_SetValueForKey( buf, "icon", icon.c_str(), false );
 
-			Rocket_DSAddRow( "VsayList", "default", buf );
+			Rocket_DSAddRow( "vsayList", "default", buf );
 		};
 
 		setCommand( "0", "defend", N_( "Defend" ), N_( "Defend our base!!" ), "gfx/feedback/vsay/defend" );
@@ -1603,7 +1603,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList, &nullGetFunc },
-	{ "VsayList", &CG_Rocket_BuildVsayList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "vsayList", &CG_Rocket_BuildVsayList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 };
 
 static const size_t dataSourceCmdListCount = ARRAY_LEN( dataSourceCmdList );

@@ -1179,7 +1179,7 @@ static void CG_AddCEntity( centity_t *cent )
 	switch ( cent->currentState.eType )
 	{
 		default:
-			Sys::Drop("Bad entity type: %s", Util::enum_str(cent->currentState.eType));
+			Sys::Drop("Bad entity type: %s", Util::enum_str( static_cast<entityType_t>( cent->currentState.eType )));
 
 		case entityType_t::ET_INVISIBLE:
 		case entityType_t::ET_PUSHER:

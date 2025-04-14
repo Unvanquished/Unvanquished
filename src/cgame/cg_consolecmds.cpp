@@ -549,7 +549,7 @@ static const struct cg_cmd_t
 	{ "viewpos",          CG_Viewpos_f,            0                },
 	{ "vote",             0,                       0                },
 	{ "vsay",             0,                       CG_CompleteVsay  },
-	{ "VsayMenu",         CG_VsayMenu_f,           0                },
+	{ "vsayMenu",         CG_VsayMenu_f,           0                },
 	{ "vsay_local",       0,                       CG_CompleteVsay  },
 	{ "vsay_team",        0,                       CG_CompleteVsay  },
 	{ "weapnext",         CG_NextWeapon_f,         0                },
