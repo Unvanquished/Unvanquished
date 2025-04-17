@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-09 17:47+0200\n"
-"PO-Revision-Date: 2025-03-23 21:55+0000\n"
+"PO-Revision-Date: 2025-04-17 23:11+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -615,7 +615,7 @@ msgstr "Majakat"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Bottien Taktiikka"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -669,7 +669,7 @@ msgstr "Katsele"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
-msgstr ""
+msgstr "Äänisanoma"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -1679,11 +1679,11 @@ msgstr "Majakkavalikko:"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr ""
+msgstr "Äänisanomavalikko:"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
-msgstr ""
+msgstr "Bottien taktiikkavalikko:"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
@@ -4222,74 +4222,74 @@ msgstr "Sama kuin näyttöruutu (%dx%d)"
 
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "The default behavior. This is what bots do when the game starts."
-msgstr ""
+msgstr "Vakiokäytös. Botit toimivat tämän mukaan pelin alkaessa."
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend"
-msgstr ""
+msgstr "Puolusta"
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 msgid "The bots stay in the base."
-msgstr ""
+msgstr "Botit pysyvät tukikohdassa."
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack"
-msgstr ""
+msgstr "Hyökkää"
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 msgid "The bots attack the enemy base."
-msgstr ""
+msgstr "Botit hyökkäävät vihollisen tukikohtaan."
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "Stay Here"
-msgstr ""
+msgstr "Pysy Täällä"
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "The bots stay where you are currently."
-msgstr ""
+msgstr "Botit jäävät sinne, missä olet tällä hetkellä."
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow"
-msgstr ""
+msgstr "Seuraa"
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 msgid "The bots follow you wherever you go."
-msgstr ""
+msgstr "Botit seuraavat sinua kaikkialle, minne menet."
 
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend our base!!"
-msgstr ""
+msgstr "Puolustakaa tukikohtaamme!!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack!"
-msgstr ""
+msgstr "Hyökätkää!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow me!"
-msgstr ""
+msgstr "Seuraa minua!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No."
-msgstr ""
+msgstr "Ei."
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes"
-msgstr ""
+msgstr "Kyllä"
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes."
-msgstr ""
+msgstr "Kyllä."
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "Flank"
-msgstr ""
+msgstr "Sivusta"
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "Flank, behind you!"
-msgstr ""
+msgstr "Sivustalta, takanasi!"
 
 #: src/cgame/cg_rocket_draw.cpp:2632
 msgid "You are at the front of the spawn queue"
@@ -4850,7 +4850,7 @@ msgstr "Joukkuekeskustelu"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Bot tactic menu"
-msgstr ""
+msgstr "Bottien taktiikkavalikko"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
@@ -4980,7 +4980,7 @@ msgstr "Pidä pohjassa %s samalla, kun liikut eteenpäin talloaksesi."
 #: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
 #, c-format
 msgid "Press %s to show the bot tactic menu."
-msgstr ""
+msgstr "Paina %s näyttääksesi bottien taktiikkavalikon."
 
 #: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
@@ -5460,12 +5460,12 @@ msgstr "Joukkueäänestys hyväksytty ($1$ — $2$)"
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Äänestys epäonnistui ($1$ – $2$; tarvitaan $3$ %)"
+msgstr "Äänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 
 #: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Joukkueen äänestys epäonnistui ($1$ — $2$; $3$ % tarvitaan)"
+msgstr "Joukkueäänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 
 #: src/shared/bg_misc.cpp:2483
 msgid "spectator"
