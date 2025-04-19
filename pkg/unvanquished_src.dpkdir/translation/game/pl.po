@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-09 17:47+0200\n"
-"PO-Revision-Date: 2025-04-19 19:05+0000\n"
+"PO-Revision-Date: 2025-04-20 02:10+0000\n"
 "Last-Translator: Robert Wolniak <robert.wolniak@szkod.ovh>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pl/>\n"
@@ -430,8 +430,8 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
-"Pozostawanie w niedalekiej odległości od [overmind] nadświadomości lub [egg] "
-"jaj też lekko przyspieszy leczenie, lecz nie tak bardzo jak sam śluz. Może "
+"Pozostawanie w niedalekiej odległości od [overmind] Nadświadomości lub [egg] "
+"Jaj też lekko przyspieszy leczenie, lecz nie tak bardzo jak sam śluz. Może "
 "ci on pomóc w bronieniu baz."
 
 #: ui/help_gameplay.rml:131
@@ -453,9 +453,9 @@ msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
-"Każdy z ludzi nosi osobisty zestaw pierwszej pomocy, którym można "
-"jednorazowo się uleczyć. Po jego zużyciu muszą powrócić do [medstat] Stacji "
-"medycznej na leczenie oraz napełnienie zestawu pierwszej pomocy."
+"Każdy z ludzi nosi osobistą apteczkę, którą można jednorazowo się uleczyć. "
+"Po jej zużyciu muszą powrócić do [medstat] Stacji medycznej na leczenie oraz "
+"żeby odnowić apteczkę."
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
@@ -816,13 +816,13 @@ msgid ""
 "A higher FOV can help combat this."
 msgstr ""
 "Wielu graczy cierpi na łagodną chorobę lokomocyjną podczas grania w "
-"strzelanki FPS. Wyższy FOV może pomóc w walce z tym problemem."
+"pierwszoosobowe strzelanki. Wyższy FOV może załagodzić ten problem."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr "kąty"
+msgstr "stopnie"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -834,12 +834,10 @@ msgid "reset"
 msgstr "reset"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
-#, fuzzy
 msgid "Mantis"
 msgstr "Modliszka"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
-#, fuzzy
 msgid "Marauder"
 msgstr "Maruder"
 
@@ -848,14 +846,12 @@ msgid "Dragoon"
 msgstr "Dragoon"
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
-#, fuzzy
 msgid "Tyrant"
 msgstr "Tyran"
 
 #: ui/options_fov.rml:71
-#, fuzzy
 msgid "View bobbing"
-msgstr "Zobacz podskakiwanie"
+msgstr "Efekt kiwania głową w trakcie ruchu"
 
 #: ui/options_fov.rml:74
 #, fuzzy
@@ -868,7 +864,7 @@ msgstr "Wyłączone"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Delikatne"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 #: src/cgame/cg_rocket_datasource.cpp:1474
@@ -877,19 +873,20 @@ msgstr "Domyślnie"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Silne"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Ruch do góry i dołu"
 
 #: ui/options_fov.rml:85
+#, fuzzy
 msgid "Camera rolling"
-msgstr ""
+msgstr "Obrót kamery"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "Ruch obrotowy"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
@@ -897,17 +894,19 @@ msgstr "Grafika"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Presety"
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "Najniższe"
 
 #: ui/options_graphics.rml:28
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"Niski subdivision modeli, brak tekstur nieba, brak cieni, brak efektu "
+"cząsteczek, tekstury 16-pikselowe…"
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:253
 #: ui/options_graphics.rml:368 ui/options_graphics.rml:377
@@ -919,6 +918,8 @@ msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
 msgstr ""
+"Multisampling, anisotropic mip-mapping, cienie, efekty cząsteczki, tekstury "
+"256 pikselowe…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -943,7 +944,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "Najwyższe"
 
 #: ui/options_graphics.rml:44
 msgid ""
@@ -953,27 +954,27 @@ msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "Wideo"
 
 #: ui/options_graphics.rml:51
 msgid "Brightness"
-msgstr ""
+msgstr "Jasność"
 
 #: ui/options_graphics.rml:54
 msgid "Gamma:"
-msgstr ""
+msgstr "Gamma:"
 
 #: ui/options_graphics.rml:61
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Rozdzielczość ekranu"
 
 #: ui/options_graphics.rml:65
 msgid "Borderless window"
-msgstr ""
+msgstr "Tryb okienkowy"
 
 #: ui/options_graphics.rml:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pełny ekran"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:378
 msgid "Off"
@@ -981,15 +982,15 @@ msgstr "Wyłączone"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Elastyczny Vsync"
 
 #: ui/options_graphics.rml:76
 msgid "Full Vsync"
-msgstr ""
+msgstr "Pełny Vsync"
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
 #: ui/options_graphics.rml:79
 msgid ""
@@ -1007,15 +1008,15 @@ msgstr ""
 #: ui/options_graphics.rml:281 ui/options_graphics.rml:319
 #: ui/options_graphics.rml:342
 msgid "Apply now"
-msgstr ""
+msgstr "Włącz teraz"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr ""
+msgstr "Oświetlenie"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
-msgstr ""
+msgstr "Światła"
 
 #: ui/options_graphics.rml:97
 msgid "Light mapping"
@@ -1956,7 +1957,7 @@ msgstr ""
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr "Język:"
+msgstr "Język"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -2837,32 +2838,32 @@ msgstr ""
 #: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*został smagnięty przez nadświadomość"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*została smagnięta przez nadświadomość"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*zostało smagnięte przez nadświadomość"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*został smagnięty przez nadświadomość; %s%s%s^* asystował"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*została smagnięta przez nadświadomość; %s%s%s^* asystował"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*zostało smagnięte przez nadświadomość; %s%s%s^* asystował"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
@@ -3995,7 +3996,7 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1218
 msgid "The Overmind is under attack!"
-msgstr ""
+msgstr "Nadświadomość jest atakowana!"
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
@@ -4003,7 +4004,7 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1240
 msgid "The Overmind is dying!"
-msgstr ""
+msgstr "Nadświadomość jest bliska śmierci!"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is going down!"
@@ -4105,7 +4106,7 @@ msgstr ""
 
 #: src/cgame/cg_main.cpp:509
 msgid "Awakening the overmind…"
-msgstr ""
+msgstr "Przebudzanie nadświadomości…"
 
 #: src/cgame/cg_main.cpp:513
 msgid "Teleporting soldiers…"
@@ -4603,22 +4604,24 @@ msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr ""
+"Brak Nadświadomości. Należy wybudować Nadświadomość, żeby można było "
+"postawić inne budowle."
 
 #: src/cgame/cg_servercmds.cpp:683 src/cgame/cg_servercmds.cpp:723
 msgid "There is no Overmind"
-msgstr "Nie ma Overminda"
+msgstr "Brak Nadświadomości"
 
 #: src/cgame/cg_servercmds.cpp:687
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
-"W grze może być tylko jeden Overmind na raz. Zdekonstruuj istniejący, jeśli "
-"chcesz go przesunąć."
+"W grze może być tylko jedna Nadświadomość na raz. Jeśli chcesz ją przesunąć, "
+"musisz zdekonstruować już istniejącą."
 
 #: src/cgame/cg_servercmds.cpp:689
 msgid "There can only be one Overmind"
-msgstr "W grze może być tylko jeden Overmind na raz."
+msgstr "W grze może być tylko jedna Nadświadomość na raz"
 
 #: src/cgame/cg_servercmds.cpp:694
 msgid "Your team cannot have any more leeches"
@@ -4629,12 +4632,12 @@ msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
-"Overmind nie może kontrolować większej ilości budynków. Zdekonstruuj parę "
-"obecnych, by móc zbudować ten."
+"Nadświadomość nie może kontrolować większej ilości budynków. Zdekonstruuj "
+"istniejące budowle, by móc zbudować nowe."
 
 #: src/cgame/cg_servercmds.cpp:700
 msgid "The Overmind cannot control any more structures"
-msgstr "Overmind nie może kontrolować większej ilości budynków"
+msgstr "Nadświadomość nie może kontrolować większej ilości budynków"
 
 #: src/cgame/cg_servercmds.cpp:704
 msgid ""
@@ -4662,14 +4665,14 @@ msgstr "To miejsce znajduje się zbyt blisko wroga by ewoluować"
 
 #: src/cgame/cg_servercmds.cpp:716 src/cgame/cg_servercmds.cpp:717
 msgid "The Overmind is too far away to devolve."
-msgstr ""
+msgstr "Nadświadomość jest za daleko, żeby móc de-ewoluować."
 
 #: src/cgame/cg_servercmds.cpp:721
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
-"Nie ma Overminda. Overmind musi zostać zbudowany by móc przeprowadzić "
-"ewolucję."
+"Nie ma Nadświadomości. Nadświadomość musi zostać zbudowana, by móc "
+"przeprowadzić ewolucję."
 
 #: src/cgame/cg_servercmds.cpp:727
 msgid "You cannot evolve until your build timer has expired."
