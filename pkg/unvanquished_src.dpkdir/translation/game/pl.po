@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-09 17:47+0200\n"
-"PO-Revision-Date: 2024-10-19 18:26+0000\n"
-"Last-Translator: Paweł Redman <pawel.redman@gmail.com>\n"
+"PO-Revision-Date: 2025-04-19 19:05+0000\n"
+"Last-Translator: Robert Wolniak <robert.wolniak@szkod.ovh>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pl/>\n"
 "Language: pl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 "X-POOTLE-MTIME: 1375081810.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -26,7 +26,7 @@ msgstr "Buduj"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr "Cena:"
+msgstr "Koszt:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -38,7 +38,7 @@ msgstr "punkty mutacji"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Wybierz formę początkową:"
+msgstr "Wybierz swoją początkową formę:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -52,7 +52,9 @@ msgstr "Granger"
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr "Drecz to cicha forma bojowa a granger to forma budownicza."
+msgstr ""
+"Drecz jest formą do atakowania po cichu, a granger jest formą do rozbudowy "
+"bazy kosmitów."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
@@ -72,11 +74,11 @@ msgstr "Ogłoś głosowanie"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr "Uzupełnij botami"
+msgstr "Zapełnij botami"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Ilu graczy (żywych i botów) powinna mieć każda drużyna?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -138,7 +140,7 @@ msgstr "Ok"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Instrukcja rozgrywki"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -150,12 +152,12 @@ msgid ""
 "to become a successful player."
 msgstr ""
 "W tym rozdziale znajdziesz podsumowanie głównych elementów gry, które musisz "
-"poznać by być dobrym graczem."
+"znać, żeby umieć dobrze grać."
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
-"Więcej informacji znajdziesz na stronie www oraz w innych ośrodkach naszej "
+"Więcej informacji znajdziesz na naszej stronie oraz innych kanałach "
 "społeczności!"
 
 #: ui/help_gameplay.rml:25
@@ -163,7 +165,7 @@ msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Porozmawiaj z graczami i deweloperami na serwerach Libra.Chat IRC, Matrix "
+"Porozmawiaj z graczami i twórcami gry na serwerach Libra.Chat IRC, Matrix "
 "oraz Discord: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
@@ -176,7 +178,7 @@ msgstr "Dowiedz się więcej o grze na wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Składaj raporty o błędach na: <web dest=\"bugs\" />"
+msgstr "Zgłaszaj błędy na: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
@@ -187,8 +189,8 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
-"Obcy zdobywają punkty ewolucyjne zabijając ludzi. Mogą użyć tych punktów, "
-"aby ewoluować w bardziej zaawansowanie formy."
+"Obcy zdobywają punkty ewolucji poprzez zabijanie ludzi. Mogą użyć tych "
+"punktów, aby ewoluować w [dragoon] bardziej zaawansowanie formy."
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -198,15 +200,15 @@ msgid ""
 msgstr ""
 "Obcy mogą ewoluować wszędzie pod warunkiem, że nie są w polu widzenia wroga "
 "lub jego struktur. Obcy mogą też de-ewoluować do [granger] mniej "
-"rozwiniętych form(z pewnym kosztem) w pobliżu [overmind] Overmind'a."
+"rozwiniętych form (z pewnym kosztem) w pobliżu [overmind] Nadświadomości."
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Jeśli Overmind zostanie zniszczony postaw nowy jako [granger] granger, "
-"potrzebujesz go by ewoluować!"
+"Jeśli Nadświadomość zostanie zniszczona postaw nową jako [granger] Granger. "
+"Potrzebujesz jej, by ewoluować!"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -215,8 +217,8 @@ msgid ""
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
 "Ludzie mogą zarabiać kredyty przez zabijanie obcych oraz niszczenie ich "
-"struktur, za kredyty mogą kupować nowe [lcannon] bronie, zbroje, [bsuit] "
-"pancerze wspomagane oraz akcesoria takie jak radary i jetpaki."
+"struktur. Za kredyty mogą kupować nowe [lcannon] bronie, zbroje, [bsuit] "
+"pancerze wspomagane oraz akcesoria takie jak radary i plecaki odrzutowe."
 
 #: ui/help_gameplay.rml:50
 msgid ""
@@ -229,7 +231,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
-msgstr "Zasilanie struktur"
+msgstr "Zasilanie budowli"
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -239,11 +241,11 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"Budowanie stryktury wymaga punktów budowy. Twoja drużyna zacznie z małą pulą "
-"punktów budowy, jeśli chcesz postawić więcej struktur w danym obszarze "
-"możesz postawić [leech] strukturę wydobywczą by zwiększyć dostępną moc i "
-"dostarczyć więcej punktów budowy. Pamiętaj, że stracisz tak pozyskane punkty "
-"jeśli struktury wydobywcze zostaną zniszczone."
+"Budowanie struktur wymaga punktów budowy. Twoja drużyna zaczyna z niewielką "
+"ilością punktów budowy na start. Jeśli chcesz postawić więcej struktur w "
+"danym obszarze, możesz postawić [leech] strukturę wydobywczą, która zwiększy "
+"dostępną moc oraz dostarczy więcej punktów budowy. Pamiętaj, że jeśli te "
+"budowle zostaną zniszczone, pozyskane z nich punkty budowy przepadną."
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -253,8 +255,8 @@ msgid ""
 "have enough energy to remain operational."
 msgstr ""
 "Jeśli używasz więcej punktów budowy (BP) niż struktury wydobywcze ([leech] "
-"Pijawka, [drill] Wiertło) są w stanie dostarczyć (obecne BP + odzyskiwane "
-"BP), struktury będą wyłączane po kolei puki wymogi energetyczne pozostałych "
+"Pijawka, [drill] Wiertło) są w stanie dostarczyć (obecne BP + odzyskiwane BP)"
+", struktury będą wyłączane po kolei, dopóki wymogi energetyczne pozostałych "
 "struktur zostaną spełnione."
 
 #: ui/help_gameplay.rml:61
@@ -264,8 +266,8 @@ msgid ""
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
 "Na działanie struktur wytwórczych ([egg] jaja i [telenode] telewęzły), "
-"struktur wydobywczych (pijawki and wiertła) i struktur unikalnych "
-"([overmind] Overmind i [reactor] reaktor) NIE wpływa brak BP."
+"struktur wydobywczych (pijawki oraz wiertła) i struktur unikalnych ("
+"[overmind] Nadświadomość i [reactor] Reaktor) NIE wpływa brak BP."
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -278,8 +280,8 @@ msgid ""
 "efficiency."
 msgstr ""
 "Punkty budowy są pozyskiwane przez dwie struktury wydobywcze: [drill] "
-"wiertła u ludzi i [leech] pijawki obcych. Dla większej efektywności obiekty "
-"te muszą być rozstawione na dużej przestrzeni."
+"Wiertła u Ludzi oraz [leech] Pijawki u Obcych. Dla większej efektywności "
+"obiekty te muszą być rozstawione w sporej odległości od siebie."
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -287,7 +289,7 @@ msgid ""
 "each other and ultimately cost build resources!"
 msgstr ""
 "Nie stawiaj struktur wydobywczych zbyt blisko siebie, bo będą ze sobą "
-"rywalizować co ostatecznie będzie cię kosztować zasoby budowlane!"
+"rywalizować, co ostatecznie będzie cię kosztować punkty budowy!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -298,10 +300,10 @@ msgid ""
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
 "Budujący widzą drugi pasek nad paskiem zdrowia postawionych generatorów "
-"zasobów, reprezentuje on wydajność danej jednostki. Przy wybieraniu miejsca "
-"dla nowej jednostki, wyświetli ci się prognoza wydajności. Punkty budowy "
-"będą natychmiastowo dostępne w chwili ukończenia konstrukcji struktury "
-"wydobywczej. Nie stawiaj niechronionych odwiertów!"
+"zasobów, który reprezentuje wydajność danej jednostki. Przy wybieraniu "
+"miejsca dla nowej jednostki, wyświetli ci się prognoza wydajności. Punkty "
+"budowy będą natychmiastowo dostępne w chwili ukończenia konstrukcji "
+"struktury wydobywczej. Nie stawiaj niechronionych odwiertów!"
 
 #: ui/help_gameplay.rml:77
 msgid ""
@@ -310,9 +312,9 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"Gdy budynki zostają zniszczone, struktury wydobywcze powoli odzyskują "
+"Gdy budynek zostanie zniszczony, struktury wydobywcze powoli odzyskują "
 "zainwestowane punkty. Tempo odzyskiwania zmniejsza się z czasem, co "
-"powoduje, że jest coraz trudniej odbudowywać zniszczone budynki podczas "
+"powoduje, że coraz trudniej jest odbudowywać zniszczone budynki podczas "
 "długiej rozgrywki. Mechanika ta zastępuje \"nagłą śmierć\"."
 
 #: ui/help_gameplay.rml:81
@@ -326,7 +328,7 @@ msgid ""
 "weapons, structures or classes will be unlocked."
 msgstr ""
 "Budowanie i niszczenie struktur oraz zabijanie wrogów daje twojej drużynie "
-"nowy zasób zwany \"momentum\". Jeśli zyskacie wystarczające momentum "
+"nowy zasób zwany \"momentum\". Jeśli zyskacie wystarczającą ilość momentum, "
 "odblokujecie nowe bronie, struktury i klasy."
 
 #: ui/help_gameplay.rml:87
@@ -334,7 +336,7 @@ msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"Momentum zmniejsza się wykładniczo podczas rozgrywki więc, jeśli twoja "
+"Momentum zmniejsza się wykładniczo podczas rozgrywki, więc jeśli twoja "
 "drużyna będzie zbyt pasywna to może stracić dostęp do nowych gadżetów. "
 "Istniejące ulepszenia dalej będą funkcjonować."
 
@@ -355,16 +357,16 @@ msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
-"Jeśli struktury są zbudowane zbyt blisko siebie to ogień może przeskoczyć "
-"między nieszczęśliwymi sąsiadami."
+"Jeśli struktury zbudowane są zbyt blisko siebie, ogień może przeskoczyć "
+"między pechowymi sąsiadami."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
-"Mały [fire] pożar sam może po chwili wygasnąć, grupa płonących struktur "
-"natomiast będzie się palić się dłużej i goręcej czyniąc dużo więcej szkód."
+"O ile niewielki [fire] pożar sam może po chwili wygasnąć, grupa struktur "
+"będzie się palić dłużej, czyniąc niewiarygodnie dużo szkód."
 
 #: ui/help_gameplay.rml:103
 msgid ""
@@ -376,7 +378,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
-msgstr "Atakują"
+msgstr "Atakowani"
 
 #: ui/help_gameplay.rml:110
 msgid ""
@@ -385,9 +387,9 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"[reactor] Reaktor i [overmind] Overmind ostrzegą drużynę przy kolejno 75%, "
-"50% i 25% zdrowia oraz przy zniszczeniu. Niszczenie innego budynku spowoduje "
-"wysłania ostrzeżenia o treści “atakują” do jego drużyny."
+"[reactor] Reaktor i [overmind] Nadświadomość ostrzegą drużynę przy kolejno "
+"75%, 50% i 25% zdrowia oraz przy ich zniszczeniu. Niszczenie innego budynku "
+"spowoduje wysłania ostrzeżenia o treści “jesteśmy atakowani” do jego drużyny."
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
@@ -395,7 +397,9 @@ msgstr "Leczenie"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr "Wasza śmierć karmi przeciwnika, możecie chcieć oszczędzać swoje życia!"
+msgstr ""
+"Wasza śmierć karmi przeciwnika, przez co możecie chcieć oszczędzać swoje "
+"życia!"
 
 #: ui/help_gameplay.rml:121
 msgid ""
@@ -404,10 +408,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
-"Obcy powoli leczą się niezależnie gdzie są, ale w grupach oraz obok swoich "
-"budynków proces ten przyśpiesza. Budowanie na wysuniętych pozycjach może być "
-"decydujące. Leczenie w jakikolwiek sposób również wpływa na regenerację "
-"pocisków [advdragoon] zaawansowanego dragoon'a."
+"Obcy powoli leczą się niezależnie od tego, gdzie są, ale w grupach oraz obok "
+"swoich budynków proces ten przyspiesza. Rozbudowywanie się na wysuniętych "
+"pozycjach może być decydujące! Leczenie w jakikolwiek sposób również wpływa "
+"na regenerację pocisków [advdragoon] zaawansowanego dragoona."
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -415,9 +419,10 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"Buster pozwala na szybkie leczenie wszystkich obcych w pobliżu, wybuduj go "
-"przy pierwszej okazji, postaraj się odblokować go jak najszybciej się da. "
-"Buster również dodaje też jad czyniący twoje ataki bardziej zabójczymi."
+"Wzmacniacz pozwala na szybkie leczenie wszystkich obcych w pobliżu. Wybuduj "
+"go przy pierwszej okazji oraz postaraj się odblokować go jak najszybciej. "
+"Wzmacniacz daje też pobliskim obcym jad czyniący twoje ataki bardziej "
+"zabójczymi."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -425,9 +430,9 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
-"Pozostawanie w niedalekiej odległości od [overmind] overmind'a lub [egg] jaj "
-"też lekko podwyższy ci leczenie, lecz nie tak bardzo jak sam śluz. Może ci "
-"to pomoże w bronieniu baz."
+"Pozostawanie w niedalekiej odległości od [overmind] nadświadomości lub [egg] "
+"jaj też lekko przyspieszy leczenie, lecz nie tak bardzo jak sam śluz. Może "
+"ci on pomóc w bronieniu baz."
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -436,10 +441,12 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Obcy mają trzecią formę wzmocnionego leczenia: bliskość innych obcych. Jeśli "
-"jesteś niedaleko innego przyjaznego tobie obcego, będziesz się leczył nieco "
-"szybciej, a przy dwóch tak szybko jak dotykając budynku Obcych. W ten sposób "
-"praca drużynowa jest doskonałą metodą oblegania wroga!"
+"Obcy mają trzecią formę wzmocnionego leczenia: towarzystwo innych obcych. "
+"Jeśli jesteś niedaleko innego przyjaznego tobie obcego, będziesz się leczył "
+"nieco szybciej. Kiedy masz obok siebie dwóch innych obcych, prędkość "
+"leczenia równa się prędkości leczenia w pobliżu budowli. W połączeniu z "
+"dobrą współpracą drużynową jest to doskonały sposób, by przezwyciężyć "
+"przeciwnika!"
 
 #: ui/help_gameplay.rml:135
 msgid ""
@@ -447,8 +454,8 @@ msgid ""
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
 "Każdy z ludzi nosi osobisty zestaw pierwszej pomocy, którym można "
-"jednorazowo się uleczyć, potem muszą powrócić do [medstat] stacji medycznej "
-"na leczenie oraz napełnienie zestawu pierwszej pomocy."
+"jednorazowo się uleczyć. Po jego zużyciu muszą powrócić do [medstat] Stacji "
+"medycznej na leczenie oraz napełnienie zestawu pierwszej pomocy."
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
@@ -459,13 +466,13 @@ msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
-"Niektóre formy obcych takie jak [dretch] drecz, [mantis] mantis oraz "
-"zaawansowana forma [advgranger] grangera potrafią chodzić po ścianach!"
+"Niektóre formy obcych takie jak [dretch] Drecz, [mantis] Modliszka oraz "
+"zaawansowana forma [advgranger] Grangera potrafią chodzić po ścianach!"
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
-"Użyj tej umiejętności by docierać do nietypowych miejsc oraz skracać drogę "
+"Użyj tej umiejętności, by docierać do nietypowych miejsc oraz skracać drogę "
 "przez kanały wentylacyjne."
 
 #: ui/help_gameplay.rml:148
@@ -473,21 +480,22 @@ msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
-"Obronne struktury obcych takie jak trappery oraz spikery działają lepiej, "
-"gdy umiejscowione są na ścianach, a budowane na sufitach są bezpieczniejsze "
-"z dala od wybuchów bomb."
+"Obronne struktury obcych takie jak Lepy oraz Kolczatki działają lepiej, gdy "
+"umiejscowione są na ścianach, a budowane na sufitach są bezpieczniejsze poza "
+"zasięgiem granatów."
 
 #: ui/help_gameplay.rml:151
 msgid "The advanced granger can be unlocked with momentum."
-msgstr "Zaawansowany granger odblokowywany jest przy odpowiednim momentum."
+msgstr "Zaawansowany Granger odblokowywany jest przy odpowiednim momentum."
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
-msgstr "Od Tremulous'a"
+msgstr "Zmiany w stosunku do Tremulous"
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "Od Tremulous'a poziom wigoru u ludzi został podniesiony."
+msgstr ""
+"W porównaniu do Tremulous, poziom wytrzymałości u ludzi został zwiększony."
 
 #: ui/help_gameplay.rml:161
 msgid ""
@@ -503,7 +511,7 @@ msgid ""
 "number of drills."
 msgstr ""
 "Stadia zostały zastąpione przez momentum, a punkty budowy zależą "
-"bezpośrednio od liczby odwiertów."
+"bezpośrednio od liczby Wierteł/Pijawek."
 
 #: ui/help_gameplay.rml:167
 msgid ""
@@ -518,26 +526,27 @@ msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Obcy dostali spiker'a jako nową budowlę obronną, która może zadać poważne "
-"obrażenia nieuważnym ludziom, ale ponieważ jest bardzo podatną strukturą nie "
-"powinien być pozostawiony na widoku!"
+"Obcy dostali Kolczatkę jako nową budowlę obronną, która może zadać poważne "
+"obrażenia nieuważnym ludziom, ale ponieważ jest bardzo podatną strukturą, "
+"nie powinien być pozostawiony na widoku!"
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
-"Basilisk został zamieniony na mantis, który nie jest w stanie unieruchamiać, "
-"ale za to jego ugryzienia spowalniają ofiary, a ponadto potrafi rzucać się "
-"błyskawicznie do przodu."
+"Basilisk został zamieniony na Modliszkę, która nie jest w stanie "
+"unieruchamiać, ale za to jej ugryzienia spowalniają ofiary, a ponadto "
+"potrafi rzucać się błyskawicznie do przodu."
 
 #: ui/help_gameplay.rml:176
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
-"Obcy mogą deewoluować obok overmind'a, a splunięcie zaawansowany granger'a "
-"ma teraz ciekawe właściwości, wypróbuj plucia na ogień oraz na ludzi!"
+"Obcy mogą deewoluować obok Nadświadomości, a splunięcie zaawansowanego "
+"grangera ma teraz ciekawe właściwości. Wypróbuj plucia na ogień oraz na "
+"ludzi!"
 
 #: ui/hud_basics.rml:196
 msgid "Game"
@@ -557,7 +566,7 @@ msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "Punkty Budowy"
+msgstr "punkty budowy"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -585,7 +594,7 @@ msgstr "Szybkostrzelność:"
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr "Walka / Ekwipunek"
+msgstr "Ulepszenia"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
@@ -593,11 +602,11 @@ msgstr "Wybierz początkowe wyposażenie:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr "SMG"
+msgstr "Pistolet maszynowy"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "Zestaw Konstrukcyjny"
+msgstr "Zestaw konstrukcyjny"
 
 #: ui/human_spawn.rml:48
 msgid ""
@@ -605,8 +614,8 @@ msgid ""
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
 "Pistolet maszynowy to szybkostrzelna broń startowa, a zestaw konstrukcyjny "
-"umożliwia budowanie i naprawianie ludzkich konstrukcji. Całym wyposażeniem "
-"można handlować w zbrojowni."
+"umożliwia budowanie i naprawianie ludzkich konstrukcji. Wyposażenie można "
+"zmieniać i kupować w zbrojowni."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
@@ -614,7 +623,7 @@ msgstr "Latarnie"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Taktyka botów"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -631,7 +640,7 @@ msgstr "Czas:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr "Auto-wybieranie zespołu"
+msgstr "Automatyczne przydzielanie drużyny"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
@@ -647,11 +656,11 @@ msgid ""
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
 "Ludzie mogą wyposażyć się w szeroką gamę broni i sprzętu. Są oni elastyczni "
-"i zabójczy na odległość, ale delikatni."
+"i zabójczy na odległość, ale mało żywotni."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr "Dołącz do Kosmitów"
+msgstr "Dołącz do Obcych"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
@@ -659,7 +668,7 @@ msgstr "Dołącz do Ludzi"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr "A jak nie chcesz grać. Możesz oglądać grę bez grania."
+msgstr "Jeśli nie chcesz grać, możesz również dołączyć jako zwykły obserwator."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
@@ -667,7 +676,7 @@ msgstr "Obserwuj"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
-msgstr ""
+msgstr "Głosówka"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -679,11 +688,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "Mecz"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr "Wyjdź z meczu"
+msgstr "Opuść mecz"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
@@ -695,19 +704,19 @@ msgstr "Demokracja"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr "Menu gospodarza (host-a)"
+msgstr "Menu gospodarza"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr "Ustaw Serwer"
+msgstr "Ustawienia serwera"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr "Zatrzymaj serwer (Stop)"
+msgstr "Zatrzymaj serwer"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr "Zatrzymaj serwer (Pauza)"
+msgstr "Zapauzuj serwer"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
@@ -715,19 +724,19 @@ msgstr "Boty"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr "Menu Główne"
+msgstr "Menu główne"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr "Listy Serwerów"
+msgstr "Lista serwerów"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr "Rozpocznij Lokalne/Gra LAN"
+msgstr "Rozpocznij grę lokalną/LAN"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr "Opcje"
+msgstr "Ustawienia"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
@@ -743,22 +752,21 @@ msgstr "Beta"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr "Pole widzenia"
+msgstr "Pole widzenia (FOV)"
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr "Dodaj bota Kosmitę"
+msgstr "Dodaj bota do obcych"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr "Dodaj bota Człowieka"
+msgstr "Dodaj bota do ludzi"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
 msgstr "Usuń wszystkie boty"
 
 #: ui/options_democracy.rml:13
-#, fuzzy
 msgid "Global vote:"
 msgstr "Globalne głosowanie:"
 
@@ -784,16 +792,15 @@ msgstr "Wyrzuć boty"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr "Rozszerz limit czasowy"
+msgstr "Wydłuż limit czasowy"
 
 #: ui/options_democracy.rml:34
-#, fuzzy
 msgid "Call a draw"
-msgstr "Zremisuj"
+msgstr "Ogłoś remis"
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr "Przyznaj się do porażki"
+msgstr "Poddaj grę"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -837,9 +844,8 @@ msgid "Marauder"
 msgstr "Maruder"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
-#, fuzzy
 msgid "Dragoon"
-msgstr "Smok (Dragon)"
+msgstr "Dragoon"
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
 #, fuzzy
