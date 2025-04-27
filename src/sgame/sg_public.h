@@ -326,8 +326,6 @@ float G_DistanceToBBox( const glm::vec3 &origin, gentity_t* ent );
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 bool G_IsOnFire( const gentity_t *ent );
 
-void SpawnDebugLine(vec3_t start, vec3_t end, int lifetime);
-
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );
 void              G_GiveMaxAmmo( gentity_t *self );
@@ -358,5 +356,10 @@ namespace CombatFeedback
 
 // sg_bot_skilltree.cpp
 void G_InitSkilltreeCvars();
+
+// Shape.cpp
+namespace Shape {
+	void SpawnLine(const glm::vec3 &start, const glm::vec3 &end, const glm::vec4 &color, int lifetime);
+}
 
 #endif // SG_PUBLIC_H_

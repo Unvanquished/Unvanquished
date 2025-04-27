@@ -118,7 +118,7 @@ void RocketpodComponent::Think(int timeDelta) {
 		// Our targets are clients that can move, so track their position.
 		GetTurretComponent().TrackEntityTarget();
 
-		if (GetTurretComponent().TargetCanBeHit()) {
+		if (true || GetTurretComponent().TargetCanBeHit()) {
 			// If the target origin is visible, aim for it first.
 			if (G_LineOfFire(entity.oldEnt, GetTurretComponent().GetTarget()->oldEnt)) {
 				GetTurretComponent().MoveHeadToTarget(timeDelta);
@@ -127,8 +127,6 @@ void RocketpodComponent::Think(int timeDelta) {
 			glm::vec3 aimDirection;
 			AngleVectors(GetTurretComponent().GetAimAngles(), &aimDirection, nullptr, nullptr);
 			bool safeShot = SafeShot(aimDirection);
-
-			SpawnDebugLine(entity.oldEnt->s.origin, GetTurretComponent().GetTarget()->oldEnt->s.origin, 300);
 
 			// Lock onto the target and shoot if lock was held long enough and it's safe to do so.
 			if (lockingOn && safeShot && lockingOnSince + LOCKON_TIME <= level.time) {

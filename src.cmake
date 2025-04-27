@@ -249,6 +249,7 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_votes.h
     ${GAMELOGIC_DIR}/sgame/sg_votes.cpp
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
+    ${GAMELOGIC_DIR}/sgame/Shape.cpp
     ${GAMELOGIC_DIR}/sgame/CBSE.h
     ${GAMELOGIC_DIR}/sgame/CombatFeedback.cpp
     ${GAMELOGIC_DIR}/sgame/CustomSurfaceFlags.h

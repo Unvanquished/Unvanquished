@@ -413,7 +413,7 @@ static void CG_Missile( centity_t *cent )
 	// add missile sound
 	if ( ma->sound )
 	{
-		vec3_t velocity = {0, 0, 0};
+		vec3_t velocity;
 
 		BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
 
@@ -1159,12 +1159,8 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	//       entity types (e.g. particle entities)
 }
 
-static void CG_DebugEntity(centity_t *cent)
+static void CG_Shape(centity_t *cent)
 {
-	// vec3_t mins = {-1, -1, -1};
-	// vec3_t maxs = {1, 1, 1};
-	// CG_DrawBoundingBox( 1, cent->lerpOrigin, mins, maxs );
-
 	vec3_t start, end, up;  // TODO: use glm::vec3
 	polyVert_t verts[4];
 
@@ -1178,7 +1174,17 @@ static void CG_DebugEntity(centity_t *cent)
 	VectorMA(end,   -1.0f, up, verts[2].xyz );
 	VectorMA(end,   1.0f,  up, verts[3].xyz );
 
-	trap_R_AddPolysToScene(cgs.media.redBuildShader, 4, verts, 1);
+	for (size_t i = 0; i < 4; i++)
+	{
+		// VectorCopy(cent->currentState.angles, verts[i].modulate);
+		//verts[i].modulate[3] = cent->currentState.angles2[0];
+		verts[i].modulate[0] = 1.0f;
+		verts[i].modulate[1] = 0.0f;
+		verts[i].modulate[2] = 0.0f;
+		verts[i].modulate[3] = 1.0f;
+	}
+
+	trap_R_AddPolysToScene(cgs.media.plainColorShader, 4, verts, 1);
 }
 
 /*
@@ -1269,8 +1275,8 @@ static void CG_AddCEntity( centity_t *cent )
 			CG_Lev2ZapChain( cent );
 			break;
 
-		case entityType_t::ET_UNUSED:
-			CG_DebugEntity(cent);
+		case entityType_t::ET_SHAPE:
+			CG_Shape(cent);
 			break;
 	}
 }

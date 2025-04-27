@@ -151,7 +151,27 @@ void TurretComponent::TrackEntityTarget() {
 	glm::vec3 targetOrigin = VEC2GLM(target->s.origin);
 	glm::vec3 muzzle       = VEC2GLM(entity.oldEnt->s.pos.trBase);
 
-	directionToTarget = glm::normalize(targetOrigin - muzzle);
+
+	glm::vec3 targetVelocity = VEC2GLM(target->s.pos.trDelta);
+	targetVelocity[2] = 0.0f;
+
+
+	glm::vec3 relativeOrigin = targetOrigin - muzzle;
+
+	const float missileSpeed = 1000.0f;  // FIXME: don't hardcode
+
+	float a = glm::dot(relativeOrigin, relativeOrigin);
+	float b = 2.0f * glm::dot(relativeOrigin, targetVelocity);
+	float c = glm::dot(targetVelocity, targetVelocity) - missileSpeed * missileSpeed;
+	float delta = b * b - 4.0f * a * c;
+	float time = 2.0f * a / (b + sqrt(delta));
+	glm::vec3 projectedTargetOrigin = targetOrigin + time * targetVelocity;
+
+	Shape::SpawnLine(targetOrigin, projectedTargetOrigin, glm::vec4(1, 0, 0, 1), 50);
+	Shape::SpawnLine(muzzle, projectedTargetOrigin, glm::vec4(0, 1, 0, 1), 50);
+
+	// directionToTarget = glm::normalize(targetOrigin - muzzle);
+	directionToTarget = glm::normalize(projectedTargetOrigin - muzzle);
 
 	if (glm::distance2(directionToTarget, oldDirectionToTarget) > 0.0f) {
 		turretLogger.Debug("Following an entity target. New direction: %s.", directionToTarget);

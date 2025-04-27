@@ -42,6 +42,8 @@ void RocketMissileComponent::HandleMissileSteer() {
 	float  rotAngle;
 	gentity_t* self = entity.oldEnt;
 
+	return; // disabled for testing
+
 	// Don't turn anymore if the target is dead or gone
 	if (!self->target)
 	{
