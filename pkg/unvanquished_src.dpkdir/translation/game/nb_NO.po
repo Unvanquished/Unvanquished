@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-09 17:47+0200\n"
-"PO-Revision-Date: 2025-04-26 05:41+0000\n"
+"PO-Revision-Date: 2025-04-27 05:01+0000\n"
 "Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
 "unvanquished/unvanquished/nb_NO/>\n"
@@ -2027,643 +2027,646 @@ msgstr "Siktefarger"
 
 #: ui/options_ui.rml:175
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "Siktets omrissfarge"
 
 #: ui/options_ui.rml:178
 msgid "Auto colour"
-msgstr ""
+msgstr "Autofarge"
 
 #: ui/options_ui.rml:184
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "Sikte omriss størrelse"
 
 #: ui/options_ui.rml:186
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr ""
+msgstr "Negative verdier vil endre omrisset slik at det blir innenfor siktet."
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr ""
+msgstr "Størrelse:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
-msgstr ""
+msgstr "Forskyvning:"
 
 #: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "Sikte omrissfarger"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "Hei der!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "Hva skal vi kalle deg?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "Farger og symboler kan benyttes."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "Du kan endre dette når som helst i innstillingene."
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "Hvilket språk ønsker du å bruke?"
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
-msgstr ""
+msgstr "Velg slagmark"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Serverliste"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
-msgstr ""
+msgstr "Internett"
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr ""
+msgstr "Navn:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Spillere (maskinspillere)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
-msgstr ""
+msgstr "Forsinkelse"
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr ""
+msgstr "Koble til"
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
-msgstr ""
+msgstr "Oppfrisk"
 
 #: ui/server_browser.rml:55
 msgid "LAN"
-msgstr ""
+msgstr "LAN"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr ""
+msgstr "Vertsnavn"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Passord"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "Utviklermodus (aktiverer juks)"
 
 #: ui/server_create.rml:54
 msgid "Building layout to use"
-msgstr ""
+msgstr "Bygningsoppsett som skal brukes"
 
 #: ui/server_create.rml:62
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
-msgstr ""
+msgstr "Frekvensen av frie midler"
 
 #: ui/server_setup.rml:17
 msgid "Every X seconds the player is alive, they will receive free funds."
-msgstr ""
+msgstr "Hvert X sekund spilleren er i live, vil de motta frie midler."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "sekunder"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
-msgstr ""
+msgstr "Skademultiplikatorer for vennlig ild"
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
 msgstr ""
+"Skademultiplikator for lagskade (inkluderer ikke bygninger eller seg selv)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr ""
+msgstr "Utenomjordiske:"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr ""
+msgstr "Mennesker:"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
-msgstr ""
+msgstr "Brannstifting på venlige strukturer"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "Tillat avstemning"
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
-msgstr ""
+msgstr "Oppvarming"
 
 #: ui/server_setup.rml:48
 msgid "Do warmups at every game start"
-msgstr ""
+msgstr "Kjør oppvarming ved hver kampstart"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
-msgstr ""
+msgstr "Gir spillere med tregere datamaskiner tid til å bli med."
 
 #: ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Lag"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
-msgstr ""
+msgstr "Tillat utenomjordiske bygninger"
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr ""
+msgstr "Tillat menneskelige bygninger"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "Fysikk"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitasjon"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr ""
+msgstr "Dulting av dretcher"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr ""
+msgstr "Dretches kan skyves ut av veien ved å angripe dem."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
-msgstr ""
+msgstr "Anti spawn-blokkering"
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
-msgstr ""
+msgstr "Skyv trege folk vekk fra startlokasjoner."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Momentum"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
-msgstr ""
+msgstr "Halveringstid"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
-msgstr ""
+msgstr "Tid for momentum å avta med 50 %. 0 deaktiverer denne funksjonen."
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "minutter"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
-msgstr ""
+msgstr "Forsinkelse for dobbel belønning"
 
 #: ui/server_setup.rml:105
 msgid "Time after which some momentum rewards double"
-msgstr ""
+msgstr "Tiden deretter momentumbelønning dobles"
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
-msgstr ""
+msgstr "Grunnmultiplikator"
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr ""
+msgstr "Generisk multiplikator for momentumbelønning"
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
-msgstr ""
+msgstr "Multiplikator for drapsbelønning"
 
 #: ui/server_setup.rml:121
 msgid "Momentum reward multiplier for kills"
-msgstr ""
+msgstr "Multiplikator for momentumbelønning for drap"
 
 #: ui/server_setup.rml:128
 msgid "Building reward multiplier"
-msgstr ""
+msgstr "Multiplikator for konstruksjonsbelønning"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr ""
+msgstr "Multiplikator for momentumbelønning for konstruksjon"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
-msgstr ""
+msgstr "Multiplikator for dekonstruksjonsstraff"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr ""
+msgstr "Multiplikator for momentumstraff for dekonstruksjon"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
-msgstr ""
+msgstr "Multiplikator for bygningsødeleggelse"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr ""
+msgstr "Multiplikator for momentumbelønning for å ødelegge bygninger"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Byggesystem"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr ""
+msgstr "Startverdi"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr ""
+msgstr "Antall byggepoeng man starter med"
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
-msgstr ""
+msgstr "Utvinnerbonus"
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
-msgstr ""
+msgstr "Byggepoengbudsjett per utvinner"
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr ""
+msgstr "Starthastighet for regenerering"
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
-msgstr ""
+msgstr "Starthastigheten som BP gjenopprettes med (i BP per minutt)"
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
-msgstr ""
+msgstr "Halv regenereringstid"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
-msgstr ""
+msgstr "Tiden man må vente før BP-gjenopprettingen halveres"
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Maskinspillere: Generelt"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr ""
+msgstr "Minimum maskinspillere per lag"
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "Fyll lag til de har nok spillere"
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "maskinspillere"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr ""
+msgstr "Standard ferdighetsnivå"
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Fungerer bare for nye maskinspillere."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Menneskeheten"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Synsvinkel"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Reaksjonstid"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Oppførsel"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Angrip bygninger"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Juks"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Evig midler"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Ignorer momentum"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Navmesh generering"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Generer navmesher ved innlasting"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Antall arbeidstråder"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Maskinspillere: Mennesker"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
-msgstr ""
+msgstr "Generelt"
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Menneskelige maskinspillere kjøper utstyr"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Modifikator for siktehastighet (høyere er tregere)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Individuelt"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Primærvåpen"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Byggesett (reparerer)"
 
 #: ui/server_setup.rml:279
 msgid "Painsaw"
-msgstr ""
+msgstr "Smertesag"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Flammekaster"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "Rustninger"
 
 #: ui/server_setup.rml:312
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "om maskinspillere kjøper lett rustning"
 
 #: ui/server_setup.rml:316
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "om maskinspillere kjøper medium rustning"
 
 #: ui/server_setup.rml:320
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "om maskinspillere kjøper kampdrakt"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "Ildbombe"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
-msgstr ""
+msgstr "Granat"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Radar"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Utenomjordiske maskinspillere formskifter"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Avansert marauder"
 
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Avansert dragoon"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
-msgstr ""
+msgstr "Frakoble"
 
 #: ui/transition_downloading.rml:58
 msgid "Additional files are required. Please be patient while they download."
-msgstr ""
+msgstr "Flere filer er nødvendige. Vær tålmodig mens de lastes ned."
 
 #: ui/transition_downloading.rml:59
 msgid "Time left:"
-msgstr ""
+msgstr "Gjenstående tid:"
 
 #: ui/transition_downloading.rml:60
 msgid "Download rate:"
-msgstr ""
+msgstr "Nedlastningshastighet:"
 
 #: ui/transition_downloading.rml:61
 msgid "Size:"
-msgstr ""
+msgstr "Størrelse:"
 
 #: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Velkommen til Unvanquished"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"Lukk denne menyen og klikk hvor som helst for å delta i et lag og begynne å "
+"spille!"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*falt til sin død"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*falt til sin død"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*falt til sin død"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*ble skvist i hjel"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*ble skvist i hjel"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*ble skvist i hjel"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*druknet"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*druknet"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*druknet"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "male"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*smeltet"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "female"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*smeltet"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "neuter"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*smeltet"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*tok en dukkert i lava"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*tok en dukkert i lava"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*tok en dukkert i lava"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*var på feil sted"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*var på feil sted"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*var på feil sted"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*ble tatt av en eksplosjon"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*ble tatt av en eksplosjon"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*ble tatt av en eksplosjon"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*ble tatt av syre"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*ble tatt av syre"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*ble tatt av syre"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*ble skutt ned av et våpentårn"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*ble skutt ned av et våpentårn"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*ble skutt ned av et våpentårn"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ble skutt ned av et våpentårn; %s%s%s^* assisterte"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ble skutt ned av et våpentårn; %s%s%s^* assisterte"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ble skutt ned av et våpentårn; %s%s%s^* assisterte"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*tok imot en rakett"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*tok imot en rakett"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*tok imot en rakett"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*tok imot en rakett; %s%s%s^* assisterte"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*tok imot en rakett; %s%s%s^* assisterte"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*tok imot en rakett; %s%s%s^* assisterte"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "male"
