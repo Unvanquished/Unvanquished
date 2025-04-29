@@ -4248,7 +4248,7 @@ static void Cmd_ReplyPrivateMessage_f( gentity_t *ent )
 	{
 		setLastPrivateMessageSenderAndTime( target, ent->num() );
 	}
-	ADMP( va("\"You have responded to %s^*: ^2%s\"", g_entities[target].client->pers.netname, Quote(msg)) );
+	ADMP( va( "%s %s %s", QQ( N_("You have responded to $1$^* : ^2$2$ ") ), Quote( g_entities[ target ].client->pers.netname ), Quote( msg ) ) );
 	G_LogPrintf( "PrivMsg: %d \"%s^*\" \"%s\": %s",
 		ent->num(), ent->client->pers.netname,
 		g_entities[target].client->pers.netname, msg);
