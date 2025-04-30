@@ -34,6 +34,8 @@ The Unvanquished game is translated on the [Weblate](https://hosted.weblate.org/
 
 ## Requirements to build the game binaries
 
+Detailed instructions for compiling the sources can be found on the wiki: [wiki:Compiling_the_source](https://wiki.unvanquished.net/wiki/Compiling_the_source).
+
 To fetch and build Unvanquished, you'll need:
 `git`,
 `cmake`,
