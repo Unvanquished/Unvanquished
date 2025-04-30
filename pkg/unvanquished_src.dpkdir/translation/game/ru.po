@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-30 23:19+0200\n"
-"PO-Revision-Date: 2025-04-16 14:14+0000\n"
+"PO-Revision-Date: 2025-05-01 02:20+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1015,13 +1015,15 @@ msgstr "Яркость"
 
 #: ui/options_graphics.rml:86
 msgid "Gamma"
-msgstr ""
+msgstr "Гамма"
 
 #: ui/options_graphics.rml:87
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
+"Некрасивый метод повышения яркости. (Рассмотрите возможность сброса и "
+"использования тонального отображения вместо этого)."
 
 #: ui/options_graphics.rml:90
 msgid "Gamma:"
@@ -1029,23 +1031,25 @@ msgstr "Гамма:"
 
 #: ui/options_graphics.rml:94
 msgid "Tone mapping"
-msgstr ""
+msgstr "Тональное отображение"
 
 #: ui/options_graphics.rml:95
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
+"Управление динамическим диапазоном с целью уменьшения размытых или слишком "
+"тёмных участков."
 
 #: ui/options_graphics.rml:98
 msgid "Enable tone mapping"
-msgstr ""
+msgstr "Включить тональное отображение"
 
 #: ui/options_graphics.rml:101
 msgid "Exposure"
-msgstr ""
+msgstr "Выдержка"
 
 #: ui/options_graphics.rml:103
 msgid "Tone mapping brightness level"
-msgstr ""
+msgstr "Уровень яркости тонального отображения"
 
 #: ui/options_graphics.rml:107
 msgid "Lighting"
