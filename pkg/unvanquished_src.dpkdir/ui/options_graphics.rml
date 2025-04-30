@@ -40,6 +40,10 @@
 					<span><translate>Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-pixel textures…</translate></span>
 				</row>
 				<row>
+					<p><translate>The lowest preset makes the game look very bad. It is only meant for very low-end devices and should only be used as a last resort.</translate></p>
+					<p><translate>If the low preset runs properly, the lowest preset will not be faster. If you're only looking for optimizations, try the low preset first.</translate></p>
+				</row>
+				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/lowest.cfg")'><translate>Lowest</translate></button>
 					<span><translate>Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel textures…</translate></span>
 				</row>
