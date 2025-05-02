@@ -77,6 +77,7 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_lua.cpp
     ${GAMELOGIC_DIR}/shared/bot_nav_shared.cpp
     ${GAMELOGIC_DIR}/shared/bot_nav_shared.h
+    ${GAMELOGIC_DIR}/shared/math.cpp
     ${GAMELOGIC_DIR}/shared/parse.cpp
     ${GAMELOGIC_DIR}/shared/parse.h
     ${GAMELOGIC_DIR}/shared/Clustering.h

@@ -24,6 +24,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "common/Common.h"
 #include "bg_public.h"
+#include "shared/math.hpp"
 
 /**
  * @brief Given an origin, a target point, an initial velocity v0, and a gravity g,

@@ -103,7 +103,7 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + range;
 	glm::vec3 mins = VEC2GLM( ent->s.origin ) - range;
 
-	num = trap_EntitiesInBox( GLM4READ( mins ), GLM4READ( maxs ), entityList, MAX_GENTITIES );
+	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{

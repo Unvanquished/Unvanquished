@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "sg_spawn.h"
 
 #include <glm/geometric.hpp>
+#include "shared/math.hpp"
 /*
 ======================================================================
 
@@ -133,7 +134,7 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 		}
 	}
 
-	spot = origin + glm::normalize( total ) * radius;
+	spot = origin + SafeNormalize( total ) * radius;
 }
 
 void SP_gfx_light_flare( gentity_t *self )

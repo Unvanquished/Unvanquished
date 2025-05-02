@@ -1946,7 +1946,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;
 
 	int entityList[ MAX_GENTITIES ];
-	int num = trap_EntitiesInBox( GLM4READ( mins ), GLM4READ( maxs ), entityList, MAX_GENTITIES );
+	int num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
 	int alienBuildingsInRange = 0;
 	int humansInRange = 0;
