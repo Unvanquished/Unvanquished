@@ -68,6 +68,23 @@ Required:
 Optional:
 `ncurses`.
 
+## Install dependencies on trixie:
+
+Uninstall `sudo apt purge -y libsdl2-2.0-0 ;` and do:
+
+```bash
+sudo apt install -y libsdl2-dev libopusfile-dev libwebp-dev libglew-dev libopenal-dev ;
+```
+
+sudo apt install -y conda-package-handling
+
+```
+wget https://repo.anaconda.com/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+bash Anaconda3-2023.07-1-Linux-x86_64.sh
+conda create --name conda2 python=2
+python -m pip install -r ../tools/cbse/requirements.txt
+```
+
 ### MSYS2
 
 MSYS2 is the recommended way to build using MinGW on a Windows host.
