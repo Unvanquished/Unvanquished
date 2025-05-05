@@ -1848,6 +1848,14 @@ bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 			toMins, toMaxs, newOrigin );
 }
 
+bool G_RoomForClassChange(gentity_t *ent, class_t pcl, glm::vec3 &newOrigin)
+{
+	vec3_t temp;
+	bool room = G_RoomForClassChange(ent, pcl, temp);
+	newOrigin = VEC2GLM(temp);
+	return room;
+}
+
 // Put a player in the spawn queue with the desired equipment
 // return true on success
 // `humanItem` is optional, defaults to WP_NONE.

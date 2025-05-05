@@ -1391,8 +1391,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				t.trTime = level.time - 50;
 
 				// find projectile's final position
-				glm::vec3 npos;
-				BG_EvaluateTrajectory( &t, level.time + BG_Missile( WP_FLAMER )->lifetime, GLM4RW( npos ) );
+				glm::vec3 npos = BG_EvaluateTrajectory( &t, level.time + BG_Missile( WP_FLAMER )->lifetime);
 
 				// find distance traveled by projectile along fire line
 				glm::vec3 proj = ProjectPointOntoVector( npos, muzzle, targetPos );
@@ -1646,8 +1645,7 @@ void BotAimAtEnemy( gentity_t *self )
 	float frac = ( 1.0f - ( static_cast<float>( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	glm::vec3 newAim = glm::mix( current, desired, frac );
 
-	glm::vec3 angles;
-	vectoangles( GLM4READ( newAim ), GLM4RW( angles ) );
+	glm::vec3 angles = vectoangles( newAim );
 
 	for ( int i = 0; i < 3; i++ )
 	{
@@ -1680,10 +1678,10 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 		return;
 	}
 
-	BG_GetClientViewOrigin( &self->client->ps, GLM4RW( viewBase ) );
+	viewBase = BG_GetClientViewOrigin( &self->client->ps );
 	aimVec = target - viewBase;
 
-	vectoangles( GLM4READ( aimVec ), GLM4RW( aimAngles ) );
+	aimAngles = vectoangles( aimVec );
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -2263,7 +2261,7 @@ void BotFireWeaponAI( gentity_t *self )
 static bool BotChangeHumanClass( gentity_t *self, class_t newClass )
 {
 	glm::vec3 newOrigin;
-	if ( !G_RoomForClassChange( self, newClass, GLM4RW( newOrigin ) ) )
+	if ( !G_RoomForClassChange( self, newClass, newOrigin ) )
 	{
 		return false;
 	}

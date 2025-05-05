@@ -228,3 +228,127 @@ WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles ) {
 	m[1] *= -1.0f;
 	return m;
 }
+
+glm::vec3 ProjectPointOntoVectorBounded(const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd)
+{
+	glm::vec3 pVec = point - vStart;
+	glm::vec3 vec = vEnd - vStart;
+	VectorNormalize( vec );
+	// project onto the directional vector for this segment
+	glm::vec3 vProj = vStart + glm::dot(pVec, vec) * vec;
+
+	// check bounds
+	int j;
+	for (j = 0; j < 3; j++)
+	{
+		if ((vProj[j] > vStart[j] && vProj[j] > vEnd[j] ) || ( vProj[j] < vStart[j] && vProj[j] < vEnd[j]))
+		{
+			break;
+		}
+	}
+
+	if (j < 3)
+	{
+		if (Q_fabs(vProj[j] - vStart[j]) < Q_fabs(vProj[j] - vEnd[j]))
+		{
+			return vStart;
+		}
+
+		else
+		{
+			return vEnd;
+		}
+	}
+
+	return vProj;
+}
+
+glm::vec3 ProjectPointOnPlane(const glm::vec3 &point, const glm::vec3 &normal)
+{
+	return point - glm::dot(point, normal) * normal;
+}
+
+glm::vec3 PerpendicularVector(const glm::vec3 &vec)
+{
+	int pos, i;
+	float minelem = 1.0f;
+
+	/*
+	 * * find the smallest magnitude axially aligned vector
+	 */
+	for (pos = 0, i = 0; i < 3; i++)
+	{
+		if (Q_fabs(vec[i]) < minelem)
+		{
+			pos = i;
+			minelem = Q_fabs(vec[i]);
+		}
+	}
+
+	glm::vec3 tempvec = {0.0f, 0.0f, 0.0f};
+	tempvec[pos] = 1.0f;
+
+	glm::vec3 result = ProjectPointOnPlane(tempvec, vec);
+	VectorNormalize(result);
+	return result;
+}
+
+glm::vec3 vectoangles(const glm::vec3 &vec)
+{
+	float yaw, pitch;
+
+	if (vec[1] == 0.0f && vec[0] == 0.0f)
+	{
+		yaw = 0.0f;
+
+		if (vec[2] > 0.0f)
+		{
+			pitch = 90.0f;
+		}
+
+		else
+		{
+			pitch = 270.0f;
+		}
+	}
+
+	else
+	{
+		if (vec[0] != 0.0f)
+		{
+			yaw = RAD2DEG(atan2f(vec[1], vec[0]));
+		}
+		else if (vec[1] > 0.0f)
+		{
+			yaw = 90.0f;
+		}
+		else
+		{
+			yaw = 270.0f;
+		}
+
+		if (yaw < 0.0f)
+		{
+			yaw += 360.0f;
+		}
+
+		float forward = sqrtf(vec[0] * vec[0] + vec[1] * vec[1]);
+		pitch = RAD2DEG(atan2f(vec[2], forward));
+
+		if (pitch < 0.0f)
+		{
+			pitch += 360.0f;
+		}
+	}
+
+	return {-pitch, yaw, 0.0f};
+}
+
+glm::vec3 AnglesSubtract(const glm::vec3 &u, const glm::vec3 &v)
+{
+	return {
+		AngleSubtract(u[0], v[0]),
+		AngleSubtract(u[1], v[1]),
+		AngleSubtract(u[2], v[2]),
+	};
+}

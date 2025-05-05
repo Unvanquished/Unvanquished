@@ -345,11 +345,11 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 		start[ 2 ] = pos[ 2 ];
 		end[ 2 ] = pos[ 2 ];
 
-		ProjectPointOntoVectorBounded( GLM4READ( pos ), GLM4READ( start ), GLM4READ( end ), GLM4RW( cmd->pos ) );
+		cmd->pos = ProjectPointOntoVectorBounded( pos, start, end );
 
 		cmd->directPathToGoal = false;
 		cmd->dir = end - pos;
-		VectorNormalize( GLM4RW( cmd->dir ) );
+		VectorNormalize( cmd->dir );
 
 		rVec tpos = rVec::Load( bot->corridor.getTarget() );
 		float height;

@@ -392,13 +392,32 @@ void G_SnapVectorTowards( vec3_t v, const vec3_t to )
 	}
 }
 
+void G_SnapVectorTowards(glm::vec3 &v, const glm::vec3 &to)
+{
+	int i;
+
+	for (i = 0; i < 3; i++)
+	{
+		if (v[i] >= 0.0f)
+		{
+			v[i] = (int)(v[i] + (to[i] <= v[i] ? 0.0f : 1.0f));
+		}
+		else
+		{
+			v[i] = (int)(v[i] + (to[i] <= v[i] ? -1.0f : 0.0f));
+		}
+	}
+}
+
 static void SendRangedHitEvent( gentity_t *attacker, const glm::vec3 &muzzle, gentity_t *target, trace_t *tr )
 {
 	// snap the endpos to integers, but nudged towards the line
-	G_SnapVectorTowards( tr->endpos, GLM4READ( muzzle ) );
+	glm::vec3 endpos = VEC2GLM(tr->endpos);
+	G_SnapVectorTowards(endpos, muzzle);
+	VectorCopy(endpos, tr->endpos);
 
 	entity_event_t evType = HasComponents<HealthComponent>(*target->entity) ? EV_WEAPON_HIT_ENTITY : EV_WEAPON_HIT_ENVIRONMENT;
-	SendHitEvent( attacker, target, VEC2GLM( tr->endpos ), VEC2GLM( tr->plane.normal ), evType );
+	SendHitEvent( attacker, target, endpos, VEC2GLM( tr->plane.normal ), evType );
 }
 
 static void SendHitEvent( gentity_t *attacker, gentity_t *target, glm::vec3 const& origin, glm::vec3 const&  normal, entity_event_t evType )
@@ -443,7 +462,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 
 	glm::vec3 origin = VEC2GLM( target->s.origin ) + normal;
 	normal = -normal;
-	VectorNormalize( GLM4RW( normal ) );
+	VectorNormalize( normal );
 
 	SendHitEvent( attacker, target, origin, normal, EV_WEAPON_HIT_ENTITY );
 }
@@ -574,8 +593,7 @@ static void ShotgunPattern( glm::vec3 const& origin, glm::vec3 const& origin2, i
 	// the client won't have any other information
 	glm::vec3 forward = glm::normalize( origin2 );
 	//TODO: check if glm::perp() is equivalent.
-	glm::vec3 right;
-	PerpendicularVector( GLM4RW( right ), GLM4RW( forward ) );
+	glm::vec3 right = PerpendicularVector( forward );
 	// FIXME: the cross product of forward and right is DOWN not up!
 	glm::vec3 up = glm::cross( forward, right );
 
@@ -657,7 +675,7 @@ void G_FirebombMissileIgnite( gentity_t *self )
 			( rand() / static_cast<float>( RAND_MAX ) ) * 0.5f,
 		};
 
-		VectorNormalize( GLM4RW( dir ) );
+		VectorNormalize( dir );
 
 		// the submissile's parent is the attacker
 		gentity_t *m = G_SpawnDumbMissile( MIS_FIREBOMB_SUB, self->parent, VEC2GLM( self->s.origin ), dir );
@@ -696,7 +714,7 @@ static void FireLcannonPrimary( gentity_t *self, int damage )
 			// Explode immediately when overcharged.
 			// But beware glitchy and framerate-dependent behavior: despite exploding
 			// "instantly" (in the next frame), it "travels" for a distance
-			// (MISSILE_PRESTEP_TIME + length of 1 frame) × attr.speed
+			// (MISSILE_PRESTEP_TIME + length of 1 frame) ï¿½ attr.speed
 			// and can score direct hits against other entities
 			attr.lifetime = 0;
 		}
@@ -973,7 +991,7 @@ static void FindZapChainTargets( zap_t *zap )
 	glm::vec3 maxs = origin + range;
 	glm::vec3 mins = origin - range;
 
-	int num = trap_EntitiesInBox( GLM4RW( mins ), GLM4RW( maxs ), entityList, MAX_GENTITIES );
+	int num = trap_EntitiesInBox( GLM4READ( mins ), GLM4READ( maxs ), entityList, MAX_GENTITIES );
 
 	for ( int i = 0; i < num; i++ )
 	{
@@ -1258,7 +1276,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	glm::vec3 forward = VEC2GLM( victim->s.origin ) - VEC2GLM( self->s.origin );
-	VectorNormalize( GLM4RW( forward ) );
+	VectorNormalize( forward );
 
 	// For buildables, track the last MAX_TRAMPLE_BUILDABLES_TRACKED buildables
 	//  hit, and do not do damage if the current buildable is in that list
@@ -1340,7 +1358,7 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 
 	// calculate knockback direction
 	glm::vec3 knockbackDir = VEC2GLM( victim->s.origin ) - VEC2GLM( self->client->ps.origin );
-	VectorNormalize( GLM4RW( knockbackDir ) );
+	VectorNormalize( knockbackDir );
 
 	victim->Damage( impactDamage, self, VEC2GLM( victim->s.origin ), knockbackDir, DAMAGE_NO_LOCDAMAGE, ModWeight( self ) );
 }
