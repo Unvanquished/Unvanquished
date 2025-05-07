@@ -268,6 +268,7 @@ glm::vec3 ProjectPointOnPlane(const glm::vec3 &point, const glm::vec3 &normal)
 	return point - glm::dot(point, normal) * normal;
 }
 
+// Assumes "vec" is normalized.
 glm::vec3 PerpendicularVector(const glm::vec3 &vec)
 {
 	int pos, i;
