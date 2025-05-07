@@ -1968,12 +1968,5 @@ inline float VectorNormalize(glm::vec3 &vec)
 	return length2;
 }
 
-inline void VectorCopy(const glm::vec3 &in, vec3_t out)
-{
-	out[0] = in.x;
-	out[1] = in.y;
-	out[2] = in.z;
-}
-
 //==================================================================
 #endif /* BG_PUBLIC_H_ */
