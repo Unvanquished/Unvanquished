@@ -420,7 +420,7 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 
 		// Save net bandwidth.
 		glm::vec3 snappedPosition = VEC2GLM( trace->endpos );
-		G_SnapVectorTowards( GLM4RW( snappedPosition ), ent->s.pos.trBase );
+		G_SnapVectorTowards( snappedPosition, VEC2GLM( ent->s.pos.trBase ) );
 		G_SetOrigin( ent, snappedPosition );
 
 		trap_LinkEntity( ent );

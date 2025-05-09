@@ -1155,6 +1155,13 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 	}
 }
 
+glm::vec3 BG_EvaluateTrajectory(const trajectory_t *tr, int atTime)
+{
+	vec3_t result;
+	BG_EvaluateTrajectory(tr, atTime, result);
+	return VEC2GLM(result);
+}
+
 /*
 ================
 BG_EvaluateTrajectoryDelta

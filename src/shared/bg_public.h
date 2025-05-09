@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 // entityState_t is the information conveyed from the server
 // in an update message about entities that the client will
@@ -104,26 +105,7 @@ glm::vec3 VEC2GLM( const rVec& ) = delete;
 // Useful when calling functions with a `const vec3_t` argument.
 #define GLM4READ( v ) ( glm4read_impl( v ).data() )
 
-// Consructs a read/write capable proxy object which can be used when calling a function
-// with a mutable vec3_t argument.
-#define GLM4RW( v ) ( glm4rw_impl( v ).data )
-
 inline std::array<const vec_t, 3> glm4read_impl( const glm::vec3 &v ) { return { v.x, v.y, v.z }; }
-
-struct glm4rw_impl
-{
-	glm::vec3 &sink;
-	vec3_t data;
-	glm4rw_impl( glm::vec3 &v ) : sink(v)
-	{
-		memcpy( data, &sink, sizeof(data) );
-	}
-
-	~glm4rw_impl()
-	{
-		memcpy( &sink, data, sizeof(data) );
-	}
-};
 
 #include "engine/qcommon/q_shared.h"
 
@@ -1787,6 +1769,7 @@ void     *BG_Calloc( size_t size );
 void     BG_Free( void *ptr );
 
 void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
+glm::vec3 BG_EvaluateTrajectory( const trajectory_t *tr, int atTime );
 void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
 
 void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
@@ -1927,6 +1910,11 @@ int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
 WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles );
+glm::vec3 ProjectPointOntoVectorBounded(const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd);
+glm::vec3 ProjectPointOnPlane(const glm::vec3 &point, const glm::vec3 &normal);
+glm::vec3 PerpendicularVector(const glm::vec3 &vec);
+glm::vec3 vectoangles(const glm::vec3 &vec);
+glm::vec3 AnglesSubtract(const glm::vec3 &u, const glm::vec3 &v);
 
 // a scalar product that handles the z component differently, typically you
 // would use it with z_factor = 0, to ignore the z direction totally
@@ -1966,6 +1954,18 @@ inline float Length2D(glm::vec3 u, float z_factor = 0.0f)
 inline float Alignment2D(glm::vec3 u, glm::vec3 v, float z_factor = 0.0f)
 {
 	return ScalarProduct2D(u, v, z_factor) / ( Length2D(u, z_factor) * Length2D(v, z_factor) );
+}
+
+inline float VectorNormalize(glm::vec3 &vec)
+{
+	float length2 = glm::length2(vec);
+
+	if (length2 != 0.0f)
+	{
+		vec *= Q_rsqrt(length2);
+	}
+
+	return length2;
 }
 
 //==================================================================
