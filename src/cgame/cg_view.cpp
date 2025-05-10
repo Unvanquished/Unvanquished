@@ -1826,12 +1826,16 @@ bool CG_CullBox(vec3_t mins, vec3_t maxs)
 	int              i;
 	cplane_t         *frust;
 
+	// TODO: Make CG_CullBox use bounds_t directly.
+	bounds_t bounds;
+	BoundsSet( bounds, mins, maxs );
+
 	//check against frustum planes
 	for( i = 0; i < 4; i++ )
 	{
 		frust = &frustum[i];
 
-		if( BoxOnPlaneSide(mins, maxs, frust ) == 2 )
+		if( BoxOnPlaneSide( bounds, frust ) == 2 )
 			return true;
 	}
 	return false;

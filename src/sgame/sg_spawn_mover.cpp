@@ -291,7 +291,11 @@ static bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t
 	{
 		float radius;
 
-		radius = RadiusFromBounds( pusher->r.mins, pusher->r.maxs );
+		// TODO: Make pusher->r use bounds_t directly.
+		bounds_t b;
+		BoundsSet( b, pusher->r.mins, pusher->r.maxs );
+
+		radius = RadiusFromBounds( b );
 
 		for ( i = 0; i < 3; i++ )
 		{
@@ -1585,17 +1589,17 @@ a trigger that encloses all of them
 static void Think_SpawnNewDoorTrigger( gentity_t *self )
 {
 	gentity_t *other;
-	vec3_t    mins, maxs;
 	int       i, best;
 
 	// find the bounds of everything on the group
-	VectorCopy( self->r.absmin, mins );
-	VectorCopy( self->r.absmax, maxs );
+	// TODO: Make self->r use bounds_t directly.
+	bounds_t b;
+	BoundsSet( b, self->r.absmin, self->r.absmax );
 
 	for ( other = self->mapEntity.groupChain; other; other = other->mapEntity.groupChain )
 	{
-		AddPointToBounds( other->r.absmin, mins, maxs );
-		AddPointToBounds( other->r.absmax, mins, maxs );
+		AddPointToBounds( other->r.absmin, b );
+		AddPointToBounds( other->r.absmax, b );
 	}
 
 	// find the thinnest axis, which will be the one we expand
@@ -1603,20 +1607,20 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 	for ( i = 1; i < 3; i++ )
 	{
-		if ( maxs[ i ] - mins[ i ] < maxs[ best ] - mins[ best ] )
+		if ( b.maxs[ i ] - b.mins[ i ] < b.maxs[ best ] - b.mins[ best ] )
 		{
 			best = i;
 		}
 	}
 
-	maxs[ best ] += self->mapEntity.config.triggerRange;
-	mins[ best ] -= self->mapEntity.config.triggerRange;
+	b.maxs[ best ] += self->mapEntity.config.triggerRange;
+	b.mins[ best ] -= self->mapEntity.config.triggerRange;
 
 	// create a trigger with this size
 	other = G_NewEntity( NO_CBSE );
 	other->classname = S_DOOR_SENSOR;
-	VectorCopy( mins, other->r.mins );
-	VectorCopy( maxs, other->r.maxs );
+	VectorCopy( b.mins, other->r.mins );
+	VectorCopy( b.maxs, other->r.maxs );
 	other->parent = self;
 	other->r.contents = CONTENTS_TRIGGER;
 	other->touch = door_trigger_touch;
