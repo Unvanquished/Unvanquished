@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-30 23:19+0200\n"
-"PO-Revision-Date: 2025-03-16 23:43+0000\n"
-"Last-Translator: Couvez <ccouvez@free.fr>\n"
+"PO-Revision-Date: 2025-05-12 05:13+0000\n"
+"Last-Translator: Mel420-star <roaakolyyy@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -634,7 +634,7 @@ msgstr "Balises"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Tactique du bot"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -687,8 +687,9 @@ msgid "Spectate"
 msgstr "Spectateur"
 
 #: ui/ingame_vsaymenu.rml:78
+#, fuzzy
 msgid "Vsay"
-msgstr ""
+msgstr "Message vocal"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -1030,37 +1031,44 @@ msgstr "Luminosité"
 
 #: ui/options_graphics.rml:86
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: ui/options_graphics.rml:87
+#, fuzzy
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
+"Méthode dégueulasse pour augmenter la luminosité\n"
+"(Envisage de réinitialiser et d’utiliser la cartographie des tons à la "
+"place.)"
 
 #: ui/options_graphics.rml:90
 msgid "Gamma:"
 msgstr "Gamma :"
 
 #: ui/options_graphics.rml:94
+#, fuzzy
 msgid "Tone mapping"
-msgstr ""
+msgstr "Ajustement de l’éclairage"
 
 #: ui/options_graphics.rml:95
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
+"Gère la plage dynamique pour atténuer les zones trop éclairées ou trop "
+"sombres."
 
 #: ui/options_graphics.rml:98
 msgid "Enable tone mapping"
-msgstr ""
+msgstr "Activer l'ajustement de l'éclairage"
 
 #: ui/options_graphics.rml:101
 msgid "Exposure"
-msgstr ""
+msgstr "Exposition"
 
 #: ui/options_graphics.rml:103
 msgid "Tone mapping brightness level"
-msgstr ""
+msgstr "Niveau de luminosité de l'ajustement de l'éclairage"
 
 #: ui/options_graphics.rml:107
 msgid "Lighting"
@@ -1724,11 +1732,11 @@ msgstr "Menu balise :"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr ""
+msgstr "Menu des messages vocaux:"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
-msgstr ""
+msgstr "Menu de tactiques du bot :"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
@@ -2660,7 +2668,6 @@ msgid "Advanced Marauder"
 msgstr "Maraudeur Avancé"
 
 #: ui/server_setup.rml:372
-#, fuzzy
 msgid "Advanced Dragoon"
 msgstr "Dragon Avancé"
 
@@ -4307,15 +4314,17 @@ msgstr "Identique à l'écran (%dx%d)"
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
+"Le comportement par défaut. C’est ce que les bots font lorsque la partie "
+"commence."
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend"
-msgstr ""
+msgstr "Défendre"
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 msgid "The bots stay in the base."
-msgstr ""
+msgstr "Les bots restent dans la base."
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 #: src/cgame/cg_rocket_datasource.cpp:1509
@@ -4324,28 +4333,28 @@ msgstr "Attaque"
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 msgid "The bots attack the enemy base."
-msgstr ""
+msgstr "Les bots attaquent la base ennemie."
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "Stay Here"
-msgstr ""
+msgstr "Reste ici"
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "The bots stay where you are currently."
-msgstr ""
+msgstr "Les bots restent là où tu es actuellement."
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow"
-msgstr ""
+msgstr "Suivre"
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 msgid "The bots follow you wherever you go."
-msgstr ""
+msgstr "Les bots te suivent partout où tu vas."
 
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend our base!!"
-msgstr ""
+msgstr "Défendez notre base !!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack!"
@@ -4353,11 +4362,11 @@ msgstr "À l’attaque !"
 
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow me!"
-msgstr ""
+msgstr "Suivez-moi !"
 
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No."
-msgstr ""
+msgstr "Non."
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes"
@@ -4365,15 +4374,17 @@ msgstr "Oui"
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes."
-msgstr ""
+msgstr "Oui."
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
+#, fuzzy
 msgid "Flank"
-msgstr ""
+msgstr "Flanquer"
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
+#, fuzzy
 msgid "Flank, behind you!"
-msgstr ""
+msgstr "Flanquez, derrière vous !"
 
 #: src/cgame/cg_rocket_draw.cpp:2644
 msgid "You are at the front of the spawn queue"
@@ -4961,7 +4972,7 @@ msgstr "Discussion d'équipe"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Bot tactic menu"
-msgstr ""
+msgstr "Menu des tactiques du bot"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
@@ -5093,7 +5104,7 @@ msgstr "Maintenez %s enfoncé tout en avançant pour piétiner."
 #: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
 #, c-format
 msgid "Press %s to show the bot tactic menu."
-msgstr ""
+msgstr "Appuyez sur %s pour afficher le menu des tactiques du bot."
 
 #: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
