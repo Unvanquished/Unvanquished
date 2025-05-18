@@ -1200,19 +1200,7 @@ void CG_GhostBuildable( int buildableInfo )
 	}
 
 	// Apply rotation from config.
-	{
-		matrix_t axisMat;
-		quat_t   axisQuat, rotQuat;
-
-		QuatFromAngles( rotQuat, bmc->modelRotation[ PITCH ], bmc->modelRotation[ YAW ],
-		                bmc->modelRotation[ ROLL ] );
-
-		MatrixFromVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-		QuatFromMatrix( axisQuat, axisMat );
-		QuatMultiply2( axisQuat, rotQuat );
-		MatrixFromQuat( axisMat, axisQuat );
-		MatrixToVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-	}
+	CG_ApplyModelRotationToAxis( VEC2GLM( bmc->modelRotation ), ent.axis );
 
 	if ( scale != 1.0f )
 	{
@@ -2109,19 +2097,7 @@ void CG_Buildable( centity_t *cent )
 	// TODO: Merge the scaling and rotation of (non-)ghost buildables.
 
 	// Apply rotation from config.
-	{
-		matrix_t axisMat;
-		quat_t   axisQuat, rotQuat;
-
-		QuatFromAngles( rotQuat, bmc->modelRotation[ PITCH ], bmc->modelRotation[ YAW ],
-		                bmc->modelRotation[ ROLL ] );
-
-		MatrixFromVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-		QuatFromMatrix( axisQuat, axisMat );
-		QuatMultiply2( axisQuat, rotQuat );
-		MatrixFromQuat( axisMat, axisQuat );
-		MatrixToVectorsFLU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-	}
+	CG_ApplyModelRotationToAxis( VEC2GLM( bmc->modelRotation ), ent.axis );
 
 	// Apply scale from config.
 	scale = bmc->modelScale;

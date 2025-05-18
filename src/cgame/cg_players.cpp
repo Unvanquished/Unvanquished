@@ -2927,21 +2927,7 @@ void CG_Player( centity_t *cent )
 			legs.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
 
 			// Apply rotation from config.
-			{
-				matrix_t axisMat;
-				quat_t axisQuat, rotQuat;
-
-				QuatFromAngles( rotQuat,
-					cmc->modelRotation[ PITCH ],
-					cmc->modelRotation[ YAW ],
-					cmc->modelRotation[ ROLL ] );
-
-				MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
-				QuatFromMatrix( axisQuat, axisMat );
-				QuatMultiply2( axisQuat, rotQuat );
-				MatrixFromQuat( axisMat, axisQuat );
-				MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
-			}
+			CG_ApplyModelRotationToAxis( VEC2GLM( cmc->modelRotation ), legs.axis );
 
 			// Apply scale from config.
 			if ( cmc->modelScale != 1.0f )
@@ -3117,21 +3103,7 @@ void CG_Player( centity_t *cent )
 	}
 
 	// Apply rotation from config.
-	{
-		matrix_t axisMat;
-		quat_t axisQuat, rotQuat;
-
-		QuatFromAngles( rotQuat,
-			cmc->modelRotation[ PITCH ],
-			cmc->modelRotation[ YAW ],
-			cmc->modelRotation[ ROLL ] );
-
-		MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
-		QuatFromMatrix( axisQuat, axisMat );
-		QuatMultiply2( axisQuat, rotQuat );
-		MatrixFromQuat( axisMat, axisQuat );
-		MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
-	}
+	CG_ApplyModelRotationToAxis( VEC2GLM( cmc->modelRotation ), legs.axis );
 
 	// Apply scale from config.
 	if ( cmc->modelScale != 1.0f )
@@ -3381,19 +3353,7 @@ void CG_Corpse( centity_t *cent )
 	// Apply rotation from config.
 	if ( !ci->skeletal )
 	{
-		matrix_t axisMat;
-		quat_t axisQuat, rotQuat;
-
-		QuatFromAngles( rotQuat,
-			cmc->modelRotation[ PITCH ],
-			cmc->modelRotation[ YAW ],
-			cmc->modelRotation[ ROLL ] );
-
-		MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
-		QuatFromMatrix( axisQuat, axisMat );
-		QuatMultiply2( axisQuat, rotQuat );
-		MatrixFromQuat( axisMat, axisQuat );
-		MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+		CG_ApplyModelRotationToAxis( VEC2GLM( cmc->modelRotation ), legs.axis );
 	}
 
 	// Apply scale from config.
