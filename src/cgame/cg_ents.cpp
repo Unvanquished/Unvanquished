@@ -455,23 +455,16 @@ static void CG_Missile( centity_t *cent )
 			ent.axis[ 0 ][ 2 ] = 1.0f;
 		}
 
+		// FIXME: producing a complete orientation from a single axis can't produce a stable/continuous
+		// result (hairy ball theorem), so the missile is liable to suddenly flip at some orientations.
+		// Also not great for grenades which can instantly change direction when bouncing.
 		MakeNormalVectors( ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 
+		// Convert FRU -> FLU
+		VectorNegate( ent.axis[ 1 ], ent.axis[ 1 ] );
+
 		// apply rotation from config
-		{
-			matrix_t axisMat;
-			quat_t   axisQuat, rotQuat;
-
-			QuatFromAngles( rotQuat, ma->modelRotation[ PITCH ], ma->modelRotation[ YAW ],
-			                         ma->modelRotation[ ROLL ] );
-
-			// FRU because that's what MakeNormalVectors produces (?)
-			MatrixFromVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-			QuatFromMatrix( axisQuat, axisMat );
-			QuatMultiply2( axisQuat, rotQuat );
-			MatrixFromQuat( axisMat, axisQuat );
-			MatrixToVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
-		}
+		CG_ApplyModelRotationToAxis( VEC2GLM( ma->modelRotation ), ent.axis );
 
 		// apply scale from config
 		if ( ma->modelScale != 1.0f )
