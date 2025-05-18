@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-30 23:19+0200\n"
-"PO-Revision-Date: 2025-05-01 02:20+0000\n"
+"PO-Revision-Date: 2025-05-19 02:01+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -26,7 +26,7 @@ msgstr "Строить"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr "Стоимость:"
+msgstr "Цена:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
