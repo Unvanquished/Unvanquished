@@ -2542,7 +2542,7 @@ public:
 			if ( newNumBarbs > numBarbs_ || ( newNumBarbs < numBarbs_ && numBarbs_ == maxBarbs_ ) )
 			{
 				t0_ = cg.time;
-				offset_ = -M_PI_2; // sin(-pi/2) is minimal
+				offset_ = -Math::divpi_2_f; // sin(-pi/2) is minimal
 				regenerationInterval_ = interval;
 			}
 			// change regeneration speed
@@ -2559,7 +2559,7 @@ public:
 				}
 				else
 				{
-					offset_ = M_PI - asinf( sinOld );
+					offset_ = Math::pi_f - asinf( sinOld );
 				}
 				regenerationInterval_ = interval;
 			}
@@ -2602,7 +2602,7 @@ private:
 		float timeElapsed = ( cg.time - t0_ ) / 1000.0f; // in s
 		float frequency = (float)LEVEL3_BOUNCEBALL_REGEN_CREEP
 		                / (float)regenerationInterval_; // in Hz
-		return offset_ + 2.0f * M_PI * frequency * timeElapsed;
+		return offset_ + Math::mul2_pi_f * frequency * timeElapsed;
 	}
 
 	int numBarbs_;

@@ -207,8 +207,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 	lastMomentumHalfLife = momentumHalfLife;
 	lastunlockableMinTime  = unlockableMinTime;
 
-	// ln(2) ~= 0.6931472
-	lastMod = exp( -0.6931472f * ( unlockableMinTime / ( momentumHalfLife * 60.0f ) ) );
+	lastMod = exp( -Math::ln2_f * ( unlockableMinTime / ( momentumHalfLife * 60.0f ) ) );
 
 	return lastMod * unlockThreshold;
 }

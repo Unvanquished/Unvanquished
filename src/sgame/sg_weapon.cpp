@@ -533,7 +533,7 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	VectorMA( muzzle, 8192 * 16, forward, end );
 	if ( spread > 0.f )
 	{
-		float r = random() * M_PI * 2.0f;
+		float r = random() * Math::mul2_pi_f;
 		float u = sinf( r ) * crandom() * spread * 16;
 		r = cosf( r ) * crandom() * spread * 16;
 		VectorMA( end, r, right, end );
@@ -600,7 +600,7 @@ static void ShotgunPattern( glm::vec3 const& origin, glm::vec3 const& origin2, i
 	// generate the "random" spread pattern
 	for ( int i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
-		float r = Q_crandom( &seed ) * M_PI;
+		float r = Q_crandom( &seed ) * Math::pi_f;
 		float a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
 		float u = sinf( r ) * a;
