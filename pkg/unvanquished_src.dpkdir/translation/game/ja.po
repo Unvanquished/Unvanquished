@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-30 23:19+0200\n"
-"PO-Revision-Date: 2025-03-17 15:16+0000\n"
-"Last-Translator: Couvez <ccouvez@free.fr>\n"
+"PO-Revision-Date: 2025-05-22 16:13+0000\n"
+"Last-Translator: Jimmy Dahlberg <jimmydaswag@hotmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ja/>\n"
 "Language: ja\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -462,7 +462,7 @@ msgstr "フレームレート"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -2453,7 +2453,7 @@ msgstr ""
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "レーダー"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
@@ -2481,7 +2481,7 @@ msgstr ""
 
 #: ui/transition_downloading.rml:60
 msgid "Download rate:"
-msgstr ""
+msgstr "ダウンロード速度:"
 
 #: ui/transition_downloading.rml:61
 msgid "Size:"
