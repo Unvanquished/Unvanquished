@@ -2316,6 +2316,7 @@ bool   CG_ParseColor( byte *c, const char **text_p );
 void       CG_ReadableSize( char *buf, int bufsize, int value );
 void       CG_PrintTime( char *buf, int bufsize, int time );
 void CG_SetKeyCatcher( int catcher );
+void CG_ApplyModelRotationToAxis( const glm::vec3 &modelRotation, vec3_t axis[ 3 ] );
 
 //
 // cg_rocket.c

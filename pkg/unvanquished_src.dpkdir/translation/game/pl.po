@@ -5,9 +5,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-09 17:47+0200\n"
-"PO-Revision-Date: 2024-10-19 18:26+0000\n"
-"Last-Translator: Paweł Redman <pawel.redman@gmail.com>\n"
+"POT-Creation-Date: 2025-04-30 23:19+0200\n"
+"PO-Revision-Date: 2025-04-20 02:10+0000\n"
+"Last-Translator: Robert Wolniak <robert.wolniak@szkod.ovh>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pl/>\n"
 "Language: pl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.8-rc\n"
+"X-Generator: Weblate 5.11.1-dev\n"
 "X-POOTLE-MTIME: 1375081810.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -26,7 +26,7 @@ msgstr "Buduj"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr "Cena:"
+msgstr "Koszt:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -38,7 +38,7 @@ msgstr "punkty mutacji"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Wybierz formę początkową:"
+msgstr "Wybierz swoją początkową formę:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -52,7 +52,9 @@ msgstr "Granger"
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr "Drecz to cicha forma bojowa a granger to forma budownicza."
+msgstr ""
+"Drecz jest formą do atakowania po cichu, a granger jest formą do rozbudowy "
+"bazy kosmitów."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
@@ -72,11 +74,11 @@ msgstr "Ogłoś głosowanie"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr "Uzupełnij botami"
+msgstr "Zapełnij botami"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Ilu graczy (żywych i botów) powinna mieć każda drużyna?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -138,7 +140,7 @@ msgstr "Ok"
 
 #: ui/help_gameplay.rml:12
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Instrukcja rozgrywki"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
@@ -150,12 +152,12 @@ msgid ""
 "to become a successful player."
 msgstr ""
 "W tym rozdziale znajdziesz podsumowanie głównych elementów gry, które musisz "
-"poznać by być dobrym graczem."
+"znać, żeby umieć dobrze grać."
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
-"Więcej informacji znajdziesz na stronie www oraz w innych ośrodkach naszej "
+"Więcej informacji znajdziesz na naszej stronie oraz innych kanałach "
 "społeczności!"
 
 #: ui/help_gameplay.rml:25
@@ -163,7 +165,7 @@ msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Porozmawiaj z graczami i deweloperami na serwerach Libra.Chat IRC, Matrix "
+"Porozmawiaj z graczami i twórcami gry na serwerach Libra.Chat IRC, Matrix "
 "oraz Discord: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
@@ -176,7 +178,7 @@ msgstr "Dowiedz się więcej o grze na wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Składaj raporty o błędach na: <web dest=\"bugs\" />"
+msgstr "Zgłaszaj błędy na: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
@@ -187,8 +189,8 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
-"Obcy zdobywają punkty ewolucyjne zabijając ludzi. Mogą użyć tych punktów, "
-"aby ewoluować w bardziej zaawansowanie formy."
+"Obcy zdobywają punkty ewolucji poprzez zabijanie ludzi. Mogą użyć tych "
+"punktów, aby ewoluować w [dragoon] bardziej zaawansowanie formy."
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -198,15 +200,15 @@ msgid ""
 msgstr ""
 "Obcy mogą ewoluować wszędzie pod warunkiem, że nie są w polu widzenia wroga "
 "lub jego struktur. Obcy mogą też de-ewoluować do [granger] mniej "
-"rozwiniętych form(z pewnym kosztem) w pobliżu [overmind] Overmind'a."
+"rozwiniętych form (z pewnym kosztem) w pobliżu [overmind] Nadświadomości."
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Jeśli Overmind zostanie zniszczony postaw nowy jako [granger] granger, "
-"potrzebujesz go by ewoluować!"
+"Jeśli Nadświadomość zostanie zniszczona postaw nową jako [granger] Granger. "
+"Potrzebujesz jej, by ewoluować!"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -215,8 +217,8 @@ msgid ""
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
 "Ludzie mogą zarabiać kredyty przez zabijanie obcych oraz niszczenie ich "
-"struktur, za kredyty mogą kupować nowe [lcannon] bronie, zbroje, [bsuit] "
-"pancerze wspomagane oraz akcesoria takie jak radary i jetpaki."
+"struktur. Za kredyty mogą kupować nowe [lcannon] bronie, zbroje, [bsuit] "
+"pancerze wspomagane oraz akcesoria takie jak radary i plecaki odrzutowe."
 
 #: ui/help_gameplay.rml:50
 msgid ""
@@ -229,7 +231,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
-msgstr "Zasilanie struktur"
+msgstr "Zasilanie budowli"
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -239,11 +241,11 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"Budowanie stryktury wymaga punktów budowy. Twoja drużyna zacznie z małą pulą "
-"punktów budowy, jeśli chcesz postawić więcej struktur w danym obszarze "
-"możesz postawić [leech] strukturę wydobywczą by zwiększyć dostępną moc i "
-"dostarczyć więcej punktów budowy. Pamiętaj, że stracisz tak pozyskane punkty "
-"jeśli struktury wydobywcze zostaną zniszczone."
+"Budowanie struktur wymaga punktów budowy. Twoja drużyna zaczyna z niewielką "
+"ilością punktów budowy na start. Jeśli chcesz postawić więcej struktur w "
+"danym obszarze, możesz postawić [leech] strukturę wydobywczą, która zwiększy "
+"dostępną moc oraz dostarczy więcej punktów budowy. Pamiętaj, że jeśli te "
+"budowle zostaną zniszczone, pozyskane z nich punkty budowy przepadną."
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -254,8 +256,8 @@ msgid ""
 msgstr ""
 "Jeśli używasz więcej punktów budowy (BP) niż struktury wydobywcze ([leech] "
 "Pijawka, [drill] Wiertło) są w stanie dostarczyć (obecne BP + odzyskiwane "
-"BP), struktury będą wyłączane po kolei puki wymogi energetyczne pozostałych "
-"struktur zostaną spełnione."
+"BP), struktury będą wyłączane po kolei, dopóki wymogi energetyczne "
+"pozostałych struktur zostaną spełnione."
 
 #: ui/help_gameplay.rml:61
 msgid ""
@@ -264,8 +266,8 @@ msgid ""
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
 "Na działanie struktur wytwórczych ([egg] jaja i [telenode] telewęzły), "
-"struktur wydobywczych (pijawki and wiertła) i struktur unikalnych "
-"([overmind] Overmind i [reactor] reaktor) NIE wpływa brak BP."
+"struktur wydobywczych (pijawki oraz wiertła) i struktur unikalnych "
+"([overmind] Nadświadomość i [reactor] Reaktor) NIE wpływa brak BP."
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -278,8 +280,8 @@ msgid ""
 "efficiency."
 msgstr ""
 "Punkty budowy są pozyskiwane przez dwie struktury wydobywcze: [drill] "
-"wiertła u ludzi i [leech] pijawki obcych. Dla większej efektywności obiekty "
-"te muszą być rozstawione na dużej przestrzeni."
+"Wiertła u Ludzi oraz [leech] Pijawki u Obcych. Dla większej efektywności "
+"obiekty te muszą być rozstawione w sporej odległości od siebie."
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -287,7 +289,7 @@ msgid ""
 "each other and ultimately cost build resources!"
 msgstr ""
 "Nie stawiaj struktur wydobywczych zbyt blisko siebie, bo będą ze sobą "
-"rywalizować co ostatecznie będzie cię kosztować zasoby budowlane!"
+"rywalizować, co ostatecznie będzie cię kosztować punkty budowy!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -298,10 +300,10 @@ msgid ""
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
 "Budujący widzą drugi pasek nad paskiem zdrowia postawionych generatorów "
-"zasobów, reprezentuje on wydajność danej jednostki. Przy wybieraniu miejsca "
-"dla nowej jednostki, wyświetli ci się prognoza wydajności. Punkty budowy "
-"będą natychmiastowo dostępne w chwili ukończenia konstrukcji struktury "
-"wydobywczej. Nie stawiaj niechronionych odwiertów!"
+"zasobów, który reprezentuje wydajność danej jednostki. Przy wybieraniu "
+"miejsca dla nowej jednostki, wyświetli ci się prognoza wydajności. Punkty "
+"budowy będą natychmiastowo dostępne w chwili ukończenia konstrukcji "
+"struktury wydobywczej. Nie stawiaj niechronionych odwiertów!"
 
 #: ui/help_gameplay.rml:77
 msgid ""
@@ -310,9 +312,9 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"Gdy budynki zostają zniszczone, struktury wydobywcze powoli odzyskują "
+"Gdy budynek zostanie zniszczony, struktury wydobywcze powoli odzyskują "
 "zainwestowane punkty. Tempo odzyskiwania zmniejsza się z czasem, co "
-"powoduje, że jest coraz trudniej odbudowywać zniszczone budynki podczas "
+"powoduje, że coraz trudniej jest odbudowywać zniszczone budynki podczas "
 "długiej rozgrywki. Mechanika ta zastępuje \"nagłą śmierć\"."
 
 #: ui/help_gameplay.rml:81
@@ -326,7 +328,7 @@ msgid ""
 "weapons, structures or classes will be unlocked."
 msgstr ""
 "Budowanie i niszczenie struktur oraz zabijanie wrogów daje twojej drużynie "
-"nowy zasób zwany \"momentum\". Jeśli zyskacie wystarczające momentum "
+"nowy zasób zwany \"momentum\". Jeśli zyskacie wystarczającą ilość momentum, "
 "odblokujecie nowe bronie, struktury i klasy."
 
 #: ui/help_gameplay.rml:87
@@ -334,7 +336,7 @@ msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"Momentum zmniejsza się wykładniczo podczas rozgrywki więc, jeśli twoja "
+"Momentum zmniejsza się wykładniczo podczas rozgrywki, więc jeśli twoja "
 "drużyna będzie zbyt pasywna to może stracić dostęp do nowych gadżetów. "
 "Istniejące ulepszenia dalej będą funkcjonować."
 
@@ -355,16 +357,16 @@ msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
-"Jeśli struktury są zbudowane zbyt blisko siebie to ogień może przeskoczyć "
-"między nieszczęśliwymi sąsiadami."
+"Jeśli struktury zbudowane są zbyt blisko siebie, ogień może przeskoczyć "
+"między pechowymi sąsiadami."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
-"Mały [fire] pożar sam może po chwili wygasnąć, grupa płonących struktur "
-"natomiast będzie się palić się dłużej i goręcej czyniąc dużo więcej szkód."
+"O ile niewielki [fire] pożar sam może po chwili wygasnąć, grupa struktur "
+"będzie się palić dłużej, czyniąc niewiarygodnie dużo szkód."
 
 #: ui/help_gameplay.rml:103
 msgid ""
@@ -376,7 +378,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
-msgstr "Atakują"
+msgstr "Atakowani"
 
 #: ui/help_gameplay.rml:110
 msgid ""
@@ -385,9 +387,9 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"[reactor] Reaktor i [overmind] Overmind ostrzegą drużynę przy kolejno 75%, "
-"50% i 25% zdrowia oraz przy zniszczeniu. Niszczenie innego budynku spowoduje "
-"wysłania ostrzeżenia o treści “atakują” do jego drużyny."
+"[reactor] Reaktor i [overmind] Nadświadomość ostrzegą drużynę przy kolejno "
+"75%, 50% i 25% zdrowia oraz przy ich zniszczeniu. Niszczenie innego budynku "
+"spowoduje wysłania ostrzeżenia o treści “jesteśmy atakowani” do jego drużyny."
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
@@ -395,7 +397,9 @@ msgstr "Leczenie"
 
 #: ui/help_gameplay.rml:117
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr "Wasza śmierć karmi przeciwnika, możecie chcieć oszczędzać swoje życia!"
+msgstr ""
+"Wasza śmierć karmi przeciwnika, przez co możecie chcieć oszczędzać swoje "
+"życia!"
 
 #: ui/help_gameplay.rml:121
 msgid ""
@@ -404,10 +408,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
-"Obcy powoli leczą się niezależnie gdzie są, ale w grupach oraz obok swoich "
-"budynków proces ten przyśpiesza. Budowanie na wysuniętych pozycjach może być "
-"decydujące. Leczenie w jakikolwiek sposób również wpływa na regenerację "
-"pocisków [advdragoon] zaawansowanego dragoon'a."
+"Obcy powoli leczą się niezależnie od tego, gdzie są, ale w grupach oraz obok "
+"swoich budynków proces ten przyspiesza. Rozbudowywanie się na wysuniętych "
+"pozycjach może być decydujące! Leczenie w jakikolwiek sposób również wpływa "
+"na regenerację pocisków [advdragoon] zaawansowanego dragoona."
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -415,9 +419,10 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"Buster pozwala na szybkie leczenie wszystkich obcych w pobliżu, wybuduj go "
-"przy pierwszej okazji, postaraj się odblokować go jak najszybciej się da. "
-"Buster również dodaje też jad czyniący twoje ataki bardziej zabójczymi."
+"Wzmacniacz pozwala na szybkie leczenie wszystkich obcych w pobliżu. Wybuduj "
+"go przy pierwszej okazji oraz postaraj się odblokować go jak najszybciej. "
+"Wzmacniacz daje też pobliskim obcym jad czyniący twoje ataki bardziej "
+"zabójczymi."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -425,9 +430,9 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
-"Pozostawanie w niedalekiej odległości od [overmind] overmind'a lub [egg] jaj "
-"też lekko podwyższy ci leczenie, lecz nie tak bardzo jak sam śluz. Może ci "
-"to pomoże w bronieniu baz."
+"Pozostawanie w niedalekiej odległości od [overmind] Nadświadomości lub [egg] "
+"Jaj też lekko przyspieszy leczenie, lecz nie tak bardzo jak sam śluz. Może "
+"ci on pomóc w bronieniu baz."
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -436,19 +441,21 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Obcy mają trzecią formę wzmocnionego leczenia: bliskość innych obcych. Jeśli "
-"jesteś niedaleko innego przyjaznego tobie obcego, będziesz się leczył nieco "
-"szybciej, a przy dwóch tak szybko jak dotykając budynku Obcych. W ten sposób "
-"praca drużynowa jest doskonałą metodą oblegania wroga!"
+"Obcy mają trzecią formę wzmocnionego leczenia: towarzystwo innych obcych. "
+"Jeśli jesteś niedaleko innego przyjaznego tobie obcego, będziesz się leczył "
+"nieco szybciej. Kiedy masz obok siebie dwóch innych obcych, prędkość "
+"leczenia równa się prędkości leczenia w pobliżu budowli. W połączeniu z "
+"dobrą współpracą drużynową jest to doskonały sposób, by przezwyciężyć "
+"przeciwnika!"
 
 #: ui/help_gameplay.rml:135
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
-"Każdy z ludzi nosi osobisty zestaw pierwszej pomocy, którym można "
-"jednorazowo się uleczyć, potem muszą powrócić do [medstat] stacji medycznej "
-"na leczenie oraz napełnienie zestawu pierwszej pomocy."
+"Każdy z ludzi nosi osobistą apteczkę, którą można jednorazowo się uleczyć. "
+"Po jej zużyciu muszą powrócić do [medstat] Stacji medycznej na leczenie oraz "
+"żeby odnowić apteczkę."
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
@@ -459,13 +466,13 @@ msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
-"Niektóre formy obcych takie jak [dretch] drecz, [mantis] mantis oraz "
-"zaawansowana forma [advgranger] grangera potrafią chodzić po ścianach!"
+"Niektóre formy obcych takie jak [dretch] Drecz, [mantis] Modliszka oraz "
+"zaawansowana forma [advgranger] Grangera potrafią chodzić po ścianach!"
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
-"Użyj tej umiejętności by docierać do nietypowych miejsc oraz skracać drogę "
+"Użyj tej umiejętności, by docierać do nietypowych miejsc oraz skracać drogę "
 "przez kanały wentylacyjne."
 
 #: ui/help_gameplay.rml:148
@@ -473,21 +480,22 @@ msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
-"Obronne struktury obcych takie jak trappery oraz spikery działają lepiej, "
-"gdy umiejscowione są na ścianach, a budowane na sufitach są bezpieczniejsze "
-"z dala od wybuchów bomb."
+"Obronne struktury obcych takie jak Lepy oraz Kolczatki działają lepiej, gdy "
+"umiejscowione są na ścianach, a budowane na sufitach są bezpieczniejsze poza "
+"zasięgiem granatów."
 
 #: ui/help_gameplay.rml:151
 msgid "The advanced granger can be unlocked with momentum."
-msgstr "Zaawansowany granger odblokowywany jest przy odpowiednim momentum."
+msgstr "Zaawansowany Granger odblokowywany jest przy odpowiednim momentum."
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
-msgstr "Od Tremulous'a"
+msgstr "Zmiany w stosunku do Tremulous"
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "Od Tremulous'a poziom wigoru u ludzi został podniesiony."
+msgstr ""
+"W porównaniu do Tremulous, poziom wytrzymałości u ludzi został zwiększony."
 
 #: ui/help_gameplay.rml:161
 msgid ""
@@ -503,7 +511,7 @@ msgid ""
 "number of drills."
 msgstr ""
 "Stadia zostały zastąpione przez momentum, a punkty budowy zależą "
-"bezpośrednio od liczby odwiertów."
+"bezpośrednio od liczby Wierteł/Pijawek."
 
 #: ui/help_gameplay.rml:167
 msgid ""
@@ -518,26 +526,27 @@ msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Obcy dostali spiker'a jako nową budowlę obronną, która może zadać poważne "
-"obrażenia nieuważnym ludziom, ale ponieważ jest bardzo podatną strukturą nie "
-"powinien być pozostawiony na widoku!"
+"Obcy dostali Kolczatkę jako nową budowlę obronną, która może zadać poważne "
+"obrażenia nieuważnym ludziom, ale ponieważ jest bardzo podatną strukturą, "
+"nie powinien być pozostawiony na widoku!"
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
-"Basilisk został zamieniony na mantis, który nie jest w stanie unieruchamiać, "
-"ale za to jego ugryzienia spowalniają ofiary, a ponadto potrafi rzucać się "
-"błyskawicznie do przodu."
+"Basilisk został zamieniony na Modliszkę, która nie jest w stanie "
+"unieruchamiać, ale za to jej ugryzienia spowalniają ofiary, a ponadto "
+"potrafi rzucać się błyskawicznie do przodu."
 
 #: ui/help_gameplay.rml:176
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
-"Obcy mogą deewoluować obok overmind'a, a splunięcie zaawansowany granger'a "
-"ma teraz ciekawe właściwości, wypróbuj plucia na ogień oraz na ludzi!"
+"Obcy mogą deewoluować obok Nadświadomości, a splunięcie zaawansowanego "
+"grangera ma teraz ciekawe właściwości. Wypróbuj plucia na ogień oraz na "
+"ludzi!"
 
 #: ui/hud_basics.rml:196
 msgid "Game"
@@ -557,7 +566,7 @@ msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "Punkty Budowy"
+msgstr "punkty budowy"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -585,7 +594,7 @@ msgstr "Szybkostrzelność:"
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr "Walka / Ekwipunek"
+msgstr "Ulepszenia"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
@@ -593,11 +602,11 @@ msgstr "Wybierz początkowe wyposażenie:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr "SMG"
+msgstr "Pistolet maszynowy"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "Zestaw Konstrukcyjny"
+msgstr "Zestaw konstrukcyjny"
 
 #: ui/human_spawn.rml:48
 msgid ""
@@ -605,8 +614,8 @@ msgid ""
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
 "Pistolet maszynowy to szybkostrzelna broń startowa, a zestaw konstrukcyjny "
-"umożliwia budowanie i naprawianie ludzkich konstrukcji. Całym wyposażeniem "
-"można handlować w zbrojowni."
+"umożliwia budowanie i naprawianie ludzkich konstrukcji. Wyposażenie można "
+"zmieniać i kupować w zbrojowni."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
@@ -614,7 +623,7 @@ msgstr "Latarnie"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Taktyka botów"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -631,7 +640,7 @@ msgstr "Czas:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr "Auto-wybieranie zespołu"
+msgstr "Automatyczne przydzielanie drużyny"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
@@ -647,11 +656,11 @@ msgid ""
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
 "Ludzie mogą wyposażyć się w szeroką gamę broni i sprzętu. Są oni elastyczni "
-"i zabójczy na odległość, ale delikatni."
+"i zabójczy na odległość, ale mało żywotni."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr "Dołącz do Kosmitów"
+msgstr "Dołącz do Obcych"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
@@ -659,7 +668,7 @@ msgstr "Dołącz do Ludzi"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr "A jak nie chcesz grać. Możesz oglądać grę bez grania."
+msgstr "Jeśli nie chcesz grać, możesz również dołączyć jako zwykły obserwator."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
@@ -667,7 +676,7 @@ msgstr "Obserwuj"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
-msgstr ""
+msgstr "Głosówka"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -679,11 +688,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "Mecz"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr "Wyjdź z meczu"
+msgstr "Opuść mecz"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
@@ -695,19 +704,19 @@ msgstr "Demokracja"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr "Menu gospodarza (host-a)"
+msgstr "Menu gospodarza"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr "Ustaw Serwer"
+msgstr "Ustawienia serwera"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr "Zatrzymaj serwer (Stop)"
+msgstr "Zatrzymaj serwer"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr "Zatrzymaj serwer (Pauza)"
+msgstr "Zapauzuj serwer"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
@@ -715,19 +724,19 @@ msgstr "Boty"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr "Menu Główne"
+msgstr "Menu główne"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr "Listy Serwerów"
+msgstr "Lista serwerów"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr "Rozpocznij Lokalne/Gra LAN"
+msgstr "Rozpocznij grę lokalną/LAN"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr "Opcje"
+msgstr "Ustawienia"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
@@ -743,22 +752,21 @@ msgstr "Beta"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr "Pole widzenia"
+msgstr "Pole widzenia (FOV)"
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr "Dodaj bota Kosmitę"
+msgstr "Dodaj bota do obcych"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr "Dodaj bota Człowieka"
+msgstr "Dodaj bota do ludzi"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
 msgstr "Usuń wszystkie boty"
 
 #: ui/options_democracy.rml:13
-#, fuzzy
 msgid "Global vote:"
 msgstr "Globalne głosowanie:"
 
@@ -784,16 +792,15 @@ msgstr "Wyrzuć boty"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr "Rozszerz limit czasowy"
+msgstr "Wydłuż limit czasowy"
 
 #: ui/options_democracy.rml:34
-#, fuzzy
 msgid "Call a draw"
-msgstr "Zremisuj"
+msgstr "Ogłoś remis"
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr "Przyznaj się do porażki"
+msgstr "Poddaj grę"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -809,47 +816,42 @@ msgid ""
 "A higher FOV can help combat this."
 msgstr ""
 "Wielu graczy cierpi na łagodną chorobę lokomocyjną podczas grania w "
-"strzelanki FPS. Wyższy FOV może pomóc w walce z tym problemem."
+"pierwszoosobowe strzelanki. Wyższy FOV może załagodzić ten problem."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr "kąty"
+msgstr "stopnie"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:55 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:389 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_fov.rml:67 ui/options_graphics.rml:91 ui/options_graphics.rml:277
+#: ui/options_graphics.rml:399 ui/options_mouse.rml:21 ui/options_ui.rml:75
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "reset"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
-#, fuzzy
 msgid "Mantis"
 msgstr "Modliszka"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
-#, fuzzy
 msgid "Marauder"
 msgstr "Maruder"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
-#, fuzzy
 msgid "Dragoon"
-msgstr "Smok (Dragon)"
+msgstr "Dragoon"
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
-#, fuzzy
 msgid "Tyrant"
 msgstr "Tyran"
 
 #: ui/options_fov.rml:71
-#, fuzzy
 msgid "View bobbing"
-msgstr "Zobacz podskakiwanie"
+msgstr "Efekt kiwania głową w trakcie ruchu"
 
 #: ui/options_fov.rml:74
 #, fuzzy
@@ -862,7 +864,7 @@ msgstr "Wyłączone"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Delikatne"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 #: src/cgame/cg_rocket_datasource.cpp:1474
@@ -871,19 +873,20 @@ msgstr "Domyślnie"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Silne"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Ruch do góry i dołu"
 
 #: ui/options_fov.rml:85
+#, fuzzy
 msgid "Camera rolling"
-msgstr ""
+msgstr "Obrót kamery"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "Ruch obrotowy"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
@@ -891,20 +894,22 @@ msgstr "Grafika"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Presety"
 
 #: ui/options_graphics.rml:27
 msgid "Lowest"
-msgstr ""
+msgstr "Najniższe"
 
 #: ui/options_graphics.rml:28
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"Niski subdivision modeli, brak tekstur nieba, brak cieni, brak efektu "
+"cząsteczek, tekstury 16-pikselowe…"
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:253
-#: ui/options_graphics.rml:368 ui/options_graphics.rml:377
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:263
+#: ui/options_graphics.rml:378 ui/options_graphics.rml:387
 msgid "Low"
 msgstr "Niskie"
 
@@ -913,6 +918,8 @@ msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
 msgstr ""
+"Multisampling, anisotropic mip-mapping, cienie, efekty cząsteczki, tekstury "
+"256 pikselowe…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -924,8 +931,8 @@ msgid ""
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:255
-#: ui/options_graphics.rml:367 ui/options_graphics.rml:375
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:265
+#: ui/options_graphics.rml:377 ui/options_graphics.rml:385
 msgid "High"
 msgstr "Wysokie"
 
@@ -937,7 +944,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:43
 msgid "Ultra"
-msgstr ""
+msgstr "Najwyższe"
 
 #: ui/options_graphics.rml:44
 msgid ""
@@ -947,538 +954,558 @@ msgstr ""
 
 #: ui/options_graphics.rml:47 ui/options_graphics.rml:49
 msgid "Video"
-msgstr ""
+msgstr "Wideo"
 
-#: ui/options_graphics.rml:51
-msgid "Brightness"
-msgstr ""
-
-#: ui/options_graphics.rml:54
-msgid "Gamma:"
-msgstr ""
-
-#: ui/options_graphics.rml:61
+#: ui/options_graphics.rml:52
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Rozdzielczość ekranu"
 
-#: ui/options_graphics.rml:65
+#: ui/options_graphics.rml:56
 msgid "Borderless window"
-msgstr ""
+msgstr "Tryb okienkowy"
 
-#: ui/options_graphics.rml:69
+#: ui/options_graphics.rml:60
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pełny ekran"
 
-#: ui/options_graphics.rml:74 ui/options_graphics.rml:378
+#: ui/options_graphics.rml:65 ui/options_graphics.rml:388
 msgid "Off"
 msgstr "Wyłączone"
 
-#: ui/options_graphics.rml:75
+#: ui/options_graphics.rml:66
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Elastyczny Vsync"
 
-#: ui/options_graphics.rml:76
+#: ui/options_graphics.rml:67
 msgid "Full Vsync"
-msgstr ""
+msgstr "Pełny Vsync"
 
-#: ui/options_graphics.rml:78
+#: ui/options_graphics.rml:69
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
-#: ui/options_graphics.rml:79
+#: ui/options_graphics.rml:70
 msgid ""
 "Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
 
-#: ui/options_graphics.rml:84
+#: ui/options_graphics.rml:75
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr ""
 
-#: ui/options_graphics.rml:88 ui/options_graphics.rml:135
-#: ui/options_graphics.rml:199 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:281 ui/options_graphics.rml:319
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:79 ui/options_graphics.rml:145
+#: ui/options_graphics.rml:209 ui/options_graphics.rml:248
+#: ui/options_graphics.rml:291 ui/options_graphics.rml:329
+#: ui/options_graphics.rml:352
 msgid "Apply now"
+msgstr "Włącz teraz"
+
+#: ui/options_graphics.rml:83
+msgid "Brightness"
+msgstr "Jasność"
+
+#: ui/options_graphics.rml:86
+msgid "Gamma"
 msgstr ""
 
-#: ui/options_graphics.rml:92
-msgid "Lighting"
+#: ui/options_graphics.rml:87
+msgid ""
+"Ugly method for increasing brightness. (Consider resetting and using tone "
+"mapping instead.)"
 msgstr ""
+
+#: ui/options_graphics.rml:90
+msgid "Gamma:"
+msgstr "Gamma:"
 
 #: ui/options_graphics.rml:94
-msgid "Lights"
+msgid "Tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:97
-msgid "Light mapping"
-msgstr ""
-
-#: ui/options_graphics.rml:97
-msgid "normal"
+#: ui/options_graphics.rml:95
+msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 
 #: ui/options_graphics.rml:98
-msgid "Vertex lighting"
+msgid "Enable tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:98
-msgid "low, ugly"
-msgstr ""
-
-#: ui/options_graphics.rml:100
-msgid "Lighting system"
+#: ui/options_graphics.rml:101
+msgid "Exposure"
 msgstr ""
 
 #: ui/options_graphics.rml:103
-msgid "Brightness clamping"
+msgid "Tone mapping brightness level"
 msgstr ""
 
-#: ui/options_graphics.rml:105
-msgid ""
-"Old brightness limit of map lighting of world surfaces and models (the way "
-"legacy maps looked before)"
+#: ui/options_graphics.rml:107
+msgid "Lighting"
+msgstr "Oświetlenie"
+
+#: ui/options_graphics.rml:109
+msgid "Lights"
+msgstr "Światła"
+
+#: ui/options_graphics.rml:112
+msgid "Light mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:108
-msgid "Light styles"
-msgstr ""
-
-#: ui/options_graphics.rml:110
-msgid "Precomputed dynamic lights emitted by static map objects."
+#: ui/options_graphics.rml:112
+msgid "normal"
 msgstr ""
 
 #: ui/options_graphics.rml:113
-msgid "Dynamic lights"
+msgid "Vertex lighting"
+msgstr ""
+
+#: ui/options_graphics.rml:113
+msgid "low, ugly"
 msgstr ""
 
 #: ui/options_graphics.rml:115
+msgid "Lighting system"
+msgstr ""
+
+#: ui/options_graphics.rml:118
+msgid "Light styles"
+msgstr ""
+
+#: ui/options_graphics.rml:120
+msgid "Precomputed dynamic lights emitted by static map objects."
+msgstr ""
+
+#: ui/options_graphics.rml:123
+msgid "Dynamic lights"
+msgstr ""
+
+#: ui/options_graphics.rml:125
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 
-#: ui/options_graphics.rml:118
+#: ui/options_graphics.rml:128
 msgid "Rim lighting"
 msgstr ""
 
-#: ui/options_graphics.rml:120
+#: ui/options_graphics.rml:130
 msgid "Light the edges of models from behind."
 msgstr ""
 
-#: ui/options_graphics.rml:123
+#: ui/options_graphics.rml:133
 msgid "Half Lambert lighting"
 msgstr ""
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:135
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
-#: ui/options_graphics.rml:129
+#: ui/options_graphics.rml:139
 msgid "Blobs"
 msgstr "Blob"
 
-#: ui/options_graphics.rml:129
+#: ui/options_graphics.rml:139
 msgid "low"
 msgstr ""
 
-#: ui/options_graphics.rml:130 ui/options_graphics.rml:351
+#: ui/options_graphics.rml:140 ui/options_graphics.rml:361
 #: ui/options_ui.rml:177
 msgid "None"
 msgstr "Nie Sortuj"
 
-#: ui/options_graphics.rml:132
+#: ui/options_graphics.rml:142
 msgid "Shadows"
 msgstr ""
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:149
 msgid "Textures"
 msgstr ""
 
-#: ui/options_graphics.rml:141 ui/server_setup.rml:13
+#: ui/options_graphics.rml:151 ui/server_setup.rml:13
 msgid "General"
 msgstr "Ogólne"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:157
+#: ui/options_graphics.rml:154 ui/options_graphics.rml:167
 msgid "No limit"
 msgstr ""
 
-#: ui/options_graphics.rml:145
+#: ui/options_graphics.rml:155
 msgid "(ultra)"
 msgstr ""
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:156
 msgid "(high)"
 msgstr ""
 
-#: ui/options_graphics.rml:147
+#: ui/options_graphics.rml:157
 msgid "(medium)"
 msgstr ""
 
-#: ui/options_graphics.rml:148
+#: ui/options_graphics.rml:158
 msgid "(low)"
 msgstr ""
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:159
 msgid "(lowest)"
 msgstr ""
 
-#: ui/options_graphics.rml:151
+#: ui/options_graphics.rml:161
 msgid "Image size limit"
 msgstr ""
 
-#: ui/options_graphics.rml:152
+#: ui/options_graphics.rml:162
 msgid "Limit image size to save on memory."
 msgstr ""
 
-#: ui/options_graphics.rml:158
+#: ui/options_graphics.rml:168
 msgid "No smaller than screen"
 msgstr ""
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:169
 msgid "No larger than screen"
 msgstr ""
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:171
 msgid "Menu image size limit"
 msgstr ""
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:172
 msgid "Limit menu image size to save on memory."
 msgstr ""
 
-#: ui/options_graphics.rml:167
+#: ui/options_graphics.rml:177
 msgid "High-precision rendering"
 msgstr ""
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:178
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:182
 msgid "Use bindless textures if possible"
 msgstr ""
 
-#: ui/options_graphics.rml:174
+#: ui/options_graphics.rml:184
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
 
-#: ui/options_graphics.rml:174 ui/options_graphics.rml:224
-#: ui/options_graphics.rml:248 ui/options_graphics.rml:329
-#: ui/options_graphics.rml:334 ui/options_graphics.rml:339
+#: ui/options_graphics.rml:184 ui/options_graphics.rml:234
+#: ui/options_graphics.rml:258 ui/options_graphics.rml:339
+#: ui/options_graphics.rml:344 ui/options_graphics.rml:349
 msgid "Experimental."
 msgstr ""
 
-#: ui/options_graphics.rml:177
+#: ui/options_graphics.rml:187
 msgid "Mip-mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:188
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
 
-#: ui/options_graphics.rml:185 ui/options_ui.rml:47
+#: ui/options_graphics.rml:195 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Nie"
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:197
 msgid "Anisotropic mip-mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:198
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:192
+#: ui/options_graphics.rml:202
 msgid "Trilinear"
 msgstr "Trójliniowe"
 
-#: ui/options_graphics.rml:192
+#: ui/options_graphics.rml:202
 msgid "better"
 msgstr ""
 
-#: ui/options_graphics.rml:193
+#: ui/options_graphics.rml:203
 msgid "Bilinear"
 msgstr "Dwuliniowe"
 
-#: ui/options_graphics.rml:195
+#: ui/options_graphics.rml:205
 msgid "Texture scaling filter"
 msgstr ""
 
-#: ui/options_graphics.rml:203 ui/options_graphics.rml:205
+#: ui/options_graphics.rml:213 ui/options_graphics.rml:215
 msgid "Materials"
 msgstr ""
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:217
 msgid "Sky"
 msgstr ""
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:219
 msgid "Draw the sky."
 msgstr ""
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:222
 msgid "Normal mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:214
+#: ui/options_graphics.rml:224
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:227
 msgid "Deluxe mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:219
+#: ui/options_graphics.rml:229
 msgid "Light direction based on baked textures."
 msgstr ""
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:232
 msgid "Relief mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:234
 msgid "Adds bumps on supported surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:237
 msgid "Specular mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:239
 msgid "Simulate light specularity."
 msgstr ""
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:242
 msgid "Physical mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:244
 msgid "Material appearance based on physical approximations."
 msgstr ""
 
-#: ui/options_graphics.rml:242 ui/options_graphics.rml:244
+#: ui/options_graphics.rml:252 ui/options_graphics.rml:254
 msgid "Reflections"
 msgstr ""
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:256
 msgid "Static reflections"
 msgstr ""
 
-#: ui/options_graphics.rml:248
+#: ui/options_graphics.rml:258
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:262
 msgid "Very low"
 msgstr ""
 
-#: ui/options_graphics.rml:254 ui/options_graphics.rml:376
+#: ui/options_graphics.rml:264 ui/options_graphics.rml:386
 msgid "Moderate"
 msgstr ""
 
-#: ui/options_graphics.rml:256
+#: ui/options_graphics.rml:266
 msgid "Very high"
 msgstr ""
 
-#: ui/options_graphics.rml:258 ui/options_graphics.rml:370
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:380
 msgid "Quality"
 msgstr ""
 
-#: ui/options_graphics.rml:259
+#: ui/options_graphics.rml:269
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:272
 msgid "Cubemap grid spacing"
 msgstr ""
 
-#: ui/options_graphics.rml:266 ui/options_graphics.rml:388
+#: ui/options_graphics.rml:276 ui/options_graphics.rml:398
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr ""
 
-#: ui/options_graphics.rml:272 ui/options_ui.rml:129
+#: ui/options_graphics.rml:282 ui/options_ui.rml:129
 msgid "Never"
 msgstr "Nigdy"
 
-#: ui/options_graphics.rml:273
+#: ui/options_graphics.rml:283
 msgid "Cache on disk"
 msgstr ""
 
-#: ui/options_graphics.rml:274
+#: ui/options_graphics.rml:284
 msgid "Always rebuild"
 msgstr ""
 
-#: ui/options_graphics.rml:276
+#: ui/options_graphics.rml:286
 msgid "Static reflection cubemaps autobuild"
 msgstr ""
 
-#: ui/options_graphics.rml:277
+#: ui/options_graphics.rml:287
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr ""
 
-#: ui/options_graphics.rml:285 ui/options_graphics.rml:287
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:297
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Efekty"
 
-#: ui/options_graphics.rml:289
+#: ui/options_graphics.rml:299
 msgid "Bloom"
 msgstr ""
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:301
 msgid "Makes bright areas on your screen glow."
 msgstr ""
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:304
 msgid "Color grading"
 msgstr ""
 
-#: ui/options_graphics.rml:296
+#: ui/options_graphics.rml:306
 msgid "Alter colors to create specific ambiences."
 msgstr ""
 
-#: ui/options_graphics.rml:299
+#: ui/options_graphics.rml:309
 msgid "Heat-haze"
 msgstr ""
 
-#: ui/options_graphics.rml:301
+#: ui/options_graphics.rml:311
 msgid "Simulate air refraction in severe heat."
 msgstr ""
 
-#: ui/options_graphics.rml:304
+#: ui/options_graphics.rml:314
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr ""
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:316
 msgid "Simulate dark corners."
 msgstr ""
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:319
 msgid "Marks"
 msgstr ""
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:321
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
 
-#: ui/options_graphics.rml:314
+#: ui/options_graphics.rml:324
 msgid "Particle physics"
 msgstr ""
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:326
 msgid "Allow particles to bounce off surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:323
+#: ui/options_graphics.rml:333
 msgid "Renderer"
 msgstr ""
 
-#: ui/options_graphics.rml:325 ui/options_graphics.rml:327
+#: ui/options_graphics.rml:335 ui/options_graphics.rml:337
 msgid "Material system"
 msgstr ""
 
-#: ui/options_graphics.rml:329
+#: ui/options_graphics.rml:339
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
 
-#: ui/options_graphics.rml:332
+#: ui/options_graphics.rml:342
 msgid "GPU frustum culling"
 msgstr ""
 
-#: ui/options_graphics.rml:334
+#: ui/options_graphics.rml:344
 msgid "Cull surfaces that are out of view."
 msgstr ""
 
-#: ui/options_graphics.rml:337
+#: ui/options_graphics.rml:347
 msgid "GPU occlusion culling"
 msgstr ""
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:349
 msgid "Cull hidden surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:356
 msgid "Gameplay"
 msgstr ""
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:358
 msgid "Building markers"
 msgstr ""
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:361
 msgid "disabled"
 msgstr "wyłączone"
 
-#: ui/options_graphics.rml:352
+#: ui/options_graphics.rml:362
 msgid "All structures"
 msgstr ""
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:363
 msgid "Support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:354
+#: ui/options_graphics.rml:364
 msgid "Offensive structures"
 msgstr ""
 
-#: ui/options_graphics.rml:355
+#: ui/options_graphics.rml:365
 msgid "Alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:366
 msgid "Human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:357
+#: ui/options_graphics.rml:367
 msgid "Alien support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:368
 msgid "Human support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:359
+#: ui/options_graphics.rml:369
 msgid "Offensive alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:360
+#: ui/options_graphics.rml:370
 msgid "Offensive human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:372
 msgid "Building ranges"
 msgstr ""
 
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:374
 msgid "Models"
 msgstr ""
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:382
 msgid "Motion blur"
 msgstr ""
 
-#: ui/options_graphics.rml:380
+#: ui/options_graphics.rml:390
 msgid "Intensity"
 msgstr ""
 
-#: ui/options_graphics.rml:381
+#: ui/options_graphics.rml:391
 msgid "Level of motion-blur."
 msgstr ""
 
-#: ui/options_graphics.rml:384
+#: ui/options_graphics.rml:394
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr ""
 
@@ -1950,7 +1977,7 @@ msgstr ""
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr "Język:"
+msgstr "Język"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -2831,32 +2858,32 @@ msgstr ""
 #: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*został smagnięty przez nadświadomość"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*została smagnięta przez nadświadomość"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*zostało smagnięte przez nadświadomość"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*został smagnięty przez nadświadomość; %s%s%s^* asystował"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*została smagnięta przez nadświadomość; %s%s%s^* asystował"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*zostało smagnięte przez nadświadomość; %s%s%s^* asystował"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
@@ -3989,7 +4016,7 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1218
 msgid "The Overmind is under attack!"
-msgstr ""
+msgstr "Nadświadomość jest atakowana!"
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
@@ -3997,7 +4024,7 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1240
 msgid "The Overmind is dying!"
-msgstr ""
+msgstr "Nadświadomość jest bliska śmierci!"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is going down!"
@@ -4017,139 +4044,139 @@ msgstr ""
 msgid "%s under attack"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:472
+#: src/cgame/cg_main.cpp:471
 msgid "Calling home…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:472
+#: src/cgame/cg_main.cpp:471
 msgid "Sending to the front…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:477
+#: src/cgame/cg_main.cpp:476
 msgid "Tracking your movements…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:477
+#: src/cgame/cg_main.cpp:476
 msgid "Letting out the magic smoke…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:481
+#: src/cgame/cg_main.cpp:480
 msgid "Collecting bees for the hives…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:481
+#: src/cgame/cg_main.cpp:480
 msgid "Initialising fireworks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:481
+#: src/cgame/cg_main.cpp:480
 msgid "Causing electrical faults…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:485
+#: src/cgame/cg_main.cpp:484
 msgid "Reading the manual…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:485
+#: src/cgame/cg_main.cpp:484
 msgid "Looking at blueprints…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:489
+#: src/cgame/cg_main.cpp:488
 msgid "Generating annoying noises…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:489
+#: src/cgame/cg_main.cpp:488
 msgid "Recording granger purring…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:493
+#: src/cgame/cg_main.cpp:492
 msgid "Hello World!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:493
+#: src/cgame/cg_main.cpp:492
 msgid "Making a scene…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:497
+#: src/cgame/cg_main.cpp:496
 msgid "Taking pictures of the world…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:497
+#: src/cgame/cg_main.cpp:496
 msgid "Drawing smiley faces…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:501
+#: src/cgame/cg_main.cpp:500
 msgid "Sharpening the aliens' claws…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:501
+#: src/cgame/cg_main.cpp:500
 msgid "Overloading lucifer cannons…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:505
+#: src/cgame/cg_main.cpp:504
 msgid "Unwrapping jetpacks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:505
+#: src/cgame/cg_main.cpp:504
 msgid "Spinning silk for reticles…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:509
+#: src/cgame/cg_main.cpp:508
 msgid "Adding turret spam…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:509
+#: src/cgame/cg_main.cpp:508
 msgid "Awakening the overmind…"
-msgstr ""
+msgstr "Przebudzanie nadświadomości…"
 
-#: src/cgame/cg_main.cpp:513
+#: src/cgame/cg_main.cpp:512
 msgid "Teleporting soldiers…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:513
+#: src/cgame/cg_main.cpp:512
 msgid "Replicating alien DNA…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:517
+#: src/cgame/cg_main.cpp:516
 msgid "Customizing helmets…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:521
+#: src/cgame/cg_main.cpp:520
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:525
+#: src/cgame/cg_main.cpp:524
 msgid "Surveying the map…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:529
+#: src/cgame/cg_main.cpp:528
 msgid "Done!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1144
+#: src/cgame/cg_main.cpp:1143
 msgid "Generating bot navigation meshes"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1188
+#: src/cgame/cg_main.cpp:1187
 #, c-format
 msgid "by %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1436
+#: src/cgame/cg_players.cpp:1431
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1443
+#: src/cgame/cg_players.cpp:1438
 #, c-format
 msgid "%s^* left the %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1448
+#: src/cgame/cg_players.cpp:1443
 #, c-format
 msgid "%s^* joined the %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1453
+#: src/cgame/cg_players.cpp:1448
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr ""
@@ -4235,20 +4262,20 @@ msgstr ""
 msgid "Flank, behind you!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2632
+#: src/cgame/cg_rocket_draw.cpp:2644
 msgid "You are at the front of the spawn queue"
 msgstr "Jesteś na początku kolejki do odrodzenia"
 
-#: src/cgame/cg_rocket_draw.cpp:2636
+#: src/cgame/cg_rocket_draw.cpp:2648
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Jesteś %d w kolejce do odrodzenia"
 
-#: src/cgame/cg_rocket_draw.cpp:2676
+#: src/cgame/cg_rocket_draw.cpp:2688
 msgid "There are no spawns remaining"
 msgstr "Nie ma żadnych punktów odrodzenia"
 
-#: src/cgame/cg_rocket_draw.cpp:2680
+#: src/cgame/cg_rocket_draw.cpp:2692
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
@@ -4256,41 +4283,41 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: src/cgame/cg_rocket_draw.cpp:3229
+#: src/cgame/cg_rocket_draw.cpp:3241
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Oczekiwanie na połączenie… %i"
 
-#: src/cgame/cg_rocket_draw.cpp:3233
+#: src/cgame/cg_rocket_draw.cpp:3245
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Oczekiwanie na wyzwanie… %i"
 
-#: src/cgame/cg_rocket_draw.cpp:3237
+#: src/cgame/cg_rocket_draw.cpp:3249
 msgid "Awaiting gamestate…"
 msgstr "Oczekiwanie na gamestate…"
 
-#: src/cgame/cg_rocket_draw.cpp:3319
+#: src/cgame/cg_rocket_draw.cpp:3331
 msgid "Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3320
+#: src/cgame/cg_rocket_draw.cpp:3332
 msgid "Team Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3321
+#: src/cgame/cg_rocket_draw.cpp:3333
 msgid "Admin Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3322
+#: src/cgame/cg_rocket_draw.cpp:3334
 msgid "Command:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3672
+#: src/cgame/cg_rocket_draw.cpp:3684
 msgid "FIGHT!"
 msgstr "START!"
 
-#: src/cgame/cg_rocket_draw.cpp:3766
+#: src/cgame/cg_rocket_draw.cpp:3778
 msgid "estimating"
 msgstr "około"
 
@@ -4597,22 +4624,24 @@ msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr ""
+"Brak Nadświadomości. Należy wybudować Nadświadomość, żeby można było "
+"postawić inne budowle."
 
 #: src/cgame/cg_servercmds.cpp:683 src/cgame/cg_servercmds.cpp:723
 msgid "There is no Overmind"
-msgstr "Nie ma Overminda"
+msgstr "Brak Nadświadomości"
 
 #: src/cgame/cg_servercmds.cpp:687
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
-"W grze może być tylko jeden Overmind na raz. Zdekonstruuj istniejący, jeśli "
-"chcesz go przesunąć."
+"W grze może być tylko jedna Nadświadomość na raz. Jeśli chcesz ją przesunąć, "
+"musisz zdekonstruować już istniejącą."
 
 #: src/cgame/cg_servercmds.cpp:689
 msgid "There can only be one Overmind"
-msgstr "W grze może być tylko jeden Overmind na raz."
+msgstr "W grze może być tylko jedna Nadświadomość na raz"
 
 #: src/cgame/cg_servercmds.cpp:694
 msgid "Your team cannot have any more leeches"
@@ -4623,12 +4652,12 @@ msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
-"Overmind nie może kontrolować większej ilości budynków. Zdekonstruuj parę "
-"obecnych, by móc zbudować ten."
+"Nadświadomość nie może kontrolować większej ilości budynków. Zdekonstruuj "
+"istniejące budowle, by móc zbudować nowe."
 
 #: src/cgame/cg_servercmds.cpp:700
 msgid "The Overmind cannot control any more structures"
-msgstr "Overmind nie może kontrolować większej ilości budynków"
+msgstr "Nadświadomość nie może kontrolować większej ilości budynków"
 
 #: src/cgame/cg_servercmds.cpp:704
 msgid ""
@@ -4656,14 +4685,14 @@ msgstr "To miejsce znajduje się zbyt blisko wroga by ewoluować"
 
 #: src/cgame/cg_servercmds.cpp:716 src/cgame/cg_servercmds.cpp:717
 msgid "The Overmind is too far away to devolve."
-msgstr ""
+msgstr "Nadświadomość jest za daleko, żeby móc de-ewoluować."
 
 #: src/cgame/cg_servercmds.cpp:721
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
-"Nie ma Overminda. Overmind musi zostać zbudowany by móc przeprowadzić "
-"ewolucję."
+"Nie ma Nadświadomości. Nadświadomość musi zostać zbudowana, by móc "
+"przeprowadzić ewolucję."
 
 #: src/cgame/cg_servercmds.cpp:727
 msgid "You cannot evolve until your build timer has expired."

@@ -83,13 +83,14 @@ static trace2_t MissileTrace(gentity_t* ent)
 
 		if (trWorld.startsolid)
 		{
-			return trWorld;
+			result = trWorld;
 		}
-
-		trace2_t trBody = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
-			passent, CONTENTS_BODY, 0);
-
-		result = trWorld.fraction < trBody.fraction ? trWorld : trBody;
+		else
+		{
+			trace2_t trBody = G_Trace2(ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
+				passent, CONTENTS_BODY, 0);
+			result = trBody.fraction < 1.0f ? trBody : trWorld;
+		}
 	}
 	else
 	{
@@ -102,7 +103,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 		// In this case we have a collision, and so we want a normal vector, but there isn't one
 		// Try to use the missile's direction of travel
 		glm::vec3 dir = VEC2GLM(origin) - VEC2GLM(ent->r.currentOrigin);
-		if (VectorNormalize(GLM4RW(dir)))
+		if (VectorNormalize(dir))
 		{
 			VectorCopy(dir, result.plane.normal);
 		}

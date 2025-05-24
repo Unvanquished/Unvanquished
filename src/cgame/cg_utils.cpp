@@ -163,3 +163,13 @@ void CG_SetKeyCatcher( int catcher )
 	Rocket_SetActiveContext( catcher );
 	trap_Key_SetCatcher( catcher );
 }
+
+void CG_ApplyModelRotationToAxis( const glm::vec3 &modelRotation, vec3_t axis[ 3 ] )
+{
+	glm::mat3 rotMat = RotationMatrix( modelRotation );
+	glm::mat3 axisMat( VEC2GLM( axis[ 0 ] ), VEC2GLM( axis[ 1 ] ), VEC2GLM( axis[ 2 ] ) );
+	glm::mat3 result = axisMat * rotMat;
+	VectorCopy( result[ 0 ], axis[ 0 ] );
+	VectorCopy( result[ 1 ], axis[ 1 ] );
+	VectorCopy( result[ 2 ], axis[ 2 ] );
+}

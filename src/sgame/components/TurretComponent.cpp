@@ -97,9 +97,7 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 	glm::vec3 relativeAnglesToTarget = DirectionToRelativeAngles(directionToTarget);
 
 	// Compute difference between angles to target and current angles.
-	glm::vec3 deltaAngles;
-	// FIXME: first two args should be const
-	AnglesSubtract(GLM4RW(relativeAnglesToTarget), GLM4RW(relativeAimAngles), GLM4RW(deltaAngles));
+	glm::vec3 deltaAngles = AnglesSubtract(relativeAnglesToTarget, relativeAimAngles);
 
 	// Stop if there is nothing to do.
 	if (glm::length(deltaAngles) < 0.1f) {
