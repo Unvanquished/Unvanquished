@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-30 23:19+0200\n"
-"PO-Revision-Date: 2025-04-17 23:11+0000\n"
+"PO-Revision-Date: 2025-05-24 16:56+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 5.12-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -1008,13 +1008,15 @@ msgstr "Kirkkaus"
 
 #: ui/options_graphics.rml:86
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: ui/options_graphics.rml:87
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
+"Ruma keino kirkkauden lisäämiseen. (Harkitse nollaamista ja sävykartoituksen "
+"käyttöä tämän sijasta.)"
 
 #: ui/options_graphics.rml:90
 msgid "Gamma:"
@@ -1022,23 +1024,25 @@ msgstr "Gamma:"
 
 #: ui/options_graphics.rml:94
 msgid "Tone mapping"
-msgstr ""
+msgstr "Sävykartoitus"
 
 #: ui/options_graphics.rml:95
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
+"Hallitse dynaamista aluetta vaalentuneiden taikka liian hämärien paikkojen "
+"parantamiseksi."
 
 #: ui/options_graphics.rml:98
 msgid "Enable tone mapping"
-msgstr ""
+msgstr "Käytä sävykartoitusta"
 
 #: ui/options_graphics.rml:101
 msgid "Exposure"
-msgstr ""
+msgstr "Valotus"
 
 #: ui/options_graphics.rml:103
 msgid "Tone mapping brightness level"
-msgstr ""
+msgstr "Sävykartoituksen kirkkaus"
 
 #: ui/options_graphics.rml:107
 msgid "Lighting"
