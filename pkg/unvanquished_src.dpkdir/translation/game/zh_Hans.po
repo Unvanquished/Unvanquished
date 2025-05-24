@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-30 23:19+0200\n"
+"POT-Creation-Date: 2025-05-24 21:19+0200\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -136,25 +136,25 @@ msgstr "错误！"
 msgid "Ok"
 msgstr "确定"
 
-#: ui/help_gameplay.rml:12
+#: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
 msgstr ""
 
-#: ui/help_gameplay.rml:17 ui/welcome.rml:16
+#: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "欢迎"
 
-#: ui/help_gameplay.rml:20
+#: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr "在这一节，你会了解游戏包含的主要元素，并学到如何在游戏中成长。"
 
-#: ui/help_gameplay.rml:23
+#: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
 msgstr "可以在我们的网站和社区了解更多！"
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
@@ -162,29 +162,29 @@ msgstr ""
 "在 Libera.Chat IRC、Matrix 或 Discord 与各位玩家和开发者聊天: <web "
 "dest=\"chat\" />"
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr "在论坛讨论新闻: <web dest=\"forums\" />"
 
-#: ui/help_gameplay.rml:27
+#: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr "在百科页面发现游戏的更多精彩: <web dest=\"wiki\" />"
 
-#: ui/help_gameplay.rml:29
+#: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr "请在这里报告游戏问题: <web dest=\"bugs\" />"
 
-#: ui/help_gameplay.rml:33
+#: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
 msgstr "成长与进化"
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr "异形击杀人类，得到进化点。进化点可使它们进化成为 [dragoon] 高级形态。"
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:48
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -193,14 +193,14 @@ msgstr ""
 "当异形不在人类视野或人类建筑范围内时，可以开始进化。在 [overmind]〔主脑〕旁"
 "时，也可以退化为 [granger] 低级形态。"
 
-#: ui/help_gameplay.rml:43
+#: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
 "若主脑被摧毁，[granger]〔守卫者〕可负责再构造一只。只有主脑存在时才可以进化！"
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:55
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -209,7 +209,7 @@ msgstr ""
 "人类击杀异形、摧毁异形建筑，获得点数。使用点数可以购买 [lcannon] 新武器、铠"
 "甲、[bsuit] 战斗服，以及雷达、喷气背包等装备。"
 
-#: ui/help_gameplay.rml:50
+#: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -217,11 +217,11 @@ msgstr ""
 "人类在 [armoury]〔武器中心〕购买或卖出武器。确保武器中心存在！如果没有了武器"
 "中心，可以使用建造器再次建造。"
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:62
 msgid "Powering buildables"
 msgstr "供能设施"
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:65
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -233,7 +233,7 @@ msgstr ""
 "[leech]〔采掘设施〕，增加供能、获得更多建筑点。请留意，在采掘设备被摧毁后，建"
 "筑点会被扣除。"
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:68
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -243,7 +243,7 @@ msgstr ""
 "建造点由 [leech]〔蛭〕或 [drill]〔钻井〕供应，同时可缓慢恢复。当现有的建筑点"
 "不能满足新的建筑需求时，新设施会停止运作，当供能充足时才会恢复。"
 
-#: ui/help_gameplay.rml:61
+#: ui/help_gameplay.rml:69
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -253,11 +253,11 @@ msgstr ""
 "点〕；采掘设施 — 蛭、钻井；特殊设施 — [overmind]〔主脑〕、[reactor]〔反应"
 "机〕。"
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:73
 msgid "Mining structures"
 msgstr "采掘设施"
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:76
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -265,13 +265,13 @@ msgid ""
 msgstr ""
 "建筑点由两种采掘设施供给: 人类的 [drill]〔钻井〕和异形的 [leech]〔蛭〕。"
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr "请勿让采掘设施挨得太近，否则它们的效率会下降、甚至消耗建造点！"
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:82
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -283,7 +283,7 @@ msgstr ""
 "当采掘设施建造完毕后，所得建筑点立即可用，而当采掘设施被摧毁时建筑点会损失。"
 "不要忘记保护钻井！"
 
-#: ui/help_gameplay.rml:77
+#: ui/help_gameplay.rml:85
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -294,11 +294,11 @@ msgstr ""
 "渐降低，这样随着游戏进程的发展，重建设施会越来越难。这样的特性替代了常见的“决"
 "胜时刻”。"
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
 msgstr "阶段与势力"
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:92
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -307,7 +307,7 @@ msgstr ""
 "建造或摧毁设施、击杀敌人可以为你的阵营增强“势力”。当你得到充分的势力时，会解"
 "锁新的武器、设施或职业。"
 
-#: ui/help_gameplay.rml:87
+#: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -315,23 +315,23 @@ msgstr ""
 "势力会随时间指数下降。如果你的阵营不活动，升级得到的能力会被重新锁定。现有的"
 "高级物品仍然可用。"
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:99
 msgid "Wildfire"
 msgstr "火焰"
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr "异形的设施会被 [flamer]〔喷火器〕或 [firebomb]〔烈焰弹〕引燃。"
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr "若设施挨得太近，火焰会传播到临近的设施。"
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -339,17 +339,17 @@ msgstr ""
 "小范围的 [fire]〔火焰〕在过一会后能熄灭，而一组设施燃烧起来并不会轻易熄灭，导"
 "致更糟糕的情况。"
 
-#: ui/help_gameplay.rml:103
+#: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr "[advgranger]〔高级守卫者〕的唾液攻击可以扑灭火焰、拖慢进犯者的移动！"
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:115
 msgid "Under attack"
 msgstr "遭受攻击"
 
-#: ui/help_gameplay.rml:110
+#: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -359,15 +359,15 @@ msgstr ""
 "[reactor]〔反应机〕和 [overmind]〔主脑〕会在剩余 75%、50%、25% 生命值以及被摧"
 "毁时分别发出警告。其他设施被摧毁时会提示己方阵营正“遭受攻击”。"
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:122
 msgid "Healing"
 msgstr "治疗"
 
-#: ui/help_gameplay.rml:117
+#: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr "被击杀会增强敌人的实力。尽量不要死亡！"
 
-#: ui/help_gameplay.rml:121
+#: ui/help_gameplay.rml:129
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -378,7 +378,7 @@ msgstr ""
 "施建在前线，会有好处的！任何形式的恢复生命都会促使 [advdragoon]〔高级守卫者〕"
 "的射弹恢复。"
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:133
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -387,7 +387,7 @@ msgstr ""
 "“助力者”可给予身旁的异形极快的生命恢复效果，请趁早解锁它并构造一只。“助力"
 "者”也会赋予你毒性，让你对敌人的攻击更致命。"
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:136
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -396,7 +396,7 @@ msgstr ""
 "在 [overmind]〔主脑〕或 [egg]〔卵〕附近时会得到稍快的生命恢复效果，在“爬虫”旁"
 "的恢复效果更佳。这样的特性有利于保护基地。"
 
-#: ui/help_gameplay.rml:131
+#: ui/help_gameplay.rml:139
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -406,7 +406,7 @@ msgstr ""
 "异形还有另一种加成方式: 扎堆。若你靠近一位队友，你的生命恢复会稍微加快，靠近"
 "两位队友时，恢复效果与在设施旁相当。加上团队合作，可以很有效地围攻敌人！"
 
-#: ui/help_gameplay.rml:135
+#: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -414,11 +414,11 @@ msgstr ""
 "人类会携带一个医疗包，用于即时治疗。在使用过一次医疗包后，再次治疗需要返回 "
 "[medstat]〔医疗中心〕恢复生命，同时拿取医疗包。"
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:147
 msgid "Wallwalking"
 msgstr "爬墙"
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -426,11 +426,11 @@ msgstr ""
 "诸如 [dretch]〔潜伏者〕、[mantis]〔螳螂〕和 [advgranger]〔高级守卫者〕等形式"
 "的异形可以在墙上行走！"
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr "利用这一点可以潜伏在特别的地方，或者走捷径。"
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -438,37 +438,37 @@ msgstr ""
 "异形的防御设施，如陷阱、刺头，在墙上会更有效。把它们建在天花板可以避免手雷伤"
 "害。"
 
-#: ui/help_gameplay.rml:151
+#: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "高级守卫者会在势力增长到一定阶段时解锁。"
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
 msgstr "Tremulous 的发展"
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "与 Tremulous 中相比，人类和异形的体力得到提升。"
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr "异形的进化成本与效力翻倍。异形可持有的最大进化点从 9 增加到 20。"
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:172
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr "“阶段”的概念由“势力”取代。建造点的多少现在直接依赖于建造的钻井数。"
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr "人类没有了特斯拉防御塔和防御电脑，但可以建造“火箭发射器”。"
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:178
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
@@ -476,7 +476,7 @@ msgstr ""
 "异形可以建造“刺头”，重伤无所防备的人类。但注意刺头非常容易被摧毁，不要放在轻"
 "易能看见的地方！"
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -484,7 +484,7 @@ msgstr ""
 "Basilisk 由“螳螂”取代。螳螂不能抓东西，但螳螂咬嗜可减缓敌人行动速度，螳螂扑击"
 "也更加迅捷。"
 
-#: ui/help_gameplay.rml:176
+#: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -765,8 +765,8 @@ msgstr "度"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:91 ui/options_graphics.rml:277
-#: ui/options_graphics.rml:399 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -834,90 +834,90 @@ msgid "Presets"
 msgstr "预设"
 
 #: ui/options_graphics.rml:27
-msgid "Lowest"
-msgstr "最低"
+msgid "Ultra"
+msgstr "极高"
 
 #: ui/options_graphics.rml:28
-msgid ""
-"Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-"textures…"
-msgstr "低细分，无天空，无阴影，无弹跳粒子，16 位贴图…"
+msgid "Everything enabled."
+msgstr ""
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:263
-#: ui/options_graphics.rml:378 ui/options_graphics.rml:387
-msgid "Low"
-msgstr "低"
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
+#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+msgid "High"
+msgstr "高"
 
 #: ui/options_graphics.rml:32
-msgid ""
-"Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-"pixel textures…"
-msgstr "多重采样，各向异性 Mip-map，有阴影，弹跳粒子，256 像素贴图…"
+msgid "Dynamic lights, special effects, large textures…"
+msgstr ""
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
 msgstr "中"
 
 #: ui/options_graphics.rml:36
-msgid ""
-"Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
-"textures…"
-msgstr "基本、镜面与物理映射，亮光，三线性过滤，512 像素贴图…"
+msgid "Surface details, good textures…"
+msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:265
-#: ui/options_graphics.rml:377 ui/options_graphics.rml:385
-msgid "High"
-msgstr "高"
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
+#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+msgid "Low"
+msgstr "低"
 
 #: ui/options_graphics.rml:40
-msgid ""
-"Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-"pixel textures…"
-msgstr "动态光照，热力波，动态模糊，更好的多同采样，最大 2048 像素贴图…"
+msgid "The fastest preset that doesn't make the game look ugly."
+msgstr ""
 
 #: ui/options_graphics.rml:43
-msgid "Ultra"
-msgstr "极高"
-
-#: ui/options_graphics.rml:44
 msgid ""
-"Relief mapping and other features and effects enabled, up to 4096-pixel "
-"textures…"
-msgstr "交替映射，其他特性和特效，最大 4096 像素贴图…"
+"When looking for optimizations, try the low preset first. When the low "
+"preset runs properly, the lowest preset is not faster."
+msgstr ""
 
-#: ui/options_graphics.rml:47 ui/options_graphics.rml:49
+#: ui/options_graphics.rml:46
+msgid "Lowest"
+msgstr "最低"
+
+#: ui/options_graphics.rml:47
+msgid "Ugly textures and geometry, no sky, no particle bounce…"
+msgstr ""
+
+#: ui/options_graphics.rml:48
+msgid "Only meant for very slow devices, as a last resort."
+msgstr ""
+
+#: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
 msgstr "视频"
 
-#: ui/options_graphics.rml:52
+#: ui/options_graphics.rml:56
 msgid "Screen Resolution"
 msgstr "屏幕分辨率"
 
-#: ui/options_graphics.rml:56
+#: ui/options_graphics.rml:60
 msgid "Borderless window"
 msgstr "无边框窗口"
 
-#: ui/options_graphics.rml:60
+#: ui/options_graphics.rml:64
 msgid "Fullscreen"
 msgstr "全屏"
 
-#: ui/options_graphics.rml:65 ui/options_graphics.rml:388
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
 msgid "Off"
 msgstr "关"
 
-#: ui/options_graphics.rml:66
+#: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
 msgstr "灵活垂直同步"
 
-#: ui/options_graphics.rml:67
+#: ui/options_graphics.rml:71
 msgid "Full Vsync"
 msgstr "完全垂直同步"
 
-#: ui/options_graphics.rml:69
+#: ui/options_graphics.rml:73
 msgid "Vsync"
 msgstr "垂直同步"
 
-#: ui/options_graphics.rml:70
+#: ui/options_graphics.rml:74
 msgid ""
 "Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
@@ -926,218 +926,218 @@ msgstr ""
 "垂直同步可避免视觉撕裂，但会略微增加输入延迟。灵活垂直同步只在帧率超过屏幕刷"
 "新率时启用垂直同步，可避免掉帧时的卡顿。"
 
-#: ui/options_graphics.rml:75
+#: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr "快速近似抗锯齿 (FXAA)"
 
-#: ui/options_graphics.rml:79 ui/options_graphics.rml:145
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:248
-#: ui/options_graphics.rml:291 ui/options_graphics.rml:329
-#: ui/options_graphics.rml:352
+#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
+#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
+#: ui/options_graphics.rml:356
 msgid "Apply now"
 msgstr "立即应用"
 
-#: ui/options_graphics.rml:83
+#: ui/options_graphics.rml:87
 msgid "Brightness"
 msgstr "亮度"
 
-#: ui/options_graphics.rml:86
+#: ui/options_graphics.rml:90
 msgid "Gamma"
 msgstr ""
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:94
 msgid "Gamma:"
 msgstr "伽玛值:"
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:98
 msgid "Tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:95
+#: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:101
+#: ui/options_graphics.rml:105
 msgid "Exposure"
 msgstr ""
 
-#: ui/options_graphics.rml:103
+#: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
 msgstr ""
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:111
 msgid "Lighting"
 msgstr "光照"
 
-#: ui/options_graphics.rml:109
+#: ui/options_graphics.rml:113
 msgid "Lights"
 msgstr "光"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "Light mapping"
 msgstr "光照贴图"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "normal"
 msgstr "中等质量"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "Vertex lighting"
 msgstr "顶点照明"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "low, ugly"
 msgstr "低质量，简陋"
 
-#: ui/options_graphics.rml:115
+#: ui/options_graphics.rml:119
 msgid "Lighting system"
 msgstr "光照系统"
 
-#: ui/options_graphics.rml:118
+#: ui/options_graphics.rml:122
 msgid "Light styles"
 msgstr "光照风格"
 
-#: ui/options_graphics.rml:120
+#: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr "由静态的地图物件预计算生成的动态光照。"
 
-#: ui/options_graphics.rml:123
+#: ui/options_graphics.rml:127
 msgid "Dynamic lights"
 msgstr "动态光照"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:129
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr "由枪、建筑等移动物件发出的实时动态光照。"
 
-#: ui/options_graphics.rml:128
+#: ui/options_graphics.rml:132
 msgid "Rim lighting"
 msgstr "Rim 光照"
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:134
 msgid "Light the edges of models from behind."
 msgstr "从后方照亮模型的边缘。"
 
-#: ui/options_graphics.rml:133
+#: ui/options_graphics.rml:137
 msgid "Half Lambert lighting"
 msgstr "半 Lambert 光照"
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:139
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "非物理的光照方式，使模型不会过暗。"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "Blobs"
 msgstr "圆状"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "low"
 msgstr "低质量"
 
-#: ui/options_graphics.rml:140 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
 #: ui/options_ui.rml:177
 msgid "None"
 msgstr "无"
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:146
 msgid "Shadows"
 msgstr "阴影"
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:153
 msgid "Textures"
 msgstr "贴图"
 
-#: ui/options_graphics.rml:151 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/server_setup.rml:13
 msgid "General"
 msgstr "通用"
 
-#: ui/options_graphics.rml:154 ui/options_graphics.rml:167
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
 msgid "No limit"
 msgstr "无限制"
 
-#: ui/options_graphics.rml:155
+#: ui/options_graphics.rml:159
 msgid "(ultra)"
 msgstr "(超级)"
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:160
 msgid "(high)"
 msgstr "(高)"
 
-#: ui/options_graphics.rml:157
+#: ui/options_graphics.rml:161
 msgid "(medium)"
 msgstr "(中)"
 
-#: ui/options_graphics.rml:158
+#: ui/options_graphics.rml:162
 msgid "(low)"
 msgstr "(低)"
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:163
 msgid "(lowest)"
 msgstr "(最低)"
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:165
 msgid "Image size limit"
 msgstr "图像大小限制"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:166
 msgid "Limit image size to save on memory."
 msgstr "限制图像大小以节省内存。"
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:172
 msgid "No smaller than screen"
 msgstr "大于屏幕大小"
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:173
 msgid "No larger than screen"
 msgstr "小于屏幕大小"
 
-#: ui/options_graphics.rml:171
+#: ui/options_graphics.rml:175
 msgid "Menu image size limit"
 msgstr "菜单图像大小限制"
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:176
 msgid "Limit menu image size to save on memory."
 msgstr "限制菜单图像大小以节省内存。"
 
-#: ui/options_graphics.rml:177
+#: ui/options_graphics.rml:181
 msgid "High-precision rendering"
 msgstr "高精度渲染"
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:182
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr "使用高精度像素缓冲，可以减少颜色分层。"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:186
 msgid "Use bindless textures if possible"
 msgstr "尝试使用无绑定贴图"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:188
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr "若硬件或驱动支持，使用无绑定贴图。可能提升性能。"
 
-#: ui/options_graphics.rml:184 ui/options_graphics.rml:234
-#: ui/options_graphics.rml:258 ui/options_graphics.rml:339
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
 msgid "Experimental."
 msgstr "实验性的。"
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:191
 msgid "Mip-mapping"
 msgstr "Mip-map"
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:192
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1145,96 +1145,96 @@ msgstr ""
 "Mip-map 通过为远处的平面使用低分辨率贴图以取得更好的视觉效果。这通常不影响性"
 "能。"
 
-#: ui/options_graphics.rml:195 ui/options_ui.rml:47
+#: ui/options_graphics.rml:199 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "无"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
 msgstr "各向异性 Mip-map"
 
-#: ui/options_graphics.rml:198
+#: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "对有角度的平面实现的更好的 Mip-map。"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "Trilinear"
 msgstr "三线性"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "better"
 msgstr "更好"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:207
 msgid "Bilinear"
 msgstr "双线性"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
 msgstr "贴图缩放过滤"
 
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:215
+#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
 msgid "Materials"
 msgstr "材质"
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:221
 msgid "Sky"
 msgstr "天空"
 
-#: ui/options_graphics.rml:219
+#: ui/options_graphics.rml:223
 msgid "Draw the sky."
 msgstr "绘制天空。"
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:226
 msgid "Normal mapping"
 msgstr "一般映射"
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "在平坦的平面上模拟更强的光照。"
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
 msgstr "高级映射"
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
 msgstr "基于处理后贴图的光照方向。"
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:236
 msgid "Relief mapping"
 msgstr "交替映射"
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
 msgstr "在有支撑的平面上添加突起。"
 
-#: ui/options_graphics.rml:237
+#: ui/options_graphics.rml:241
 msgid "Specular mapping"
 msgstr "镜面映射"
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
 msgstr "模拟光的反射。"
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:246
 msgid "Physical mapping"
 msgstr "物理映射"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
 msgstr "基于物理估量的材质外观。"
 
-#: ui/options_graphics.rml:252 ui/options_graphics.rml:254
+#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
 msgstr "倒影"
 
-#: ui/options_graphics.rml:256
+#: ui/options_graphics.rml:260
 msgid "Static reflections"
 msgstr "静态倒影"
 
-#: ui/options_graphics.rml:258
+#: ui/options_graphics.rml:262
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1242,210 +1242,210 @@ msgstr ""
 "在支持的平面添加静态立方贴图倒影。需要一般、镜面与高级映射。目前不支持与物理"
 "映射同时使用。"
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:266
 msgid "Very low"
 msgstr "极低"
 
-#: ui/options_graphics.rml:264 ui/options_graphics.rml:386
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
 msgstr "少量"
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:270
 msgid "Very high"
 msgstr "极高"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:380
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
 msgstr "质量"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr "静态倒影立方贴图的质量。较高的质量会占用很多磁盘空间。"
 
-#: ui/options_graphics.rml:272
+#: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
 msgstr "立方贴图网格间隔"
 
-#: ui/options_graphics.rml:276 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "当前:"
 
-#: ui/options_graphics.rml:282 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:129
 msgid "Never"
 msgstr "无准星"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:287
 msgid "Cache on disk"
 msgstr "磁盘缓存"
 
-#: ui/options_graphics.rml:284
+#: ui/options_graphics.rml:288
 msgid "Always rebuild"
 msgstr "总是重构建"
 
-#: ui/options_graphics.rml:286
+#: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
 msgstr "重新构建静态倒影立方贴图"
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "自动重新构建、加载、保存静态倒影立方贴图。"
 
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:297
+#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "特效"
 
-#: ui/options_graphics.rml:299
+#: ui/options_graphics.rml:303
 msgid "Bloom"
 msgstr "闪光"
 
-#: ui/options_graphics.rml:301
+#: ui/options_graphics.rml:305
 msgid "Makes bright areas on your screen glow."
 msgstr "让屏幕上可见的光照发光。"
 
-#: ui/options_graphics.rml:304
+#: ui/options_graphics.rml:308
 msgid "Color grading"
 msgstr "颜色分级"
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
 msgstr "变更颜色以创造出特殊的环境效果。"
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:313
 msgid "Heat-haze"
 msgstr "热力波"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:315
 msgid "Simulate air refraction in severe heat."
 msgstr "模拟高温环境下的空气折射。"
 
-#: ui/options_graphics.rml:314
+#: ui/options_graphics.rml:318
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "屏幕空间环境光遮蔽 (SSAO)"
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:320
 msgid "Simulate dark corners."
 msgstr "模拟阴暗的角落。"
 
-#: ui/options_graphics.rml:319
+#: ui/options_graphics.rml:323
 msgid "Marks"
 msgstr "印记"
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:325
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "在平面上绘制印记 (如弹孔和爪印)"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:328
 msgid "Particle physics"
 msgstr "粒子物理"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:330
 msgid "Allow particles to bounce off surfaces."
 msgstr "允许粒子在平面弹跳。"
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:337
 msgid "Renderer"
 msgstr "渲染器"
 
-#: ui/options_graphics.rml:335 ui/options_graphics.rml:337
+#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
 msgid "Material system"
 msgstr "物质系统"
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:343
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
 "使用能够极度增强性能的系统。一些驱动可能不支持 (如 Mesa 和 AMD 专有驱动) 。"
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:346
 msgid "GPU frustum culling"
 msgstr "GPU 视锥体剔除"
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:348
 msgid "Cull surfaces that are out of view."
 msgstr "剔除不在视野内的平面。"
 
-#: ui/options_graphics.rml:347
+#: ui/options_graphics.rml:351
 msgid "GPU occlusion culling"
 msgstr "GPU 遮挡剔除"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:353
 msgid "Cull hidden surfaces."
 msgstr "剔除隐藏的平面。"
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:360
 msgid "Gameplay"
 msgstr "游戏"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:362
 msgid "Building markers"
 msgstr "建筑标识"
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:365
 msgid "disabled"
 msgstr "禁用"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:366
 msgid "All structures"
 msgstr "所有设施"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:367
 msgid "Support structures"
 msgstr "支援设施"
 
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:368
 msgid "Offensive structures"
 msgstr "攻击设施"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:369
 msgid "Alien structures"
 msgstr "异形设施"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:370
 msgid "Human structures"
 msgstr "人类设施"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:371
 msgid "Alien support structures"
 msgstr "异形支援设施"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:372
 msgid "Human support structures"
 msgstr "人类支援设施"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:373
 msgid "Offensive alien structures"
 msgstr "异形攻击设施"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:374
 msgid "Offensive human structures"
 msgstr "人类攻击设施"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:376
 msgid "Building ranges"
 msgstr "建筑范围"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:378
 msgid "Models"
 msgstr "模型"
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:386
 msgid "Motion blur"
 msgstr "动态模糊"
 
-#: ui/options_graphics.rml:390
+#: ui/options_graphics.rml:394
 msgid "Intensity"
 msgstr "密集度"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:395
 msgid "Level of motion-blur."
 msgstr "动态模糊等级。"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:398
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "激活动态模糊的最小移动速度"
 
@@ -5325,29 +5325,54 @@ msgstr "投票被驳回 ($1$ — $2$，需要 $3$%)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "团队投票被驳回 ($1$ — $2$，需要 $3$%)"
 
-#: src/shared/bg_misc.cpp:2483
+#: src/shared/bg_misc.cpp:2490
 msgid "spectator"
 msgstr "观察者"
 
-#: src/shared/bg_misc.cpp:2488
+#: src/shared/bg_misc.cpp:2495
 msgid "alien"
 msgstr "异形"
 
-#: src/shared/bg_misc.cpp:2493
+#: src/shared/bg_misc.cpp:2500
 msgid "human"
 msgstr "人类"
 
-#: src/shared/bg_misc.cpp:2503
+#: src/shared/bg_misc.cpp:2510
 msgid "spectators"
 msgstr "观察者"
 
-#: src/shared/bg_misc.cpp:2508
+#: src/shared/bg_misc.cpp:2515
 msgid "aliens"
 msgstr "异形"
 
-#: src/shared/bg_misc.cpp:2513
+#: src/shared/bg_misc.cpp:2520
 msgid "humans"
 msgstr "人类"
+
+#~ msgid ""
+#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
+#~ "textures…"
+#~ msgstr "低细分，无天空，无阴影，无弹跳粒子，16 位贴图…"
+
+#~ msgid ""
+#~ "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
+#~ "pixel textures…"
+#~ msgstr "多重采样，各向异性 Mip-map，有阴影，弹跳粒子，256 像素贴图…"
+
+#~ msgid ""
+#~ "Normal, specular and physical mapping, bloom, trilinear filtering, 512-"
+#~ "pixel textures…"
+#~ msgstr "基本、镜面与物理映射，亮光，三线性过滤，512 像素贴图…"
+
+#~ msgid ""
+#~ "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
+#~ "pixel textures…"
+#~ msgstr "动态光照，热力波，动态模糊，更好的多同采样，最大 2048 像素贴图…"
+
+#~ msgid ""
+#~ "Relief mapping and other features and effects enabled, up to 4096-pixel "
+#~ "textures…"
+#~ msgstr "交替映射，其他特性和特效，最大 4096 像素贴图…"
 
 #~ msgid "Brightness clamping"
 #~ msgstr "亮度截断"

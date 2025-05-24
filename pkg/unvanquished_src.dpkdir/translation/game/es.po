@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-30 23:19+0200\n"
+"POT-Creation-Date: 2025-05-24 21:19+0200\n"
 "PO-Revision-Date: 2025-01-08 09:01+0000\n"
 "Last-Translator: Galo Maldonado <galitopistola7@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
@@ -137,15 +137,15 @@ msgstr "¡Error!"
 msgid "Ok"
 msgstr "De acuerdo"
 
-#: ui/help_gameplay.rml:12
+#: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
 msgstr ""
 
-#: ui/help_gameplay.rml:17 ui/welcome.rml:16
+#: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "Bienvenid@"
 
-#: ui/help_gameplay.rml:20
+#: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
@@ -153,13 +153,13 @@ msgstr ""
 "En esta sección se resumen los principales elementos del juego que deberías "
 "conocer para convertirte en un jugador formidable."
 
-#: ui/help_gameplay.rml:23
+#: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
 msgstr ""
 "¡Encontrará más información en nuestra página web y en otros lugares de la "
 "comunidad!"
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
@@ -167,23 +167,23 @@ msgstr ""
 "Chatea con jugadores y desarrolladores en IRC, Matrix o Discord de Libera."
 "Chat: <web dest=\"chat\" />"
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr "Discutir novedades en los foros: <web dest=\"forums\" />"
 
-#: ui/help_gameplay.rml:27
+#: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr "Descubre más sobre el juego en la wiki: <web dest=\"wiki\" />"
 
-#: ui/help_gameplay.rml:29
+#: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr "Por favor, informa de errores en: <web dest=\"bugs\" />"
 
-#: ui/help_gameplay.rml:33
+#: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
 msgstr "Ingreso &amp; evolución"
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -191,7 +191,7 @@ msgstr ""
 "Los alienígenas ganan puntos de evolución matando humanos. Éstos pueden "
 "usarse para evolucionar hacia [dragoon] clases más poderosas."
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:48
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -202,7 +202,7 @@ msgstr ""
 "degenerar en formas menos avanzadas [granger] (a un costo) cuando están "
 "cerca de la supermente [overmind]."
 
-#: ui/help_gameplay.rml:43
+#: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -210,7 +210,7 @@ msgstr ""
 "Construye una supermente con un [granger] granger si se destruye, ¡necesitas "
 "una supermente viva para evolucionar!"
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:55
 #, fuzzy
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
@@ -222,7 +222,7 @@ msgstr ""
 "nuevas armas [lcannon], armaduras o trajes de batalla [bsuit], y accesorios "
 "como un radar o una mochila propulsora."
 
-#: ui/help_gameplay.rml:50
+#: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -231,11 +231,11 @@ msgstr ""
 "que hay una construida! Utiliza el kit de construcción para construir una "
 "armería si falta."
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:62
 msgid "Powering buildables"
 msgstr "Suministro a las estructuras"
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:65
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -250,7 +250,7 @@ msgstr ""
 "de construcción. Ten en cuenta que perderás los puntos de construcción si "
 "las estructuras mineras son destruidas."
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:68
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -261,7 +261,7 @@ msgstr ""
 "minar disponen, las construcciones se desactivaran hasta recuperar la "
 "energía necesaria para funcionar."
 
-#: ui/help_gameplay.rml:61
+#: ui/help_gameplay.rml:69
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -271,11 +271,11 @@ msgstr ""
 "para minar ([leech] [drill]) y estructuras únicas ([overmind] overmind y "
 "[reactor] reactor) no son afectados por la falta de puntos de construcción."
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:73
 msgid "Mining structures"
 msgstr "Estructuras mineras"
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:76
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -285,7 +285,7 @@ msgstr ""
 "el [drill] humano y la [leech] alienígena. Estas construcciones deben "
 "extenderse para mayor eficiencia."
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -293,7 +293,7 @@ msgstr ""
 "No construyas estructuras mineras demasiado cerca unas de otras o competirán "
 "entre ellas y, en última instancia, ¡te costarán recursos de construcción!"
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:82
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -308,7 +308,7 @@ msgstr ""
 "y se volverán a restar si el edificio es destruido. ¡No construyas "
 "perforadoras desprotegidas!"
 
-#: ui/help_gameplay.rml:77
+#: ui/help_gameplay.rml:85
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -321,11 +321,11 @@ msgstr ""
 "destruidos en una partida de larga duración. Esto sustituye a la muerte "
 "súbita."
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
 msgstr "Etapas &amp; Inercia"
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:92
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -335,7 +335,7 @@ msgstr ""
 "un nuevo recurso llamado momentum. Si ganas suficiente impulso, se "
 "desbloquearán nuevas armas, estructuras o clases."
 
-#: ui/help_gameplay.rml:87
+#: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -344,11 +344,11 @@ msgstr ""
 "nada tu equipo perderá acceso a los nuevos objetos. Las actualizaciones "
 "existentes seguirán siendo funcionales."
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:99
 msgid "Wildfire"
 msgstr "Incendio"
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -356,7 +356,7 @@ msgstr ""
 "Las construcciones alienígenas pueden incendiarse cuando son atacadas con el "
 "[flamer] lanzallamas o la [firebomb] bomba incendiaria."
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -364,7 +364,7 @@ msgstr ""
 "Si las estructuras se construyen demasiado juntas, el fuego puede saltar de "
 "una a otra."
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -373,7 +373,7 @@ msgstr ""
 "un rato, pero un grupo de estructuras en llamas se mantendrá lo "
 "suficientemente caliente como para provocar un caos mayor."
 
-#: ui/help_gameplay.rml:103
+#: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -381,11 +381,11 @@ msgstr ""
 "¡El ataque de escupitajo del granger avanzado [advgranger] puede usarse para "
 "apagar incendios o ralentizar a los intrusos!"
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:115
 msgid "Under attack"
 msgstr "Bajo ataque"
 
-#: ui/help_gameplay.rml:110
+#: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -397,15 +397,15 @@ msgstr ""
 "cuando esté destruido. Destruir otros edificios activará advertencias de "
 "\"bajo ataque\" para el equipo propietario."
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:122
 msgid "Healing"
 msgstr "Curación"
 
-#: ui/help_gameplay.rml:117
+#: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr "Morir alimenta al enemigo, ¡puede que quieras salvar tu vida!"
 
-#: ui/help_gameplay.rml:121
+#: ui/help_gameplay.rml:129
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -417,7 +417,7 @@ msgstr ""
 "los avanzados puede ser decisivo! La curación de cualquier manera también "
 "contribuirá a restaurar los proyectiles avanzados del dragón [advdragoon]."
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:133
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -428,7 +428,7 @@ msgstr ""
 "potenciador también te dará un poco de veneno para hacer tus ataques más "
 "mortales."
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:136
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -438,7 +438,7 @@ msgstr ""
 "overmind mejorará un poco tu curación, aunque no mucho. Esto puede ayudar a "
 "defender tu base."
 
-#: ui/help_gameplay.rml:131
+#: ui/help_gameplay.rml:139
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -451,7 +451,7 @@ msgstr ""
 "estructura alien. Con buen trabajo en equipo, ¡esta es una gran manera de "
 "asediar al enemigo!"
 
-#: ui/help_gameplay.rml:135
+#: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -460,11 +460,11 @@ msgstr ""
 "vez, después de esto tienen que volver a la [medstat] medistation para "
 "curarse y rellenar su botiquín."
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:147
 msgid "Wallwalking"
 msgstr "Caminar por la pared"
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -472,13 +472,13 @@ msgstr ""
 "¡Algunas formas alienígenas como el [dretch] dretch, la [mantis] mantis y el "
 "[advgranger] granger avanzado pueden caminar sobre las paredes!"
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 "Utiliza esto para llegar a lugares especiales o utilizar atajos a través de "
 "conductos de ventilación."
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -486,19 +486,19 @@ msgstr ""
 "Las estructuras defensivas alienígenas como el trapper y el spiker funcionan "
 "mejor en las paredes, construirlas en el techo las protegerá de las granadas."
 
-#: ui/help_gameplay.rml:151
+#: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "El granger avanzado puede ser desbloqueado con momentum."
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
 msgstr "Desde Tremulous"
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "Desde Tremulous, la resistencia ha aumentado."
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
@@ -507,7 +507,7 @@ msgstr ""
 "alienígenas. El nuevo máximo de evos que puede almacenar un alienígena es 20 "
 "(antes 9)."
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:172
 #, fuzzy
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
@@ -516,7 +516,7 @@ msgstr ""
 "Las etapas se sustituyeron por el impulso, y los puntos de acumulación "
 "dependen directamente del número de ejercicios."
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
@@ -524,7 +524,7 @@ msgstr ""
 "Los humanos ya no tienen la torre de defensa Tesla ni el ordenador de "
 "defensa, pero pueden construir vainas de cohetes."
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:178
 #, fuzzy
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
@@ -534,7 +534,7 @@ msgstr ""
 "los humanos imprudentes, pero es una estructura muy vulnerable, ¡no la "
 "pongas a la vista!"
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -543,7 +543,7 @@ msgstr ""
 "su mordedura ralentiza a sus víctimas, y puede embestir para acercarse muy "
 "rápidamente."
 
-#: ui/help_gameplay.rml:176
+#: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -830,8 +830,8 @@ msgstr "grados"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:91 ui/options_graphics.rml:277
-#: ui/options_graphics.rml:399 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -899,100 +899,90 @@ msgid "Presets"
 msgstr "Preconfiguraciones"
 
 #: ui/options_graphics.rml:27
-msgid "Lowest"
-msgstr "Más bajo"
+msgid "Ultra"
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:28
-msgid ""
-"Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-"textures…"
+msgid "Everything enabled."
 msgstr ""
-"Subdivisiones bajas, sin cielo, sin sombras, sin partículas que rebotan, "
-"texturas de 16 píxeles…"
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:263
-#: ui/options_graphics.rml:378 ui/options_graphics.rml:387
-msgid "Low"
-msgstr "Baja"
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
+#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+msgid "High"
+msgstr "Alta"
 
 #: ui/options_graphics.rml:32
-msgid ""
-"Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-"pixel textures…"
+msgid "Dynamic lights, special effects, large textures…"
 msgstr ""
-"Multisampling, mip-mapping anisotrópico, sombras, partículas, texturas de "
-"256 pixels…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
 msgstr "Media"
 
 #: ui/options_graphics.rml:36
-msgid ""
-"Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
-"textures…"
+msgid "Surface details, good textures…"
 msgstr ""
-"Mapeo normal, specular y físico, bloom, filtro trilineal, texturas de 512 "
-"pixels…"
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:265
-#: ui/options_graphics.rml:377 ui/options_graphics.rml:385
-msgid "High"
-msgstr "Alta"
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
+#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+msgid "Low"
+msgstr "Baja"
 
 #: ui/options_graphics.rml:40
-msgid ""
-"Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-"pixel textures…"
+msgid "The fastest preset that doesn't make the game look ugly."
 msgstr ""
-"Luces dinámicas, bruma de calor, motion blur, mejor multisampling, texturas "
-"hasta 2048 pixels…"
 
 #: ui/options_graphics.rml:43
-msgid "Ultra"
-msgstr "Ultra"
-
-#: ui/options_graphics.rml:44
 msgid ""
-"Relief mapping and other features and effects enabled, up to 4096-pixel "
-"textures…"
+"When looking for optimizations, try the low preset first. When the low "
+"preset runs properly, the lowest preset is not faster."
 msgstr ""
-"Modelación del relieve y otras funciones y efectos disponibles, texturas "
-"hasta 4096 pixels…"
 
-#: ui/options_graphics.rml:47 ui/options_graphics.rml:49
+#: ui/options_graphics.rml:46
+msgid "Lowest"
+msgstr "Más bajo"
+
+#: ui/options_graphics.rml:47
+msgid "Ugly textures and geometry, no sky, no particle bounce…"
+msgstr ""
+
+#: ui/options_graphics.rml:48
+msgid "Only meant for very slow devices, as a last resort."
+msgstr ""
+
+#: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
 msgstr "Vídeo"
 
-#: ui/options_graphics.rml:52
+#: ui/options_graphics.rml:56
 msgid "Screen Resolution"
 msgstr "Resolución de pantalla"
 
-#: ui/options_graphics.rml:56
+#: ui/options_graphics.rml:60
 msgid "Borderless window"
 msgstr "Ventana sin contorno"
 
-#: ui/options_graphics.rml:60
+#: ui/options_graphics.rml:64
 msgid "Fullscreen"
 msgstr "Pantalla completa"
 
-#: ui/options_graphics.rml:65 ui/options_graphics.rml:388
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
 msgid "Off"
 msgstr "Apagado"
 
-#: ui/options_graphics.rml:66
+#: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
 msgstr "Vsync dinámico"
 
-#: ui/options_graphics.rml:67
+#: ui/options_graphics.rml:71
 msgid "Full Vsync"
 msgstr "Vsync completo"
 
-#: ui/options_graphics.rml:69
+#: ui/options_graphics.rml:73
 msgid "Vsync"
 msgstr "Vsync"
 
-#: ui/options_graphics.rml:70
+#: ui/options_graphics.rml:74
 msgid ""
 "Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
@@ -1003,222 +993,222 @@ msgstr ""
 "cuando la tasa de refresco de la imagen es superior al de la pantalla, lo "
 "que permite evitar micro cortes cuando hay caída de FPS."
 
-#: ui/options_graphics.rml:75
+#: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr "FXAA"
 
-#: ui/options_graphics.rml:79 ui/options_graphics.rml:145
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:248
-#: ui/options_graphics.rml:291 ui/options_graphics.rml:329
-#: ui/options_graphics.rml:352
+#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
+#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
+#: ui/options_graphics.rml:356
 msgid "Apply now"
 msgstr "Aplicar ahora"
 
-#: ui/options_graphics.rml:83
+#: ui/options_graphics.rml:87
 msgid "Brightness"
 msgstr "Brillo"
 
-#: ui/options_graphics.rml:86
+#: ui/options_graphics.rml:90
 msgid "Gamma"
 msgstr ""
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:94
 msgid "Gamma:"
 msgstr "Gamma:"
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:98
 msgid "Tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:95
+#: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:101
+#: ui/options_graphics.rml:105
 msgid "Exposure"
 msgstr ""
 
-#: ui/options_graphics.rml:103
+#: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
 msgstr ""
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:111
 msgid "Lighting"
 msgstr "Iluminación"
 
-#: ui/options_graphics.rml:109
+#: ui/options_graphics.rml:113
 msgid "Lights"
 msgstr "Luces"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "Light mapping"
 msgstr "Mapeo de luces"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "normal"
 msgstr "normal"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "Vertex lighting"
 msgstr "Iluminación de vértices"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "low, ugly"
 msgstr "bajo, feo"
 
-#: ui/options_graphics.rml:115
+#: ui/options_graphics.rml:119
 msgid "Lighting system"
 msgstr "Sistema de iluminación"
 
-#: ui/options_graphics.rml:118
+#: ui/options_graphics.rml:122
 msgid "Light styles"
 msgstr "Estilos de luces"
 
-#: ui/options_graphics.rml:120
+#: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr "Luces dinámicas precalculadas emitidas por objetos estáticos del mapa."
 
-#: ui/options_graphics.rml:123
+#: ui/options_graphics.rml:127
 msgid "Dynamic lights"
 msgstr "Luces dinámicas"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:129
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "Luces dinámicas en tiempo real emitidas por objetos en movimiento, como "
 "armas o estructuras."
 
-#: ui/options_graphics.rml:128
+#: ui/options_graphics.rml:132
 msgid "Rim lighting"
 msgstr "Iluminación de bordes"
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:134
 msgid "Light the edges of models from behind."
 msgstr "Iluminar los bordes de modelos por detrás."
 
-#: ui/options_graphics.rml:133
+#: ui/options_graphics.rml:137
 msgid "Half Lambert lighting"
 msgstr "Iluminación Half Lambert"
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:139
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "Método de iluminación no físico para hacer modelos menos oscuros."
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "Blobs"
 msgstr "Blobs"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "low"
 msgstr "bajo"
 
-#: ui/options_graphics.rml:140 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
 #: ui/options_ui.rml:177
 msgid "None"
 msgstr "Ninguno"
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:146
 msgid "Shadows"
 msgstr "Sombras"
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:153
 msgid "Textures"
 msgstr "Texturas"
 
-#: ui/options_graphics.rml:151 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/server_setup.rml:13
 msgid "General"
 msgstr "General"
 
-#: ui/options_graphics.rml:154 ui/options_graphics.rml:167
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
 msgid "No limit"
 msgstr "Sin límite"
 
-#: ui/options_graphics.rml:155
+#: ui/options_graphics.rml:159
 msgid "(ultra)"
 msgstr "(ultra)"
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:160
 msgid "(high)"
 msgstr "(alto)"
 
-#: ui/options_graphics.rml:157
+#: ui/options_graphics.rml:161
 msgid "(medium)"
 msgstr "(medio)"
 
-#: ui/options_graphics.rml:158
+#: ui/options_graphics.rml:162
 msgid "(low)"
 msgstr "(baja)"
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:163
 msgid "(lowest)"
 msgstr "(más baja)"
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:165
 msgid "Image size limit"
 msgstr "Límite del tamaño de la imagen"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:166
 msgid "Limit image size to save on memory."
 msgstr "Reducir el tamaño de la imagen para ahorrar memoria."
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:172
 msgid "No smaller than screen"
 msgstr "No menor que la pantalla"
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:173
 msgid "No larger than screen"
 msgstr "No más grande que la pantalla"
 
-#: ui/options_graphics.rml:171
+#: ui/options_graphics.rml:175
 msgid "Menu image size limit"
 msgstr "Límite en el tamaño de la imagen del menú"
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:176
 msgid "Limit menu image size to save on memory."
 msgstr "Limitar el tamaño de la imagen en los menús para ahorrar memoria."
 
-#: ui/options_graphics.rml:177
+#: ui/options_graphics.rml:181
 msgid "High-precision rendering"
 msgstr "Renderizado de alta precisión"
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:182
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "Utilice búferes de píxeles de alta definición, que reducen la formación de "
 "bandas de color."
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:186
 msgid "Use bindless textures if possible"
 msgstr ""
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:188
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
 
-#: ui/options_graphics.rml:184 ui/options_graphics.rml:234
-#: ui/options_graphics.rml:258 ui/options_graphics.rml:339
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
 msgid "Experimental."
 msgstr "Experimental."
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:191
 msgid "Mip-mapping"
 msgstr "Mip-mapping"
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:192
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1226,118 +1216,118 @@ msgstr ""
 "El mip-mapping mejora la apariencia de las superficies distantes utilizando "
 "texturas de resolución inferior. Esto generalmente no afecta el rendimiento."
 
-#: ui/options_graphics.rml:195 ui/options_ui.rml:47
+#: ui/options_graphics.rml:199 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "No"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
 msgstr "Mip-mapping anisotrópico"
 
-#: ui/options_graphics.rml:198
+#: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Mejor interpretación de los mip-maps sobre las superficies inclinadas."
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "Trilinear"
 msgstr "Trilinear"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "better"
 msgstr "mejor"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:207
 msgid "Bilinear"
 msgstr "Bilinear"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
 msgstr "Filtro de puesta a escala de las texturas"
 
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:215
+#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
 msgid "Materials"
 msgstr "Materiales"
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:221
 msgid "Sky"
 msgstr "Cielo"
 
-#: ui/options_graphics.rml:219
+#: ui/options_graphics.rml:223
 msgid "Draw the sky."
 msgstr "Dibuja el cielo."
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:226
 msgid "Normal mapping"
 msgstr "Mapping normal"
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simula detalles de iluminación sobre superficies planas."
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
 msgstr "Mapping de luces direccional"
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
 msgstr "Dirección de la luz basada en el baking de textura."
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:236
 msgid "Relief mapping"
 msgstr "Mapping del relieve"
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
 msgstr "Añade baches a las superficies soportadas."
 
-#: ui/options_graphics.rml:237
+#: ui/options_graphics.rml:241
 msgid "Specular mapping"
 msgstr "Mapping especular"
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
 msgstr "Simula la especularidad de la luz."
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:246
 msgid "Physical mapping"
 msgstr "Mapping físico"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
 msgstr "Aspecto material basado en aproximaciones físicas."
 
-#: ui/options_graphics.rml:252 ui/options_graphics.rml:254
+#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
 msgstr "Reflejos"
 
-#: ui/options_graphics.rml:256
+#: ui/options_graphics.rml:260
 msgid "Static reflections"
 msgstr "Reflejos estáticos"
 
-#: ui/options_graphics.rml:258
+#: ui/options_graphics.rml:262
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:266
 msgid "Very low"
 msgstr "Muy baja"
 
-#: ui/options_graphics.rml:264 ui/options_graphics.rml:386
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
 msgstr "Moderada"
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:270
 msgid "Very high"
 msgstr "Muy alta"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:380
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
 msgstr "Calidad"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1345,97 +1335,97 @@ msgstr ""
 "Calidad de los mapas cubos de reflexión estática. Las calidades más altas "
 "pueden ocupar mucho espacio en disco."
 
-#: ui/options_graphics.rml:272
+#: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
 msgstr "Separación de la rejilla del mapeo de cubos"
 
-#: ui/options_graphics.rml:276 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Actual:"
 
-#: ui/options_graphics.rml:282 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:129
 msgid "Never"
 msgstr "Nunca"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:287
 msgid "Cache on disk"
 msgstr ""
 
-#: ui/options_graphics.rml:284
+#: ui/options_graphics.rml:288
 msgid "Always rebuild"
 msgstr "Reconstruir siempre"
 
-#: ui/options_graphics.rml:286
+#: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
 msgstr ""
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr ""
 
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:297
+#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Efectos"
 
-#: ui/options_graphics.rml:299
+#: ui/options_graphics.rml:303
 msgid "Bloom"
 msgstr "Bloom"
 
-#: ui/options_graphics.rml:301
+#: ui/options_graphics.rml:305
 msgid "Makes bright areas on your screen glow."
 msgstr "Hace brillar las zonas luminosas de tu pantalla."
 
-#: ui/options_graphics.rml:304
+#: ui/options_graphics.rml:308
 msgid "Color grading"
 msgstr ""
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
 msgstr ""
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:313
 msgid "Heat-haze"
 msgstr "Bruma de calor"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:315
 msgid "Simulate air refraction in severe heat."
 msgstr "Simula la refracción del aire en caso de mucho calor."
 
-#: ui/options_graphics.rml:314
+#: ui/options_graphics.rml:318
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Oclusión ambiental del espacio de pantalla (SSAO)"
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:320
 msgid "Simulate dark corners."
 msgstr "Simula esquinas oscuras."
 
-#: ui/options_graphics.rml:319
+#: ui/options_graphics.rml:323
 msgid "Marks"
 msgstr "Marcas"
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:325
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "Dibuja marcas (como impactos de balas o desgastes) en las superficies"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:328
 msgid "Particle physics"
 msgstr "Física de partículas"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:330
 msgid "Allow particles to bounce off surfaces."
 msgstr "Permite a las partículas rebotar sobre superficies."
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:337
 msgid "Renderer"
 msgstr ""
 
-#: ui/options_graphics.rml:335 ui/options_graphics.rml:337
+#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
 msgid "Material system"
 msgstr ""
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:343
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1444,91 +1434,91 @@ msgstr ""
 "algunos controladores fallen con esta opción activada (p. ej. Mesa y "
 "controladores AMD propietarios)."
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:346
 msgid "GPU frustum culling"
 msgstr ""
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:348
 msgid "Cull surfaces that are out of view."
 msgstr ""
 
-#: ui/options_graphics.rml:347
+#: ui/options_graphics.rml:351
 msgid "GPU occlusion culling"
 msgstr ""
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:353
 msgid "Cull hidden surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:360
 msgid "Gameplay"
 msgstr "Jugabilidad"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:362
 msgid "Building markers"
 msgstr "Indicadores de construcción"
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:365
 msgid "disabled"
 msgstr "deshabilitado"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:366
 msgid "All structures"
 msgstr "Todas las estructuras"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:367
 msgid "Support structures"
 msgstr "Estructuras de apoyo"
 
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:368
 msgid "Offensive structures"
 msgstr "Estructuras ofensivas"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:369
 msgid "Alien structures"
 msgstr "Estructuras alienígenas"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:370
 msgid "Human structures"
 msgstr "Estructuras humanas"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:371
 msgid "Alien support structures"
 msgstr "Estructuras alienígenas de apoyo"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:372
 msgid "Human support structures"
 msgstr "Estructuras humanas de apoyo"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:373
 msgid "Offensive alien structures"
 msgstr "Estructuras alienígenas ofensivas"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:374
 msgid "Offensive human structures"
 msgstr "Estructuras humanas ofensivas"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:376
 msgid "Building ranges"
 msgstr "Alcances de construcción"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:378
 msgid "Models"
 msgstr "Modelos"
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:386
 msgid "Motion blur"
 msgstr "Desenfoque de movimiento"
 
-#: ui/options_graphics.rml:390
+#: ui/options_graphics.rml:394
 msgid "Intensity"
 msgstr "Intensidad"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:395
 msgid "Level of motion-blur."
 msgstr "Nivel de desenfoque de movimiento."
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:398
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Velocidad mínima de movimiento para activar el desenfoque"
 
@@ -5473,29 +5463,64 @@ msgstr "Votación fallida ($1$ — $2$; se necesitaba %$3$)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Votación fallida ($1$ — $2$; $3$% se necesitaba)"
 
-#: src/shared/bg_misc.cpp:2483
+#: src/shared/bg_misc.cpp:2490
 msgid "spectator"
 msgstr "espectador"
 
-#: src/shared/bg_misc.cpp:2488
+#: src/shared/bg_misc.cpp:2495
 msgid "alien"
 msgstr "alienígena"
 
-#: src/shared/bg_misc.cpp:2493
+#: src/shared/bg_misc.cpp:2500
 msgid "human"
 msgstr "humano"
 
-#: src/shared/bg_misc.cpp:2503
+#: src/shared/bg_misc.cpp:2510
 msgid "spectators"
 msgstr "espectadores"
 
-#: src/shared/bg_misc.cpp:2508
+#: src/shared/bg_misc.cpp:2515
 msgid "aliens"
 msgstr "alienígenas"
 
-#: src/shared/bg_misc.cpp:2513
+#: src/shared/bg_misc.cpp:2520
 msgid "humans"
 msgstr "humanos"
+
+#~ msgid ""
+#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
+#~ "textures…"
+#~ msgstr ""
+#~ "Subdivisiones bajas, sin cielo, sin sombras, sin partículas que rebotan, "
+#~ "texturas de 16 píxeles…"
+
+#~ msgid ""
+#~ "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "Multisampling, mip-mapping anisotrópico, sombras, partículas, texturas de "
+#~ "256 pixels…"
+
+#~ msgid ""
+#~ "Normal, specular and physical mapping, bloom, trilinear filtering, 512-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "Mapeo normal, specular y físico, bloom, filtro trilineal, texturas de 512 "
+#~ "pixels…"
+
+#~ msgid ""
+#~ "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "Luces dinámicas, bruma de calor, motion blur, mejor multisampling, "
+#~ "texturas hasta 2048 pixels…"
+
+#~ msgid ""
+#~ "Relief mapping and other features and effects enabled, up to 4096-pixel "
+#~ "textures…"
+#~ msgstr ""
+#~ "Modelación del relieve y otras funciones y efectos disponibles, texturas "
+#~ "hasta 4096 pixels…"
 
 #~ msgid "Brightness clamping"
 #~ msgstr "Limitar el brillo"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-30 23:19+0200\n"
+"POT-Creation-Date: 2025-05-24 21:19+0200\n"
 "PO-Revision-Date: 2024-10-27 09:00+0000\n"
 "Last-Translator: Jeannes Bryan <jeannesbond@hotmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/unvanquished/"
@@ -136,83 +136,83 @@ msgstr ""
 msgid "Ok"
 msgstr "Ok"
 
-#: ui/help_gameplay.rml:12
+#: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
 msgstr ""
 
-#: ui/help_gameplay.rml:17 ui/welcome.rml:16
+#: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "Selamat datang"
 
-#: ui/help_gameplay.rml:20
+#: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
 
-#: ui/help_gameplay.rml:23
+#: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
 msgstr ""
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr ""
 
-#: ui/help_gameplay.rml:27
+#: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr ""
 
-#: ui/help_gameplay.rml:29
+#: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr ""
 
-#: ui/help_gameplay.rml:33
+#: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
 msgstr ""
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:48
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
 
-#: ui/help_gameplay.rml:43
+#: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:55
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
 
-#: ui/help_gameplay.rml:50
+#: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:62
 msgid "Powering buildables"
 msgstr ""
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:65
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -221,7 +221,7 @@ msgid ""
 "loose the build points if the mining structures are destroyed."
 msgstr ""
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:68
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -229,31 +229,31 @@ msgid ""
 "have enough energy to remain operational."
 msgstr ""
 
-#: ui/help_gameplay.rml:61
+#: ui/help_gameplay.rml:69
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:73
 msgid "Mining structures"
 msgstr ""
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:76
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:82
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -262,7 +262,7 @@ msgid ""
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
 
-#: ui/help_gameplay.rml:77
+#: ui/help_gameplay.rml:85
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -270,56 +270,56 @@ msgid ""
 "This replaces sudden death."
 msgstr ""
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
 msgstr ""
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:92
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
 
-#: ui/help_gameplay.rml:87
+#: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:99
 msgid "Wildfire"
 msgstr ""
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
 
-#: ui/help_gameplay.rml:103
+#: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:115
 msgid "Under attack"
 msgstr ""
 
-#: ui/help_gameplay.rml:110
+#: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -327,15 +327,15 @@ msgid ""
 "owning team."
 msgstr ""
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:122
 msgid "Healing"
 msgstr ""
 
-#: ui/help_gameplay.rml:117
+#: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr ""
 
-#: ui/help_gameplay.rml:121
+#: ui/help_gameplay.rml:129
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -343,21 +343,21 @@ msgid ""
 "projectiles."
 msgstr ""
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:133
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:136
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
 
-#: ui/help_gameplay.rml:131
+#: ui/help_gameplay.rml:139
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -365,75 +365,75 @@ msgid ""
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
 
-#: ui/help_gameplay.rml:135
+#: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:147
 msgid "Wallwalking"
 msgstr ""
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
 
-#: ui/help_gameplay.rml:151
+#: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
 msgstr ""
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
 msgstr ""
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
 msgstr ""
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:172
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:178
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
 
-#: ui/help_gameplay.rml:176
+#: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -706,8 +706,8 @@ msgstr ""
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:91 ui/options_graphics.rml:277
-#: ui/options_graphics.rml:399 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -775,24 +775,20 @@ msgid "Presets"
 msgstr ""
 
 #: ui/options_graphics.rml:27
-msgid "Lowest"
+msgid "Ultra"
 msgstr ""
 
 #: ui/options_graphics.rml:28
-msgid ""
-"Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-"textures…"
+msgid "Everything enabled."
 msgstr ""
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:263
-#: ui/options_graphics.rml:378 ui/options_graphics.rml:387
-msgid "Low"
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
+#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+msgid "High"
 msgstr ""
 
 #: ui/options_graphics.rml:32
-msgid ""
-"Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-"pixel textures…"
+msgid "Dynamic lights, special effects, large textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:35
@@ -800,586 +796,590 @@ msgid "Medium"
 msgstr ""
 
 #: ui/options_graphics.rml:36
-msgid ""
-"Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
-"textures…"
+msgid "Surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:265
-#: ui/options_graphics.rml:377 ui/options_graphics.rml:385
-msgid "High"
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
+#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+msgid "Low"
 msgstr ""
 
 #: ui/options_graphics.rml:40
-msgid ""
-"Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-"pixel textures…"
+msgid "The fastest preset that doesn't make the game look ugly."
 msgstr ""
 
 #: ui/options_graphics.rml:43
-msgid "Ultra"
-msgstr ""
-
-#: ui/options_graphics.rml:44
 msgid ""
-"Relief mapping and other features and effects enabled, up to 4096-pixel "
-"textures…"
+"When looking for optimizations, try the low preset first. When the low "
+"preset runs properly, the lowest preset is not faster."
 msgstr ""
 
-#: ui/options_graphics.rml:47 ui/options_graphics.rml:49
+#: ui/options_graphics.rml:46
+msgid "Lowest"
+msgstr ""
+
+#: ui/options_graphics.rml:47
+msgid "Ugly textures and geometry, no sky, no particle bounce…"
+msgstr ""
+
+#: ui/options_graphics.rml:48
+msgid "Only meant for very slow devices, as a last resort."
+msgstr ""
+
+#: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
 msgstr ""
 
-#: ui/options_graphics.rml:52
+#: ui/options_graphics.rml:56
 msgid "Screen Resolution"
 msgstr ""
 
-#: ui/options_graphics.rml:56
+#: ui/options_graphics.rml:60
 msgid "Borderless window"
 msgstr ""
 
-#: ui/options_graphics.rml:60
+#: ui/options_graphics.rml:64
 msgid "Fullscreen"
 msgstr ""
 
-#: ui/options_graphics.rml:65 ui/options_graphics.rml:388
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
 msgid "Off"
 msgstr ""
 
-#: ui/options_graphics.rml:66
+#: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
 msgstr ""
 
-#: ui/options_graphics.rml:67
+#: ui/options_graphics.rml:71
 msgid "Full Vsync"
 msgstr ""
 
-#: ui/options_graphics.rml:69
+#: ui/options_graphics.rml:73
 msgid "Vsync"
 msgstr ""
 
-#: ui/options_graphics.rml:70
+#: ui/options_graphics.rml:74
 msgid ""
 "Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
 
-#: ui/options_graphics.rml:75
+#: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr ""
 
-#: ui/options_graphics.rml:79 ui/options_graphics.rml:145
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:248
-#: ui/options_graphics.rml:291 ui/options_graphics.rml:329
-#: ui/options_graphics.rml:352
+#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
+#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
+#: ui/options_graphics.rml:356
 msgid "Apply now"
 msgstr ""
 
-#: ui/options_graphics.rml:83
+#: ui/options_graphics.rml:87
 msgid "Brightness"
 msgstr ""
 
-#: ui/options_graphics.rml:86
+#: ui/options_graphics.rml:90
 msgid "Gamma"
 msgstr ""
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:94
 msgid "Gamma:"
 msgstr ""
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:98
 msgid "Tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:95
+#: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:101
+#: ui/options_graphics.rml:105
 msgid "Exposure"
 msgstr ""
 
-#: ui/options_graphics.rml:103
+#: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
 msgstr ""
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:111
 msgid "Lighting"
 msgstr ""
 
-#: ui/options_graphics.rml:109
+#: ui/options_graphics.rml:113
 msgid "Lights"
 msgstr ""
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "Light mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "normal"
 msgstr ""
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "Vertex lighting"
 msgstr ""
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "low, ugly"
 msgstr ""
 
-#: ui/options_graphics.rml:115
+#: ui/options_graphics.rml:119
 msgid "Lighting system"
 msgstr ""
 
-#: ui/options_graphics.rml:118
+#: ui/options_graphics.rml:122
 msgid "Light styles"
 msgstr ""
 
-#: ui/options_graphics.rml:120
+#: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
 
-#: ui/options_graphics.rml:123
+#: ui/options_graphics.rml:127
 msgid "Dynamic lights"
 msgstr ""
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:129
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 
-#: ui/options_graphics.rml:128
+#: ui/options_graphics.rml:132
 msgid "Rim lighting"
 msgstr ""
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:134
 msgid "Light the edges of models from behind."
 msgstr ""
 
-#: ui/options_graphics.rml:133
+#: ui/options_graphics.rml:137
 msgid "Half Lambert lighting"
 msgstr ""
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:139
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "Blobs"
 msgstr ""
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "low"
 msgstr ""
 
-#: ui/options_graphics.rml:140 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
 #: ui/options_ui.rml:177
 msgid "None"
 msgstr ""
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:146
 msgid "Shadows"
 msgstr ""
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:153
 msgid "Textures"
 msgstr ""
 
-#: ui/options_graphics.rml:151 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/server_setup.rml:13
 msgid "General"
 msgstr ""
 
-#: ui/options_graphics.rml:154 ui/options_graphics.rml:167
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
 msgid "No limit"
 msgstr ""
 
-#: ui/options_graphics.rml:155
+#: ui/options_graphics.rml:159
 msgid "(ultra)"
 msgstr ""
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:160
 msgid "(high)"
 msgstr ""
 
-#: ui/options_graphics.rml:157
+#: ui/options_graphics.rml:161
 msgid "(medium)"
 msgstr ""
 
-#: ui/options_graphics.rml:158
+#: ui/options_graphics.rml:162
 msgid "(low)"
 msgstr ""
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:163
 msgid "(lowest)"
 msgstr ""
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:165
 msgid "Image size limit"
 msgstr ""
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:166
 msgid "Limit image size to save on memory."
 msgstr ""
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:172
 msgid "No smaller than screen"
 msgstr ""
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:173
 msgid "No larger than screen"
 msgstr ""
 
-#: ui/options_graphics.rml:171
+#: ui/options_graphics.rml:175
 msgid "Menu image size limit"
 msgstr ""
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:176
 msgid "Limit menu image size to save on memory."
 msgstr ""
 
-#: ui/options_graphics.rml:177
+#: ui/options_graphics.rml:181
 msgid "High-precision rendering"
 msgstr ""
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:182
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:186
 msgid "Use bindless textures if possible"
 msgstr ""
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:188
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
 
-#: ui/options_graphics.rml:184 ui/options_graphics.rml:234
-#: ui/options_graphics.rml:258 ui/options_graphics.rml:339
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
 msgid "Experimental."
 msgstr ""
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:191
 msgid "Mip-mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:192
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
 
-#: ui/options_graphics.rml:195 ui/options_ui.rml:47
+#: ui/options_graphics.rml:199 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr ""
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:198
+#: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "Trilinear"
 msgstr ""
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "better"
 msgstr ""
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:207
 msgid "Bilinear"
 msgstr ""
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
 msgstr ""
 
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:215
+#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
 msgid "Materials"
 msgstr ""
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:221
 msgid "Sky"
 msgstr ""
 
-#: ui/options_graphics.rml:219
+#: ui/options_graphics.rml:223
 msgid "Draw the sky."
 msgstr ""
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:226
 msgid "Normal mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
 msgstr ""
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:236
 msgid "Relief mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:237
+#: ui/options_graphics.rml:241
 msgid "Specular mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
 msgstr ""
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:246
 msgid "Physical mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
 msgstr ""
 
-#: ui/options_graphics.rml:252 ui/options_graphics.rml:254
+#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
 msgstr ""
 
-#: ui/options_graphics.rml:256
+#: ui/options_graphics.rml:260
 msgid "Static reflections"
 msgstr ""
 
-#: ui/options_graphics.rml:258
+#: ui/options_graphics.rml:262
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:266
 msgid "Very low"
 msgstr ""
 
-#: ui/options_graphics.rml:264 ui/options_graphics.rml:386
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
 msgstr ""
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:270
 msgid "Very high"
 msgstr ""
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:380
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
 msgstr ""
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
 
-#: ui/options_graphics.rml:272
+#: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
 msgstr ""
 
-#: ui/options_graphics.rml:276 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr ""
 
-#: ui/options_graphics.rml:282 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:129
 msgid "Never"
 msgstr ""
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:287
 msgid "Cache on disk"
 msgstr ""
 
-#: ui/options_graphics.rml:284
+#: ui/options_graphics.rml:288
 msgid "Always rebuild"
 msgstr ""
 
-#: ui/options_graphics.rml:286
+#: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
 msgstr ""
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr ""
 
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:297
+#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr ""
 
-#: ui/options_graphics.rml:299
+#: ui/options_graphics.rml:303
 msgid "Bloom"
 msgstr ""
 
-#: ui/options_graphics.rml:301
+#: ui/options_graphics.rml:305
 msgid "Makes bright areas on your screen glow."
 msgstr ""
 
-#: ui/options_graphics.rml:304
+#: ui/options_graphics.rml:308
 msgid "Color grading"
 msgstr ""
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
 msgstr ""
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:313
 msgid "Heat-haze"
 msgstr ""
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:315
 msgid "Simulate air refraction in severe heat."
 msgstr ""
 
-#: ui/options_graphics.rml:314
+#: ui/options_graphics.rml:318
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr ""
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:320
 msgid "Simulate dark corners."
 msgstr ""
 
-#: ui/options_graphics.rml:319
+#: ui/options_graphics.rml:323
 msgid "Marks"
 msgstr ""
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:325
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:328
 msgid "Particle physics"
 msgstr ""
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:330
 msgid "Allow particles to bounce off surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:337
 msgid "Renderer"
 msgstr ""
 
-#: ui/options_graphics.rml:335 ui/options_graphics.rml:337
+#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
 msgid "Material system"
 msgstr ""
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:343
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:346
 msgid "GPU frustum culling"
 msgstr ""
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:348
 msgid "Cull surfaces that are out of view."
 msgstr ""
 
-#: ui/options_graphics.rml:347
+#: ui/options_graphics.rml:351
 msgid "GPU occlusion culling"
 msgstr ""
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:353
 msgid "Cull hidden surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:360
 msgid "Gameplay"
 msgstr ""
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:362
 msgid "Building markers"
 msgstr ""
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:365
 msgid "disabled"
 msgstr ""
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:366
 msgid "All structures"
 msgstr ""
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:367
 msgid "Support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:368
 msgid "Offensive structures"
 msgstr ""
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:369
 msgid "Alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:370
 msgid "Human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:371
 msgid "Alien support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:372
 msgid "Human support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:373
 msgid "Offensive alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:374
 msgid "Offensive human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:376
 msgid "Building ranges"
 msgstr ""
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:378
 msgid "Models"
 msgstr ""
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:386
 msgid "Motion blur"
 msgstr ""
 
-#: ui/options_graphics.rml:390
+#: ui/options_graphics.rml:394
 msgid "Intensity"
 msgstr ""
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:395
 msgid "Level of motion-blur."
 msgstr ""
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:398
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr ""
 
@@ -5254,26 +5254,26 @@ msgstr ""
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2483
+#: src/shared/bg_misc.cpp:2490
 msgid "spectator"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2488
+#: src/shared/bg_misc.cpp:2495
 msgid "alien"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2493
+#: src/shared/bg_misc.cpp:2500
 msgid "human"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2503
+#: src/shared/bg_misc.cpp:2510
 msgid "spectators"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2508
+#: src/shared/bg_misc.cpp:2515
 msgid "aliens"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2513
+#: src/shared/bg_misc.cpp:2520
 msgid "humans"
 msgstr ""

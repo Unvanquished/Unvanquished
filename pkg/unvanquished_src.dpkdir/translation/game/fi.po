@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-30 23:19+0200\n"
+"POT-Creation-Date: 2025-05-24 21:19+0200\n"
 "PO-Revision-Date: 2025-05-24 16:56+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -138,15 +138,15 @@ msgstr "Virhe!"
 msgid "Ok"
 msgstr "Selvä"
 
-#: ui/help_gameplay.rml:12
+#: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
 msgstr "Peliopas"
 
-#: ui/help_gameplay.rml:17 ui/welcome.rml:16
+#: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "Tervetuloa"
 
-#: ui/help_gameplay.rml:20
+#: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
@@ -154,11 +154,11 @@ msgstr ""
 "Tässä osiossa löydät yhteenvedon merkittävistä pelin osa-alueista jotta "
 "tiedät miten tulla menestyksekkääksi pelaajaksi."
 
-#: ui/help_gameplay.rml:23
+#: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
 msgstr "Lisää löytyy meidän verkkosivulta ja toisilta yhteisöpaikoilta!"
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
@@ -166,23 +166,23 @@ msgstr ""
 "Keskustele pelaajien ja kehittäjien kanssa Libera.Chat IRC:ssä, Matrixissa "
 "tai Discordissa: <web dest=\"chat\" />"
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr "Keskustele uutisista foorumeilla: <web dest=\"forums\" />"
 
-#: ui/help_gameplay.rml:27
+#: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr "Löydä lisää tietoa pelistä wikissä: <web dest=\"wiki\" />"
 
-#: ui/help_gameplay.rml:29
+#: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr "Ilmoitathan virheistä tänne: <web dest=\"bugs\" />"
 
-#: ui/help_gameplay.rml:33
+#: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
 msgstr "Ansiot ja kehittyminen"
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -190,7 +190,7 @@ msgstr ""
 "Alienit voivat ansaita kehittymispisteitä tappamalla ihmisiä. He voivat "
 "sitten käyttää niitä pisteitä kehittyäkseen [dragoon] parempiin muotoihin."
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:48
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -201,7 +201,7 @@ msgstr ""
 "alkeellisempiin muotoihin (pienestä hinnasta) ollessaan [overmind] "
 "ylihallitsijan läheisyydessä."
 
-#: ui/help_gameplay.rml:43
+#: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -209,7 +209,7 @@ msgstr ""
 "Rakenna ylihallitsija [granger] grangerilla jos se tuhotaan, tarvitset "
 "elävän ylihallitsijan kehittyäksesi!"
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:55
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -220,7 +220,7 @@ msgstr ""
 "aseita, panssareita tai [bsuit] taistelupuvun, sekä lisävarusteita kuten "
 "tutkan tai rakettirepun."
 
-#: ui/help_gameplay.rml:50
+#: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -229,11 +229,11 @@ msgstr ""
 "rakennatte yhden! Käytä rakennuspakkia rakentaaksesi asevarikon jos se "
 "puuttuu."
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:62
 msgid "Powering buildables"
 msgstr "Rakennelmien käynnistäminen"
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:65
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -247,7 +247,7 @@ msgstr ""
 "saatavaa voimaa ja tuodaksesi lisää rakennuspisteitä. Huomioi kuitenkin, "
 "että menetät rakennuspisteet jos louhintarakennelmat tuhotaan."
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:68
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -259,7 +259,7 @@ msgstr ""
 "palautuvat ajan myötä), rakennelmat simahtavat kunnes muilla rakennelmilla "
 "on riittävästi energiaa pysyäkseen toiminnassa."
 
-#: ui/help_gameplay.rml:61
+#: ui/help_gameplay.rml:69
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -269,11 +269,11 @@ msgstr ""
 "telepisteet), louhintarakennelmiin (loinen ja pora) ja uniikkeihin "
 "rakennelmiin ([overmind] ylihallitsija ja [reactor] reaktori)."
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:73
 msgid "Mining structures"
 msgstr "Louhintarakennelmat"
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:76
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -283,7 +283,7 @@ msgstr ""
 "poralla ja alienien [leech] loisella. Nämä rakennelmat täytyy sijoittaa "
 "erilleen toisistaan tehokkuuden vuoksi."
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -291,7 +291,7 @@ msgstr ""
 "Älä laita louhintarakennelmia liian lähelle yhteen, tai ne kilpailevat "
 "keskenään ja päätyvät lisätaakaksi maksaen rakenteluresursseja!"
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:82
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -305,7 +305,7 @@ msgstr ""
 "louhintarakennelma on valmis ja pisteet lähtevät, jos rakennelma tuhoutuu. "
 "Älä rakenna puolustuksettomia poria!"
 
-#: ui/help_gameplay.rml:77
+#: ui/help_gameplay.rml:85
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -316,11 +316,11 @@ msgstr ""
 "Louhinnan palautustahti vähenee erän edetessä tehden uudelleenrakentamisesta "
 "vaikeampaa pitkissä erissä. Tämä korvaa äkkikuoleman."
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
 msgstr "Tasot ja vauhti"
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:92
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -330,7 +330,7 @@ msgstr ""
 "joukkueellesi uutta resurssia nimeltä vauhti. Jos kerrytät tarpeeksi "
 "vauhtia, uusia aseita, rakennelmia tai muotoja avautuu käytettäväksi."
 
-#: ui/help_gameplay.rml:87
+#: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -339,11 +339,11 @@ msgstr ""
 "lepäämällä joukkueesi menettää pääsyn uusiin ominaisuuksiin. Hankitut "
 "päivitykset pysyvät toiminnassa."
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:99
 msgid "Wildfire"
 msgstr "Tulipalot"
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -351,7 +351,7 @@ msgstr ""
 "Alienien rakennelmat voivat syttyä tuleen, kun niihin osutaan [flamer] "
 "liekinheittimellä tai [firebomb] palopommilla."
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -359,7 +359,7 @@ msgstr ""
 "Jos rakennelmat ovat rakennettu liian lähelle, tulipalo voi levitä huono-"
 "onnisiin naapureihin."
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -368,7 +368,7 @@ msgstr ""
 "päästä, mutta rykelmä palavia rakennelmia pysyy riittävän kuumana saadakseen "
 "enemmän tuhoa osakseen."
 
-#: ui/help_gameplay.rml:103
+#: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -376,11 +376,11 @@ msgstr ""
 "[advgranger] Kehittynyt granger voi sylkihyökkäyksellään sammuttaa "
 "tulipaloja tai hidastaa tunkeilijoita!"
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:115
 msgid "Under attack"
 msgstr "Hyökättynä"
 
-#: ui/help_gameplay.rml:110
+#: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -392,15 +392,15 @@ msgstr ""
 "tuhoutumisesta. Muiden rakennelmien tuhoamisesta tulee hyökkäysvaroituksia "
 "rakennelman omistavalle joukkueelle."
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:122
 msgid "Healing"
 msgstr "Parantuminen"
 
-#: ui/help_gameplay.rml:117
+#: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr "Kuoleminen ruokkii vihollista, saatat haluta pelastautua!"
 
-#: ui/help_gameplay.rml:121
+#: ui/help_gameplay.rml:129
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -412,7 +412,7 @@ msgstr ""
 "ratkaisevaa! Millä tahansa tavalla paraneminen vaikuttaa myös [advdragoon] "
 "kehittyneen dragoonin ammusten palautumiseen."
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:133
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -422,7 +422,7 @@ msgstr ""
 "kuin voit, pyri avaamaan se käytettäväksi niin varhain, kuin mahdollista. "
 "Tehostin antaa myös myrkkyä, joka tekee hyökkäyksistäsi kuolettavampia."
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:136
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -432,7 +432,7 @@ msgstr ""
 "pientä lisänopeutta parantumiseen, vaikkakin vähemmän, kuin mitä rihmasto. "
 "Tämä voi auttaa puolustamaan tukikohtia."
 
-#: ui/help_gameplay.rml:131
+#: ui/help_gameplay.rml:139
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -445,7 +445,7 @@ msgstr ""
 "kyljessä kiinni. Pienellä yhteistyöllä tämä on mainio tapa saartaa "
 "vihollisia!"
 
-#: ui/help_gameplay.rml:135
+#: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -454,11 +454,11 @@ msgstr ""
 "jälkeen heidän täytyy palata [medstat] ensiapuasemalle paranemaan ja "
 "täyttämään lääkepakkinsa."
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:147
 msgid "Wallwalking"
 msgstr "Seinilläkävely"
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -466,13 +466,13 @@ msgstr ""
 "Jotkin alienien muodot, kuten [dretch] dretch, [mantis] mantis ja "
 "[advgranger] kehittynyt granger, voivat kävellä seinillä!"
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 "Käytä tätä päästäksesi erityisiin paikkoihin tai käyttääksesi oikoreittejä "
 "ilmanvaihtokanavien läpi."
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -480,19 +480,19 @@ msgstr ""
 "Alienien puolustusrakennelmat kuten ansoitin ja piikitin toimivat paremmin "
 "seinillä, niiden rakentaminen katolle suojaa niitä kranaateilta."
 
-#: ui/help_gameplay.rml:151
+#: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "Edistynyt granger avautuu käytettäväksi vauhdin kertyessä."
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
 msgstr "Tremulousin jälkeen"
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "Tremulousista eteenpäin, staminaa on lisätty."
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
@@ -500,7 +500,7 @@ msgstr ""
 "Kaikki alienien kehittymiskulut ja hyödyt ovat tuplattu. Uusi "
 "kehittymispisteiden maksimi, jonka alieni voi varata on 20 (aiemmin 9)."
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:172
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
@@ -508,7 +508,7 @@ msgstr ""
 "Tasot ovat korvattu vauhdilla, ja rakennuspisteet riippuvat suoraan "
 "louhintarakennelmien määrästä."
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
@@ -516,7 +516,7 @@ msgstr ""
 "Ihmisillä ei enää ole Tesla-puolustustornia eikä puolustustietokonetta, "
 "mutta he voivat rakentaa ohjuspattereita."
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:178
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
@@ -524,7 +524,7 @@ msgstr ""
 "Alienit saivat piikitinrakennelman, joka voi syvästi haavoittaa varomattomia "
 "ihmisiä, mutta se on hyvin suojaton rakennelma, älä laita sitä näkösälle!"
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -532,7 +532,7 @@ msgstr ""
 "Basiliskin korvasi mantis, se ei voi tarttua kiinni toisista, mutta sen "
 "purema hidastaa uhrejaan, ja se voi loikata tehdäkseen nopeita lähestymisiä."
 
-#: ui/help_gameplay.rml:176
+#: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -819,8 +819,8 @@ msgstr "astetta"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:91 ui/options_graphics.rml:277
-#: ui/options_graphics.rml:399 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -888,100 +888,90 @@ msgid "Presets"
 msgstr "Esiasetukset"
 
 #: ui/options_graphics.rml:27
-msgid "Lowest"
-msgstr "Alhaisin"
+msgid "Ultra"
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:28
-msgid ""
-"Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-"textures…"
+msgid "Everything enabled."
 msgstr ""
-"Matalat alijaot, ei taivasta, ei varjoa, ei kimpoilevia partikkeleita, 16-"
-"pikseliset tekstuurit…"
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:263
-#: ui/options_graphics.rml:378 ui/options_graphics.rml:387
-msgid "Low"
-msgstr "Matala"
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
+#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+msgid "High"
+msgstr "Korkea"
 
 #: ui/options_graphics.rml:32
-msgid ""
-"Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-"pixel textures…"
+msgid "Dynamic lights, special effects, large textures…"
 msgstr ""
-"Moninäytteistys, anisotrooppinen mip-kartoitus, varjot, kimpoavat "
-"partikkelit, 256-pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
 msgstr "Keskiverto"
 
 #: ui/options_graphics.rml:36
-msgid ""
-"Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
-"textures…"
+msgid "Surface details, good textures…"
 msgstr ""
-"Normaali‐, peili‐ ja fyysinen kartoitus, hohka, trilineaarinen suodatus, 512-"
-"pikseliset tekstuurit…"
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:265
-#: ui/options_graphics.rml:377 ui/options_graphics.rml:385
-msgid "High"
-msgstr "Korkea"
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
+#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+msgid "Low"
+msgstr "Matala"
 
 #: ui/options_graphics.rml:40
-msgid ""
-"Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-"pixel textures…"
+msgid "The fastest preset that doesn't make the game look ugly."
 msgstr ""
-"Dynaaminen valaistus, kuumuuden väreily, vauhtisokeus, parempi "
-"moninäytteistys, enintään 2048-pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:43
-msgid "Ultra"
-msgstr "Ultra"
-
-#: ui/options_graphics.rml:44
 msgid ""
-"Relief mapping and other features and effects enabled, up to 4096-pixel "
-"textures…"
+"When looking for optimizations, try the low preset first. When the low "
+"preset runs properly, the lowest preset is not faster."
 msgstr ""
-"Kohokartoitus ja muut ominaisuudet ja tehosteet käytössä, enintään 4096-"
-"pikseliset tekstuurit…"
 
-#: ui/options_graphics.rml:47 ui/options_graphics.rml:49
+#: ui/options_graphics.rml:46
+msgid "Lowest"
+msgstr "Alhaisin"
+
+#: ui/options_graphics.rml:47
+msgid "Ugly textures and geometry, no sky, no particle bounce…"
+msgstr ""
+
+#: ui/options_graphics.rml:48
+msgid "Only meant for very slow devices, as a last resort."
+msgstr ""
+
+#: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
 msgstr "Video"
 
-#: ui/options_graphics.rml:52
+#: ui/options_graphics.rml:56
 msgid "Screen Resolution"
 msgstr "Kuvaruudun resoluutio"
 
-#: ui/options_graphics.rml:56
+#: ui/options_graphics.rml:60
 msgid "Borderless window"
 msgstr "Reunaton ikkuna"
 
-#: ui/options_graphics.rml:60
+#: ui/options_graphics.rml:64
 msgid "Fullscreen"
 msgstr "Kokonäyttötila"
 
-#: ui/options_graphics.rml:65 ui/options_graphics.rml:388
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
 msgid "Off"
 msgstr "Pois"
 
-#: ui/options_graphics.rml:66
+#: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
 msgstr "Valikoiva Vsync"
 
-#: ui/options_graphics.rml:67
+#: ui/options_graphics.rml:71
 msgid "Full Vsync"
 msgstr "Täysi Vsync"
 
-#: ui/options_graphics.rml:69
+#: ui/options_graphics.rml:73
 msgid "Vsync"
 msgstr "Vsync"
 
-#: ui/options_graphics.rml:70
+#: ui/options_graphics.rml:74
 msgid ""
 "Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
@@ -991,26 +981,26 @@ msgstr ""
 "aktivoituu ainoastaan ruutunopeuden ylittäessä näytön virkistystaajuuden, "
 "välttäen nykimistä FPS:n pudotessa."
 
-#: ui/options_graphics.rml:75
+#: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr "Nopea likiarvoinen antialiasointi (FXAA)"
 
-#: ui/options_graphics.rml:79 ui/options_graphics.rml:145
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:248
-#: ui/options_graphics.rml:291 ui/options_graphics.rml:329
-#: ui/options_graphics.rml:352
+#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
+#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
+#: ui/options_graphics.rml:356
 msgid "Apply now"
 msgstr "Käytä heti"
 
-#: ui/options_graphics.rml:83
+#: ui/options_graphics.rml:87
 msgid "Brightness"
 msgstr "Kirkkaus"
 
-#: ui/options_graphics.rml:86
+#: ui/options_graphics.rml:90
 msgid "Gamma"
 msgstr "Gamma"
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
@@ -1018,185 +1008,185 @@ msgstr ""
 "Ruma keino kirkkauden lisäämiseen. (Harkitse nollaamista ja sävykartoituksen "
 "käyttöä tämän sijasta.)"
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:94
 msgid "Gamma:"
 msgstr "Gamma:"
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:98
 msgid "Tone mapping"
 msgstr "Sävykartoitus"
 
-#: ui/options_graphics.rml:95
+#: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 "Hallitse dynaamista aluetta vaalentuneiden taikka liian hämärien paikkojen "
 "parantamiseksi."
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
 msgstr "Käytä sävykartoitusta"
 
-#: ui/options_graphics.rml:101
+#: ui/options_graphics.rml:105
 msgid "Exposure"
 msgstr "Valotus"
 
-#: ui/options_graphics.rml:103
+#: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
 msgstr "Sävykartoituksen kirkkaus"
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:111
 msgid "Lighting"
 msgstr "Valaisu"
 
-#: ui/options_graphics.rml:109
+#: ui/options_graphics.rml:113
 msgid "Lights"
 msgstr "Valot"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "Light mapping"
 msgstr "Valokartoitus"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "normal"
 msgstr "normaali"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "Vertex lighting"
 msgstr "Verteksivalaisu"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "low, ugly"
 msgstr "alhainen, ruma"
 
-#: ui/options_graphics.rml:115
+#: ui/options_graphics.rml:119
 msgid "Lighting system"
 msgstr "Valaisujärjestelmä"
 
-#: ui/options_graphics.rml:118
+#: ui/options_graphics.rml:122
 msgid "Light styles"
 msgstr "Valotyylit"
 
-#: ui/options_graphics.rml:120
+#: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
 "Liikkumattomien kenttäobjektien erittämät esilaskelmoidut dynaamiset valot."
 
-#: ui/options_graphics.rml:123
+#: ui/options_graphics.rml:127
 msgid "Dynamic lights"
 msgstr "Dynaamiset valot"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:129
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "Liikkuvien objektien, kuten aseiden ja rakennelmien, erittämät "
 "reaaliaikaiset dynaamiset valot."
 
-#: ui/options_graphics.rml:128
+#: ui/options_graphics.rml:132
 msgid "Rim lighting"
 msgstr "Reunusvalaisu"
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:134
 msgid "Light the edges of models from behind."
 msgstr "Valaise kohteiden reunat takaapäin."
 
-#: ui/options_graphics.rml:133
+#: ui/options_graphics.rml:137
 msgid "Half Lambert lighting"
 msgstr "Half Lambert ‐valaisu"
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:139
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 "Ei‐fyysinen valaisutekniikka, jolla tehdään kohteista vähemmän hämäriä."
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "Blobs"
 msgstr "Möykyt"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "low"
 msgstr "alhainen"
 
-#: ui/options_graphics.rml:140 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
 #: ui/options_ui.rml:177
 msgid "None"
 msgstr "Ei mikään"
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:146
 msgid "Shadows"
 msgstr "Varjot"
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:153
 msgid "Textures"
 msgstr "Tekstuurit"
 
-#: ui/options_graphics.rml:151 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/server_setup.rml:13
 msgid "General"
 msgstr "Yleinen"
 
-#: ui/options_graphics.rml:154 ui/options_graphics.rml:167
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
 msgid "No limit"
 msgstr "Ei rajaa"
 
-#: ui/options_graphics.rml:155
+#: ui/options_graphics.rml:159
 msgid "(ultra)"
 msgstr "(ultra)"
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:160
 msgid "(high)"
 msgstr "(korkea)"
 
-#: ui/options_graphics.rml:157
+#: ui/options_graphics.rml:161
 msgid "(medium)"
 msgstr "(keskitaso)"
 
-#: ui/options_graphics.rml:158
+#: ui/options_graphics.rml:162
 msgid "(low)"
 msgstr "(matala)"
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:163
 msgid "(lowest)"
 msgstr "(matalin)"
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:165
 msgid "Image size limit"
 msgstr "Kuvan koon raja"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:166
 msgid "Limit image size to save on memory."
 msgstr "Rajoita kuvan kokoa muistin säästämiseksi."
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:172
 msgid "No smaller than screen"
 msgstr "Ei kuvaruutua pienempi"
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:173
 msgid "No larger than screen"
 msgstr "Ei kuvaruutua suurempi"
 
-#: ui/options_graphics.rml:171
+#: ui/options_graphics.rml:175
 msgid "Menu image size limit"
 msgstr "Valikon kuvan koon raja"
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:176
 msgid "Limit menu image size to save on memory."
 msgstr "Rajoita valikon kuvan kokoa muistin säästämiseksi."
 
-#: ui/options_graphics.rml:177
+#: ui/options_graphics.rml:181
 msgid "High-precision rendering"
 msgstr "Korkeatarkkuuksinen renderöinti"
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:182
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "Käytä korkeatarkkuuksisia pikselipuskureita, jotka vähentävät värin "
 "raidoittumista."
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:186
 msgid "Use bindless textures if possible"
 msgstr "Käytä sitoutumattomia tekstuureja jos mahdollista"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:188
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1204,17 +1194,17 @@ msgstr ""
 "Käytä sitoutumattomia tekstuureja jos laitteisto/ajuri tukee niitä. Tämä voi "
 "parantaa suorituskykyä."
 
-#: ui/options_graphics.rml:184 ui/options_graphics.rml:234
-#: ui/options_graphics.rml:258 ui/options_graphics.rml:339
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
 msgid "Experimental."
 msgstr "Kokeellinen."
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:191
 msgid "Mip-mapping"
 msgstr "Mip‐kartoitus"
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:192
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1223,96 +1213,96 @@ msgstr ""
 "matalempiresoluutioisia tekstuureja niissä. Tämä yleensä ei vaikuta "
 "suorituskykyyn."
 
-#: ui/options_graphics.rml:195 ui/options_ui.rml:47
+#: ui/options_graphics.rml:199 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Ei"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
 msgstr "Anisotrooppinen mip-kartoitus"
 
-#: ui/options_graphics.rml:198
+#: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Parempi mip-karttojen tulkinta kaltevilla pinnoilla."
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "Trilinear"
 msgstr "Trilineaarinen"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "better"
 msgstr "parempi"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:207
 msgid "Bilinear"
 msgstr "Bilineaarinen"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
 msgstr "Tekstuurien skaalaussuodatin"
 
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:215
+#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
 msgid "Materials"
 msgstr "Materiaalit"
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:221
 msgid "Sky"
 msgstr "Taivas"
 
-#: ui/options_graphics.rml:219
+#: ui/options_graphics.rml:223
 msgid "Draw the sky."
 msgstr "Näytä taivas."
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:226
 msgid "Normal mapping"
 msgstr "Normaalikartoitus"
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simuloi ylimääräistä valaisudetaljia tasaisilla pinnoilla."
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
 msgstr "Deluxe‐kartoitus"
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
 msgstr "Valon suuntaus perustuen valmisteltuihin tekstuureihin."
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:236
 msgid "Relief mapping"
 msgstr "Kohokartoitus"
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
 msgstr "Lisää kohoumia yhteensopiviin pintoihin."
 
-#: ui/options_graphics.rml:237
+#: ui/options_graphics.rml:241
 msgid "Specular mapping"
 msgstr "Peilikartoitus"
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
 msgstr "Simuloi valon heijastumista."
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:246
 msgid "Physical mapping"
 msgstr "Fyysinen kartoitus"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
 msgstr "Materiaalinen ulkonäkö perustuen fyysisiin arviointeihin."
 
-#: ui/options_graphics.rml:252 ui/options_graphics.rml:254
+#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
 msgstr "Heijastukset"
 
-#: ui/options_graphics.rml:256
+#: ui/options_graphics.rml:260
 msgid "Static reflections"
 msgstr "Kiinteät heijastukset"
 
-#: ui/options_graphics.rml:258
+#: ui/options_graphics.rml:262
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1321,23 +1311,23 @@ msgstr ""
 "normaali-, spekulaari-, ja deluxe-kartoituksen. Tällä hetkellä "
 "epäyhteensopiva fyysisen kartoituksen kanssa."
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:266
 msgid "Very low"
 msgstr "Hyvin alhainen"
 
-#: ui/options_graphics.rml:264 ui/options_graphics.rml:386
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
 msgstr "Kohtalainen"
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:270
 msgid "Very high"
 msgstr "Hyvin korkea"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:380
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
 msgstr "Laatu"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1345,97 +1335,97 @@ msgstr ""
 "Kiinteiden heijastuskuutiokarttojen laatu. Korkeammat laadut voivat käyttää "
 "paljon levytilaa."
 
-#: ui/options_graphics.rml:272
+#: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
 msgstr "Kuutiokartan ristikkoväli"
 
-#: ui/options_graphics.rml:276 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Nykyinen:"
 
-#: ui/options_graphics.rml:282 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:129
 msgid "Never"
 msgstr "Ei koskaan"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:287
 msgid "Cache on disk"
 msgstr "Tallenna välimuisti"
 
-#: ui/options_graphics.rml:284
+#: ui/options_graphics.rml:288
 msgid "Always rebuild"
 msgstr "Rakenna aina uudelleen"
 
-#: ui/options_graphics.rml:286
+#: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
 msgstr "Kiinteiden heijastuksien kuutiokarttojen automaattirakennus"
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "Rakenna/lataa/tallenna heijastuksien kuutiokartat automaattisesti."
 
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:297
+#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Tehosteet"
 
-#: ui/options_graphics.rml:299
+#: ui/options_graphics.rml:303
 msgid "Bloom"
 msgstr "Hohka"
 
-#: ui/options_graphics.rml:301
+#: ui/options_graphics.rml:305
 msgid "Makes bright areas on your screen glow."
 msgstr "Saa kirkkaat alueet ruudullasi loistamaan."
 
-#: ui/options_graphics.rml:304
+#: ui/options_graphics.rml:308
 msgid "Color grading"
 msgstr "Värin tasapainotus"
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
 msgstr "Muuta värejä tiettyjen ambienssien luontia varten."
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:313
 msgid "Heat-haze"
 msgstr "Kuumuuden väreily"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:315
 msgid "Simulate air refraction in severe heat."
 msgstr "Simuloi ilman laajenemista kuumuuden äärellä."
 
-#: ui/options_graphics.rml:314
+#: ui/options_graphics.rml:318
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Screen space ambient occlusion (SSAO)"
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:320
 msgid "Simulate dark corners."
 msgstr "Simuloi pimeitä kulmia."
 
-#: ui/options_graphics.rml:319
+#: ui/options_graphics.rml:323
 msgid "Marks"
 msgstr "Jäljet"
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:325
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "Tee jälkiä (kuten luodinreikiä tai rihmastoa) pintoihin"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:328
 msgid "Particle physics"
 msgstr "Partikkelifysiikka"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:330
 msgid "Allow particles to bounce off surfaces."
 msgstr "Anna partikkelien kimmota pinnoista."
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:337
 msgid "Renderer"
 msgstr "Renderöijä"
 
-#: ui/options_graphics.rml:335 ui/options_graphics.rml:337
+#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
 msgid "Material system"
 msgstr "Materiaalijärjestelmä"
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:343
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1444,91 +1434,91 @@ msgstr ""
 "ajurit voivat epäonnistua tätä käyttäessä (esim. Mesa ja AMD:n "
 "proprietaariajurit)."
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:346
 msgid "GPU frustum culling"
 msgstr "Katkaistun kartion mukaan karsinta GPU:lla"
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:348
 msgid "Cull surfaces that are out of view."
 msgstr "Karsi pinnat, jotka ovat näkökentän ulkopuolella."
 
-#: ui/options_graphics.rml:347
+#: ui/options_graphics.rml:351
 msgid "GPU occlusion culling"
 msgstr "Okkluusiokarsinta GPU:lla"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:353
 msgid "Cull hidden surfaces."
 msgstr "Karsi piilotetut pinnat."
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:360
 msgid "Gameplay"
 msgstr "Pelaaminen"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:362
 msgid "Building markers"
 msgstr "Rakennelmien merkinnät"
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:365
 msgid "disabled"
 msgstr "pois käytöstä"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:366
 msgid "All structures"
 msgstr "Kaikki rakennelmat"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:367
 msgid "Support structures"
 msgstr "Tukirakennelmat"
 
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:368
 msgid "Offensive structures"
 msgstr "Hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:369
 msgid "Alien structures"
 msgstr "Alienien rakennelmat"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:370
 msgid "Human structures"
 msgstr "Ihmisten rakennelmat"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:371
 msgid "Alien support structures"
 msgstr "Alienien tukirakennelmat"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:372
 msgid "Human support structures"
 msgstr "Ihmisten tukirakennelmat"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:373
 msgid "Offensive alien structures"
 msgstr "Alienien hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:374
 msgid "Offensive human structures"
 msgstr "Ihmisten hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:376
 msgid "Building ranges"
 msgstr "Rakennelmien vaikutusetäisyydet"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:378
 msgid "Models"
 msgstr "Mallit"
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:386
 msgid "Motion blur"
 msgstr "Vauhtisokeus"
 
-#: ui/options_graphics.rml:390
+#: ui/options_graphics.rml:394
 msgid "Intensity"
 msgstr "Vahvuus"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:395
 msgid "Level of motion-blur."
 msgstr "Vauhtisokeuden taso."
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:398
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Pienin liikkumisnopeus vauhtisokeuden aktivoitumiselle"
 
@@ -5489,29 +5479,64 @@ msgstr "Äänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Joukkueäänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 
-#: src/shared/bg_misc.cpp:2483
+#: src/shared/bg_misc.cpp:2490
 msgid "spectator"
 msgstr "katsoja"
 
-#: src/shared/bg_misc.cpp:2488
+#: src/shared/bg_misc.cpp:2495
 msgid "alien"
 msgstr "alieni"
 
-#: src/shared/bg_misc.cpp:2493
+#: src/shared/bg_misc.cpp:2500
 msgid "human"
 msgstr "ihminen"
 
-#: src/shared/bg_misc.cpp:2503
+#: src/shared/bg_misc.cpp:2510
 msgid "spectators"
 msgstr "katsojat"
 
-#: src/shared/bg_misc.cpp:2508
+#: src/shared/bg_misc.cpp:2515
 msgid "aliens"
 msgstr "alienit"
 
-#: src/shared/bg_misc.cpp:2513
+#: src/shared/bg_misc.cpp:2520
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid ""
+#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
+#~ "textures…"
+#~ msgstr ""
+#~ "Matalat alijaot, ei taivasta, ei varjoa, ei kimpoilevia partikkeleita, 16-"
+#~ "pikseliset tekstuurit…"
+
+#~ msgid ""
+#~ "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "Moninäytteistys, anisotrooppinen mip-kartoitus, varjot, kimpoavat "
+#~ "partikkelit, 256-pikseliset tekstuurit…"
+
+#~ msgid ""
+#~ "Normal, specular and physical mapping, bloom, trilinear filtering, 512-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "Normaali‐, peili‐ ja fyysinen kartoitus, hohka, trilineaarinen suodatus, "
+#~ "512-pikseliset tekstuurit…"
+
+#~ msgid ""
+#~ "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "Dynaaminen valaistus, kuumuuden väreily, vauhtisokeus, parempi "
+#~ "moninäytteistys, enintään 2048-pikseliset tekstuurit…"
+
+#~ msgid ""
+#~ "Relief mapping and other features and effects enabled, up to 4096-pixel "
+#~ "textures…"
+#~ msgstr ""
+#~ "Kohokartoitus ja muut ominaisuudet ja tehosteet käytössä, enintään 4096-"
+#~ "pikseliset tekstuurit…"
 
 #~ msgid "Brightness clamping"
 #~ msgstr "Kirkkauden rajaaminen"
