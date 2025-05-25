@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-30 23:19+0200\n"
+"POT-Creation-Date: 2025-05-24 21:19+0200\n"
 "PO-Revision-Date: 2025-04-25 18:03+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
@@ -137,15 +137,15 @@ msgstr "பிழை!"
 msgid "Ok"
 msgstr "சரி"
 
-#: ui/help_gameplay.rml:12
+#: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
 msgstr "விளையாட்டு வழிகாட்டி"
 
-#: ui/help_gameplay.rml:17 ui/welcome.rml:16
+#: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "வரவேற்கிறோம்"
 
-#: ui/help_gameplay.rml:20
+#: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
@@ -153,11 +153,11 @@ msgstr ""
 "இந்த பிரிவில் வெற்றிகரமான வீரராக மாறுவதற்கு முக்கிய விளையாட்டு கூறுகளின் சுருக்கத்தை "
 "நீங்கள் காண்பீர்கள்."
 
-#: ui/help_gameplay.rml:23
+#: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
 msgstr "மேலும் எங்கள் வலைத்தளம் மற்றும் பிற சமூக இடங்களில் காணலாம்!"
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
@@ -165,23 +165,23 @@ msgstr ""
 "லிபரா ஐ.ஆர்.சி, மேட்ரிக்ச் அல்லது டிச்கார்ட்: <web dest=\"chat\" /> இல் வீரர்கள் மற்றும் "
 "டெவலப்பர்களுடன் அரட்டையடிக்கவும்"
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr "மன்றங்களில் செய்திகளைப் பற்றி விவாதிக்கவும்: <web dest = \"மன்றங்கள்\" />"
 
-#: ui/help_gameplay.rml:27
+#: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr "விக்கியில் விளையாட்டைப் பற்றி மேலும் கண்டறியவும்: <web dest = \"wiki\" />"
 
-#: ui/help_gameplay.rml:29
+#: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr "பிழைகள் குறித்து புகாரளிக்கவும்: <web dest = \"பிழைகள்\" />"
 
-#: ui/help_gameplay.rml:33
+#: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
 msgstr "வருமானம் &amp; பரிணாமம்"
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -190,7 +190,7 @@ msgstr ""
 "அவர்கள் அந்த படிமலர்ச்சி புள்ளிகளைப் பயன்படுத்தி [டிராகன்] மிகவும் மேம்பட்ட வடிவங்களாக "
 "உருவாகலாம்."
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:48
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -200,7 +200,7 @@ msgstr ""
 "எல்லா இடங்களிலிருந்தும் உருவாகலாம். [ஓவர் மைண்ட்] ஓவர் மைண்டிற்கு அருகில் இருக்கும்போது "
 "குறைந்த மேம்பட்ட வடிவங்களை (சில செலவில்) வேற்றுகிரகவாசிகள் வழங்கலாம்."
 
-#: ui/help_gameplay.rml:43
+#: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -208,7 +208,7 @@ msgstr ""
 "ஒரு [கிரேன்சர்] கிரேன்சருடன் ஒரு மிகைப்படுத்தலை உருவாக்குங்கள், அது அழிக்கப்பட்டால், "
 "உருவாக உங்களுக்கு ஒரு நேரடி ஓவர் மைண்ட் தேவை!"
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:55
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -219,7 +219,7 @@ msgstr ""
 "அல்லது [BSUIT] போர்க்களம் மற்றும் ரேடார் அல்லது செட் பேக் போன்ற பாகங்கள் வாங்க அந்த "
 "வரவுகளைப் பயன்படுத்தலாம்."
 
-#: ui/help_gameplay.rml:50
+#: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -228,11 +228,11 @@ msgstr ""
 "கட்டப்பட்டிருப்பதை உறுதிப்படுத்திக் கொள்ளுங்கள்! ஒரு ஆயுதக் களஞ்சியத்தை காணவில்லை என்றால் "
 "கட்டுமானக் கருவியைப் பயன்படுத்தவும்."
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:62
 msgid "Powering buildables"
 msgstr "பில்டபிள்சை இயக்கும்"
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:65
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -246,7 +246,7 @@ msgstr ""
 "[லீச்] சுரங்க கட்டமைப்பை உருவாக்கலாம். சுரங்க கட்டமைப்புகள் அழிக்கப்பட்டால் நீங்கள் உருவாக்கப் "
 "புள்ளிகளை இழக்க நேரிடும் என்று எச்சரிக்கையாக இருங்கள்."
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:68
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -258,7 +258,7 @@ msgstr ""
 "வழங்கும் திறன் கொண்டவை, மற்ற கட்டடங்கள் செயல்பாட்டுக்கு போதுமான ஆற்றல் இருக்கும் வரை "
 "பில்டபிள்கள் இயங்கும்."
 
-#: ui/help_gameplay.rml:61
+#: ui/help_gameplay.rml:69
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -268,11 +268,11 @@ msgstr ""
 "(லீச் மற்றும் துரப்பணம்) மற்றும் தனித்துவமான கட்டமைப்புகள் ([ஓவர் மைண்ட்] ஓவர் மைண்ட் மற்றும் "
 "[உலை] உலை) பிபிஎச் இல்லாததால் பாதிக்கப்படாது."
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:73
 msgid "Mining structures"
 msgstr "சுரங்க கட்டமைப்புகள்"
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:76
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -281,7 +281,7 @@ msgstr ""
 "இரண்டு சுரங்க கட்டமைப்புகள் வழியாக உருவாக்க புள்ளிகள் பெறப்படுகின்றன: மனித [துரப்பணம்] "
 "துரப்பணம் மற்றும் ஏலியன் [லீச்] லீச். இந்த கட்டிடங்கள் செயல்திறனுக்காக பரவ வேண்டும்."
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -289,7 +289,7 @@ msgstr ""
 "சுரங்க கட்டமைப்புகளை மிக நெருக்கமாக உருவாக்க வேண்டாம் அல்லது அவை ஒருவருக்கொருவர் "
 "போட்டியிடுகின்றன, இறுதியில் வளங்களை உருவாக்கும்!"
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:82
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -303,7 +303,7 @@ msgstr ""
 "கிடைக்கின்றன, மேலும் கட்டிடம் அழிக்கப்பட்டால் மீண்டும் கழிக்கப்படும். பாதுகாப்பற்ற பயிற்சிகளை "
 "உருவாக்க வேண்டாம்!"
 
-#: ui/help_gameplay.rml:77
+#: ui/help_gameplay.rml:85
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -315,11 +315,11 @@ msgstr ""
 "அழிக்கப்பட்ட கட்டிடங்களை மீண்டும் கட்டியெழுப்புவது கடினமாகிறது. இது திடீர் மரணத்தை "
 "மாற்றுகிறது."
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
 msgstr "நிலைகள் &amp; உந்தம்"
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:92
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -329,7 +329,7 @@ msgstr ""
 "புதிய வளத்தைப் பெறுகிறது. புதிய ஆயுதங்களை நீங்கள் பெற்றால், கட்டமைப்புகள் அல்லது "
 "வகுப்புகள் திறக்கப்படும்."
 
-#: ui/help_gameplay.rml:87
+#: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -337,11 +337,11 @@ msgstr ""
 "காலப்போக்கில் உந்தம் அதிவேகமாக குறைகிறது, எனவே நீங்கள் சும்மா இருந்தால் உங்கள் குழு புதிய "
 "உருப்படிகளுக்கான அணுகலை இழக்க நேரிடும். தற்போதுள்ள மேம்பாடுகள் செயல்பாட்டுடன் இருக்கும்."
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:99
 msgid "Wildfire"
 msgstr "காட்டுத்தீ"
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -349,7 +349,7 @@ msgstr ""
 "[தீ எரி] தீ எரி அல்லது [தீ வெடி] தீ வெடிமூலம் தாக்கப்படும்போது ஏலியன் பில்டபிள்ச் "
 "நெருப்பைப் பிடிக்கலாம்."
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -357,7 +357,7 @@ msgstr ""
 "கட்டமைப்புகள் மிக நெருக்கமாக கட்டப்பட்டால், நெருப்பு துரதிர்ச்டவசமான அண்டை நாடுகளுக்கு "
 "செல்லலாம்."
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -365,7 +365,7 @@ msgstr ""
 "ஒரு சிறிய [தீ] தீ சிறிது நேரத்திற்குப் பிறகு வெளியே செல்ல ஒரு நல்ல வாய்ப்பு உள்ளது, "
 "ஆனால் எரியும் கட்டமைப்புகளின் ஒரு குழு அதிக சகதியில் தன்னை சூடாக வைத்திருக்கும்."
 
-#: ui/help_gameplay.rml:103
+#: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -373,11 +373,11 @@ msgstr ""
 "[Advgranger] மேம்பட்ட கிரெஞ்சரின் SPIT தாக்குதல் தீவை வெளியேற்ற அல்லது ஊடுருவும் "
 "நபர்களை மெதுவாக்க பயன்படுத்தலாம்!"
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:115
 msgid "Under attack"
 msgstr "தாக்குதலுக்கு உள்ளாகும்"
 
-#: ui/help_gameplay.rml:110
+#: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -387,15 +387,15 @@ msgstr ""
 "[உலை] உலை மற்றும் [மிகைப்படுத்தப்பட்ட] மேலதிகாரி 75% ஆரோக்கியத்தில், 50% ஆரோக்கியத்தில், "
 "25% ஆரோக்கியத்தில் மற்றும் அழிக்கப்படும்போது அணிக்கு எச்சரிக்கைகளை வழங்கும்."
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:122
 msgid "Healing"
 msgstr "குணப்படுத்துதல்"
 
-#: ui/help_gameplay.rml:117
+#: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
 msgstr "இறப்பது எதிரிக்கு உணவளிக்கிறது, நீங்கள் உங்கள் உயிரைக் காப்பாற்ற விரும்பலாம்!"
 
-#: ui/help_gameplay.rml:121
+#: ui/help_gameplay.rml:129
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -407,7 +407,7 @@ msgstr ""
 "இருக்கும்! எந்தவொரு வகையிலும் குணப்படுத்துவது [அட்வ்ராகூன்] மேம்பட்ட டிராகன் எறிபொருள்களை "
 "மீட்டெடுப்பதற்கும் பங்களிக்கும்."
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:133
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -417,7 +417,7 @@ msgstr ""
 "முடிந்தவரை ஒன்றை உருவாக்குங்கள், விரைவில் அதைத் திறக்க முயற்சிக்கவும். உங்கள் தாக்குதல்களை "
 "மிகவும் ஆபத்தானதாக மாற்ற பூச்டர் உங்களுக்கு சில விசத்தையும் வழங்கும்."
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:136
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -427,7 +427,7 @@ msgstr ""
 "சற்று மேம்பட்ட குணப்படுத்துதலையும் தரும், இருப்பினும் தவழும் விட குறைவாக இருந்தாலும். "
 "இது தளங்களை பாதுகாக்க உதவும்."
 
-#: ui/help_gameplay.rml:131
+#: ui/help_gameplay.rml:139
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -440,7 +440,7 @@ msgstr ""
 "தொடுவதன் மூலம் நீங்கள் விரும்பும் அளவுக்கு வேகமாக குணப்படுத்துவீர்கள். சில குழுப்பணிகள் "
 "மூலம், எதிரிகளை முற்றுகையிட இது ஒரு சிறந்த வழியாகும்!"
 
-#: ui/help_gameplay.rml:135
+#: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -448,11 +448,11 @@ msgstr ""
 "மனிதர்கள் ஒரு முறை குணமடைய அவர்கள் பயன்படுத்தக்கூடிய ஒரு மெட்கிட்டை அவர்களுடன் சுமந்து "
 "செல்கிறார்கள், அதன் பிறகு அவர்கள் [மெட்ச்டாட்] மெடிச்டேசனுக்குத் திரும்ப வேண்டும்."
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:147
 msgid "Wallwalking"
 msgstr "வால்விங்"
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -460,13 +460,13 @@ msgstr ""
 "[ட்ரெட்ச்] டிரெட்ச், [மன்டிச்] மன்டிச் மற்றும் [அட்வ்கிரேஞ்சர்] மேம்பட்ட கிரேன்சர் போன்ற சில "
 "அன்னிய வடிவங்கள் சுவர்களில் நடக்க முடியும்!"
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 "சிறப்பு இடங்களை அடைய இதைப் பயன்படுத்தவும் அல்லது வென்ட்கள் மூலம் குறுக்குவழிகளைப் "
 "பயன்படுத்தவும்."
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -474,19 +474,19 @@ msgstr ""
 "டிராப்பர் மற்றும் ச்பைக்கர் போன்ற அன்னிய தற்காப்பு கட்டமைப்புகள் சுவர்களில் சிறப்பாக "
 "செயல்படுகின்றன, அவற்றை உச்சவரம்பில் கட்டுவது கையெறி குண்டுகளிலிருந்து பாதுகாக்கும்."
 
-#: ui/help_gameplay.rml:151
+#: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "மேம்பட்ட கிரேன்சரை வேகத்துடன் திறக்கலாம்."
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
 msgstr "அதிர்ச்சியடைந்ததிலிருந்து"
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "அதிர்ச்சியடைந்ததிலிருந்து, சகிப்புத்தன்மை அதிகரித்துள்ளது."
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
@@ -494,7 +494,7 @@ msgstr ""
 "அனைத்து அன்னிய படிமலர்ச்சி செலவுகள் மற்றும் ஆதாயங்கள் இரட்டிப்பாகியுள்ளன. ஒரு ஏலியன் "
 "சேமிக்கக்கூடிய புதிய அதிகபட்சம் 20 (முன்பு 9)."
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:172
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
@@ -502,7 +502,7 @@ msgstr ""
 "நிலைகள் வேகத்துடன் மாற்றப்பட்டன, மேலும் உருவாக்க புள்ளிகள் நேரடியாக பயிற்சிகளின் "
 "எண்ணிக்கையைப் பொறுத்தது."
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
@@ -510,7 +510,7 @@ msgstr ""
 "மனிதர்களுக்கு இனி டெச்லா பாதுகாப்பு கோபுரம் அல்லது பாதுகாப்பு கணினி இல்லை, ஆனால் "
 "அவர்கள் ராக்கெட் காய்களை உருவாக்க முடியும்."
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:178
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
@@ -519,7 +519,7 @@ msgstr ""
 "காயப்படுத்தக்கூடும், ஆனால் அது மிகவும் பாதிக்கப்படக்கூடிய கட்டமைப்பு, அதை வெற்றுப் "
 "பார்வையில் வைக்க வேண்டாம்!"
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -528,7 +528,7 @@ msgstr ""
 "பாதிக்கப்பட்டவர்களை மெதுவாக்குகிறது, மேலும் இது மிக விரைவான அணுகுமுறைகளுக்குச் "
 "செல்லலாம்."
 
-#: ui/help_gameplay.rml:176
+#: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -813,8 +813,8 @@ msgstr "டிகிரி"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:91 ui/options_graphics.rml:277
-#: ui/options_graphics.rml:399 ui/options_mouse.rml:21 ui/options_ui.rml:75
+#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -882,100 +882,90 @@ msgid "Presets"
 msgstr "முன்னமைவுகள்"
 
 #: ui/options_graphics.rml:27
-msgid "Lowest"
-msgstr "மிகக் குறைந்த"
+msgid "Ultra"
+msgstr "அல்ட்ரா"
 
 #: ui/options_graphics.rml:28
-msgid ""
-"Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-"textures…"
+msgid "Everything enabled."
 msgstr ""
-"குறைந்த துணைப்பிரிவுகள், வானம் இல்லை, நிழல் இல்லை, துள்ளல் துகள்கள் இல்லை, 16 படப்புள்ளி "
-"அமைப்புகள்…"
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:263
-#: ui/options_graphics.rml:378 ui/options_graphics.rml:387
-msgid "Low"
-msgstr "குறைந்த"
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
+#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+msgid "High"
+msgstr "உயர்ந்த"
 
 #: ui/options_graphics.rml:32
-msgid ""
-"Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-"pixel textures…"
+msgid "Dynamic lights, special effects, large textures…"
 msgstr ""
-"மல்டிசாம்ப்ளிங், அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங், நிழல்கள், பவுன்சிங் துகள்கள், 256 படப்புள்ளி "
-"அமைப்புகள்…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
 msgstr "சராசரி"
 
 #: ui/options_graphics.rml:36
-msgid ""
-"Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
-"textures…"
+msgid "Surface details, good textures…"
 msgstr ""
-"இயல்பான, ஏகப்பட்ட மற்றும் இயற்பியல் மேப்பிங், ப்ளூம், ட்ரிலினியர் வடிகட்டுதல், 512-பிக்சல் "
-"அமைப்புகள்…"
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:265
-#: ui/options_graphics.rml:377 ui/options_graphics.rml:385
-msgid "High"
-msgstr "உயர்ந்த"
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
+#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+msgid "Low"
+msgstr "குறைந்த"
 
 #: ui/options_graphics.rml:40
-msgid ""
-"Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-"pixel textures…"
+msgid "The fastest preset that doesn't make the game look ugly."
 msgstr ""
-"மாறும் விளக்குகள், வெப்ப மூடுபனி, மோசன் மங்கலானது, சிறந்த மல்டிசாம்ப்ளிங், 2048 "
-"படப்புள்ளி அமைப்புகள் வரை…"
 
 #: ui/options_graphics.rml:43
-msgid "Ultra"
-msgstr "அல்ட்ரா"
-
-#: ui/options_graphics.rml:44
 msgid ""
-"Relief mapping and other features and effects enabled, up to 4096-pixel "
-"textures…"
+"When looking for optimizations, try the low preset first. When the low "
+"preset runs properly, the lowest preset is not faster."
 msgstr ""
-"நிவாரண மேப்பிங் மற்றும் பிற நற்பொருத்தங்கள் மற்றும் விளைவுகள் இயக்கப்பட்டவை, 4096 படப்புள்ளி "
-"அமைப்புகள் வரை…"
 
-#: ui/options_graphics.rml:47 ui/options_graphics.rml:49
+#: ui/options_graphics.rml:46
+msgid "Lowest"
+msgstr "மிகக் குறைந்த"
+
+#: ui/options_graphics.rml:47
+msgid "Ugly textures and geometry, no sky, no particle bounce…"
+msgstr ""
+
+#: ui/options_graphics.rml:48
+msgid "Only meant for very slow devices, as a last resort."
+msgstr ""
+
+#: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
 msgstr "ஒளிதோற்றம்"
 
-#: ui/options_graphics.rml:52
+#: ui/options_graphics.rml:56
 msgid "Screen Resolution"
 msgstr "திரை தெளிவுத்திறன்"
 
-#: ui/options_graphics.rml:56
+#: ui/options_graphics.rml:60
 msgid "Borderless window"
 msgstr "எல்லையற்ற சாளரம்"
 
-#: ui/options_graphics.rml:60
+#: ui/options_graphics.rml:64
 msgid "Fullscreen"
 msgstr "முழு திரை"
 
-#: ui/options_graphics.rml:65 ui/options_graphics.rml:388
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
 msgid "Off"
 msgstr "அணை"
 
-#: ui/options_graphics.rml:66
+#: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
 msgstr "நெகிழ்வான vsync"
 
-#: ui/options_graphics.rml:67
+#: ui/options_graphics.rml:71
 msgid "Full Vsync"
 msgstr "முழு vsync"
 
-#: ui/options_graphics.rml:69
+#: ui/options_graphics.rml:73
 msgid "Vsync"
 msgstr "செஒத்திசை"
 
-#: ui/options_graphics.rml:70
+#: ui/options_graphics.rml:74
 msgid ""
 "Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
@@ -985,205 +975,205 @@ msgstr ""
 "வீதம் மானிட்டரின் புதுப்பிப்பு விகிதத்திற்கு மேலே இருக்கும்போது மட்டுமே நெகிழ்வான VSYNC "
 "செயல்படுத்துகிறது, FPS குறையும் போது திணறுவதைத் தவிர்க்கிறது."
 
-#: ui/options_graphics.rml:75
+#: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
 msgstr "வேகமாக தோராயமான எதிர்ப்பு மாற்றுப்பெயர் (FXAA)"
 
-#: ui/options_graphics.rml:79 ui/options_graphics.rml:145
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:248
-#: ui/options_graphics.rml:291 ui/options_graphics.rml:329
-#: ui/options_graphics.rml:352
+#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
+#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
+#: ui/options_graphics.rml:356
 msgid "Apply now"
 msgstr "இப்பொழுது இடு"
 
-#: ui/options_graphics.rml:83
+#: ui/options_graphics.rml:87
 msgid "Brightness"
 msgstr "ஒளி"
 
-#: ui/options_graphics.rml:86
+#: ui/options_graphics.rml:90
 msgid "Gamma"
 msgstr ""
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:94
 msgid "Gamma:"
 msgstr "காமா:"
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:98
 msgid "Tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:95
+#: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:101
+#: ui/options_graphics.rml:105
 msgid "Exposure"
 msgstr ""
 
-#: ui/options_graphics.rml:103
+#: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
 msgstr ""
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:111
 msgid "Lighting"
 msgstr "லைட்டிங்"
 
-#: ui/options_graphics.rml:109
+#: ui/options_graphics.rml:113
 msgid "Lights"
 msgstr "விளக்குகள்"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "Light mapping"
 msgstr "ஒளி மேப்பிங்"
 
-#: ui/options_graphics.rml:112
+#: ui/options_graphics.rml:116
 msgid "normal"
 msgstr "சாதாரண"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "Vertex lighting"
 msgstr "வெர்டெக்ச் லைட்டிங்"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:117
 msgid "low, ugly"
 msgstr "குறைந்த, அசிங்கமான"
 
-#: ui/options_graphics.rml:115
+#: ui/options_graphics.rml:119
 msgid "Lighting system"
 msgstr "லைட்டிங் சிச்டம்"
 
-#: ui/options_graphics.rml:118
+#: ui/options_graphics.rml:122
 msgid "Light styles"
 msgstr "ஒளி பாணிகள்"
 
-#: ui/options_graphics.rml:120
+#: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr "நிலையான வரைபட பொருள்களால் வெளிப்படும் முன்கூட்டிய மாறும் விளக்குகள்."
 
-#: ui/options_graphics.rml:123
+#: ui/options_graphics.rml:127
 msgid "Dynamic lights"
 msgstr "மாறும் விளக்குகள்"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:129
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "ஆயுதங்கள் மற்றும் கட்டிடங்கள் போன்ற பொருட்களை நகர்த்துவதன் மூலம் உமிழப்படும் நிகழ்நேர மாறும் "
 "விளக்குகள்."
 
-#: ui/options_graphics.rml:128
+#: ui/options_graphics.rml:132
 msgid "Rim lighting"
 msgstr "விளிம்பு விளக்குகள்"
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:134
 msgid "Light the edges of models from behind."
 msgstr "பின்னால் இருந்து மாதிரிகளின் விளிம்புகளை ஒளிரச் செய்யுங்கள்."
 
-#: ui/options_graphics.rml:133
+#: ui/options_graphics.rml:137
 msgid "Half Lambert lighting"
 msgstr "அரை லம்பேர்ட் லைட்டிங்"
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:139
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "மாதிரிகள் குறைவான இருட்டாக மாற்ற இயற்பியல் அல்லாத விளக்கு நுட்பம்."
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "Blobs"
 msgstr "குமிழ்கள்"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:143
 msgid "low"
 msgstr "குறைந்த"
 
-#: ui/options_graphics.rml:140 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
 #: ui/options_ui.rml:177
 msgid "None"
 msgstr "எதுவுமில்லை"
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:146
 msgid "Shadows"
 msgstr "நிழல்கள்"
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:153
 msgid "Textures"
 msgstr "கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:151 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/server_setup.rml:13
 msgid "General"
 msgstr "பொது"
 
-#: ui/options_graphics.rml:154 ui/options_graphics.rml:167
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
 msgid "No limit"
 msgstr "வரம்பு இல்லை"
 
-#: ui/options_graphics.rml:155
+#: ui/options_graphics.rml:159
 msgid "(ultra)"
 msgstr "(அல்ட்ரா)"
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:160
 msgid "(high)"
 msgstr "(உயர்)"
 
-#: ui/options_graphics.rml:157
+#: ui/options_graphics.rml:161
 msgid "(medium)"
 msgstr "(நடுத்தர)"
 
-#: ui/options_graphics.rml:158
+#: ui/options_graphics.rml:162
 msgid "(low)"
 msgstr "(குறைந்த)"
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:163
 msgid "(lowest)"
 msgstr "(மிகக் குறைந்த)"
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:165
 msgid "Image size limit"
 msgstr "பட அளவு வரம்பு"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:166
 msgid "Limit image size to save on memory."
 msgstr "நினைவகத்தில் சேமிக்க பட அளவைக் கட்டுப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:172
 msgid "No smaller than screen"
 msgstr "திரையை விட சிறியதாக இல்லை"
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:173
 msgid "No larger than screen"
 msgstr "திரையை விட பெரியது இல்லை"
 
-#: ui/options_graphics.rml:171
+#: ui/options_graphics.rml:175
 msgid "Menu image size limit"
 msgstr "பட்டியல் பட அளவு வரம்பு"
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:176
 msgid "Limit menu image size to save on memory."
 msgstr "நினைவகத்தில் சேமிக்க பட்டியல் பட அளவைக் கட்டுப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:177
+#: ui/options_graphics.rml:181
 msgid "High-precision rendering"
 msgstr "உயர் துல்லியமான வழங்குதல்"
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:182
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "உயர் துல்லியமான படப்புள்ளி இடையகங்களைப் பயன்படுத்தவும், இது வண்ணக் குழிவைக் குறைக்கிறது."
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:186
 msgid "Use bindless textures if possible"
 msgstr "முடிந்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்துங்கள்"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:188
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1191,17 +1181,17 @@ msgstr ""
 "வன்பொருள்/இயக்கி ஆதரித்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்தவும். இது செயல்திறனை "
 "மேம்படுத்தக்கூடும்."
 
-#: ui/options_graphics.rml:184 ui/options_graphics.rml:234
-#: ui/options_graphics.rml:258 ui/options_graphics.rml:339
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
 msgid "Experimental."
 msgstr "சோதனை."
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:191
 msgid "Mip-mapping"
 msgstr "மிப்-மேப்பிங்"
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:192
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1209,96 +1199,96 @@ msgstr ""
 "எம்ஐபி-மேப்பிங் குறைந்த தெளிவுத்திறன் கொண்ட அமைப்புகளைப் பயன்படுத்துவதன் மூலம் தொலைதூர "
 "மேற்பரப்புகளை சிறப்பாகக் காட்டுகிறது. இது பொதுவாக செயல்திறனை பாதிக்காது."
 
-#: ui/options_graphics.rml:195 ui/options_ui.rml:47
+#: ui/options_graphics.rml:199 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "இல்லை"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
 msgstr "அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங்"
 
-#: ui/options_graphics.rml:198
+#: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "கோண மேற்பரப்புகளில் எம்ஐபி-வரைபடங்களின் சிறந்த விளக்கம்."
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "Trilinear"
 msgstr "மூநேர்கோடு"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:206
 msgid "better"
 msgstr "சிறந்தது"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:207
 msgid "Bilinear"
 msgstr "பிலினியர்"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
 msgstr "அமைப்பு அளவிடுதல் வடிகட்டி"
 
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:215
+#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
 msgid "Materials"
 msgstr "பொருட்கள்"
 
-#: ui/options_graphics.rml:217
+#: ui/options_graphics.rml:221
 msgid "Sky"
 msgstr "வானம்"
 
-#: ui/options_graphics.rml:219
+#: ui/options_graphics.rml:223
 msgid "Draw the sky."
 msgstr "வானத்தை வரையவும்."
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:226
 msgid "Normal mapping"
 msgstr "சாதாரண மேப்பிங்"
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "தட்டையான மேற்பரப்புகளில் கூடுதல் விளக்கு விவரங்களை உருவகப்படுத்துகிறது."
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
 msgstr "டீலக்ச் மேப்பிங்"
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
 msgstr "வேகவைத்த அமைப்புகளின் அடிப்படையில் ஒளி திசை."
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:236
 msgid "Relief mapping"
 msgstr "நிவாரண மேப்பிங்"
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
 msgstr "உதவி மேற்பரப்புகளில் புடைப்புகளைச் சேர்க்கிறது."
 
-#: ui/options_graphics.rml:237
+#: ui/options_graphics.rml:241
 msgid "Specular mapping"
 msgstr "ஏகப்பட்ட மேப்பிங்"
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
 msgstr "ஒளி ஊகத்தை உருவகப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:246
 msgid "Physical mapping"
 msgstr "உடல் வரைபடம்"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
 msgstr "உடல் தோராயங்களின் அடிப்படையில் பொருள் தோற்றம்."
 
-#: ui/options_graphics.rml:252 ui/options_graphics.rml:254
+#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
 msgstr "பிரதிபலிப்புகள்"
 
-#: ui/options_graphics.rml:256
+#: ui/options_graphics.rml:260
 msgid "Static reflections"
 msgstr "நிலையான பிரதிபலிப்புகள்"
 
-#: ui/options_graphics.rml:258
+#: ui/options_graphics.rml:262
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1306,23 +1296,23 @@ msgstr ""
 "ஆதரிக்கப்பட்ட மேற்பரப்புகளில் நிலையான கியூபேப் பிரதிபலிப்புகளைச் சேர்க்கிறது. சாதாரண, "
 "ஏகப்பட்ட மற்றும் டீலக்ச் மேப்பிங் தேவை. தற்போது உடல் மேப்பிங் மூலம் ஆதரிக்கப்படவில்லை."
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:266
 msgid "Very low"
 msgstr "மிகக் குறைவு"
 
-#: ui/options_graphics.rml:264 ui/options_graphics.rml:386
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
 msgstr "மிதமான"
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:270
 msgid "Very high"
 msgstr "மிக உயர்ந்த"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:380
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
 msgstr "தகுதி"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1330,97 +1320,97 @@ msgstr ""
 "நிலையான பிரதிபலிப்பு கியூபேப்சின் தகுதி. அதிக குணங்கள் நிறைய வட்டு இடத்தைப் "
 "பயன்படுத்தலாம்."
 
-#: ui/options_graphics.rml:272
+#: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
 msgstr "க்யூப்மேப் கட்டம் இடைவெளி"
 
-#: ui/options_graphics.rml:276 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "நடப்பு:"
 
-#: ui/options_graphics.rml:282 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:129
 msgid "Never"
 msgstr "ஒருபோதும்"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:287
 msgid "Cache on disk"
 msgstr "வட்டில் கேச்"
 
-#: ui/options_graphics.rml:284
+#: ui/options_graphics.rml:288
 msgid "Always rebuild"
 msgstr "எப்போதும் மீண்டும் உருவாக்கவும்"
 
-#: ui/options_graphics.rml:286
+#: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
 msgstr "நிலையான பிரதிபலிப்பு கியூபேப்ச் தன்னியக்க கட்டை"
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "தானாகவே உருவாக்க/ஏற்ற/பிரதிபலிப்பு க்யூபேப்புகளை சேமிக்கவும்."
 
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:297
+#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "விளைவுகள்"
 
-#: ui/options_graphics.rml:299
+#: ui/options_graphics.rml:303
 msgid "Bloom"
 msgstr "பூக்கும்"
 
-#: ui/options_graphics.rml:301
+#: ui/options_graphics.rml:305
 msgid "Makes bright areas on your screen glow."
 msgstr "உங்கள் திரையில் பிரகாசமான பகுதிகளை ஒளிரச் செய்கிறது."
 
-#: ui/options_graphics.rml:304
+#: ui/options_graphics.rml:308
 msgid "Color grading"
 msgstr "வண்ண தகுதி"
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
 msgstr "குறிப்பிட்ட ஆத்மினங்களை உருவாக்க வண்ணங்களை மாற்றவும்."
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:313
 msgid "Heat-haze"
 msgstr "வெப்பம் கேள்விக்குரிய"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:315
 msgid "Simulate air refraction in severe heat."
 msgstr "கடுமையான வெப்பத்தில் காற்று ஒளிவிலகல் உருவகப்படுத்தவும்."
 
-#: ui/options_graphics.rml:314
+#: ui/options_graphics.rml:318
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "திரை விண்வெளி சுற்றுப்புற மறுப்பு (SSAO)"
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:320
 msgid "Simulate dark corners."
 msgstr "இருண்ட மூலைகளை உருவகப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:319
+#: ui/options_graphics.rml:323
 msgid "Marks"
 msgstr "மதிப்பெண்கள்"
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:325
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "மேற்பரப்புகளில் மதிப்பெண்களை (புல்லட் துளைகள் அல்லது க்ரீப் போன்றவை) வரையவும்"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:328
 msgid "Particle physics"
 msgstr "துகள் இயற்பியல்"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:330
 msgid "Allow particles to bounce off surfaces."
 msgstr "துகள்கள் மேற்பரப்புகளைத் துடைக்க அனுமதிக்கவும்."
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:337
 msgid "Renderer"
 msgstr "ரெண்டரர்"
 
-#: ui/options_graphics.rml:335 ui/options_graphics.rml:337
+#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
 msgid "Material system"
 msgstr "பொருள் அமைப்பு"
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:343
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1428,91 +1418,91 @@ msgstr ""
 "செயல்திறனை கணிசமாக மேம்படுத்தும் புதிய அமைப்பைப் பயன்படுத்தவும். சில ஓட்டுநர்கள் இதில் "
 "தோல்வியடையக்கூடும் (எ.கா. சி. மேசா மற்றும் ஏஎம்டி தனியுரிம ஓட்டுநர்கள்)."
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:346
 msgid "GPU frustum culling"
 msgstr "Finu freustum culling"
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:348
 msgid "Cull surfaces that are out of view."
 msgstr "பார்வைக்கு வெளியே இருக்கும் குல் மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:347
+#: ui/options_graphics.rml:351
 msgid "GPU occlusion culling"
 msgstr "சி.பீ.யூ மறைவு"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:353
 msgid "Cull hidden surfaces."
 msgstr "மறைக்கப்பட்ட மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:360
 msgid "Gameplay"
 msgstr "விளையாட்டு"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:362
 msgid "Building markers"
 msgstr "கட்டிட குறிப்பான்கள்"
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:365
 msgid "disabled"
 msgstr "முடக்கப்பட்டது"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:366
 msgid "All structures"
 msgstr "அனைத்து கட்டமைப்புகளும்"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:367
 msgid "Support structures"
 msgstr "உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:368
 msgid "Offensive structures"
 msgstr "கெட்ட கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:369
 msgid "Alien structures"
 msgstr "அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:370
 msgid "Human structures"
 msgstr "மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:371
 msgid "Alien support structures"
 msgstr "அன்னிய உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:372
 msgid "Human support structures"
 msgstr "மனித உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:373
 msgid "Offensive alien structures"
 msgstr "தாக்குதல் அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:374
 msgid "Offensive human structures"
 msgstr "தாக்குதல் மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:376
 msgid "Building ranges"
 msgstr "கட்டிட வரம்புகள்"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:378
 msgid "Models"
 msgstr "மாதிரிகள்"
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:386
 msgid "Motion blur"
 msgstr "இயக்க மங்கலானது"
 
-#: ui/options_graphics.rml:390
+#: ui/options_graphics.rml:394
 msgid "Intensity"
 msgstr "தீவிரம்"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:395
 msgid "Level of motion-blur."
 msgstr "மோசன்-ப்ளூரின் நிலை."
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:398
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "இயக்க-BLUR ஐ செயல்படுத்த குறைந்தபட்ச இயக்க விரைவு"
 
@@ -5476,29 +5466,64 @@ msgstr "வாக்கு தோல்வியுற்றது ($ 1 $ - $ 2 
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "குழு வாக்கு தோல்வியடைந்தது ($ 1 $ - $ 2 $; $ 3 $% தேவை)"
 
-#: src/shared/bg_misc.cpp:2483
+#: src/shared/bg_misc.cpp:2490
 msgid "spectator"
 msgstr "பார்வையாளர்"
 
-#: src/shared/bg_misc.cpp:2488
+#: src/shared/bg_misc.cpp:2495
 msgid "alien"
 msgstr "ஏலியன்"
 
-#: src/shared/bg_misc.cpp:2493
+#: src/shared/bg_misc.cpp:2500
 msgid "human"
 msgstr "மனித"
 
-#: src/shared/bg_misc.cpp:2503
+#: src/shared/bg_misc.cpp:2510
 msgid "spectators"
 msgstr "பார்வையாளர்கள்"
 
-#: src/shared/bg_misc.cpp:2508
+#: src/shared/bg_misc.cpp:2515
 msgid "aliens"
 msgstr "வேற்றுகிரகவாசிகள்"
 
-#: src/shared/bg_misc.cpp:2513
+#: src/shared/bg_misc.cpp:2520
 msgid "humans"
 msgstr "மனிதர்கள்"
+
+#~ msgid ""
+#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
+#~ "textures…"
+#~ msgstr ""
+#~ "குறைந்த துணைப்பிரிவுகள், வானம் இல்லை, நிழல் இல்லை, துள்ளல் துகள்கள் இல்லை, 16 "
+#~ "படப்புள்ளி அமைப்புகள்…"
+
+#~ msgid ""
+#~ "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "மல்டிசாம்ப்ளிங், அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங், நிழல்கள், பவுன்சிங் துகள்கள், 256 "
+#~ "படப்புள்ளி அமைப்புகள்…"
+
+#~ msgid ""
+#~ "Normal, specular and physical mapping, bloom, trilinear filtering, 512-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "இயல்பான, ஏகப்பட்ட மற்றும் இயற்பியல் மேப்பிங், ப்ளூம், ட்ரிலினியர் வடிகட்டுதல், 512-பிக்சல் "
+#~ "அமைப்புகள்…"
+
+#~ msgid ""
+#~ "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
+#~ "pixel textures…"
+#~ msgstr ""
+#~ "மாறும் விளக்குகள், வெப்ப மூடுபனி, மோசன் மங்கலானது, சிறந்த மல்டிசாம்ப்ளிங், 2048 "
+#~ "படப்புள்ளி அமைப்புகள் வரை…"
+
+#~ msgid ""
+#~ "Relief mapping and other features and effects enabled, up to 4096-pixel "
+#~ "textures…"
+#~ msgstr ""
+#~ "நிவாரண மேப்பிங் மற்றும் பிற நற்பொருத்தங்கள் மற்றும் விளைவுகள் இயக்கப்பட்டவை, 4096 "
+#~ "படப்புள்ளி அமைப்புகள் வரை…"
 
 #~ msgid "Brightness clamping"
 #~ msgstr "ஒளி கிளம்பிங்"

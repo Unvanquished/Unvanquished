@@ -2,9 +2,17 @@
 	<head>
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<style>
+			tabs {
+				width: 30%;
+			}
+
 			panel {
-				width: 65%;
-				padding: 0.5em;
+				padding-top: 0.5em;
+				/* This is a workaround for float precision loss.
+				By keeping the sum of the widths a bit under 100%
+				we make sure the computed sum cannot be more than 100%.
+				See https://github.com/Unvanquished/Unvanquished/issues/2012 */
+				width: 69%;
 			}
 		</style>
 	</head>
