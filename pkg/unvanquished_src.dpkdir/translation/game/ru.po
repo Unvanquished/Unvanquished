@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-24 21:19+0200\n"
-"PO-Revision-Date: 2025-05-19 02:01+0000\n"
+"PO-Revision-Date: 2025-05-26 07:18+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -353,7 +353,7 @@ msgid ""
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
 "Постройки Чужих могут загораться тогда, когда они атакованы с помощью "
-"[framer] огнемёта или [firebomb] огненной бомбы."
+"[flamer] огнемёта или [firebomb] огненной бомбы."
 
 #: ui/help_gameplay.rml:105
 msgid ""
@@ -423,10 +423,10 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"[booster] Усилитель способствует быстрому лечению для ближайших Чужих, "
-"постройте один настолько быстро, насколько можете, пробуйте разблокировать "
-"его как можно скорее. Усилитель также даст вам немного яда, чтобы сделать "
-"ваши атаки более смертоносными."
+"Усилитель способствует быстрому лечению для ближайших Чужих, постройте один "
+"настолько быстро, насколько можете, пробуйте разблокировать его как можно "
+"скорее. Усилитель также даст вам немного яда, чтобы сделать ваши атаки более "
+"смертоносными."
 
 #: ui/help_gameplay.rml:136
 msgid ""
@@ -899,39 +899,41 @@ msgstr "Ультра"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Всё включено."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:381 ui/options_graphics.rml:389
 msgid "High"
-msgstr "Высокое"
+msgstr "Высокая"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "Динамическое освещение, спецэффекты, большие текстуры…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr "Средне"
+msgstr "Средняя"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "Детали поверхности, хорошие текстуры…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:382 ui/options_graphics.rml:391
 msgid "Low"
-msgstr "Низкое"
+msgstr "Низкая"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "Самая быстрая предустановка, которая не делает игру уродливой."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"Для оптимизации сначала попробуйте низкую предустановку. Если низкая "
+"предустановка работает правильно, самая низкая не будет быстрее."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
@@ -939,11 +941,11 @@ msgstr "Худшая"
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
-msgstr ""
+msgstr "Уродливые текстуры и геометрия, ни неба, ни отскока частиц…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Только для очень медленных устройств при крайней необходимости."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
@@ -1012,8 +1014,8 @@ msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
-"Некрасивый метод повышения яркости. (Рассмотрите возможность сброса и "
-"использования тонального отображения вместо этого)."
+"Некрасивый способ увеличения яркости. (Попробуйте сбросить настройки и "
+"вместо этого использовать тональное отображение)."
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
@@ -1051,11 +1053,11 @@ msgstr "Освещение"
 
 #: ui/options_graphics.rml:116
 msgid "Light mapping"
-msgstr "Световое картирование"
+msgstr "Карта освещения"
 
 #: ui/options_graphics.rml:116
 msgid "normal"
-msgstr "нормальный"
+msgstr "обычная"
 
 #: ui/options_graphics.rml:117
 msgid "Vertex lighting"
@@ -1063,7 +1065,7 @@ msgstr "Вершинное освещение"
 
 #: ui/options_graphics.rml:117
 msgid "low, ugly"
-msgstr "низкий, уродливый"
+msgstr "низкая, некрасивая"
 
 #: ui/options_graphics.rml:119
 msgid "Lighting system"
@@ -1113,7 +1115,7 @@ msgstr "Пятна"
 
 #: ui/options_graphics.rml:143
 msgid "low"
-msgstr "низкий"
+msgstr "низкие"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:365
 #: ui/options_ui.rml:177
@@ -1206,7 +1208,7 @@ msgstr ""
 #: ui/options_graphics.rml:262 ui/options_graphics.rml:343
 #: ui/options_graphics.rml:348 ui/options_graphics.rml:353
 msgid "Experimental."
-msgstr "Экспериментальный."
+msgstr "Экспериментально."
 
 #: ui/options_graphics.rml:191
 msgid "Mip-mapping"
@@ -1217,7 +1219,7 @@ msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
-"Mip-текстурирование заставляет удаленные поверхности выглядеть лучше, "
+"Mip-текстурирование заставляет отдалённые поверхности выглядеть лучше, "
 "используя на них текстуры с более низким разрешением. Это, как правило, не "
 "влияет на производительность."
 
@@ -1236,7 +1238,7 @@ msgstr "Лучшая интерпретация Mip-текстур на плос
 
 #: ui/options_graphics.rml:206
 msgid "Trilinear"
-msgstr "Трехлинейная"
+msgstr "Трилинейный"
 
 #: ui/options_graphics.rml:206
 msgid "better"
@@ -1244,7 +1246,7 @@ msgstr "лучше"
 
 #: ui/options_graphics.rml:207
 msgid "Bilinear"
-msgstr "Билинейная"
+msgstr "Билинейный"
 
 #: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
@@ -1264,7 +1266,7 @@ msgstr "Рисовать небо."
 
 #: ui/options_graphics.rml:226
 msgid "Normal mapping"
-msgstr "Нормальный мэппинг (проецировние)"
+msgstr "Карта нормалей"
 
 #: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
@@ -1272,7 +1274,7 @@ msgstr "Симулирует дополнительные детали осве�
 
 #: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
-msgstr "Особенно хороший мэппинг (проецирование)"
+msgstr "Делюксовое картирование"
 
 #: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
@@ -1280,7 +1282,7 @@ msgstr "Направление света основано на запечённ
 
 #: ui/options_graphics.rml:236
 msgid "Relief mapping"
-msgstr "Рельефный мэппинг"
+msgstr "Рельефное картирование"
 
 #: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
@@ -1288,7 +1290,7 @@ msgstr "Добавляет неровности на поддерживаемы�
 
 #: ui/options_graphics.rml:241
 msgid "Specular mapping"
-msgstr "Зеркальный мэппинг"
+msgstr "Карта бликов"
 
 #: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
@@ -1296,7 +1298,7 @@ msgstr "Имитация зеркальности света."
 
 #: ui/options_graphics.rml:246
 msgid "Physical mapping"
-msgstr "Физический мэппинг"
+msgstr "Физическая карта"
 
 #: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
@@ -1322,7 +1324,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:266
 msgid "Very low"
-msgstr "Очень низкий"
+msgstr "Очень низкое"
 
 #: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
@@ -1330,7 +1332,7 @@ msgstr "Среднее"
 
 #: ui/options_graphics.rml:270
 msgid "Very high"
-msgstr "Очень высокий"
+msgstr "Очень высокое"
 
 #: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
@@ -1565,7 +1567,7 @@ msgstr "Геймпад"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
-msgstr "Пока что не работает в меню,<br />&nbsp;Экспериментальный."
+msgstr "Пока что не работает в меню,<br />&nbsp;Экспериментально."
 
 #: ui/options_keys.rml:33
 msgid "Move"
@@ -1685,7 +1687,7 @@ msgstr "Разное"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr "Показать очки:"
+msgstr "Показать табло очков:"
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
@@ -1725,7 +1727,7 @@ msgstr ""
 
 #: ui/options_keys.rml:175
 msgid "Quake-look"
-msgstr "Обзор в стиле Quake"
+msgstr "Обзор как в Quake"
 
 #: ui/options_keys.rml:179
 msgid "Look up:"
@@ -2091,7 +2093,7 @@ msgstr "Прозрачность:"
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
-msgstr "Перекрестие"
+msgstr "Прицел"
 
 #: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
