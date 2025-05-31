@@ -30,6 +30,7 @@
 		ui/ingame_chat.rml ingame_chat                         // ROCKETMENU_CHAT
 		ui/ingame_beaconmenu.rml ingame_beaconmenu passthrough // ROCKETMENU_BEACONS
 		ui/error.rml error                                     // ROCKETMENU_ERROR
+		ui/banned.rml banned                                   // ROCKETMENU_BANNED
 		ui/welcome.rml welcome                                 // ROCKETMENU_WELCOME
 		ui/ingame_bottacticmenu.rml ingame_bottacticmenu passthrough  // ROCKETMENU_BOTTACTIC
 		ui/ingame_vsaymenu.rml ingame_vsaymenu passthrough  // ROCKETMENU_VSAY
