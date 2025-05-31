@@ -25,8 +25,8 @@
 			}
 
 			.ban-button:hover {
-				background: #e74c3c;
-				color: #1e1e1e;
+				background: #FF0000;
+				color: #000000;
 			}
 
 			.ban-window h2 {
