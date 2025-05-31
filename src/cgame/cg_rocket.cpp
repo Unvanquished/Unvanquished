@@ -255,6 +255,16 @@ void CG_Rocket_Init( glconfig_t gl )
 	}
 
 	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE );
+
+	text[ 0 ] = '\0';
+	trap_Cvar_VariableStringBuffer( "com_bannedMessage", text, sizeof( text ) );
+	if ( *text )
+	{
+		trap_Cvar_Set( "ui_bannedMessage", text );
+		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BANNED ].id, "open" );
+	}
+
+	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE );
 }
 
 void CG_Rocket_LoadHuds()
