@@ -58,9 +58,9 @@
 	<body id="banned" template="banned" class="ban-window" style="margin: 30%;">
 		<img src="/ui/assets/icons/ban.png" style="width:100px; height:100px" class="icon"/>
 		<h2 style="color:red;"><translate>You have been banned</translate></h2>
-		<p><span style="color:#f39c12">Banned by:</span>&nbsp;<inlinecvar quake cvar="ui_BannedBy"/></p>
-		<p><span style="color:#f39c12">Duration:</span>&nbsp;<inlinecvar quake cvar="ui_BanDuration"/></p>
-		<p><span style="color:#f39c12">Reason:</span>&nbsp;<inlinecvar quake cvar="ui_BanReason"/></p>
+		<p><span style="color:#f39c12"><translate>Banned by:</translate></span>&nbsp;<inlinecvar quake emoticons cvar="ui_BannedBy"/></p>
+		<p><span style="color:#f39c12"><translate>Duration:</translate></span>&nbsp;<inlinecvar quake cvar="ui_BanDuration"/></p>
+		<p><span style="color:#f39c12"><translate>Reason:</translate></span>&nbsp;<inlinecvar quake cvar="ui_BanReason"/></p>
 
 		<button onclick='Events.pushcmd("hide banned")' class="ban-button"><translate>Close</translate></button>
 	</body>
