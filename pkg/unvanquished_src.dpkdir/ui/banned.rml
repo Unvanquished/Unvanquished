@@ -1,0 +1,67 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/banned.rml" />
+		<style>
+			.ban-button {
+				margin-top: 25px;
+				display: inline-block;
+				color: #e74c3c;
+				font-weight: 600;
+				border: 2px #e74c3c;
+				padding: 8px 20px;
+				border-radius: 5px;
+				transition: background 0.3s, color 0.3s;
+			}
+
+			.ban-window {
+				background: #1e1e1e;
+				border: 2px #e74c3c;
+				border-radius: 10px;
+				padding: 30px 40px;
+				max-width: 400px;
+				text-align: center;
+			}
+
+			.ban-button:hover {
+				background: #ff0000;
+				color: #ffffff;
+			}
+
+			.ban-window h2 {
+				color: #e74c3c;
+				margin-bottom: 15px;
+			}
+
+			.ban-info {
+				font-size: 1.1em;
+				margin: 10px 0;
+			}
+
+			.ban-info span {
+				font-weight: 600;
+				color: #f39c12;
+			}
+
+			.ban-message {
+				margin-top: 20px;
+				color: #bbbbbb;
+			}
+
+			.icon {
+				font-size: 50px;
+				color: #e74c3c;
+				margin-bottom: 15px;
+			}
+		</style>
+	</head>
+	<body id="banned" template="banned" class="ban-window" style="margin: 30%;">
+		<img src="/ui/assets/icons/ban.png" style="width:100px; height:100px" class="icon"/>
+		<h2 style="color:red;"><translate>You have been banned</translate></h2>
+		<p><span style="color:#f39c12"><translate>Banned by:</translate></span>&nbsp;<inlinecvar quake emoticons cvar="ui_BannedBy"/></p>
+		<p><span style="color:#f39c12"><translate>Duration:</translate></span>&nbsp;<inlinecvar quake cvar="ui_BanDuration"/></p>
+		<p><span style="color:#f39c12"><translate>Reason:</translate></span>&nbsp;<inlinecvar quake cvar="ui_BanReason"/></p>
+
+		<button onclick='Events.pushcmd("hide banned")' class="ban-button"><translate>Close</translate></button>
+	</body>
+</rml>
