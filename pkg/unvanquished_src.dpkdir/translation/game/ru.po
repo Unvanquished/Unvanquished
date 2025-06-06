@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-24 21:19+0200\n"
-"PO-Revision-Date: 2025-06-06 09:40+0000\n"
+"PO-Revision-Date: 2025-06-07 10:01+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -305,7 +305,7 @@ msgstr ""
 "которая показывает эффективность. Во время размещения постройки будет "
 "показана предполагаемая эффективность. Очки Строительства доступны сразу "
 "после завершения строительства добывающей структуры, и они будут вычтены "
-"обратно, если постройка будет разрушена. Не стройте незащищенные Буры!"
+"обратно, если постройка будет разрушена. Не стройте незащищённые Буры!"
 
 #: ui/help_gameplay.rml:85
 msgid ""
@@ -528,8 +528,8 @@ msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"У инопланетян пояилась защитная структурас стреляющая шипами, но она очень "
-"уязвима. Не оставляйте ее незащищенной!"
+"У инопланетян появилась защитная структура стреляющая шипами, но она очень "
+"уязвима. Не оставляйте её незащищённой!"
 
 #: ui/help_gameplay.rml:181
 msgid ""
@@ -646,16 +646,16 @@ msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
-"Чужие очень мобильны и обладают широким разнообразием основанные на движении "
-"атак. Они крепки, но должны полагаться на скрытность и уклонение."
+"Чужие обладают высокой мобильностью и широким спектром атак, основанных на "
+"движении. Они крепкие, но вынуждены полагаться на скрытность и уклонение."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
-"Люди могут экипировать себя разнообразным оружием и экипировкой. Они гибки и "
-"опасны на расстоянии, но уязвимы вблизи."
+"Люди могут вооружиться различным оружием и снаряжением. Они гибки и "
+"смертоносны на расстоянии, но уязвимы вблизи."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
@@ -791,7 +791,7 @@ msgstr "Выгнать ботов"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr "Увеличить лимит времени"
+msgstr "Увеличить предел времени"
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
@@ -807,7 +807,7 @@ msgstr "Угол обзора"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr "FOV = широта обзора игрока, измеряемая в градусах."
+msgstr "FOV = ширина обзора игрока, измеряемая в градусах."
 
 #: ui/options_fov.rml:12
 msgid ""
@@ -830,7 +830,7 @@ msgstr "градусов"
 #: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr "сбросить"
+msgstr "сброс"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
@@ -850,11 +850,11 @@ msgstr "Тиран"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr "Покачивание камеры"
+msgstr "Рыскание камеры"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr "Наклон камеры"
+msgstr "Тангаж камеры"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
@@ -879,11 +879,11 @@ msgstr "Движение вверх и вниз"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr "Вращение камеры"
+msgstr "Крен камеры"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr "Круговое движение"
+msgstr "Вращательное движение"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
@@ -988,7 +988,7 @@ msgstr ""
 "Вертикальная синхронизация предотвращает визуальные разрывы, но увеличивает "
 "задержку ввода. Адаптивная вертикальная синхронизация активируется только "
 "тогда, когда частота кадров превышает частоту обновления монитора, избавляя "
-"от эффекта «заикания» при падении кадровой часты."
+"от эффекта «заикания» при падении кадровой частоты."
 
 #: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
@@ -1078,7 +1078,7 @@ msgstr "Стили освещения"
 #: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
-"Предпросчитанное динамическое освещение, испускаемое статичными объектами на "
+"Предрассчитанное динамическое освещение, испускаемое статичными объектами на "
 "карте."
 
 #: ui/options_graphics.rml:127
@@ -1090,7 +1090,7 @@ msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "Динамическое освещение реального времени, исходящее из перемещающихся "
-"объектов, таких как оружия и постройки."
+"объектов, таких как оружие и постройки."
 
 #: ui/options_graphics.rml:132
 msgid "Rim lighting"
@@ -1230,7 +1230,7 @@ msgstr "Нет"
 
 #: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
-msgstr "Антизотропное Mip-текстурирование"
+msgstr "Анизотропное Mip-текстурирование"
 
 #: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
@@ -1623,7 +1623,7 @@ msgstr "Дополнительная атака:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
-msgstr "Выстрелитьшипом:"
+msgstr "Выстрелить шипом:"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
@@ -1647,7 +1647,7 @@ msgstr "Эволюционировать:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr "Чат/голосование"
+msgstr "Чат / голосование"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
@@ -1675,7 +1675,7 @@ msgstr "Проголосовать Нет:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr "Голосование в группе Да:"
+msgstr "Командное голосование Да:"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
@@ -1859,11 +1859,11 @@ msgstr "У людей и у чужих"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr "Люди (полупрозрачные)"
+msgstr "У людей (полупрозрачные)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr "Люди и инопланетяне (прозрачные)"
+msgstr "У людей и чужих (полупрозрачные)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1891,7 +1891,7 @@ msgstr "Персональные"
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr "Никнейм"
+msgstr "Позывной (никнейм)"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
@@ -1917,7 +1917,7 @@ msgstr "Смайлики"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr "Также можно помещать смайлики в никнейм."
+msgstr "Также можно помещать смайлики в ваш позывной."
 
 #: ui/options_player.rml:70
 msgid ""
@@ -2029,11 +2029,11 @@ msgstr "Часы реального времени"
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr "12-часовой формат"
+msgstr "12-часовой вид"
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr "24-часовой формат"
+msgstr "24-часовой вид"
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
@@ -2314,7 +2314,7 @@ msgstr "Множитель урона огня по своим"
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
-msgstr "Множитель урона по команде (не включая постройки и себя)"
+msgstr "Множитель урона по команде (не включает постройки или себя самого)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
@@ -2370,7 +2370,7 @@ msgstr "Возможность толкать Дретчи с пути"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr "Дретчи можно толкать с пути атакуя их."
+msgstr "Дретчи можно отодвинуть с пути с помощью атаки."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
@@ -2502,7 +2502,7 @@ msgstr "боты"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr "Стандартный уровень скилла"
+msgstr "Стандартный уровень сложности"
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
@@ -2656,8 +2656,8 @@ msgstr "Добро пожаловать в Unvanquished"
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
-"Закройте это меню и кликните где угодно, чтобы присоединиться к команде и "
-"начать играть!"
+"Закройте это меню и щёлкните где угодно, чтобы присоединиться к команде и "
+"начать игру!"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
@@ -3202,7 +3202,7 @@ msgstr "%s%s ^*было застрелено %s%s%s^*; %s%s%s^* помог(ла)
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*был сожжен импульсным зарядом %s%s%s^*"
+msgstr "%s%s ^*был сожжён импульсным зарядом %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
@@ -3217,7 +3217,7 @@ msgstr "%s%s ^*было сожжено импульсным зарядом %s%s%
 #: src/cgame/cg_event.cpp:416
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*был сожжен импульсным зарядом %s%s%s^*; %s%s%s^* помог(ла)"
+msgstr "%s%s ^*был сожжён импульсным зарядом %s%s%s^*; %s%s%s^* помог(ла)"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "female"
@@ -4075,7 +4075,7 @@ msgstr "Сверхразум умирает!"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is going down!"
-msgstr "Реактор падает!"
+msgstr "Реактор выходит из строя!"
 
 #: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
 msgid "Our base is under attack!"
@@ -4093,47 +4093,47 @@ msgstr "%s атакован"
 
 #: src/cgame/cg_main.cpp:471
 msgid "Calling home…"
-msgstr "Звоним домой…"
+msgstr "Совершается звонок домой…"
 
 #: src/cgame/cg_main.cpp:471
 msgid "Sending to the front…"
-msgstr "Отправляем на фронт…"
+msgstr "Отправка на фронт…"
 
 #: src/cgame/cg_main.cpp:476
 msgid "Tracking your movements…"
-msgstr "Отслеживаем ваши движения…"
+msgstr "Отслеживаются ваши движения…"
 
 #: src/cgame/cg_main.cpp:476
 msgid "Letting out the magic smoke…"
-msgstr "Выпускаем волшебный дым…"
+msgstr "Выпускается волшебный дым…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Collecting bees for the hives…"
-msgstr "Собираем пчёл для ульев…"
+msgstr "Собираются пчёлы для ульев…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Initialising fireworks…"
-msgstr "Инициализируем фейерверки…"
+msgstr "Запускаются фейерверки…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Causing electrical faults…"
-msgstr "Вызываем электрическое замыкание…"
+msgstr "Вызывается электрическое замыкание…"
 
 #: src/cgame/cg_main.cpp:484
 msgid "Reading the manual…"
-msgstr "Читаем руководство…"
+msgstr "Читается руководство…"
 
 #: src/cgame/cg_main.cpp:484
 msgid "Looking at blueprints…"
-msgstr "Смотрим на чертежи…"
+msgstr "Осматриваются чертежи…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Generating annoying noises…"
-msgstr "Генерируем раздражающие звуки…"
+msgstr "Создаются раздражающие звуки…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Recording granger purring…"
-msgstr "Записываем мурчание Грэнгера…"
+msgstr "Записывается мурчание Грэнгера…"
 
 #: src/cgame/cg_main.cpp:492
 msgid "Hello World!"
@@ -4141,59 +4141,59 @@ msgstr "Привет, Мир!"
 
 #: src/cgame/cg_main.cpp:492
 msgid "Making a scene…"
-msgstr "Делаем сцену…"
+msgstr "Создаётся сцена…"
 
 #: src/cgame/cg_main.cpp:496
 msgid "Taking pictures of the world…"
-msgstr "Делаем фотографии мира…"
+msgstr "Создаются фотографии мира…"
 
 #: src/cgame/cg_main.cpp:496
 msgid "Drawing smiley faces…"
-msgstr "Рисуем улыбающиеся лица…"
+msgstr "Рисуются улыбающиеся лица…"
 
 #: src/cgame/cg_main.cpp:500
 msgid "Sharpening the aliens' claws…"
-msgstr "Заостряем когти Чужих…"
+msgstr "Заостряются когти Чужих…"
 
 #: src/cgame/cg_main.cpp:500
 msgid "Overloading lucifer cannons…"
-msgstr "Перегружаем пушки Люцифера…"
+msgstr "Перегружаются пушки Люцифера…"
 
 #: src/cgame/cg_main.cpp:504
 msgid "Unwrapping jetpacks…"
-msgstr "Разворачиваем джетпаки…"
+msgstr "Распаковываются реактивные ранцы…"
 
 #: src/cgame/cg_main.cpp:504
 msgid "Spinning silk for reticles…"
-msgstr "Прядём шелк для сеток…"
+msgstr "Прядётся шёлк для сеток…"
 
 #: src/cgame/cg_main.cpp:508
 msgid "Adding turret spam…"
-msgstr "Добавляем турельный спам…"
+msgstr "Добавляется турельный спам…"
 
 #: src/cgame/cg_main.cpp:508
 msgid "Awakening the overmind…"
-msgstr "Пробуждаем Сверхразум…"
+msgstr "Пробуждается Сверхразум…"
 
 #: src/cgame/cg_main.cpp:512
 msgid "Teleporting soldiers…"
-msgstr "Телепортируем солдат…"
+msgstr "Телепортируются солдаты…"
 
 #: src/cgame/cg_main.cpp:512
 msgid "Replicating alien DNA…"
-msgstr "Копируем ДНК Чужих…"
+msgstr "Копируется ДНК Чужих…"
 
 #: src/cgame/cg_main.cpp:516
 msgid "Customizing helmets…"
-msgstr "Кастомизируем шлемы…"
+msgstr "Настраиваются шлемы…"
 
 #: src/cgame/cg_main.cpp:520
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr "Компиляция шейдеров GLSL (пожалуйста, подождите)…"
+msgstr "Компилируются шейдеры GLSL (пожалуйста, подождите)…"
 
 #: src/cgame/cg_main.cpp:524
 msgid "Surveying the map…"
-msgstr "Обследуем карту местности…"
+msgstr "Изучается карта местности…"
 
 #: src/cgame/cg_main.cpp:528
 msgid "Done!"
@@ -4201,7 +4201,7 @@ msgstr "Всё!"
 
 #: src/cgame/cg_main.cpp:1143
 msgid "Generating bot navigation meshes"
-msgstr "Генерируем навигационные сетки ботов"
+msgstr "Создаются навигационные сетки ботов"
 
 #: src/cgame/cg_main.cpp:1187
 #, c-format
@@ -4327,7 +4327,7 @@ msgstr "Не осталось мест для возрождения"
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Осталось %d воскрешение"
-msgstr[1] "Осталось %d воскрешений"
+msgstr[1] "Осталось %d воскрешения"
 msgstr[2] "Осталось %d воскрешений"
 
 #: src/cgame/cg_rocket_draw.cpp:3241
@@ -4354,7 +4354,7 @@ msgstr "Сказать команде:"
 
 #: src/cgame/cg_rocket_draw.cpp:3333
 msgid "Admin Say:"
-msgstr "Админ говорит:"
+msgstr "Сказать от админа:"
 
 #: src/cgame/cg_rocket_draw.cpp:3334
 msgid "Command:"
@@ -4908,7 +4908,7 @@ msgstr "%s, %s"
 #: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
-msgstr "\"%s\" (не настроено)"
+msgstr "«%s» (не настроено)"
 
 #: src/cgame/cg_tutorial.cpp:178
 #, c-format
@@ -4960,7 +4960,7 @@ msgstr "Нажмите %s, чтобы ходить по стенам."
 
 #: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
-msgstr "Задень людей, чтобы нанести им урон."
+msgstr "Прикасайтесь к людям, чтобы нанести им урон."
 
 #: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
@@ -5019,7 +5019,7 @@ msgstr "Найдите Арсенал, чтобы получить больше 
 #: src/cgame/cg_tutorial.cpp:393
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr "Нажимте %s чтобы выстрелить %s."
+msgstr "Нажмите %s для выстрела %s."
 
 #: src/cgame/cg_tutorial.cpp:380
 #, c-format
@@ -5240,11 +5240,11 @@ msgstr "Время вышло"
 
 #: src/sgame/sg_main.cpp:2005
 msgid "$1$ minutes remaining!"
-msgstr "осталось $1$ минут!"
+msgstr "Осталось $1$ минут!"
 
 #: src/sgame/sg_main.cpp:2013
 msgid "1 minute remaining!"
-msgstr "осталась 1 минута!"
+msgstr "Осталась 1 минута!"
 
 #: src/sgame/sg_main.cpp:2026
 msgid "Humans win"
@@ -5301,7 +5301,7 @@ msgstr "Команды не сбалансированы. У команды Чу
 #: src/sgame/sg_votes.cpp:59
 #, c-format
 msgid "Kick player '%s'"
-msgstr "Кикнуть игрока '%s'"
+msgstr "Кикнуть игрока «%s»"
 
 #: src/sgame/sg_votes.cpp:71
 #, c-format
@@ -5315,7 +5315,7 @@ msgstr "$1$: игрок уже не может говорить (muted)"
 #: src/sgame/sg_votes.cpp:89
 #, c-format
 msgid "Mute player '%s'"
-msgstr "Заглушить игрока '%s'"
+msgstr "Заглушить игрока «%s»"
 
 #: src/sgame/sg_votes.cpp:101
 msgid "$1$: player is not currently muted"
@@ -5324,7 +5324,7 @@ msgstr "$1$: игрок может говорить (not muted)"
 #: src/sgame/sg_votes.cpp:108
 #, c-format
 msgid "Unmute player '%s'"
-msgstr "Разглушить игрока '%s'"
+msgstr "Разглушить игрока «%s»"
 
 #: src/sgame/sg_votes.cpp:120
 msgid "$1$: player already lost building rights"
@@ -5416,7 +5416,7 @@ msgstr "Голоса '$1$' не принимаются пока не прошл�
 
 #: src/sgame/sg_votes.cpp:611
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining"
-msgstr "Голоса '$1$' принимаются только пока остается $2$ минут"
+msgstr "Голоса «$1$» принимаются только при оставшемся времени менее $2$ минут"
 
 #: src/sgame/sg_votes.cpp:655
 msgid "$1$: no target"
@@ -5465,14 +5465,14 @@ msgstr ""
 #: src/sgame/sg_votes.cpp:878
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr ""
-"Голосование провалено ($1$ из $2$; необходимое число участников не "
+"Голосование не удалось ($1$ из $2$; необходимое число участников не "
 "достигнуто)"
 
 #: src/sgame/sg_votes.cpp:879
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr ""
-"Командное голосование провалено ($1$ из $2$; необходимое число участников не "
-"достигнуто)"
+"Командное голосование не удалось ($1$ из $2$; необходимое число участников "
+"не достигнуто)"
 
 #: src/sgame/sg_votes.cpp:885
 msgid "Vote passed ($1$ — $2$)"
@@ -5485,12 +5485,12 @@ msgstr "Командное голосование прошло ($1$ — $2$)"
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Голосование провалено ($1$ — $2$; $3$% требуется)"
+msgstr "Голосование не удалось ($1$ — $2$; требуется $3$%)"
 
 #: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Командное голосование провалено (необходимо $1$ — $2$; $3$% )"
+msgstr "Командное голосование не удалось ($1$ — $2$; требуется $3$%)"
 
 #: src/shared/bg_misc.cpp:2490
 msgid "spectator"
