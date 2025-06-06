@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-24 21:19+0200\n"
-"PO-Revision-Date: 2025-05-26 07:18+0000\n"
+"PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -1015,7 +1015,7 @@ msgid ""
 "mapping instead.)"
 msgstr ""
 "Некрасивый способ увеличения яркости. (Попробуйте сбросить настройки и "
-"вместо этого использовать тональное отображение)."
+"вместо этого использовать тональное отображение.)"
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
@@ -2277,7 +2277,7 @@ msgstr "LAN"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr "Название хоста"
+msgstr "Имя хоста"
 
 #: ui/server_create.rml:44
 msgid "Password"
