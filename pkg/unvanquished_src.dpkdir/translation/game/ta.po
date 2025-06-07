@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-24 21:19+0200\n"
-"PO-Revision-Date: 2025-04-25 18:03+0000\n"
+"PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ta/>\n"
@@ -346,8 +346,8 @@ msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
-"[தீ எரி] தீ எரி அல்லது [தீ வெடி] தீ வெடிமூலம் தாக்கப்படும்போது ஏலியன் பில்டபிள்ச் "
-"நெருப்பைப் பிடிக்கலாம்."
+"[தீ எரி] தீ எரி அல்லது [தீ வெடி] தீ வெடிமூலம் தாக்கப்படும்போது ஏலியன் பில்டபிள்ச் நெருப்பைப்"
+" பிடிக்கலாம்."
 
 #: ui/help_gameplay.rml:105
 msgid ""
@@ -610,7 +610,7 @@ msgstr "பீக்கான்கள்"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "போட் தந்திரோபாயம்"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -663,15 +663,15 @@ msgstr "கவனமாக"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
-msgstr ""
+msgstr "வேண்டும்"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"இது அறியப்படாத பீட்டா பதிப்பாகும். <web dest=\"bugs\" /> இல் நீங்கள் காணக்கூடிய "
-"எந்தவொரு சிக்கலையும் தெரிவிக்கவும்"
+"இது அறியப்படாத பீட்டா பதிப்பாகும். <web dest=\"bugs\" /> இல் நீங்கள் காணக்கூடிய எந்தவொரு"
+" சிக்கலையும் தெரிவிக்கவும்"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
@@ -887,7 +887,7 @@ msgstr "அல்ட்ரா"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "எல்லாம் செயல்படுத்தப்பட்டது."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:381 ui/options_graphics.rml:389
@@ -896,7 +896,7 @@ msgstr "உயர்ந்த"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "மாறும் விளக்குகள், சிறப்பு விளைவுகள், பெரிய அமைப்புகள்…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -904,7 +904,7 @@ msgstr "சராசரி"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "மேற்பரப்பு விவரங்கள், நல்ல அமைப்புகள்…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:382 ui/options_graphics.rml:391
@@ -913,13 +913,15 @@ msgstr "குறைந்த"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "விளையாட்டை அசிங்கமாக்காத வேகமான முன்னமைவு."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"மேம்படுத்தல்களைத் தேடும்போது, முதலில் குறைந்த முன்னமைவை முயற்சிக்கவும். குறைந்த முன்னமைவு "
+"சரியாக இயங்கும்போது, மிகக் குறைந்த முன்னமைவு வேகமாக இல்லை."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
@@ -928,10 +930,11 @@ msgstr "மிகக் குறைந்த"
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
 msgstr ""
+"அசிங்கமான கட்டமைப்புகள் மற்றும் வடிவியல், வானம் இல்லை, துகள் எதுவும் துள்ளல் இல்லை…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "கடைசி முயற்சியாக, மிகவும் மெதுவான சாதனங்களுக்கு மட்டுமே."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
@@ -992,13 +995,15 @@ msgstr "ஒளி"
 
 #: ui/options_graphics.rml:90
 msgid "Gamma"
-msgstr ""
+msgstr "காமா"
 
 #: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
+"பிரகாசத்தை அதிகரிப்பதற்கான அசிங்கமான முறை. (அதற்கு பதிலாக டோன் மேப்பிங்கை "
+"மீட்டமைப்பதையும் பயன்படுத்துவதையும் கவனியுங்கள்.)"
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
@@ -1006,23 +1011,24 @@ msgstr "காமா:"
 
 #: ui/options_graphics.rml:98
 msgid "Tone mapping"
-msgstr ""
+msgstr "தொனி மேப்பிங்"
 
 #: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
+"கழுவப்பட்ட அல்லது அதிக இருண்ட பகுதிகளைத் தணிக்க மாறும் வரம்பை நிர்வகிக்கவும்."
 
 #: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
-msgstr ""
+msgstr "டோன் மேப்பிங்கை இயக்கவும்"
 
 #: ui/options_graphics.rml:105
 msgid "Exposure"
-msgstr ""
+msgstr "நேரிடுவது"
 
 #: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
-msgstr ""
+msgstr "டோன் மேப்பிங் பிரகாச நிலை"
 
 #: ui/options_graphics.rml:111
 msgid "Lighting"
@@ -1675,11 +1681,11 @@ msgstr "பெக்கான் மெனு:"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr ""
+msgstr "Vsays மெனு:"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
-msgstr ""
+msgstr "போட் தந்திரோபாயம் மெனு:"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
@@ -3333,17 +3339,17 @@ msgstr "%s%s ^*%s%s%s ^*இன் நெருப்பால் எரிக்
 #: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*எரிக்கப்பட்டது"
+msgstr "%s%s ^*எரித்துக் கொல்லப்பட்டார்"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*எரிக்கப்பட்டது"
+msgstr "%s%s ^*எரித்துக் கொல்லப்பட்டார்"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*எரிக்கப்பட்டது"
+msgstr "%s%s ^*எரித்துக் கொல்லப்பட்டார்"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "male"
@@ -4035,7 +4041,7 @@ msgstr "%s%s^* இறந்தது"
 #: src/cgame/cg_consolecmds.cpp:130
 #, c-format
 msgid "Listed %2d clients"
-msgstr "பட்டியலிடப்பட்ட %2 டி வாடிக்கையாளர்கள்"
+msgstr "பட்டியலிடப்பட்ட %2d வாடிக்கையாளர்கள்"
 
 #: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
 #, c-format
@@ -4222,73 +4228,74 @@ msgstr "திரை அதே (%dx%d)"
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
+"இயல்புநிலை நடத்தை. விளையாட்டு தொடங்கும் போது போட்கள் இதைத்தான் செய்கின்றன."
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend"
-msgstr ""
+msgstr "பாதுகாக்க"
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 msgid "The bots stay in the base."
-msgstr ""
+msgstr "போட்கள் அடிவாரத்தில் இருக்கும்."
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack"
-msgstr ""
+msgstr "தாக்குதல்"
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 msgid "The bots attack the enemy base."
-msgstr ""
+msgstr "போட்கள் எதிரி தளத்தைத் தாக்குகின்றன."
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "Stay Here"
-msgstr ""
+msgstr "இங்கேயே இருங்கள்"
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "The bots stay where you are currently."
-msgstr ""
+msgstr "நீங்கள் தற்போது இருக்கும் இடத்தில் போட்கள் தங்குகின்றன."
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow"
-msgstr ""
+msgstr "பின்தொடர்"
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 msgid "The bots follow you wherever you go."
-msgstr ""
+msgstr "நீங்கள் எங்கு சென்றாலும் போட்கள் உங்களைப் பின்தொடர்கின்றன."
 
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend our base!!"
-msgstr ""
+msgstr "எங்கள் தளத்தைப் பாதுகாக்கவும் !!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack!"
-msgstr ""
+msgstr "தாக்குதல்!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow me!"
-msgstr ""
+msgstr "என்னைப் பின்தொடரவும்!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No."
-msgstr ""
+msgstr "இல்லை."
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes"
-msgstr ""
+msgstr "ஆம்"
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes."
-msgstr ""
+msgstr "ஆம்."
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "Flank"
-msgstr ""
+msgstr "பக்கவாட்டு"
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "Flank, behind you!"
-msgstr ""
+msgstr "பக்கவாட்டு, உங்களுக்கு பின்னால்!"
 
 #: src/cgame/cg_rocket_draw.cpp:2644
 msgid "You are at the front of the spawn queue"
@@ -4784,7 +4791,7 @@ msgstr "^1*இறந்த*^*"
 #: src/cgame/cg_servercmds.cpp:932
 #, c-format
 msgid "%sPrivate message from: ^7%s"
-msgstr "இருந்து%தனிப்பட்ட செய்தி: ^7%s"
+msgstr "%sதனிப்பட்ட செய்தி இவரிடமிருந்து: ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:940
 #, c-format
@@ -4850,7 +4857,7 @@ msgstr "குழு அரட்டை"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Bot tactic menu"
-msgstr ""
+msgstr "போட் தந்திரோபாயம் பட்டியல்"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
@@ -4975,12 +4982,12 @@ msgstr "துள்ளுவதற்கு %s ஐ கீழே வைத்த
 #: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
-msgstr "மிதிக்க முன்னேறும்போது கீழே வைத்திருங்கள்."
+msgstr "மிதிக்க முன்னோக்கி நகரும்போது %s ஐ அழுத்திப் பிடிக்கவும்."
 
 #: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
 #, c-format
 msgid "Press %s to show the bot tactic menu."
-msgstr ""
+msgstr "போட் தந்திரோபாய மெனுவைக் காட்ட %s ஐ அழுத்தவும்."
 
 #: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
@@ -5459,12 +5466,12 @@ msgstr "குழு வாக்கு நிறைவேற்றப்பட�
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr "வாக்கு தோல்வியுற்றது ($ 1 $ - $ 2 $; $ 3 $% தேவை)"
+msgstr "வாக்கு தோல்வியுற்றது ($1$ - $2$; $3$% தேவை)"
 
 #: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr "குழு வாக்கு தோல்வியடைந்தது ($ 1 $ - $ 2 $; $ 3 $% தேவை)"
+msgstr "குழு வாக்கு தோல்வியடைந்தது ($1$ - $2$; $3$% தேவை)"
 
 #: src/shared/bg_misc.cpp:2490
 msgid "spectator"
