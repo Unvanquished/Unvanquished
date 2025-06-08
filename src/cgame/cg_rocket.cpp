@@ -281,8 +281,10 @@ void CG_Rocket_Init( glconfig_t gl )
 
 		Rocket_DocumentAction(rocketInfo.menu[ROCKETMENU_BANNED].id, "open");
 	} else {
-		trap_Cvar_Set("ui_errorMessage", text);
-		Rocket_DocumentAction(rocketInfo.menu[ROCKETMENU_ERROR].id, "open");
+		if (strlen(text) > 0) {
+			trap_Cvar_Set("ui_errorMessage", text);
+			Rocket_DocumentAction(rocketInfo.menu[ROCKETMENU_ERROR].id, "open");
+		}
 	}
 
 	CG_SetKeyCatcher(rocketInfo.keyCatcher | KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE);
