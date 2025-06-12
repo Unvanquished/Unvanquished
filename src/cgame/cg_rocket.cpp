@@ -243,18 +243,52 @@ void CG_Rocket_Init( glconfig_t gl )
 		}
 	}
 
-	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );
+	Rocket_DocumentAction(rocketInfo.menu[ROCKETMENU_MAIN].id, "open");
 
-	// Check if we need to display a server connect/disconnect error
-	text[ 0 ] = '\0';
-	trap_Cvar_VariableStringBuffer( "com_errorMessage", text, sizeof( text ) );
-	if ( *text )
-	{
-		trap_Cvar_Set( "ui_errorMessage", text );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
+	text[0] = '\0';
+	trap_Cvar_VariableStringBuffer("com_errorMessage", text, sizeof(text));
+
+	const char* bannedPrefix = "You have been banned by";
+
+	if (strstr(text, bannedPrefix)) {
+		char bannedBy[128] = "";
+		char banDuration[128] = "";
+		char banReason[256] = "";
+		const char* p;
+
+		p = strstr(text, bannedPrefix);
+		if (p) {
+			p += strlen(bannedPrefix);
+			sscanf(p, "%127[^\n]", bannedBy);
+		}
+
+		p = strstr(text, "Duration:");
+		if (p) {
+			p += strlen("Duration:");
+			sscanf(p, "%127[^\n]", banDuration);
+		}
+
+		p = strstr(text, "Reason:");
+		if (p) {
+			p += strlen("Reason:");
+			sscanf(p, "%255[^\n]", banReason);
+		}
+
+		trap_Cvar_Set("ui_BannedBy", bannedBy);
+		trap_Cvar_Set("ui_BanDuration", banDuration);
+		trap_Cvar_Set("ui_BanReason", banReason);
+		trap_Cvar_Set("ui_bannedMessage", text);
+
+		Rocket_DocumentAction(rocketInfo.menu[ROCKETMENU_BANNED].id, "open");
+	} else {
+		if (strlen(text) > 0) {
+			trap_Cvar_Set("ui_errorMessage", text);
+			Rocket_DocumentAction(rocketInfo.menu[ROCKETMENU_ERROR].id, "open");
+		}
 	}
 
-	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE );
+	CG_SetKeyCatcher(rocketInfo.keyCatcher | KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE);
+
 }
 
 void CG_Rocket_LoadHuds()

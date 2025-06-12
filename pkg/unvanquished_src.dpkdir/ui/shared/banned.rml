@@ -1,0 +1,40 @@
+<template name="banned" content="content">
+<head>
+	<style>
+	body {
+		background: #121212;
+		color: #e0e0e0;
+		justify-content: center;
+		align-items: center;
+		margin: 0;
+		text-align: center;
+	}
+	.ban-window {
+		background: #1e1e1e;
+		border: 2px #e74c3c;
+		border-radius: 10px;
+		padding: 30px 40px;
+		max-width: 400px;
+		text-align: center;
+	}
+	.ban-window h2 {
+		color: #e74c3c;
+		margin-bottom: 15px;
+	}
+
+	.ban-window h1 {
+		color: #e74c3c;
+		margin-bottom: 15px;
+	}
+
+	</style>
+	<script src="../lua/util.lua" />
+</head>
+<body onkeydown="detectEscape(event, document)">
+	<window>
+		<handle move_target="#document" />
+		<closebutton onclick="document:Hide()" />  <!-- Defined after the handle, so it's "ontop" -->
+		<div id="content"></div>
+	</window>
+</body>
+</template>
