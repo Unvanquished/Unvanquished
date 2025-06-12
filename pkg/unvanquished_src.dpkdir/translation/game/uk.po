@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
 "PO-Revision-Date: 2024-02-09 01:19+0000\n"
 "Last-Translator: Mykhailo Muzyka <mykhailo.muzyka535@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
@@ -60,6 +60,26 @@ msgstr ""
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "Повернутися до вибору команди"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr "Привід:"
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr "Закрити"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -5409,9 +5429,6 @@ msgstr "люди"
 #~ msgid "Join"
 #~ msgstr "Приєднатись"
 
-#~ msgid "Close"
-#~ msgstr "Закрити"
-
 #~ msgid "Create a Profile"
 #~ msgstr "Створити профіль"
 
@@ -5465,9 +5482,6 @@ msgstr "люди"
 
 #~ msgid "Info"
 #~ msgstr "Інформація"
-
-#~ msgid "Reason:"
-#~ msgstr "Привід:"
 
 #~ msgid "End Match In Draw"
 #~ msgstr "Закінчити матч нічиєю"

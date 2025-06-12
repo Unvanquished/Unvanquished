@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -57,6 +57,26 @@ msgstr "〔潜伏者〕是攻击形态，悄然近敌；〔守卫者〕是建造
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "返回阵营选择"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr ""
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr ""
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"

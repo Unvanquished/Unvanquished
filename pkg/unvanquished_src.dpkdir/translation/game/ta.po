@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
 "PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
@@ -58,6 +58,26 @@ msgstr ""
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "அணி தேர்வுக்குத் திரும்பு"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr ""
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr ""
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -346,8 +366,8 @@ msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
-"[தீ எரி] தீ எரி அல்லது [தீ வெடி] தீ வெடிமூலம் தாக்கப்படும்போது ஏலியன் பில்டபிள்ச் நெருப்பைப்"
-" பிடிக்கலாம்."
+"[தீ எரி] தீ எரி அல்லது [தீ வெடி] தீ வெடிமூலம் தாக்கப்படும்போது ஏலியன் பில்டபிள்ச் "
+"நெருப்பைப் பிடிக்கலாம்."
 
 #: ui/help_gameplay.rml:105
 msgid ""
@@ -670,8 +690,8 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"இது அறியப்படாத பீட்டா பதிப்பாகும். <web dest=\"bugs\" /> இல் நீங்கள் காணக்கூடிய எந்தவொரு"
-" சிக்கலையும் தெரிவிக்கவும்"
+"இது அறியப்படாத பீட்டா பதிப்பாகும். <web dest=\"bugs\" /> இல் நீங்கள் காணக்கூடிய "
+"எந்தவொரு சிக்கலையும் தெரிவிக்கவும்"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
@@ -929,8 +949,7 @@ msgstr "மிகக் குறைந்த"
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
-msgstr ""
-"அசிங்கமான கட்டமைப்புகள் மற்றும் வடிவியல், வானம் இல்லை, துகள் எதுவும் துள்ளல் இல்லை…"
+msgstr "அசிங்கமான கட்டமைப்புகள் மற்றும் வடிவியல், வானம் இல்லை, துகள் எதுவும் துள்ளல் இல்லை…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
@@ -1015,8 +1034,7 @@ msgstr "தொனி மேப்பிங்"
 
 #: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
-msgstr ""
-"கழுவப்பட்ட அல்லது அதிக இருண்ட பகுதிகளைத் தணிக்க மாறும் வரம்பை நிர்வகிக்கவும்."
+msgstr "கழுவப்பட்ட அல்லது அதிக இருண்ட பகுதிகளைத் தணிக்க மாறும் வரம்பை நிர்வகிக்கவும்."
 
 #: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
@@ -4227,8 +4245,7 @@ msgstr "திரை அதே (%dx%d)"
 
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "The default behavior. This is what bots do when the game starts."
-msgstr ""
-"இயல்புநிலை நடத்தை. விளையாட்டு தொடங்கும் போது போட்கள் இதைத்தான் செய்கின்றன."
+msgstr "இயல்புநிலை நடத்தை. விளையாட்டு தொடங்கும் போது போட்கள் இதைத்தான் செய்கின்றன."
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 #: src/cgame/cg_rocket_datasource.cpp:1508

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
 "PO-Revision-Date: 2025-02-27 04:50+0000\n"
 "Last-Translator: \"V. Elle\" <leonardo.luzzi@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
@@ -58,6 +58,26 @@ msgstr ""
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "Indietro scelta squadra"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr "Motivazione:"
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr "Chiudi"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -6059,9 +6079,6 @@ msgstr "umani"
 #~ msgid "Join"
 #~ msgstr "Entra"
 
-#~ msgid "Close"
-#~ msgstr "Chiudi"
-
 #~ msgid "Select a HUD"
 #~ msgstr "Seleziona un HUD"
 
@@ -6076,9 +6093,6 @@ msgstr "umani"
 
 #~ msgid "Info"
 #~ msgstr "Info"
-
-#~ msgid "Reason:"
-#~ msgstr "Motivazione:"
 
 #~ msgid "End Match In Draw"
 #~ msgstr "Termina Match in Pareggio"
