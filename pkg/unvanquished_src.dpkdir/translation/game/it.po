@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-12 14:59+0200\n"
-"PO-Revision-Date: 2025-02-27 04:50+0000\n"
+"PO-Revision-Date: 2025-06-18 10:01+0000\n"
 "Last-Translator: \"V. Elle\" <leonardo.luzzi@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.2-dev\n"
+"X-Generator: Weblate 5.12.1\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -61,15 +61,15 @@ msgstr "Indietro scelta squadra"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Sei stato bannato"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "Bannato da:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Durata:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
