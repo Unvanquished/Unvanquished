@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
 "PO-Revision-Date: 2025-03-17 15:16+0000\n"
 "Last-Translator: DJGummikuh <djgummikuh@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -58,6 +58,26 @@ msgstr ""
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "Zurück zur Team-Auswahl"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr "Begründung:"
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr "Schließen"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -6008,9 +6028,6 @@ msgstr "Menschen"
 #~ msgid "Join"
 #~ msgstr "Beitreten"
 
-#~ msgid "Close"
-#~ msgstr "Schließen"
-
 #~ msgid "Select a HUD"
 #~ msgstr "Wähle ein HUD aus"
 
@@ -6027,9 +6044,6 @@ msgstr "Menschen"
 
 #~ msgid "Info"
 #~ msgstr "Info"
-
-#~ msgid "Reason:"
-#~ msgstr "Begründung:"
 
 #~ msgid "End Match In Draw"
 #~ msgstr "Runde abbrechen"

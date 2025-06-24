@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
 "PO-Revision-Date: 2025-05-12 05:13+0000\n"
 "Last-Translator: Mel420-star <roaakolyyy@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -58,6 +58,26 @@ msgstr ""
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "Retour à la sélection de l’équipe"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr "Motif :"
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr "Fermer"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -6140,9 +6160,6 @@ msgstr "humains"
 #~ msgid "Join"
 #~ msgstr "Joindre"
 
-#~ msgid "Close"
-#~ msgstr "Fermer"
-
 #~ msgid "Select a HUD"
 #~ msgstr "Sélectionner un ATH"
 
@@ -6157,9 +6174,6 @@ msgstr "humains"
 
 #~ msgid "Info"
 #~ msgstr "Infos"
-
-#~ msgid "Reason:"
-#~ msgstr "Motif :"
 
 #~ msgid "End Match In Draw"
 #~ msgstr "Finir la partie sur un nul"

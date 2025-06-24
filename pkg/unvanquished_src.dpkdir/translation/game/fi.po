@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 21:19+0200\n"
-"PO-Revision-Date: 2025-05-24 16:56+0000\n"
+"POT-Creation-Date: 2025-06-12 14:59+0200\n"
+"PO-Revision-Date: 2025-06-12 12:54+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -59,6 +59,26 @@ msgstr ""
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
 msgstr "Palaa joukkuevalintaan"
+
+#: ui/banned.rml:60
+msgid "You have been banned"
+msgstr ""
+
+#: ui/banned.rml:61
+msgid "Banned by:"
+msgstr ""
+
+#: ui/banned.rml:62
+msgid "Duration:"
+msgstr ""
+
+#: ui/banned.rml:63
+msgid "Reason:"
+msgstr ""
+
+#: ui/banned.rml:65
+msgid "Close"
+msgstr ""
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -893,7 +913,7 @@ msgstr "Ultra"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Kaikki ominaisuudet käytössä."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:381 ui/options_graphics.rml:389
@@ -902,7 +922,7 @@ msgstr "Korkea"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "Dynaamiset valot, erikoistehosteet, suuret tekstuurit…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -910,7 +930,7 @@ msgstr "Keskiverto"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "Pintojen yksityiskohdat, hyvät tekstuurit…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:382 ui/options_graphics.rml:391
@@ -919,13 +939,15 @@ msgstr "Matala"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "Nopeimmat ominaisuudet, jotka eivät tee pelistä rumannäköistä."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"Kun pyrit optimoimaan, kokeile matalaa asetusta ensin. Kun matalat asetukset "
+"toimivat oikein, alhaisimmat ominaisuudet eivät ole nopeampia."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
@@ -934,10 +956,11 @@ msgstr "Alhaisin"
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
 msgstr ""
+"Rumat tekstuurit ja geometria, yksivärinen taivas, ei partikkelien kimpoilua…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Tarkoitettu vain erittäin hitaille laitteille viimeisenä vaihtoehtona."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
