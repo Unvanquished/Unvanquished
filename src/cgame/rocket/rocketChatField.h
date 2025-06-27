@@ -148,6 +148,7 @@ public:
 						break;
 
 					case Rml::Input::KI_C:
+					case Rml::Input::KI_U:
 						if ( event.GetParameter< int >( "ctrl_key", 0 ) == 1 )
 						{
 							text.clear();
@@ -329,7 +330,7 @@ protected:
 			q2rml( text, text_element );
 
 			Rml::ElementPtr child = Rml::Factory::InstanceElement( text_element, "#text", "span", Rml::XMLAttributes() );
-			static_cast< Rml::ElementText* >( child.get() )->SetText( " Ctrl + C: clear" );
+			static_cast< Rml::ElementText* >( child.get() )->SetText( " Ctrl + C / Ctrl + U: clear" );
 			child->SetProperty( "color", "#007F7F" );
 
 			text_element->AppendChild( std::move( child ) );
