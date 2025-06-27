@@ -39,6 +39,8 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
+static Cvar::Cvar<bool> cg_chatAutoClear( "cg_chatAutoClear", "Clear chat field when closed", Cvar::NONE, false );
+
 class RocketChatField : public Rml::Element, Rml::EventListener
 {
 public:
@@ -97,6 +99,12 @@ public:
 		if ( event == "focus" )
 		{
 			CG_Rocket_EnableCursor( false );
+
+			if ( cg_chatAutoClear.Get() ) {
+				text.clear();
+				cursor_character_index = 0;
+				UpdateText();
+			}
 		}
 
 		{
