@@ -327,6 +327,12 @@ protected:
 		if ( !text.empty() )
 		{
 			q2rml( text, text_element );
+
+			Rml::ElementPtr child = Rml::Factory::InstanceElement( text_element, "#text", "span", Rml::XMLAttributes() );
+			static_cast< Rml::ElementText* >( child.get() )->SetText( " Ctrl + C: clear" );
+			child->SetProperty( "color", "#007F7F" );
+
+			text_element->AppendChild( std::move( child ) );
 		}
 	}
 
