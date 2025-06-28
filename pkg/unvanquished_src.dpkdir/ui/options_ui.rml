@@ -56,6 +56,11 @@
 					<p><translate>Show how long a match has lasted.</translate></p>
 				</row>
 				<row>
+					<h3><translate>map change-persistent console input</translate></h3>
+					<input cvar="con_persistOnMapChange " type="checkbox" />
+					<p><translate>Current console input will be restored the first time the console is opened after a new map is loaded.</translate></p>
+				</row>
+				<row>
 					<h3><translate>Chat field auto-clear</translate></h3>
 					<input cvar="cg_chatAutoClear" type="checkbox" />
 					<p><translate>Clear chat field when closed.</translate></p>
