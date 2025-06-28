@@ -39,6 +39,8 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
+static Cvar::Cvar<bool> cg_chatAutoClear( "cg_chatAutoClear", "Clear chat field when closed", Cvar::NONE, false );
+
 class RocketChatField : public Rml::Element, Rml::EventListener
 {
 public:
@@ -97,6 +99,12 @@ public:
 		if ( event == "focus" )
 		{
 			CG_Rocket_EnableCursor( false );
+
+			if ( cg_chatAutoClear.Get() ) {
+				text.clear();
+				cursor_character_index = 0;
+				UpdateText();
+			}
 		}
 
 		{
@@ -140,6 +148,7 @@ public:
 						break;
 
 					case Rml::Input::KI_C:
+					case Rml::Input::KI_U:
 						if ( event.GetParameter< int >( "ctrl_key", 0 ) == 1 )
 						{
 							text.clear();
@@ -319,6 +328,12 @@ protected:
 		if ( !text.empty() )
 		{
 			q2rml( text, text_element );
+
+			Rml::ElementPtr child = Rml::Factory::InstanceElement( text_element, "#text", "span", Rml::XMLAttributes() );
+			static_cast< Rml::ElementText* >( child.get() )->SetText( " Ctrl + C / Ctrl + U: clear" );
+			child->SetProperty( "color", "#007F7F" );
+
+			text_element->AppendChild( std::move( child ) );
 		}
 	}
 

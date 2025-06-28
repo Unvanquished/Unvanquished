@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-12 14:59+0200\n"
-"PO-Revision-Date: 2024-03-30 17:02+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2025-06-23 09:01+0000\n"
+"Last-Translator: João <kid-bigode@hotmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pt/>\n"
 "Language: pt\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -62,23 +62,23 @@ msgstr "Voltar a seleção de equipa"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Você foi banido"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "Banido por:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Duração:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr ""
+msgstr "Motivo:"
 
 #: ui/banned.rml:65
 msgid "Close"
-msgstr ""
+msgstr "Fechar"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -98,7 +98,7 @@ msgstr "Preencher com bots"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Quantos jogadores (reais e bots) uma equipa deve ter?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -160,7 +160,7 @@ msgstr "Ok"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Guia de Jogabilidade"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
@@ -641,7 +641,7 @@ msgstr "Balizas"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Tática do Bot"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -695,7 +695,7 @@ msgstr "Assistir"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
-msgstr ""
+msgstr "Vsay"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -854,7 +854,7 @@ msgstr "resetar"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr ""
+msgstr "Mantis"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
@@ -915,11 +915,11 @@ msgstr "Predefinições"
 
 #: ui/options_graphics.rml:27
 msgid "Ultra"
-msgstr ""
+msgstr "Muito Alto"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Tudo ativado."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:381 ui/options_graphics.rml:389
@@ -928,7 +928,7 @@ msgstr "Alto"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "Luzes dinâmicas, efeitos especiais, texturas grandes…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -936,7 +936,7 @@ msgstr "Médio"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "Detalhes de superfície, texturas boas…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:382 ui/options_graphics.rml:391
@@ -945,7 +945,7 @@ msgstr "Baixo"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "A predefinição mais rápida não deixa o jogo feio."
 
 #: ui/options_graphics.rml:43
 msgid ""
@@ -959,11 +959,11 @@ msgstr "Mais baixo"
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
-msgstr ""
+msgstr "Texturas e geometria feia, sem céu, sem salto de partículas…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Apenas para equipamentos muito lentos, como ultimo recurso."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
@@ -1158,7 +1158,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:161
 msgid "(medium)"
-msgstr ""
+msgstr "(medio)"
 
 #: ui/options_graphics.rml:162
 msgid "(low)"
@@ -1263,11 +1263,11 @@ msgstr "Materiais"
 
 #: ui/options_graphics.rml:221
 msgid "Sky"
-msgstr ""
+msgstr "Céu"
 
 #: ui/options_graphics.rml:223
 msgid "Draw the sky."
-msgstr ""
+msgstr "Desenhe o céu."
 
 #: ui/options_graphics.rml:226
 msgid "Normal mapping"
@@ -1311,11 +1311,11 @@ msgstr "Aparência do material baseada em aproximações físicas."
 
 #: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
-msgstr ""
+msgstr "Reflexões"
 
 #: ui/options_graphics.rml:260
 msgid "Static reflections"
-msgstr ""
+msgstr "Reflexões estáticas"
 
 #: ui/options_graphics.rml:262
 msgid ""
@@ -1325,7 +1325,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:266
 msgid "Very low"
-msgstr ""
+msgstr "Muito Baixo"
 
 #: ui/options_graphics.rml:268 ui/options_graphics.rml:390
 msgid "Moderate"
@@ -1333,21 +1333,23 @@ msgstr "Moderado"
 
 #: ui/options_graphics.rml:270
 msgid "Very high"
-msgstr ""
+msgstr "Muito Alto"
 
 #: ui/options_graphics.rml:272 ui/options_graphics.rml:384
 msgid "Quality"
-msgstr ""
+msgstr "Qualidade"
 
 #: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"Qualidade das reflexões estáticas dos mapas de cubo. Qualidades mais altas "
+"podem consumir muito espaço no disco."
 
 #: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "Espaçamento da grade do Mapa de Cubo"
 
 #: ui/options_graphics.rml:280 ui/options_graphics.rml:402
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
@@ -1360,19 +1362,20 @@ msgstr "Nunca"
 
 #: ui/options_graphics.rml:287
 msgid "Cache on disk"
-msgstr ""
+msgstr "Cache no disco"
 
 #: ui/options_graphics.rml:288
 msgid "Always rebuild"
-msgstr ""
+msgstr "Reconstruir sempre"
 
 #: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Construir automaticamente a reflexão estática dos mapas de cubo"
 
 #: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr ""
+"Automaticamente construir/carregar/guardar as reflexões dos mapas de cubo."
 
 #: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
@@ -1393,7 +1396,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Alterar cores para criar ambientes específicos."
 
 #: ui/options_graphics.rml:313
 msgid "Heat-haze"
@@ -1433,13 +1436,16 @@ msgstr ""
 
 #: ui/options_graphics.rml:339 ui/options_graphics.rml:341
 msgid "Material system"
-msgstr ""
+msgstr "Sistema de Material"
 
 #: ui/options_graphics.rml:343
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Use um novo sistema que melhore significativamente o desempenho. Alguns "
+"drivers podem falhar com este sistema ativado (por exemplo, drivers "
+"proprietários Mesa e AMD)."
 
 #: ui/options_graphics.rml:346
 msgid "GPU frustum culling"
@@ -1511,7 +1517,7 @@ msgstr "Alcances das construções"
 
 #: ui/options_graphics.rml:378
 msgid "Models"
-msgstr ""
+msgstr "Modelos"
 
 #: ui/options_graphics.rml:386
 msgid "Motion blur"
@@ -1698,11 +1704,11 @@ msgstr "Menu de baliza:"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr ""
+msgstr "Menu de Vsays:"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
-msgstr ""
+msgstr "Menu da tática do bot:"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
@@ -1854,11 +1860,11 @@ msgstr "Humanos e alienígenas"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "Humanos (translúcidos)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "Humanos e alienígenas (translúcido)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1908,7 +1914,7 @@ msgstr ""
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr ""
+msgstr "Emoticons"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
@@ -1950,7 +1956,7 @@ msgstr "Mostrar apenas o chat da equipa"
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr ""
+msgstr "Mostrar obituários"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -2002,7 +2008,7 @@ msgstr "Interface de utilizador"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Principal"
 
 #: ui/options_ui.rml:24
 msgid "Language"
@@ -2086,19 +2092,19 @@ msgstr "Alfa:"
 
 #: ui/options_ui.rml:96
 msgid "Crosshair"
-msgstr ""
+msgstr "Mira"
 
 #: ui/options_ui.rml:100
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "ATENÇÃO: A pré-visualização só funciona no jogo."
 
 #: ui/options_ui.rml:104
 msgid "Weapon"
-msgstr ""
+msgstr "Arma"
 
 #: ui/options_ui.rml:107
 msgid "Blaster"
-msgstr ""
+msgstr "Blaster"
 
 #: ui/options_ui.rml:108
 msgid "Rifle"
@@ -2106,27 +2112,27 @@ msgstr ""
 
 #: ui/options_ui.rml:109
 msgid "Pain Saw"
-msgstr ""
+msgstr "Doloserra"
 
 #: ui/options_ui.rml:110 ui/server_setup.rml:283
 msgid "Shotgun"
-msgstr ""
+msgstr "Espingarda"
 
 #: ui/options_ui.rml:111 ui/server_setup.rml:287
 msgid "Lasgun"
-msgstr ""
+msgstr "Arma de Laser"
 
 #: ui/options_ui.rml:112 ui/server_setup.rml:291
 msgid "Mass Driver"
-msgstr ""
+msgstr "Acelerador de massa"
 
 #: ui/options_ui.rml:113 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr ""
+msgstr "Metralhadora"
 
 #: ui/options_ui.rml:114
 msgid "Flamer"
-msgstr ""
+msgstr "Lança-Chamas"
 
 #: ui/options_ui.rml:115 ui/server_setup.rml:303
 msgid "Pulse Rifle"
@@ -2134,7 +2140,7 @@ msgstr ""
 
 #: ui/options_ui.rml:116 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
-msgstr ""
+msgstr "Canhão Lúcifer"
 
 #: ui/options_ui.rml:127
 msgid "Crosshair visiblity"
@@ -2162,7 +2168,7 @@ msgstr "Pequeno"
 
 #: ui/options_ui.rml:140
 msgid "Regular"
-msgstr ""
+msgstr "Regular"
 
 #: ui/options_ui.rml:141
 msgid "Huge"
@@ -2170,47 +2176,47 @@ msgstr "Enorme"
 
 #: ui/options_ui.rml:146
 msgid "Crosshair colour"
-msgstr ""
+msgstr "Cor da Mira"
 
 #: ui/options_ui.rml:148
 msgid "Image colour"
-msgstr ""
+msgstr "Cor da imagem"
 
 #: ui/options_ui.rml:149 ui/options_ui.rml:179
 msgid "Custom colour"
-msgstr ""
+msgstr "Cor personalizada"
 
 #: ui/options_ui.rml:154
 msgid "Crosshair colours"
-msgstr ""
+msgstr "Cores da Mira"
 
 #: ui/options_ui.rml:175
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "Cor do contorno da Mira"
 
 #: ui/options_ui.rml:178
 msgid "Auto colour"
-msgstr ""
+msgstr "Cor Automática"
 
 #: ui/options_ui.rml:184
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "Escala de contorno da Mira"
 
 #: ui/options_ui.rml:186
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr ""
+msgstr "Valores negativos mudarão o contorno para dentro da mira."
 
 #: ui/options_ui.rml:189
 msgid "Scale:"
-msgstr ""
+msgstr "Escala:"
 
 #: ui/options_ui.rml:193
 msgid "Offset:"
-msgstr ""
+msgstr "Deslocamento:"
 
 #: ui/options_ui.rml:198
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "Cores do contorno da mira"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2377,7 +2383,7 @@ msgstr "Empurrar pessoas lentas para longe dos spawns."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Momento"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
@@ -2441,7 +2447,7 @@ msgstr "Multiplicador de recompensa de momento por matar construções"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Sistema de Construção"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2481,7 +2487,7 @@ msgstr ""
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Bots: Geral"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
@@ -2493,7 +2499,7 @@ msgstr "Preencher equipas até que tenham jogadores suficientes"
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "bots"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
@@ -2505,35 +2511,35 @@ msgstr "Funciona apenas para novos bots."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Humanidade"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Campo de visão"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Tempo de reação"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Comportamento"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Atacar estruturas"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Batota"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Fundos infinitos"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Ignorar momento"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"

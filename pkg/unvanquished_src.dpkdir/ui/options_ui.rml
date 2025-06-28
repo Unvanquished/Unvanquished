@@ -56,6 +56,11 @@
 					<p><translate>Show how long a match has lasted.</translate></p>
 				</row>
 				<row>
+					<h3><translate>Chat field auto-clear</translate></h3>
+					<input cvar="cg_chatAutoClear" type="checkbox" />
+					<p><translate>Clear chat field when closed.</translate></p>
+				</row>
+				<row>
 					<!-- BUG: This should be a lag-o-meter, not a ping control -->
 					<h3><translate>Show ping</translate></h3>
 					<input cvar="cg_lagometer" type="checkbox" />
