@@ -216,9 +216,8 @@ The chosen numeric values for those maximums are arbitrary, but making them grea
 than or equal to the maximum of their definitions makes sure they're not obviously low. */
 #define MAX_PARTICLE_SYSTEMS      MAX_BASEPARTICLE_SYSTEMS
 #define MAX_PARTICLE_EJECTORS     (MAX_PARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM)
-/* FIXME: Something in the game is preventing to render more than a thousand particle textures.
-#define MAX_PARTICLES             (MAX_PARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR) */
-#define MAX_PARTICLES             1024
+// MAX_PARTICLES is additionally constrained by MAX_REF_ENTITIES, defined in tr_types.h in engine
+#define MAX_PARTICLES             (MAX_PARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR)
 
 #define PARTICLES_INFINITE        -1
 #define PARTICLES_SAME_AS_INITIAL -2
