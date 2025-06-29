@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 14:59+0200\n"
+"POT-Creation-Date: 2025-06-29 18:48+0200\n"
 "PO-Revision-Date: 2025-05-12 05:13+0000\n"
 "Last-Translator: Mel420-star <roaakolyyy@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -106,7 +106,7 @@ msgid "Both teams"
 msgstr "Toutes les équipes"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:106
+#: ui/options_player.rml:107 ui/options_ui.rml:116
 msgid "Aliens"
 msgstr "Extraterrestres"
 
@@ -860,8 +860,8 @@ msgstr "degrés"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
-#: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "réinitialiser"
@@ -1155,7 +1155,7 @@ msgid "low"
 msgstr "basse"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:365
-#: ui/options_ui.rml:177
+#: ui/options_ui.rml:187
 msgid "None"
 msgstr "Aucune"
 
@@ -1391,7 +1391,7 @@ msgstr "Espacement de la grille de cubemap"
 msgid "Current:"
 msgstr "Réglage :"
 
-#: ui/options_graphics.rml:286 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:139
 msgid "Never"
 msgstr "Jamais"
 
@@ -2090,179 +2090,197 @@ msgstr "Horloge de temps de jeu"
 msgid "Show how long a match has lasted."
 msgstr "Afficher la durée d'un match."
 
-#: ui/options_ui.rml:60
+#: ui/options_ui.rml:59
+msgid "map change-persistent console input"
+msgstr ""
+
+#: ui/options_ui.rml:61
+msgid ""
+"Current console input will be restored the first time the console is opened "
+"after a new map is loaded."
+msgstr ""
+
+#: ui/options_ui.rml:64
+msgid "Chat field auto-clear"
+msgstr ""
+
+#: ui/options_ui.rml:66
+msgid "Clear chat field when closed."
+msgstr ""
+
+#: ui/options_ui.rml:70
 msgid "Show ping"
 msgstr "Montrer le ping"
 
-#: ui/options_ui.rml:62
+#: ui/options_ui.rml:72
 msgid "Time that information takes to get to the server and back."
 msgstr "Temps que l’information met à aller au serveur et à en revenir."
 
-#: ui/options_ui.rml:65
+#: ui/options_ui.rml:75
 msgid "Show movement speed"
 msgstr "Afficher la vitesse de déplacement"
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:77
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Vitesse de déplacement actuelle et maximum avec graphique."
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:80
 msgid "Show FPS"
 msgstr "Afficher les IPS"
 
-#: ui/options_ui.rml:72
+#: ui/options_ui.rml:82
 msgid "Frames per second."
 msgstr "Images par seconde."
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:85
 msgid "Console colors"
 msgstr "Couleurs de la console"
 
-#: ui/options_ui.rml:79 ui/options_ui.rml:158 ui/options_ui.rml:202
+#: ui/options_ui.rml:89 ui/options_ui.rml:168 ui/options_ui.rml:212
 msgid "Red:"
 msgstr "Rouge :"
 
-#: ui/options_ui.rml:83 ui/options_ui.rml:162 ui/options_ui.rml:206
+#: ui/options_ui.rml:93 ui/options_ui.rml:172 ui/options_ui.rml:216
 msgid "Green:"
 msgstr "Vert :"
 
-#: ui/options_ui.rml:87 ui/options_ui.rml:166 ui/options_ui.rml:210
+#: ui/options_ui.rml:97 ui/options_ui.rml:176 ui/options_ui.rml:220
 msgid "Blue:"
 msgstr "Bleu :"
 
-#: ui/options_ui.rml:91 ui/options_ui.rml:170 ui/options_ui.rml:214
+#: ui/options_ui.rml:101 ui/options_ui.rml:180 ui/options_ui.rml:224
 msgid "Alpha:"
 msgstr "Alpha :"
 
-#: ui/options_ui.rml:96
+#: ui/options_ui.rml:106
 msgid "Crosshair"
 msgstr "Réticule"
 
-#: ui/options_ui.rml:100
+#: ui/options_ui.rml:110
 msgid "WARN: Preview only works in game."
 msgstr ""
 "ATTENTION : La prévisualisation des réticules fonctionne seulement en jeu."
 
-#: ui/options_ui.rml:104
+#: ui/options_ui.rml:114
 msgid "Weapon"
 msgstr "Arme"
 
-#: ui/options_ui.rml:107
+#: ui/options_ui.rml:117
 msgid "Blaster"
 msgstr "Pistolaser"
 
-#: ui/options_ui.rml:108
+#: ui/options_ui.rml:118
 msgid "Rifle"
 msgstr "Mitraillette"
 
-#: ui/options_ui.rml:109
+#: ui/options_ui.rml:119
 msgid "Pain Saw"
 msgstr "Scie endolorissante"
 
-#: ui/options_ui.rml:110 ui/server_setup.rml:283
+#: ui/options_ui.rml:120 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr "Fusil à pompe"
 
-#: ui/options_ui.rml:111 ui/server_setup.rml:287
+#: ui/options_ui.rml:121 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr "Fusil laser"
 
-#: ui/options_ui.rml:112 ui/server_setup.rml:291
+#: ui/options_ui.rml:122 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr "Fusil électromagnétique"
 
-#: ui/options_ui.rml:113 ui/server_setup.rml:295
+#: ui/options_ui.rml:123 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr "Mitrailleuse"
 
-#: ui/options_ui.rml:114
+#: ui/options_ui.rml:124
 msgid "Flamer"
 msgstr "Lance-flammes"
 
-#: ui/options_ui.rml:115 ui/server_setup.rml:303
+#: ui/options_ui.rml:125 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr "Fusil à impulsions"
 
-#: ui/options_ui.rml:116 ui/server_setup.rml:307
+#: ui/options_ui.rml:126 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr "Canon Démoniaque"
 
-#: ui/options_ui.rml:127
+#: ui/options_ui.rml:137
 msgid "Crosshair visiblity"
 msgstr "Visibilité du réticule"
 
-#: ui/options_ui.rml:130
+#: ui/options_ui.rml:140
 msgid "Ranged weapons only"
 msgstr "Armes à distance uniquement"
 
-#: ui/options_ui.rml:131
+#: ui/options_ui.rml:141
 msgid "Always"
 msgstr "Toujours"
 
-#: ui/options_ui.rml:136
+#: ui/options_ui.rml:146
 msgid "Crosshair size"
 msgstr "Taille du réticule"
 
-#: ui/options_ui.rml:138
+#: ui/options_ui.rml:148
 msgid "Tiny"
 msgstr "Minuscule"
 
 # Cette traduction est incorrecte en contexte car non accordée
-#: ui/options_ui.rml:139
+#: ui/options_ui.rml:149
 msgid "Small"
 msgstr "Petit"
 
-#: ui/options_ui.rml:140
+#: ui/options_ui.rml:150
 msgid "Regular"
 msgstr "Normal"
 
-#: ui/options_ui.rml:141
+#: ui/options_ui.rml:151
 msgid "Huge"
 msgstr "Grand"
 
-#: ui/options_ui.rml:146
+#: ui/options_ui.rml:156
 msgid "Crosshair colour"
 msgstr "Couleur du réticule"
 
-#: ui/options_ui.rml:148
+#: ui/options_ui.rml:158
 msgid "Image colour"
 msgstr "Couleur de l’image"
 
-#: ui/options_ui.rml:149 ui/options_ui.rml:179
+#: ui/options_ui.rml:159 ui/options_ui.rml:189
 msgid "Custom colour"
 msgstr "Couleur personnalisée"
 
-#: ui/options_ui.rml:154
+#: ui/options_ui.rml:164
 msgid "Crosshair colours"
 msgstr "Couleurs du réticule"
 
-#: ui/options_ui.rml:175
+#: ui/options_ui.rml:185
 msgid "Crosshair outline colour"
 msgstr "Couleur de bordure du réticule"
 
-#: ui/options_ui.rml:178
+#: ui/options_ui.rml:188
 msgid "Auto colour"
 msgstr "Couleur automatique"
 
-#: ui/options_ui.rml:184
+#: ui/options_ui.rml:194
 msgid "Crosshair outline scale"
 msgstr "Échelle de la bordure de réticule"
 
-#: ui/options_ui.rml:186
+#: ui/options_ui.rml:196
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
 "Des valeurs négatives modifieront la bordure pour être à l’intérieur du "
 "réticule."
 
-#: ui/options_ui.rml:189
+#: ui/options_ui.rml:199
 msgid "Scale:"
 msgstr "Échelle :"
 
-#: ui/options_ui.rml:193
+#: ui/options_ui.rml:203
 msgid "Offset:"
 msgstr "Décalage :"
 
-#: ui/options_ui.rml:198
+#: ui/options_ui.rml:208
 msgid "Crosshair outline colours"
 msgstr "Couleurs de bordure du réticule"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 14:59+0200\n"
+"POT-Creation-Date: 2025-06-29 18:48+0200\n"
 "PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
@@ -104,7 +104,7 @@ msgid "Both teams"
 msgstr "இரு அணிகளும்"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:106
+#: ui/options_player.rml:107 ui/options_ui.rml:116
 msgid "Aliens"
 msgstr "வேற்றுகிரகவாசிகள்"
 
@@ -834,8 +834,8 @@ msgstr "டிகிரி"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:75
-#: ui/options_ui.rml:154 ui/options_ui.rml:184 ui/options_ui.rml:198
+#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "மீட்டமை"
@@ -1120,7 +1120,7 @@ msgid "low"
 msgstr "குறைந்த"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:365
-#: ui/options_ui.rml:177
+#: ui/options_ui.rml:187
 msgid "None"
 msgstr "எதுவுமில்லை"
 
@@ -1353,7 +1353,7 @@ msgstr "க்யூப்மேப் கட்டம் இடைவெளி"
 msgid "Current:"
 msgstr "நடப்பு:"
 
-#: ui/options_graphics.rml:286 ui/options_ui.rml:129
+#: ui/options_graphics.rml:286 ui/options_ui.rml:139
 msgid "Never"
 msgstr "ஒருபோதும்"
 
@@ -2044,175 +2044,193 @@ msgstr "விளையாட்டு நேர கடிகாரம்"
 msgid "Show how long a match has lasted."
 msgstr "ஒரு போட்டி எவ்வளவு காலம் நீடித்தது என்பதைக் காட்டு."
 
-#: ui/options_ui.rml:60
+#: ui/options_ui.rml:59
+msgid "map change-persistent console input"
+msgstr ""
+
+#: ui/options_ui.rml:61
+msgid ""
+"Current console input will be restored the first time the console is opened "
+"after a new map is loaded."
+msgstr ""
+
+#: ui/options_ui.rml:64
+msgid "Chat field auto-clear"
+msgstr ""
+
+#: ui/options_ui.rml:66
+msgid "Clear chat field when closed."
+msgstr ""
+
+#: ui/options_ui.rml:70
 msgid "Show ping"
 msgstr "பிங் காட்டு"
 
-#: ui/options_ui.rml:62
+#: ui/options_ui.rml:72
 msgid "Time that information takes to get to the server and back."
 msgstr "சேவையகத்திற்குச் செல்ல செய்தி எடுக்கும் நேரம்."
 
-#: ui/options_ui.rml:65
+#: ui/options_ui.rml:75
 msgid "Show movement speed"
 msgstr "இயக்க வேகத்தைக் காட்டு"
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:77
 msgid "Current, maximum and graph of movement-speed."
 msgstr "இயக்க-வேகத்தின் தற்போதைய, அதிகபட்ச மற்றும் வரைபடம்."
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:80
 msgid "Show FPS"
 msgstr "FPS ஐக் காட்டு"
 
-#: ui/options_ui.rml:72
+#: ui/options_ui.rml:82
 msgid "Frames per second."
 msgstr "நொடிக்கு பிரேம்கள்."
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:85
 msgid "Console colors"
 msgstr "கன்சோல் வண்ணங்கள்"
 
-#: ui/options_ui.rml:79 ui/options_ui.rml:158 ui/options_ui.rml:202
+#: ui/options_ui.rml:89 ui/options_ui.rml:168 ui/options_ui.rml:212
 msgid "Red:"
 msgstr "சிவப்பு:"
 
-#: ui/options_ui.rml:83 ui/options_ui.rml:162 ui/options_ui.rml:206
+#: ui/options_ui.rml:93 ui/options_ui.rml:172 ui/options_ui.rml:216
 msgid "Green:"
 msgstr "பச்சை:"
 
-#: ui/options_ui.rml:87 ui/options_ui.rml:166 ui/options_ui.rml:210
+#: ui/options_ui.rml:97 ui/options_ui.rml:176 ui/options_ui.rml:220
 msgid "Blue:"
 msgstr "நீலம்:"
 
-#: ui/options_ui.rml:91 ui/options_ui.rml:170 ui/options_ui.rml:214
+#: ui/options_ui.rml:101 ui/options_ui.rml:180 ui/options_ui.rml:224
 msgid "Alpha:"
 msgstr "ஆல்பா:"
 
-#: ui/options_ui.rml:96
+#: ui/options_ui.rml:106
 msgid "Crosshair"
 msgstr "குறுக்கு நாற்காலி"
 
-#: ui/options_ui.rml:100
+#: ui/options_ui.rml:110
 msgid "WARN: Preview only works in game."
 msgstr "எச்சரிக்கை: முன்னோட்டம் விளையாட்டில் மட்டுமே வேலை செய்கிறது."
 
-#: ui/options_ui.rml:104
+#: ui/options_ui.rml:114
 msgid "Weapon"
 msgstr "கருவி"
 
-#: ui/options_ui.rml:107
+#: ui/options_ui.rml:117
 msgid "Blaster"
 msgstr "பிளாச்டர்"
 
-#: ui/options_ui.rml:108
+#: ui/options_ui.rml:118
 msgid "Rifle"
 msgstr "துப்பாக்கி"
 
-#: ui/options_ui.rml:109
+#: ui/options_ui.rml:119
 msgid "Pain Saw"
 msgstr "வலி பார்த்தேன்"
 
-#: ui/options_ui.rml:110 ui/server_setup.rml:283
+#: ui/options_ui.rml:120 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr "சாட்கன்"
 
-#: ui/options_ui.rml:111 ui/server_setup.rml:287
+#: ui/options_ui.rml:121 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr "லேடி"
 
-#: ui/options_ui.rml:112 ui/server_setup.rml:291
+#: ui/options_ui.rml:122 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr "வெகுசன இயக்கி"
 
-#: ui/options_ui.rml:113 ui/server_setup.rml:295
+#: ui/options_ui.rml:123 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr "கார்தேச்"
 
-#: ui/options_ui.rml:114
+#: ui/options_ui.rml:124
 msgid "Flamer"
 msgstr "ஃபிளேமர்"
 
-#: ui/options_ui.rml:115 ui/server_setup.rml:303
+#: ui/options_ui.rml:125 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr "துடிப்பு துப்பாக்கி"
 
-#: ui/options_ui.rml:116 ui/server_setup.rml:307
+#: ui/options_ui.rml:126 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr "லூசிபர் பீரங்கி"
 
-#: ui/options_ui.rml:127
+#: ui/options_ui.rml:137
 msgid "Crosshair visiblity"
 msgstr "குறுக்கு நாற்காலி தெரிவுநிலை"
 
-#: ui/options_ui.rml:130
+#: ui/options_ui.rml:140
 msgid "Ranged weapons only"
 msgstr "வரம்பான ஆயுதங்கள் மட்டுமே"
 
-#: ui/options_ui.rml:131
+#: ui/options_ui.rml:141
 msgid "Always"
 msgstr "எப்போதும்"
 
-#: ui/options_ui.rml:136
+#: ui/options_ui.rml:146
 msgid "Crosshair size"
 msgstr "குறுக்குவழி அளவு"
 
-#: ui/options_ui.rml:138
+#: ui/options_ui.rml:148
 msgid "Tiny"
 msgstr "சிறிய"
 
-#: ui/options_ui.rml:139
+#: ui/options_ui.rml:149
 msgid "Small"
 msgstr "சிறிய"
 
-#: ui/options_ui.rml:140
+#: ui/options_ui.rml:150
 msgid "Regular"
 msgstr "வழக்கமான"
 
-#: ui/options_ui.rml:141
+#: ui/options_ui.rml:151
 msgid "Huge"
 msgstr "பெரிய"
 
-#: ui/options_ui.rml:146
+#: ui/options_ui.rml:156
 msgid "Crosshair colour"
 msgstr "குறுக்கு நாற்காலி நிறம்"
 
-#: ui/options_ui.rml:148
+#: ui/options_ui.rml:158
 msgid "Image colour"
 msgstr "பட நிறம்"
 
-#: ui/options_ui.rml:149 ui/options_ui.rml:179
+#: ui/options_ui.rml:159 ui/options_ui.rml:189
 msgid "Custom colour"
 msgstr "தனிப்பயன் நிறம்"
 
-#: ui/options_ui.rml:154
+#: ui/options_ui.rml:164
 msgid "Crosshair colours"
 msgstr "குறுக்கு நாற்காலி வண்ணங்கள்"
 
-#: ui/options_ui.rml:175
+#: ui/options_ui.rml:185
 msgid "Crosshair outline colour"
 msgstr "குறுக்கு நாற்காலி அவுட்லைன் நிறம்"
 
-#: ui/options_ui.rml:178
+#: ui/options_ui.rml:188
 msgid "Auto colour"
 msgstr "வாகன நிறம்"
 
-#: ui/options_ui.rml:184
+#: ui/options_ui.rml:194
 msgid "Crosshair outline scale"
 msgstr "குறுக்குவழி அவுட்லைன் அளவு"
 
-#: ui/options_ui.rml:186
+#: ui/options_ui.rml:196
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr "எதிர்மறை மதிப்புகள் குறுக்குவழிக்குள் இருக்க அவுட்லைனை மாற்றும்."
 
-#: ui/options_ui.rml:189
+#: ui/options_ui.rml:199
 msgid "Scale:"
 msgstr "அளவு:"
 
-#: ui/options_ui.rml:193
+#: ui/options_ui.rml:203
 msgid "Offset:"
 msgstr "ஆஃப்செட்:"
 
-#: ui/options_ui.rml:198
+#: ui/options_ui.rml:208
 msgid "Crosshair outline colours"
 msgstr "குறுக்குவழி வண்ணங்கள்"
 
