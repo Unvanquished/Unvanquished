@@ -1259,10 +1259,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	// cg_shadows is latched so we can get it once at the beginning
 	cg_shadows = Util::enum_cast<shadowingMode_t>( trap_Cvar_VariableIntegerValue( "cg_shadows" ) );
 
-	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed,idle,idle2" );
-	cgs.media.whiteShader = trap_R_RegisterShader("gfx/colors/white", RSF_DEFAULT);
-	cgs.media.outlineShader = trap_R_RegisterShader("gfx/outline", RSF_DEFAULT);
 
 	// old servers
 	cgs.gameState = gameState;
@@ -1272,9 +1269,21 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	from the BSP can't be fetched. */
 	SetMapInfo();
 
+	CG_SetMapNameFromServerinfo();
+
+	/* Always do this before loading any texture, as texture options may have
+	to be read from the map worldspawn entity before loading any texture.
+	See: https://github.com/Unvanquished/Unvanquished/pull/3312
+	And: https://github.com/DaemonEngine/Daemon/issues/1079 */
+	trap_R_LoadWorldSpawn( va( "maps/%s", cgs.mapname ) );
+
 	// Must be done before trap_UpdateScreen()
 	// or the game will crash.
 	cgs.processedSnapshotNum = serverMessageNum;
+
+	// load a few needed things before we do any screen updates
+	cgs.media.whiteShader = trap_R_RegisterShader("gfx/colors/white", RSF_DEFAULT);
+	cgs.media.outlineShader = trap_R_RegisterShader("gfx/outline", RSF_DEFAULT);
 
 	// It was too early to update screen at LOAD_START time,
 	// let's do it now.
@@ -1318,19 +1327,17 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
 
-	CG_SetMapNameFromServerinfo();
-
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
+
 	// load the new map
 	CM_LoadMap(cgs.mapname);
 
 	CG_InitMinimap();
 
-	/* Always do this before loading any texture, as texture options may have
-	to be read from the map worldspawn entity before loading any texture.
-	See: https://github.com/Unvanquished/Unvanquished/pull/3312
-	And: https://github.com/DaemonEngine/Daemon/issues/1079 */
-	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
+	// Reording this may change what is rendered before or behind.
+	// See: https://github.com/Unvanquished/Unvanquished/pull/3312#pullrequestreview-2600780502
+	// and: https://github.com/DaemonEngine/Daemon/issues/1079#issuecomment-2641851730
+	trap_R_LoadWorldData();
 
 	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
