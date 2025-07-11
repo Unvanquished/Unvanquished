@@ -202,7 +202,7 @@ static bool HandleMapVote( gentity_t* ent, team_t team, const std::string& cmd, 
 	{
 		trap_SendServerCommand(
 			ent->num(), va( "print_tr %s %s %s",
-		                    QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ),
+		                    QQ( N_( "$1$: map '$2$' could not be found on the server" ) ),
 		                    cmd.c_str(), Quote( arg ) ) );
 		return false;
 	}
@@ -277,7 +277,7 @@ static bool HandleNextMapVote( gentity_t* ent, team_t team, const std::string& c
 	{
 		trap_SendServerCommand(
 			ent->num(), va( "print_tr %s %s %s",
-		                    QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ),
+		                    QQ( N_( "$1$: map '$2$' could not be found on the server" ) ),
 		                    cmd.c_str(), Quote( arg ) ) );
 		return false;
 	}
