@@ -108,7 +108,8 @@ bool G_MapExists( const char *name )
 {
 	// Due to filesystem changes, checking whether "maps/$name.bsp" exists in the
 	// VFS is no longer the correct way to check whether a map exists
-	return trap_FindPak( va( "map-%s", name ) );
+	// Legacy paks not supported here.
+	return *name && FS::Path::BaseName( name ) == name && trap_FindPak( va( "map-%s", name ) );
 }
 
 /*
