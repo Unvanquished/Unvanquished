@@ -759,7 +759,7 @@ static void CG_RegisterGraphics()
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", RSF_DEFAULT );
 
 	cgs.media.creepShader = trap_R_RegisterShader("gfx/buildables/creep/creep", RSF_DEFAULT );
 
@@ -769,7 +769,7 @@ static void CG_RegisterGraphics()
 
 	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", RSF_2D | RSF_FITSCREEN);
+	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", RSF_DEFAULT);
 
 	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
@@ -797,7 +797,7 @@ static void CG_RegisterGraphics()
 	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
-	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", RSF_DEFAULT );
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
