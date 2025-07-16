@@ -3554,7 +3554,7 @@ void CG_InitClasses()
 
 		if ( icon )
 		{
-			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 			if ( !cg_classes[ i ].classIcon )
 			{

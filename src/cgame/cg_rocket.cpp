@@ -699,7 +699,7 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 bool CG_Rocket_LoadCursor( Str::StringRef cursorPath )
 {
-	rocketInfo.cursor = trap_R_RegisterShader( cursorPath.c_str(), (RegisterShaderFlags_t) RSF_DEFAULT );
+	rocketInfo.cursor = trap_R_RegisterShader( cursorPath.c_str(), (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 	if ( rocketInfo.cursor == 0 )
 	{
 		return false;
