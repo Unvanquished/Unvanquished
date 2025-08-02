@@ -215,10 +215,10 @@ static void CG_AddTestModel()
 
 	if ( cg.testModelBarrelEntity.hModel )
 	{
-		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, &cg.testModelEntity,
-		                        "tag_barrel" );
+		const int testModel = trap_R_AddRefEntityToScene( &cg.testModelBarrelEntity );
 
-		trap_R_AddRefEntityToScene( &cg.testModelBarrelEntity );
+		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, testModel,
+		                        "tag_barrel" );
 	}
 }
 

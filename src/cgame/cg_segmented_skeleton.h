@@ -34,7 +34,8 @@ class HumanSkeletonRotations : public SkeletonModifier
 {
 public:
 	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+	virtual void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refSkeleton_t* skeleton ) override;
+	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) override;
 
 private:
 	int torsoControlBone = -1;
@@ -46,7 +47,8 @@ class BsuitSkeletonRotations : public SkeletonModifier
 {
 public:
 	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+	virtual void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refSkeleton_t* skeleton ) override;
+	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) override;
 
 private:
 	int torsoControlBone = -1;
@@ -59,7 +61,8 @@ class SegmentedSkeletonCombiner : public SkeletonModifier
 {
 public:
 	virtual bool ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p) override;
-	virtual void Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton) override;
+	virtual void Apply(const SkeletonModifierContext& ctx, refEntity_t* ent, refSkeleton_t* skeleton) override;
+	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) override;
 
 private:
 	std::vector<int> legBoneIndices;
