@@ -1518,7 +1518,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 
 	built->s.eType = entityType_t::ET_BUILDABLE;
 	built->killedBy = ENTITYNUM_NONE;
-	built->classname = attr->entityName;
+	built->classname = BG_strdup( attr->entityName );
 	built->s.modelindex = buildable;
 	built->s.modelindex2 = attr->team;
 	built->buildableTeam = (team_t) built->s.modelindex2;

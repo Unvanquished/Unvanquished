@@ -1614,7 +1614,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 	// create a trigger with this size
 	other = G_NewEntity( NO_CBSE );
-	other->classname = S_DOOR_SENSOR;
+	other->classname = BG_strdup( S_DOOR_SENSOR );
 	VectorCopy( mins, other->r.mins );
 	VectorCopy( maxs, other->r.maxs );
 	other->parent = self;
@@ -2100,7 +2100,7 @@ static void SpawnPlatSensor( gentity_t *self )
 	// the middle trigger will be a thin trigger just
 	// above the starting position
 	sensor = G_NewEntity( NO_CBSE );
-	sensor->classname = S_PLAT_SENSOR;
+	sensor->classname = BG_strdup( S_PLAT_SENSOR );
 	sensor->touch = Touch_PlatCenterTrigger;
 	sensor->r.contents = CONTENTS_TRIGGER;
 	sensor->parent = self;

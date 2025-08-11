@@ -451,7 +451,7 @@ void G_SetUpMissile( gentity_t *m, gentity_t *parent, const vec3_t start, const 
 
 	// from attribute config file
 	m->s.weapon            = ma->number;
-	m->classname           = ma->name;
+	m->classname           = BG_strdup( ma->name );
 	m->clipmask            = ma->clipmask;
 	BG_MissileBounds( ma, m->r.mins, m->r.maxs );
 	m->s.eFlags            = ma->flags;
@@ -529,7 +529,7 @@ gentity_t *G_SpawnFire( const vec3_t origin, const vec3_t normal, gentity_t *fir
 	fire = G_NewEntity( HAS_CBSE );
 
 	// create a fire entity
-	fire->classname = "fire";
+	fire->classname = BG_strdup( "fire" );
 	fire->s.eType   = entityType_t::ET_FIRE;
 	fire->clipmask  = 0;
 

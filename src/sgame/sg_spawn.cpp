@@ -479,7 +479,7 @@ static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, g
 			Log::Warn("Entity %s uses a deprecated classtype — use the class ^5%s^* instead", etos( entity ), spawnDescription->replacement );
 		}
 	}
-	entity->classname = spawnDescription->replacement;
+	entity->classname = BG_strdup( spawnDescription->replacement );
 	return true;
 }
 
@@ -1172,11 +1172,11 @@ static void SP_worldspawn()
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
-	g_entities[ ENTITYNUM_WORLD ].classname = S_WORLDSPAWN;
+	g_entities[ ENTITYNUM_WORLD ].classname = BG_strdup( S_WORLDSPAWN );
 
 	g_entities[ ENTITYNUM_NONE ].s.number = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_NONE ].r.ownerNum = ENTITYNUM_NONE;
-	g_entities[ ENTITYNUM_NONE ].classname = "nothing";
+	g_entities[ ENTITYNUM_NONE ].classname = BG_strdup( "nothing" );
 
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "-1" );
