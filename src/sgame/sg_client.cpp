@@ -444,11 +444,11 @@ static void SpawnCorpse( gentity_t *ent )
 
 	if ( ent->client->pers.team == TEAM_HUMANS )
 	{
-		body->classname = "humanCorpse";
+		body->classname = BG_strdup( "humanCorpse" );
 	}
 	else
 	{
-		body->classname = "alienCorpse";
+		body->classname = BG_strdup( "alienCorpse" );
 	}
 
 	body->s.misc = MAX_CLIENTS;
@@ -1609,7 +1609,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->classname = S_PLAYER_CLASSNAME;
+	ent->classname = BG_strdup( S_PLAYER_CLASSNAME );
 	if ( client->noclip )
 	{
 		client->cliprcontents = CONTENTS_BODY;
@@ -1845,7 +1845,7 @@ void ClientDisconnect( int clientNum )
 	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_NOT;
 
 	G_FreeEntity(ent);
-	ent->classname = "disconnected";
+	ent->classname = BG_strdup( "disconnected" );
 	ent->client = level.clients + clientNum;
 
 	trap_SetConfigstring( CS_PLAYERS + clientNum, "" );

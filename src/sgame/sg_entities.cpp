@@ -63,7 +63,7 @@ void G_InitGentity( gentity_t *entity )
 	++entity->generation;
 	entity->inuse = true;
 	entity->enabled = true;
-	entity->classname = "noclass";
+	entity->classname = BG_strdup( "noclass" );
 	entity->s.number = entity->num();
 	entity->r.ownerNum = ENTITYNUM_NONE;
 	entity->creationTime = level.time;
@@ -193,6 +193,10 @@ void G_FreeEntity( gentity_t *entity )
 
 	delete entity->entity;
 
+	if ( entity->classname ) {
+		BG_Free( entity->classname );
+	}
+
 	unsigned generation = entity->generation;
 
 	if ( entity->id )
@@ -205,7 +209,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	entity->generation = generation + 1;
 	entity->entity = nullptr;
-	entity->classname = "freent";
+	entity->classname = BG_strdup( "freent" );
 	entity->freetime = level.time;
 	entity->inuse = false;
 }
@@ -227,7 +231,7 @@ gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 	newEntity = G_NewEntity( NO_CBSE );
 	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
-	newEntity->classname = "tempEntity";
+	newEntity->classname = BG_strdup( "tempEntity" );
 	newEntity->eventTime = level.time;
 	newEntity->freeAfterEvent = true;
 

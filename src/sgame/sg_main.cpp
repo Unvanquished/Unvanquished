@@ -589,7 +589,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	for( int i = 0; i < MAX_CLIENTS; i++ )
 	{
-		g_entities[ i ].classname = "clientslot";
+		g_entities[ i ].classname = BG_strdup( "clientslot" );
 	}
 
 	// let the server system know where the entites are
