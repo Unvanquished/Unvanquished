@@ -1010,6 +1010,27 @@ void CG_RegisterWeapon( int weaponNum )
 		Log::Warn( "failed to parse %s", path );
 	}
 
+	struct WeaponRotationBoneResolve {
+		qhandle_t& weaponModel;
+		int& boneIndex;
+		bool warn;
+	};
+
+	WeaponRotationBoneResolve rotationBoneResolves[] {
+		{ weaponInfo->weaponModel, weaponInfo->rotationBoneIndex, true },
+		{ weaponInfo->weaponModel3rdPerson, weaponInfo->rotationBoneIndex3rdPerson, false }
+	};
+
+	for ( WeaponRotationBoneResolve& rotationBoneResolve : rotationBoneResolves ) {
+		rotationBoneResolve.boneIndex = trap_R_BoneIndex( rotationBoneResolve.weaponModel, weaponInfo->rotationBone );
+
+		// Currently we don't have the rotation bones for 3rd-person weapon models, so skip the warns on those
+		if ( rotationBoneResolve.boneIndex < 0 && rotationBoneResolve.warn && weaponInfo->rotationBone[0] != '\0' ) {
+			Log::Warn( "Can't find rotation bone %s for weapon %s, using root bone",
+				weaponInfo->rotationBone, weaponInfo->humanName );
+		}
+	}
+
 	if( !weaponInfo->md5 )
 	{
 		CG_ParseWeaponAnimationFile( va( "models/weapons/%s/animation.cfg", BG_Weapon( weaponNum )->name ), weaponInfo );
@@ -1358,18 +1379,22 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 	}
 
+	int rotationBone;
 	if ( !ps )
 	{
 		gun.hModel = weapon->weaponModel3rdPerson;
+		rotationBone = weapon->rotationBoneIndex3rdPerson;
 
 		if ( !gun.hModel )
 		{
 			gun.hModel = weapon->weaponModel;
+			rotationBone = weapon->rotationBoneIndex;
 		}
 	}
 	else
 	{
 		gun.hModel = weapon->weaponModel;
+		rotationBone = weapon->rotationBoneIndex;
 	}
 
 	noGunModel = ( ( !ps || cg.renderingThirdPerson ) && weapon->disableIn3rdPerson ) || !gun.hModel;
@@ -1406,26 +1431,16 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		if ( weapon->md5 )
 		{
-
 			gun.skeleton = gunSkeleton;
 
-			if ( weapon->rotationBone[ 0 ] && ps )
+			if ( ps && rotationBone >= 0 )
 			{
-				int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
 				quat_t rotation;
 				matrix_t mat;
 				vec3_t   nBounds[ 2 ];
 
-				if ( boneIndex < 0 )
-				{
-					Log::Warn( "Cannot find bone index %s, using root bone",
-								weapon->rotationBone );
-					weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
-					boneIndex = 0;
-				}
-
 				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
-				QuatMultiply2( gun.skeleton.bones[ boneIndex ].t.rot, rotation );
+				QuatMultiply2( gun.skeleton.bones[rotationBone].t.rot, rotation );
 
 				// Update bounds to reflect rotation
 				MatrixFromAngles( mat, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
