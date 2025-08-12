@@ -33,6 +33,9 @@ Maryland 20850 USA.
 */
 
 #include "common/Common.h"
+
+#include "common/cm/cm_public.h"
+
 #include "sg_local.h"
 #include "sg_spawn.h"
 
@@ -990,47 +993,51 @@ level's entity strings into level.spawnVars[]
 This does not actually spawn an entity.
 ====================
 */
-static bool G_ParseSpawnVars()
+static bool G_ParseSpawnVars( const char** entString )
 {
-	char keyname[ MAX_TOKEN_CHARS ];
-	char com_token[ MAX_TOKEN_CHARS ];
-
 	level.numSpawnVars = 0;
 	level.numSpawnVarChars = 0;
 
+	const char* entityString = *entString;
+	const char* token;
+
 	// parse the opening brace
-	if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
+	token = COM_Parse( &entityString );
+	if ( !token || token[0] == '\0' )
 	{
 		// end of spawn string
 		return false;
 	}
 
-	if ( com_token[ 0 ] != '{' )
+	if ( token[ 0 ] != '{' )
 	{
-		Sys::Drop( "G_ParseSpawnVars: found %s when expecting {", com_token );
+		Sys::Drop( "G_ParseSpawnVars: found %s when expecting {", token );
 	}
 
 	// go through all the key / value pairs
 	while ( 1 )
 	{
 		// parse key
-		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) )
+		token = COM_Parse( &entityString );
+		if ( !token )
 		{
 			Sys::Drop( "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
-		if ( keyname[ 0 ] == '}' )
+		const std::string key { token };
+		if ( key[ 0 ] == '}' )
 		{
 			break;
 		}
 
 		// parse value
-		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
+		token = COM_Parse( &entityString );
+		if ( !token )
 		{
 			Sys::Drop( "G_ParseSpawnVars: EOF without closing brace" );
 		}
 
-		if ( com_token[ 0 ] == '}' )
+		if ( token[ 0 ] == '}' )
 		{
 			Sys::Drop( "G_ParseSpawnVars: closing brace without data" );
 		}
@@ -1040,11 +1047,12 @@ static bool G_ParseSpawnVars()
 			Sys::Drop( "G_ParseSpawnVars: MAX_SPAWN_VARS" );
 		}
 
-		level.spawnVars[ level.numSpawnVars ][ 0 ] = G_AddSpawnVarToken( keyname );
-		level.spawnVars[ level.numSpawnVars ][ 1 ] = G_AddSpawnVarToken( com_token );
+		level.spawnVars[ level.numSpawnVars ][ 0 ] = G_AddSpawnVarToken( key.c_str() );
+		level.spawnVars[ level.numSpawnVars ][ 1 ] = G_AddSpawnVarToken( token );
 		level.numSpawnVars++;
 	}
 
+	*entString = entityString;
 	return true;
 }
 
@@ -1206,7 +1214,8 @@ void G_SpawnEntitiesFromString()
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)
-	if ( !G_ParseSpawnVars() )
+	const char* entityString = CM_EntityString();
+	if ( !G_ParseSpawnVars( &entityString ) )
 	{
 		Sys::Drop( "SpawnEntities: no entities" );
 	}
@@ -1214,7 +1223,7 @@ void G_SpawnEntitiesFromString()
 	SP_worldspawn();
 
 	// parse ents
-	while ( G_ParseSpawnVars() )
+	while ( G_ParseSpawnVars( &entityString ) )
 	{
 		G_SpawnGEntityFromSpawnVars();
 	}
