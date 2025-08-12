@@ -695,6 +695,11 @@ static void CG_LightFlare( centity_t *cent )
 	flare.customShader = cgs.gameShaders[ es->modelindex ];
 	flare.shaderRGBA = Color::White;
 
+	/* This will stop the engine from spamming logs about incorrect autosprite setup if it's detected
+	We have to do this here because the engine doesn't keep track of entities,
+	so the skinNum will tell to not log autosprite issues again for this entity */
+	flare.skinNum = es->modelindex;
+
 	//flares always drawn before the rest of the scene
 	flare.renderfx |= RF_DEPTHHACK;
 
