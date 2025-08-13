@@ -61,10 +61,10 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 	Rocket_GetElementDimensions( &rect->w, &rect->h );
 
 	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	rect->x = ( rect->x / cgs.glconfig.vidWidth ) * 640;
-	rect->y = ( rect->y / cgs.glconfig.vidHeight ) * 480;
-	rect->w = ( rect->w / cgs.glconfig.vidWidth ) * 640;
-	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
+	rect->x = ( rect->x / cgs.windowConfig.vidWidth ) * 640;
+	rect->y = ( rect->y / cgs.windowConfig.vidHeight ) * 480;
+	rect->w = ( rect->w / cgs.windowConfig.vidWidth ) * 640;
+	rect->h = ( rect->h / cgs.windowConfig.vidHeight ) * 480;
 }
 
 static bool updateLanguage;
@@ -321,10 +321,10 @@ public:
 		rect.h = size.y;
 
 		// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-		rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
-		rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
-		rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
-		rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
+		rect.x = ( rect.x / cgs.windowConfig.vidWidth ) * 640;
+		rect.y = ( rect.y / cgs.windowConfig.vidHeight ) * 480;
+		rect.w = ( rect.w / cgs.windowConfig.vidWidth ) * 640;
+		rect.h = ( rect.h / cgs.windowConfig.vidHeight ) * 480;
 	}
 
 	void GetColor( const Rml::String& property, Color::Color& color )

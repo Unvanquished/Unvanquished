@@ -1237,7 +1237,7 @@ Will perform callbacks to make the loading info screen update.
 =================
 */
 
-void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState)
+void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gameState)
 {
 	const char *s;
 
@@ -1251,11 +1251,11 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_UpdateLoadingStep( LOAD_START );
 
 	// get the rendering configuration from the client system
-	cgs.glconfig = gl;
-	cgs.screenXScale = cgs.glconfig.vidWidth / 640.0f;
-	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0f;
-	cgs.aspectScale = ( ( 640.0f * cgs.glconfig.vidHeight ) /
-	( 480.0f * cgs.glconfig.vidWidth ) );
+	cgs.windowConfig = windowConfig;
+	cgs.screenXScale = cgs.windowConfig.vidWidth / 640.0f;
+	cgs.screenYScale = cgs.windowConfig.vidHeight / 480.0f;
+	cgs.aspectScale = ( ( 640.0f * cgs.windowConfig.vidHeight ) /
+	( 480.0f * cgs.windowConfig.vidWidth ) );
 	// cg_shadows is latched so we can get it once at the beginning
 	cg_shadows = Util::enum_cast<shadowingMode_t>( trap_Cvar_VariableIntegerValue( "cg_shadows" ) );
 

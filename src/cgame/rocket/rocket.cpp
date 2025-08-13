@@ -270,7 +270,7 @@ public:
 
 	void SetScissorRegion( int x, int y, int width, int height ) override
 	{
-		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
+		trap_R_ScissorSet( x, cgs.windowConfig.vidHeight - ( y + height ), width, height );
 	}
 
 	void SetTransform( const Rml::Matrix4f* matrix ) override
@@ -400,7 +400,7 @@ void Rocket_Init()
 	Rocket_InitKeys();
 
 	// Create the menu context
-	menuContext = Rml::CreateContext( "menuContext", Rml::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	menuContext = Rml::CreateContext( "menuContext", Rml::Vector2i( cgs.windowConfig.vidWidth, cgs.windowConfig.vidHeight ) );
 	// Allow this context to set the mouse cursor.
 	menuContext->EnableMouseCursor( true );
 
@@ -411,7 +411,7 @@ void Rocket_Init()
 	menuContext->GetRootElement()->AddEventListener( "load", &fm, true );
 
 	// Create the HUD context
-	hudContext = Rml::CreateContext( "hudContext", Rml::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
+	hudContext = Rml::CreateContext( "hudContext", Rml::Vector2i( cgs.windowConfig.vidWidth, cgs.windowConfig.vidHeight ) );
 	// HUDs do not get to interact with the mouse. In fact, we do not even inject mouse events.
 	hudContext->EnableMouseCursor( false );
 

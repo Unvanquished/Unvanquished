@@ -288,14 +288,14 @@ static void CG_CalcVrect()
 		size = cg_viewsize.Get();
 	}
 
-	cg.refdef.width = cgs.glconfig.vidWidth * size / 100;
+	cg.refdef.width = cgs.windowConfig.vidWidth * size / 100;
 	cg.refdef.width &= ~1;
 
-	cg.refdef.height = cgs.glconfig.vidHeight * size / 100;
+	cg.refdef.height = cgs.windowConfig.vidHeight * size / 100;
 	cg.refdef.height &= ~1;
 
-	cg.refdef.x = ( cgs.glconfig.vidWidth - cg.refdef.width ) / 2;
-	cg.refdef.y = ( cgs.glconfig.vidHeight - cg.refdef.height ) / 2;
+	cg.refdef.x = ( cgs.windowConfig.vidWidth - cg.refdef.width ) / 2;
+	cg.refdef.y = ( cgs.windowConfig.vidHeight - cg.refdef.height ) / 2;
 }
 
 //==============================================================================

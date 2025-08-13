@@ -58,8 +58,8 @@ void CG_LoadBeaconsConfig()
 	int              vw, vh, base, fd;
 	pc_token_t       token;
 
-	vw = cgs.glconfig.vidWidth;
-	vh = cgs.glconfig.vidHeight;
+	vw = cgs.windowConfig.vidWidth;
+	vh = cgs.windowConfig.vidHeight;
 	base = std::min( vw, vh );
 
 	bc->~beaconsConfig_t();
@@ -558,8 +558,8 @@ static void DrawBeacon( cbeacon_t *b )
 	}
 
 	// virtual 640x480 to real
-	b->pos[ 0 ] *= cgs.glconfig.vidWidth / 640.0;
-	b->pos[ 1 ] *= cgs.glconfig.vidHeight / 480.0;
+	b->pos[ 0 ] *= cgs.windowConfig.vidWidth / 640.0;
+	b->pos[ 1 ] *= cgs.windowConfig.vidHeight / 480.0;
 
 	// clamp to edges
 	glm::vec2 mins = VEC2GLM2( cgs.bc.hudRect[0] ) + b->size/2;
