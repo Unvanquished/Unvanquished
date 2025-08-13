@@ -80,7 +80,7 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 	else if ( w == 0 )
 	{
 		std::string displayString = Str::Format(
-			_( "Same as screen (%dx%d)" ), cgs.glconfig.displayWidth, cgs.glconfig.displayHeight );
+			_( "Same as screen (%dx%d)" ), cgs.windowConfig.displayWidth, cgs.windowConfig.displayHeight );
 		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
 	}
 	else

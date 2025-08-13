@@ -43,13 +43,13 @@ Cvar::Cvar<std::string> rocket_hudFile("rocket_hudFile", "VFS path of config fil
 
 static connstate_t oldConnState;
 
-void CG_Rocket_Init( glconfig_t gl )
+void CG_Rocket_Init( const WindowConfig& windowConfig )
 {
 	const char *token, *text_p;
 	char text[ 20000 ];
 
 	oldConnState = connstate_t::CA_UNINITIALIZED;
-	cgs.glconfig = gl;
+	cgs.windowConfig = windowConfig;
 	rocketInfo.keyCatcher = trap_Key_GetCatcher();
 
 	Trans_Init();
@@ -708,7 +708,7 @@ bool CG_Rocket_LoadCursor( Str::StringRef cursorPath )
 	int x, y;
 	trap_R_GetTextureSize( rocketInfo.cursor, &x, &y );
 	float ratio = static_cast<float>( x ) / static_cast<float>( y );
-	rocketInfo.cursor_pos.h = cgs.glconfig.vidHeight * 0.025f;
+	rocketInfo.cursor_pos.h = cgs.windowConfig.vidHeight * 0.025f;
 	rocketInfo.cursor_pos.w = rocketInfo.cursor_pos.h * ratio;
 	return true;
 }
