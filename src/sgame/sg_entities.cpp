@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "common/Common.h"
 #include "sg_local.h"
 #include "sg_entities.h"
+#include "sg_spawn.h"
 #include "CBSE.h"
 
 #include <glm/geometric.hpp>
@@ -193,15 +194,17 @@ void G_FreeEntity( gentity_t *entity )
 
 	delete entity->entity;
 
-	if ( entity->classname ) {
-		BG_Free( entity->classname );
-	}
-
 	unsigned generation = entity->generation;
 
-	if ( entity->id )
-	{
-		BG_Free( entity->id );
+	for ( const fieldDescriptor_t& field : fields ) {
+		if ( field.type == F_STRING ) {
+			char** string = ( char** ) entity + field.offset;
+
+			if ( *string ) {
+				BG_Free( *string );
+				*string = nullptr;
+			}
+		}
 	}
 
 	entity->~gentity_t();
@@ -266,11 +269,11 @@ static bool matchesName( mapEntity_t const& ent, std::string const& name )
 
 std::string etos( const gentity_t *entity )
 {
-	return Str::Format( "%s^7(^5%s^*|^5#%i^*)",
-		entity->mapEntity.names[0] ?
-			entity->mapEntity.names[0] + ' '
-			: "",
-		entity->classname, entity->num() );
+	if ( entity->mapEntity.names[0] ) {
+		return Str::Format( "%s ^7(^5%s^*|^5#%i^*)", entity->mapEntity.names[0], entity->classname, entity->num() );
+	}
+
+	return Str::Format( "^7(^5%s^*|^5#%i^*)", entity->classname, entity->num() );
 }
 
 void G_PrintEntityNameList(gentity_t *entity)
