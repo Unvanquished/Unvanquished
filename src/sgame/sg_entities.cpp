@@ -411,6 +411,15 @@ int G_IdToEntityNum( Str::StringRef id )
 	}
 }
 
+void G_GetEntityOrigin( const gentity_t* entity, vec3_t origin ) {
+	if ( !entity->r.linked ) {
+		VectorCopy( entity->s.origin, origin );
+	} else {
+		VectorAdd( entity->r.absmin, entity->r.absmax, origin );
+		VectorScale( origin, 0.5f, origin );
+	}
+}
+
 void G_RegisterEntityId( int entityNum, Str::StringRef id )
 {
 	auto it = idToEntityNumMap.find( id );
