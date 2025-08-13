@@ -305,24 +305,25 @@ struct mapEntity_t
 		}
 	}
 
-	char const* nameList() const
+	std::string GetNamesString() const
 	{
-		if ( names[0] == nullptr )
-		{
+		if ( !names[0] ) {
 			return "";
 		}
 
-		static std::string buffer;
-		buffer = names[0];
-		for ( size_t i = 1; i < MAX_ENTITY_ALIASES; ++i )
-		{
-			if ( names[i] )
-			{
-				buffer += ", ";
-				buffer += names[i];
+		std::string out;
+		out = names[0];
+
+		for ( size_t i = 1; i < MAX_ENTITY_ALIASES; ++i ) {
+			if ( !names[i] ) {
+				break;
 			}
+
+			out += ", ";
+			out += names[i];
 		}
-		return buffer.c_str();
+
+		return out;
 	}
 
 };
