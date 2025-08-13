@@ -394,6 +394,10 @@ static void G_FindEntityGroups()
 				// make sure that targets only point at the master
 				for (int k = 0; comparedEntity->mapEntity.names[k]; k++)
 				{
+					if ( masterEntity->mapEntity.names[k] ) {
+						BG_Free( masterEntity->mapEntity.names[k] );
+					}
+
 					masterEntity->mapEntity.names[k] = comparedEntity->mapEntity.names[k];
 					comparedEntity->mapEntity.names[k] = nullptr;
 				}

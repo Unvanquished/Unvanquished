@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "common/Common.h"
 #include "sg_local.h"
 #include "sg_entities.h"
+#include "sg_spawn.h"
 #include "CBSE.h"
 
 #include <glm/geometric.hpp>
@@ -193,15 +194,17 @@ void G_FreeEntity( gentity_t *entity )
 
 	delete entity->entity;
 
-	if ( entity->classname ) {
-		BG_Free( entity->classname );
-	}
-
 	unsigned generation = entity->generation;
 
-	if ( entity->id )
-	{
-		BG_Free( entity->id );
+	for ( const fieldDescriptor_t* field = fields; field < fields + fieldsSize; field++ ) {
+		if ( field->type == F_STRING ) {
+			char* string = *( char** ) ( ( byte* ) entity + field->offset );
+
+			if ( string ) {
+				BG_Free( string );
+				string = nullptr;
+			}
+		}
 	}
 
 	entity->~gentity_t();
