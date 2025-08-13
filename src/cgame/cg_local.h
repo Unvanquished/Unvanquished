@@ -1680,8 +1680,8 @@ struct buildStat_t
 struct cgs_t
 {
 	GameStateCSs gameState; // gamestate from server
-	glconfig_t  glconfig; // rendering configuration
-	float       screenXScale; // derived from glconfig
+	WindowConfig windowConfig; // window configuration
+	float       screenXScale; // derived from windowConfig
 	float       screenYScale;
 	float       aspectScale;
 
@@ -1952,7 +1952,7 @@ void       CG_BuildSpectatorString();
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 
-void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState );
+void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gameState );
 void CG_Shutdown();
 
 //
@@ -2327,7 +2327,7 @@ void CG_ApplyModelRotationToAxis( const glm::vec3 &modelRotation, vec3_t axis[ 3
 // cg_rocket.c
 //
 
-void CG_Rocket_Init( glconfig_t gl );
+void CG_Rocket_Init( const WindowConfig& windowConfig );
 void CG_Rocket_LoadHuds();
 void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();

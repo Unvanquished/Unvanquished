@@ -292,7 +292,7 @@ static void DrawDamageIndicator(DamageIndicator *di)
 	float width, height, total_width, x, y;
 	std::string text;
 
-	height = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight);
+	height = std::min(cgs.windowConfig.vidWidth, cgs.windowConfig.vidHeight);
 	height *= di->scale * DAMAGE_INDICATOR_BASE_SCALE;
 	width = height * DAMAGE_INDICATOR_ASPECT_RATIO;
 

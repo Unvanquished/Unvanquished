@@ -62,7 +62,7 @@ void Rocket_LoadDocument( const char *path )
 void Rocket_SetDocumentScale( Rml::ElementDocument& document )
 {
 	// This makes 1dp one pixel on a 1366x768 screen
-	float size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight );
+	float size = std::min( cgs.windowConfig.vidWidth, cgs.windowConfig.vidHeight );
 	float ratio = size / 768.0f;
 	document.GetContext()->SetDensityIndependentPixelRatio(ratio);
 }

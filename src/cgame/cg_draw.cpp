@@ -396,11 +396,11 @@ static void CG_Draw2D()
 				           BG_Weapon( cg.predictedPlayerState.weapon )->name );
 				return;
 		}
-		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0,
-		                       cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, shader );
+		trap_R_DrawStretchPic( ( cgs.windowConfig.vidWidth / 2 ) - ( cgs.windowConfig.vidHeight / 2 ), 0,
+		                       cgs.windowConfig.vidHeight, cgs.windowConfig.vidHeight, 0, 0, 1, 1, shader );
 		trap_R_SetColor( black );
-		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
-		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
+		trap_R_DrawStretchPic( 0, 0, ( cgs.windowConfig.vidWidth / 2 ) - ( cgs.windowConfig.vidHeight / 2 ), cgs.windowConfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
+		trap_R_DrawStretchPic( cgs.windowConfig.vidWidth - ( ( cgs.windowConfig.vidWidth / 2 ) - ( cgs.windowConfig.vidHeight / 2 ) ), 0, ( cgs.windowConfig.vidWidth / 2 ) - ( cgs.windowConfig.vidHeight / 2 ), cgs.windowConfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
 		trap_R_ClearColor();
 	}
 }

@@ -559,10 +559,10 @@ static void SelectCurrentResolution()
 		return;
 	}
 
-	int width = cgs.glconfig.vidWidth;
-	int height = cgs.glconfig.vidHeight;
+	int width = cgs.windowConfig.vidWidth;
+	int height = cgs.windowConfig.vidHeight;
 
-	if ( mode == -2 && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight )
+	if ( mode == -2 && width == cgs.windowConfig.displayWidth && height == cgs.windowConfig.displayHeight )
 	{
 		width = height = 0; // see resolution_t comment
 	}
