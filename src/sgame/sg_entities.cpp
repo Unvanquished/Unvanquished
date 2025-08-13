@@ -285,8 +285,7 @@ void G_PrintEntityNameList(gentity_t *entity)
 		return;
 	}
 
-	char const* names = entity->mapEntity.nameList();
-	Log::Notice("{ %s }", names);
+	Log::Notice( "{ %s }", entity->mapEntity.GetNamesString() );
 }
 
 /*
