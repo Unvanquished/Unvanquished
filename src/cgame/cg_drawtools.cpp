@@ -92,9 +92,9 @@ void CG_AdjustFrom640( float *x, float *y, float *w, float *h )
 #if 0
 
 	// adjust for wide screens
-	if ( cgs.glconfig.vidWidth * 480 > cgs.glconfig.vidHeight * 640 )
+	if ( cgs.windowConfig.vidWidth * 480 > cgs.windowConfig.vidHeight * 640 )
 	{
-		*x += 0.5 * ( cgs.glconfig.vidWidth - ( cgs.glconfig.vidHeight * 640 / 480 ) );
+		*x += 0.5 * ( cgs.windowConfig.vidWidth - ( cgs.windowConfig.vidHeight * 640 / 480 ) );
 	}
 
 #endif
@@ -201,7 +201,7 @@ Coordinates are 640*480 virtual values
 */
 void CG_DrawNoStretchPic( float x, float y, float width, float height, qhandle_t hShader )
 {
-	float ratio = cgs.glconfig.vidWidth / width;
+	float ratio = cgs.windowConfig.vidWidth / width;
 	x *= ratio;
 	y *= cgs.screenYScale;
 	width *= ratio;
@@ -259,7 +259,7 @@ CG_SetScissor
 void CG_SetScissor( int x, int y, int w, int h )
 {
 	//Converts the Y axis
-	trap_R_ScissorSet( x, cgs.glconfig.vidHeight - y - h, w, h );
+	trap_R_ScissorSet( x, cgs.windowConfig.vidHeight - y - h, w, h );
 }
 
 /*
@@ -313,8 +313,8 @@ void CG_TileClear()
 	int top, bottom, left, right;
 	int w, h;
 
-	w = cgs.glconfig.vidWidth;
-	h = cgs.glconfig.vidHeight;
+	w = cgs.windowConfig.vidWidth;
+	h = cgs.windowConfig.vidHeight;
 
 	if ( cg.refdef.x == 0 && cg.refdef.y == 0 &&
 	     cg.refdef.width == w && cg.refdef.height == h )

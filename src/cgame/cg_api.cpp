@@ -59,8 +59,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
             case CG_INIT:
-                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gamestate) {
-                    CG_Init(serverMessageNum, clientNum, gl, gamestate);
+                IPC::HandleMsg<CGameInitMsg>(VM::rootChannel, std::move(reader), [] (int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gamestate) {
+                    CG_Init(serverMessageNum, clientNum, windowConfig, gamestate);
                     cmdBuffer.TryFlush();
                 });
                 break;
@@ -72,8 +72,8 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 break;
 
 			case CG_ROCKET_VM_INIT:
-				IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] (glconfig_t gl) {
-					CG_Rocket_Init(gl);
+				IPC::HandleMsg<CGameRocketInitMsg>(VM::rootChannel, std::move(reader), [] (const WindowConfig& windowConfig) {
+					CG_Rocket_Init(windowConfig);
 				});
 				break;
 
