@@ -155,6 +155,8 @@ void G_RegisterEntityId( int entityNum, Str::StringRef id );
 void G_ForgetEntityId( Str::StringRef id );
 int G_IdToEntityNum( Str::StringRef id );
 
+void G_GetEntityOrigin( const gentity_t* entity, vec3_t origin );
+
 //test
 bool   G_MatchesName( gentity_t *entity, const char* name );
 bool   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
