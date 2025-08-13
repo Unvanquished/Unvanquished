@@ -235,27 +235,9 @@ int G_LocationIndex( const char *name )
 	return i;
 }
 
-/*
-=============
-VectorToString
-
-This is just a convenience function
-for printing vectors
-=============
-*/
-char *vtos( const vec3_t v )
+std::string vtos( const vec3_t v )
 {
-	static  int  index;
-	static  char str[ 8 ][ 32 ];
-	char         *s;
-
-	// use an array so that multiple vtos won't collide
-	s = str[ index ];
-	index = ( index + 1 ) & 7;
-
-	Com_sprintf( s, 32, "(%i %i %i)", ( int ) v[ 0 ], ( int ) v[ 1 ], ( int ) v[ 2 ] );
-
-	return s;
+	return Str::Format( "(%i %i %i)", ( int ) v[0], ( int ) v[1], ( int ) v[2] );
 }
 
 /*

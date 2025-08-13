@@ -302,7 +302,7 @@ void              G_KillBox( gentity_t *ent );
 void              G_KillBrushModel( gentity_t *ent, gentity_t *activator );
 void              G_TeleportPlayer( gentity_t *player, const glm::vec3 &origin, const glm::vec3 &angles, float speed );
 void              G_Sound( gentity_t *ent, soundChannel_t channel, int soundIndex );
-char              *vtos( const vec3_t v );
+std::string vtos( const vec3_t v );
 void              G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void              G_AddEvent( gentity_t *ent, int event, int eventParm );
 void              G_BroadcastEvent( int event, int eventParm, team_t team );
