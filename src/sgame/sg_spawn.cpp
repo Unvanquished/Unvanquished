@@ -162,33 +162,7 @@ bool G_SpawnVector( const char *key, const char *defaultString, vec3_t out )
 	return false;
 }
 
-//
-// fields are needed for spawning from the entity string
-//
-enum fieldType_t
-{
-  F_INT,
-  F_FLOAT,
-  F_STRING,
-  F_TARGET,
-  F_CALLTARGET,
-  F_TIME,
-  F_3D_VECTOR,
-  F_4D_VECTOR,
-  F_YAW,
-  F_SOUNDINDEX
-};
-
-struct fieldDescriptor_t
-{
-	const char  *name;
-	size_t      offset;
-	fieldType_t type;
-	int   versionState;
-	const char  *replacement;
-};
-
-static const fieldDescriptor_t fields[] =
+const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),                   F_3D_VECTOR,  ENT_V_UNCLEAR, nullptr },
 	{ "alias",               FOFS( mapEntity.names[ 2 ] ),           F_STRING,     ENT_V_UNCLEAR, nullptr },
@@ -244,6 +218,8 @@ static const fieldDescriptor_t fields[] =
 	{ "wait",                FOFS( mapEntity.config.wait ),          F_TIME,       ENT_V_UNCLEAR, nullptr },
 	{ "yaw",                 FOFS( s.angles ),                       F_YAW,        ENT_V_UNCLEAR, nullptr },
 };
+
+const uint32_t fieldsSize = ARRAY_LEN( fields );
 
 enum entityChainType_t
 {
@@ -710,7 +686,7 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 	vec4_t tmpFloatData = {};
 	variatingTime_t varTime = {0, 0};
 
-	fieldDescriptor = (fieldDescriptor_t*) bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
+	fieldDescriptor = (fieldDescriptor_t*) bsearch( key, fields, fieldsSize, sizeof( fieldDescriptor_t ), cmdcmp );
 
 	if ( !fieldDescriptor )
 	{
