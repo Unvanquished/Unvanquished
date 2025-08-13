@@ -138,7 +138,7 @@ gentity_t  *G_NewTempEntity( glm::vec3 origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
 //debug
-const char *etos( const gentity_t *entity );
+std::string etos( const gentity_t *entity );
 void       G_PrintEntityNameList( gentity_t *entity );
 
 //search, select, iterate

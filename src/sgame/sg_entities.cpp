@@ -252,20 +252,11 @@ gentity debugging
 =================================================================================
 */
 
-/*
-=============
-EntityToString
-
-Convenience function for printing entities
-=============
-*/
-//assuming MAX_GENTITIES to be 5 digits or less
-#define MAX_ETOS_LENGTH (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5)
 static bool matchesName( mapEntity_t const& ent, std::string const& name )
 {
 	for ( char const* n : ent.names )
 	{
-		if ( !Q_stricmp( name.c_str(), n ) )
+		if ( n && !Q_stricmp( name.c_str(), n ) )
 		{
 			return true;
 		}
@@ -273,37 +264,17 @@ static bool matchesName( mapEntity_t const& ent, std::string const& name )
 	return false;
 }
 
-static char const* name0( mapEntity_t const& ent )
+std::string etos( const gentity_t *entity )
 {
-	static std::string buffer;
-	if ( ent.names[0] == nullptr )
-	{
-		return "";
-	}
-	buffer = ent.names[0];
-	buffer += ' ';
-	return buffer.c_str();
-}
-
-const char *etos( const gentity_t *entity )
-{
-	static  int  index;
-	static  char str[ 4 ][ MAX_ETOS_LENGTH ];
-	char         *resultString;
-
-	if(!entity)
+	if ( !entity ) {
 		return "<NULL>";
+	}
 
-	// use an array so that multiple etos have smaller chance of colliding
-	resultString = str[ index ];
-	index = ( index + 1 ) & 3;
+	if ( entity->mapEntity.names[0] ) {
+		return Str::Format( "%s ^7(^5%s^*|^5#%i^*)", entity->mapEntity.names[0], entity->classname, entity->num() );
+	}
 
-	Com_sprintf( resultString, MAX_ETOS_LENGTH,
-			"%s^7(^5%s^*|^5#%i^*)",
-			name0( entity->mapEntity ), entity->classname, entity->num()
-			);
-
-	return resultString;
+	return Str::Format( "^7(^5%s^*|^5#%i^*)", entity->classname, entity->num() );
 }
 
 void G_PrintEntityNameList(gentity_t *entity)
