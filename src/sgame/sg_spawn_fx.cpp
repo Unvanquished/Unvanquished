@@ -106,6 +106,7 @@ void SP_sfx_speaker( gentity_t *self )
 	}
 
 	self->act = target_speaker_act;
+	self->r.svFlags |= SVF_BROADCAST_ONCE;
 
 	if ( self->mapEntity.spawnflags & 4 )
 	{
