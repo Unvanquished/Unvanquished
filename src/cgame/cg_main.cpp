@@ -1294,7 +1294,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	BG_InitUnlockackables();
 
 	CG_InitConsoleCommands();
-	trap_S_BeginRegistration();
+	trap_S_BeginRegistration( clientNum );
 
 	cg.weaponSelect = WP_NONE;
 
