@@ -39,6 +39,31 @@ Maryland 20850 USA.
  * sg_spawn.c
  */
 
+// fields are needed for spawning from the entity string
+enum fieldType_t {
+	F_INT,
+	F_FLOAT,
+	F_STRING,
+	F_TARGET,
+	F_CALLTARGET,
+	F_TIME,
+	F_3D_VECTOR,
+	F_4D_VECTOR,
+	F_YAW,
+	F_SOUNDINDEX
+};
+
+struct fieldDescriptor_t {
+	const char* name;
+	size_t offset;
+	fieldType_t type;
+	int versionState;
+	const char* replacement;
+};
+
+constexpr uint32_t fieldDescriptorCount = 53;
+extern const fieldDescriptor_t fields[fieldDescriptorCount];
+
 /** spawn string returns a temporary reference, you must CopyString() if you want to keep it */
 bool G_SpawnString( const char *key, const char *defaultString, char **out );
 bool G_SpawnBoolean( const char *key, bool defaultqboolean );

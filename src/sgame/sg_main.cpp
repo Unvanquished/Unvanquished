@@ -395,6 +395,7 @@ static void G_FindEntityGroups()
 				for (int k = 0; comparedEntity->mapEntity.names[k]; k++)
 				{
 					masterEntity->mapEntity.names[k] = comparedEntity->mapEntity.names[k];
+					BG_Free( comparedEntity->mapEntity.names[k] );
 					comparedEntity->mapEntity.names[k] = nullptr;
 				}
 			}
