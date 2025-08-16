@@ -1773,9 +1773,9 @@ static bool FindRoomForClassChangeLaterally(
 		vec3_t newOrigin)
 {
 	float max_x = fabs( (toMaxs[0]-toMins[0])
-	                  - (fromMaxs[0]-fromMins[0]) ) / 2.0f;
+	                  - (fromMaxs[0]-fromMins[0]) ) * 0.5f;
 	float max_y = fabs( (toMaxs[1]-toMins[1])
-	                  - (fromMaxs[1]-fromMins[1]) ) / 2.0f;
+	                  - (fromMaxs[1]-fromMins[1]) ) * 0.5f;
 	// this is an upper bound, hopefully as small as possible
 	// to avoid bugs like evolving on the other side of walls.
 	// ideally, it would be the correct minimal length for
@@ -1948,7 +1948,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	}
 
 	// check there are no humans nearby
-	const float AS_OVER_RT3 = ( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3;
+	const float AS_OVER_RT3 = ( ALIENSENSE_RANGE * 0.5f ) * Math::inv_sqrt3_f;
 	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
 	glm::vec3 maxs = VEC2GLM( ent->client->ps.origin ) + range;
 	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;

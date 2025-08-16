@@ -2836,7 +2836,7 @@ void SP_func_pendulum( gentity_t *self )
 
 	VectorCopy( self->s.angles, self->s.apos.trBase );
 
-	float frequency = 1.0f / ( M_PI * 2.0f ) * sqrtf( g_gravity.Get() / ( 3.0f * length ) );
+	float frequency = Math::inv_mul2_pi_f * sqrtf( g_gravity.Get() / ( 3.0f * length ) );
 	self->s.apos.trDuration = 1000 / frequency;
 	self->s.apos.trTime = self->s.apos.trDuration * phase;
 	self->s.apos.trType = trType_t::TR_SINE;

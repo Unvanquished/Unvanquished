@@ -48,7 +48,7 @@ bool EggComponent::CheckSpawnPoint(
 			maxDistance = VectorLength(spawnerMins) + VectorLength(clientMaxs);
 
 			// The fraction of the angle seperating best (0°) and worst case (45°).
-			frac = acosf(-spawnerNormal[2]) / M_PI_4;
+			frac = acosf(-spawnerNormal[2]) / Math::divpi_4_f;
 		} else {
 			// Best case: Client spawning right above egg.
 			minDistance = spawnerMaxs[2] - clientMins[2];
@@ -57,7 +57,7 @@ bool EggComponent::CheckSpawnPoint(
 			maxDistance = VectorLength(spawnerMaxs) + VectorLength(clientMins);
 
 			// The fraction of the angle seperating best (0°) and worst case (45°).
-			frac = acosf(spawnerNormal[2]) / M_PI_4;
+			frac = acosf(spawnerNormal[2]) / Math::divpi_4_f;
 		}
 
 		// The linear interpolation of min & max distance should be an upper boundary for the
