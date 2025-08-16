@@ -31,29 +31,11 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef SHARED_LUA_UTILS_H_
-#define SHARED_LUA_UTILS_H_
 
-#include "common/Common.h"
-#include "shared/bg_public.h"
 #include "shared/bg_lua.h"
 
-namespace Shared {
 namespace Lua {
 
-// Report errors
-void Report(lua_State* L, Str::StringRef place);
+void InitializeSGameGlobal( lua_State *L );
 
-// Push a vec3 onto the stack as a table.
-void PushVec3(lua_State* L, const vec3_t vec);
-
-// Convert a lua table into a vec3.
-bool CheckVec3(lua_State* L, int pos, vec3_t vec);
-
-int CreatePairsHelper(lua_State* L, std::function<int(lua_State*, size_t&)> next_funcmake);
-
-} // namespace Lua
-} // namespace Shared
-
-
-#endif  // SHARED_LUA_UTILS_H_
+}  // namespace Lua
