@@ -165,6 +165,11 @@ if (BUILDING_ANY_GAMELOGIC)
     try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
     try_flag(WARNINGS           "-Woverloaded-virtual")
     try_flag(WARNINGS           "-Wstrict-null-sentinel")
+    try_flag(WARNINGS           "-Wno-deprecated-enum-compare")
+    try_flag(WARNINGS           "-Wno-deprecated-enum-compare-conditional")
+    try_flag(WARNINGS           "-Wno-deprecated-enum-enum-conversion")
+    try_flag(WARNINGS           "-Wno-deprecated-enum-float-conversion")
+    try_flag(WARNINGS           "-Wno-nonnull")
 
     # Since OSX uses newer compilers, they complain about some of header only libs.
     # So, ignore deprecation warnings on OSX.
@@ -179,6 +184,8 @@ if (BUILDING_ANY_GAMELOGIC)
     try_flag(WARNINGS "/wd4458")  # declaration of 'XXX' hides class member
     try_flag(WARNINGS "/wd4459")  # declaration of 'XXX' hides global declaration
     try_flag(WARNINGS "/wd4701")  # potentially uninitialized local variable 'XXX' used
+    try_flag(WARNINGS "/wd5054")  # operator '+': deprecated between enumerations of different types
+    try_flag(WARNINGS "/wd5055")  # operator '==': deprecated between enumerations and floating-point types
     try_flag(WARNINGS "/wd26812") # The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'
 endif()
 
