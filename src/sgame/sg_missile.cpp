@@ -120,8 +120,8 @@ static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
 			return startMod + ( endMod - startMod ) * fract;
 
 		case MTPR_EXPONENTIAL_DECREASE:
-			// arg is half life time, ln(2) ~= 0.6931472
-			return startMod * exp( ( -0.6931472f * affectedTime ) / ( float )endTime );
+			// arg is half life time
+			return startMod * exp( ( -Math::ln2_f * affectedTime ) / ( float )endTime );
 
 		default:
 			return startMod;

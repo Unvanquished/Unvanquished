@@ -745,8 +745,8 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	for ( i = 0; i < 5; i++, yaw1 -= 15 , yaw2 += 15 )
 	{
 		//compute forward for right
-		forward[0] = cosf( DEG2RAD( yaw1 ) );
-		forward[1] = sinf( DEG2RAD( yaw1 ) );
+		forward[0] = cosf( Math::DegToRad( yaw1 ) );
+		forward[1] = sinf( Math::DegToRad( yaw1 ) );
 		//forward is already normalized
 		//try the right
 		testPoint1 = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
@@ -763,8 +763,8 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 		}
 
 		//compute forward for left
-		forward[0] = cosf( DEG2RAD( yaw2 ) );
-		forward[1] = sinf( DEG2RAD( yaw2 ) );
+		forward[0] = cosf( Math::DegToRad( yaw2 ) );
+		forward[1] = sinf( Math::DegToRad( yaw2 ) );
 		//forward is already normalized
 		//try the left
 		testPoint2 = origin + BOT_OBSTACLE_AVOID_RANGE * forward;

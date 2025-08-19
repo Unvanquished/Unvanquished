@@ -1947,7 +1947,7 @@ inline float Length2D(glm::vec3 u, float z_factor = 0.0f)
 //
 // example usage:
 //     float degreesAngle = 10.0f;
-//     if (Alignment2D(angle1, angle2) < cosf(DEG2RAD(degreesAngle)) )
+//     if (Alignment2D(angle1, angle2) < cosf(Math::DegToRad(degreesAngle)) )
 //     {
 //         // looking at the same direction
 //     }

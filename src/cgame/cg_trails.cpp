@@ -123,7 +123,7 @@ alphaRange = tb->class_->backAlpha -
 		}
 
 		i->halfWidth = ( tb->class_->frontWidth +
-		                 ( ( position / totalDistance ) * widthRange ) ) / 2.0f;
+		                 ( ( position / totalDistance ) * widthRange ) ) * 0.5f;
 		i->alpha = ( byte )( ( float ) 0xFF * ( tb->class_->frontAlpha +
 		                                        ( ( position / totalDistance ) * alphaRange ) ) * fadeAlpha );
 		VectorMA( tb->class_->frontColor, ( position / totalDistance ),

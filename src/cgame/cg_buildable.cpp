@@ -284,7 +284,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < scaleUpTime )
 		{
-			frac = sinf( 0.5f * msec / scaleUpTime * M_PI );
+			frac = sinf( 0.5f * msec / scaleUpTime * Math::pi_f );
 		}
 		else
 		{
@@ -297,7 +297,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < CREEP_SCALEDOWN_TIME )
 		{
-			frac = cosf( 0.5f * msec / CREEP_SCALEDOWN_TIME * M_PI );
+			frac = cosf( 0.5f * msec / CREEP_SCALEDOWN_TIME * Math::pi_f );
 		}
 		else
 		{
@@ -2133,7 +2133,7 @@ void CG_Buildable( centity_t *cent )
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float adjustScale = spawned ? 1.0f :
-			sinf( static_cast<float>(cg.time - es->time) / ba->buildTime * M_PI/2.0f );
+			sinf( static_cast<float>(cg.time - es->time) / ba->buildTime * Math::divpi_2_f );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )

@@ -259,7 +259,7 @@ void CG_RegisterMark( qhandle_t shader, const vec3_t origin, const vec3_t dir,
 
 	if( temporary )
 	{
-		if( CG_CullPointAndRadius( origin, M_SQRT2 * radius ) )
+		if( CG_CullPointAndRadius( origin, Math::sqrt2_f * radius ) )
 		{
 			return;
 		}

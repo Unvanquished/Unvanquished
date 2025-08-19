@@ -850,7 +850,7 @@ static bool PM_CheckPounce()
 	{
 		case WP_ALEVEL1:
 			// wallwalking (ground surface normal is off more than 45° from Z direction)
-			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acosf( pml.groundTrace.plane.normal[ 2 ] ) > M_PI_4 )
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acosf( pml.groundTrace.plane.normal[ 2 ] ) > Math::divpi_4_f )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
@@ -913,9 +913,9 @@ static bool PM_CheckPounce()
 						{
 							Log::Notice( "[PM_CheckPounce] Found trajectory angles: "
 							            "%.1f° ( %.2f, %.2f, %.2f ), %.1f° ( %.2f, %.2f, %.2f )\n",
-							            180.0f / M_PI * trajAngles[ 0 ],
+							            Math::div180_pi_f * trajAngles[ 0 ],
 							            trajDir1[ 0 ], trajDir1[ 1 ], trajDir1[ 2 ],
-							            180.0f / M_PI * trajAngles[ 1 ],
+							            Math::div180_pi_f * trajAngles[ 1 ],
 							            trajDir2[ 0 ], trajDir2[ 1 ], trajDir2[ 2 ] );
 						}
 
@@ -987,18 +987,18 @@ static bool PM_CheckPounce()
 				jumpDirection[ 2 ] = fabsf( jumpDirection[ 2 ] );
 
 				// get pitch towards ground surface
-				pitchToGround = M_PI_2 - acosf( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
+				pitchToGround = Math::divpi_2_f - acosf( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
 
 				// get pitch towards XY reference plane
-				pitchToRef = M_PI_2 - acosf( DotProduct( up, jumpDirection ) );
+				pitchToRef = Math::divpi_2_f - acosf( DotProduct( up, jumpDirection ) );
 
 				// use the advantageous pitch; allows using an upwards gradiant as a ramp
 				pitch = std::min( pitchToGround, pitchToRef );
 
 				// pitches above 45° or below LEVEL1_POUNCE_MINPITCH will result in less than the maximum jump length
-				if ( pitch > M_PI_4 )
+				if ( pitch > Math::divpi_4_f )
 				{
-					pitch = M_PI_4;
+					pitch = Math::divpi_4_f;
 				}
 				else if ( pitch < LEVEL1_POUNCE_MINPITCH )
 				{
@@ -1487,11 +1487,11 @@ static void PM_LandJetpack( bool force )
 	// allow the player to jump instead of land for some impacts
 	if ( !force )
 	{
-		if ( angle > 0.0f && angle < M_PI_4 ) // 45°
+		if ( angle > 0.0f && angle < Math::divpi_4_f ) // 45°
 		{
 			if ( pm->debugLevel > 0 )
 			{
-				Log::Notice( "[PM_LandJetpack] Landing ignored (hit surface at %.0f°)\n", RAD2DEG( angle ) );
+				Log::Notice( "[PM_LandJetpack] Landing ignored (hit surface at %.0f°)\n", Math::RadToDeg( angle ) );
 			}
 
 			return;
@@ -1504,7 +1504,7 @@ static void PM_LandJetpack( bool force )
 		{
 			Log::Notice( "[PM_LandJetpack] %sJetpack thrust stopped (hit surface at %.0f°)%s\n",
 			            Color::ToString( Color::LtOrange ),
-			            RAD2DEG( angle ),
+			            Math::RadToDeg( angle ),
 			            force ? " ^1(FORCED)" : "" );
 		}
 
@@ -1522,7 +1522,7 @@ static void PM_LandJetpack( bool force )
 		{
 			Log::Notice( "[PM_LandJetpack] %sJetpack disabled (hit surface at %.0f°)%s\n",
 			            Color::ToString( Color::Yellow ),
-			            RAD2DEG( angle ),
+			            Math::RadToDeg( angle ),
 			            force ? " ^1(FORCED)" : "" );
 		}
 
@@ -1950,7 +1950,7 @@ static void PM_ClimbMove()
 	{
 		float waterScale;
 
-		waterScale = pm->waterlevel / 3.0;
+		waterScale = pm->waterlevel * Math::inv_3_f;
 		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
 
 		if ( wishspeed > pm->ps->speed * waterScale )
@@ -2055,7 +2055,7 @@ static void PM_WalkMove()
 	{
 		float waterScale;
 
-		waterScale = pm->waterlevel / 3.0;
+		waterScale = pm->waterlevel * Math::inv_3_f;
 		waterScale = 1.0 - ( 1.0 - pm_swimScale ) * waterScale;
 
 		if ( wishspeed > pm->ps->speed * waterScale )
@@ -2603,7 +2603,7 @@ static void PM_GroundClimbTrace()
 			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
 			traceDOTsurf = Math::Clamp( traceDOTsurf, -1.f, +1.f );
-			traceANGsurf = RAD2DEG( acosf( traceDOTsurf ) );
+			traceANGsurf = Math::RadToDeg( acosf( traceDOTsurf ) );
 
 			if ( traceANGsurf > 180.0f )
 			{
@@ -2613,7 +2613,7 @@ static void PM_GroundClimbTrace()
 			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
 			traceDOTref = Math::Clamp( traceDOTref, -1.f, +1.f );
-			traceANGref = RAD2DEG( acosf( traceDOTref ) );
+			traceANGref = Math::RadToDeg( acosf( traceDOTref ) );
 
 			if ( traceANGref > 180.0f )
 			{
@@ -2623,7 +2623,7 @@ static void PM_GroundClimbTrace()
 			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
 			surfDOTref = Math::Clamp( surfDOTref, -1.f, +1.f );
-			surfANGref = RAD2DEG( acosf( surfDOTref ) );
+			surfANGref = Math::RadToDeg( acosf( surfDOTref ) );
 
 			if ( surfANGref > 180.0f )
 			{
@@ -2652,7 +2652,7 @@ static void PM_GroundClimbTrace()
 					//calculate angle between refTOtrace and refTOsurfTOtrace
 					rTtDOTrTsTt = DotProduct( refTOtrace, refTOsurfTOtrace );
 					rTtDOTrTsTt = Math::Clamp( rTtDOTrTsTt, -1.f, +1.f );
-					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acosf( rTtDOTrTsTt ) ) );
+					rTtANGrTsTt = ANGLE2SHORT( Math::RadToDeg( acosf( rTtDOTrTsTt ) ) );
 
 					if ( rTtANGrTsTt > 32768 )
 					{

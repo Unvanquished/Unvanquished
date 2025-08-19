@@ -148,7 +148,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			if( !PC_Float_Parse( fd, &angle ) )
 				break;
 
-			bc->highlightAngle = cosf( angle / 180.0 * M_PI );
+			bc->highlightAngle = cosf( angle * Math::divpi_180_f );
 		}
 		else
 			Log::Warn( "bad keyword \"%s\" in \"%s\"", token.string, path );

@@ -776,7 +776,7 @@ void CG_OffsetFirstPersonView()
 			fraction1 = 1.0f;
 		}
 
-		fraction2 = -sinf( fraction1 * M_PI_2 );
+		fraction2 = -sinf( fraction1 * Math::divpi_2_f );
 
 		VectorMA( origin, LEVEL3_FEEDBACK * fraction2, forward, origin );
 	}
@@ -1055,16 +1055,16 @@ static int CG_CalcFov()
 		}
 	}
 
-	y = cg.refdef.height / tanf( 0.5f * DEG2RAD( fov_y ) );
+	y = cg.refdef.height / tanf( 0.5f * Math::DegToRad( fov_y ) );
 	fov_x = atan2f( cg.refdef.width, y );
-	fov_x = 2.0f * RAD2DEG( fov_x );
+	fov_x = 2.0f * Math::RadToDeg( fov_x );
 
 	// warp if underwater
 	contents = CG_PointContents( cg.refdef.vieworg, -1 );
 
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
 	{
-		phase = cg.time / 1000.0f * WAVE_FREQUENCY * M_PI * 2.0f;
+		phase = cg.time / 1000.0f * WAVE_FREQUENCY * Math::mul2_pi_f;
 		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
@@ -1209,7 +1209,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		}
 		else
 		{
-			rotAngle = RAD2DEG( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = Math::RadToDeg( acosf( ( rotAngle - 1.0f ) * 0.5f ) );
 		}
 
 		CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
@@ -1236,7 +1236,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + smoothTime )
 		{
 			stLocal = 1.0f - ( ( ( cg.sList[ i ].time + smoothTime ) - cg.time ) / smoothTime );
-			sFraction = - ( cosf( stLocal * M_PI ) + 1.0f ) / 2.0f;
+			sFraction = - ( cosf( stLocal * Math::pi_f ) + 1.0f ) * 0.5f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1295,7 +1295,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.Get() )
 		{
 			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.Get() ) - cg.time ) / cg_wwSmoothTime.Get();
-			sFraction = 1.0f - ( ( cosf( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
+			sFraction = 1.0f - ( ( cosf( stLocal * Math::mul2_pi_f ) + 1.0f ) * 0.5f );
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1585,7 +1585,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 	for (i = 0; i < 3; i++)
 	{
 		// The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
-		trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
+		trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] * 0.5f * cgs.gameReverbIntensities[selectedIdx[i]]);
 	}
 }
 
@@ -1670,7 +1670,7 @@ static int CG_CalcViewValues()
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
-	cg.bobfracsin = fabs( sinf( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
+	cg.bobfracsin = fabs( sinf( ( ps->bobCycle & 127 ) / 127.0f * Math::pi_f ) );
 	cg.xyspeed = sqrtf( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
 	                    ps->velocity[ 1 ] * ps->velocity[ 1 ] );
 
@@ -1786,7 +1786,7 @@ static void CG_SetupFrustum()
 	float           xs, xc;
 	float           ang;
 
-	ang = cg.refdef.fov_x / 180 * M_PI_2;
+	ang = cg.refdef.fov_x * Math::divpi_360_f; // x ÷ 180 * (π/2) 
 	xs = sinf(ang);
 	xc = cosf(ang);
 
@@ -1796,7 +1796,7 @@ static void CG_SetupFrustum()
 	VectorScale(cg.refdef.viewaxis[0], xs, frustum[1].normal);
 	VectorMA(frustum[1].normal, -xc, cg.refdef.viewaxis[1], frustum[1].normal);
 
-	ang = cg.refdef.fov_y / 180 * M_PI_2;
+	ang = cg.refdef.fov_y * Math::divpi_360_f; // y ÷ 180 * (π/2) 
 	xs = sinf(ang);
 	xc = cosf(ang);
 
