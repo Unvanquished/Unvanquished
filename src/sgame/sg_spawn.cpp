@@ -525,8 +525,6 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 	return true;
 }
 
-static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
-
 /*
 ===============
 G_CallSpawnFunction
@@ -580,9 +578,6 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	if ( spawnedClass )
 	{ // found it
 
-		spawnedEntity->mapEntity.eclass = &entityClasses[(int) (spawnedClass-entityClassDescriptions)];
-		spawnedEntity->mapEntity.eclass->instanceCounter++;
-
 		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
 			return false; // results in freeing the entity
 
@@ -591,9 +586,8 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 
 		if ( g_debugEntities.Get() > 2 )
 		{
-			std::string count = spawnedEntity->mapEntity.eclass ? std::to_string(spawnedEntity->mapEntity.eclass->instanceCounter) : "??";
-			Log::Notice("Successfully spawned entity ^5#%i^* as ^3#%s^*th instance of ^5%s",
-			            spawnedEntity->num(), count, spawnedClass->name);
+			Log::Notice("Successfully spawned entity ^5#%i^* of class ^5%s",
+			            spawnedEntity->num(), spawnedClass->name);
 		}
 
 		/*
