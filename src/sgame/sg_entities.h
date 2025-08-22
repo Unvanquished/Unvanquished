@@ -107,7 +107,7 @@ Maryland 20850 USA.
 #define S_SENSOR_STAGE            "sensor_stage"
 
 
-
+#define SENSOR_SUPPORT_BOTH_TEAMS (-1)
 
 /**
  * after which time shall a sensor that depends on polling for sensing poll again?

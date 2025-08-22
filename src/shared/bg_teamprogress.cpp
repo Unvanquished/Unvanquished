@@ -53,7 +53,7 @@ struct unlockable_t
 // ----
 
 bool         unlockablesDataAvailable;
-team_t           unlockablesTeamKnowledge;
+int unlockablesTeamKnowledge; // bit mask of (1 << team)
 
 unlockable_t     unlockables[ NUM_UNLOCKABLES ];
 int              unlockablesMask[ NUM_TEAMS ];
@@ -220,7 +220,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 void BG_InitUnlockackables()
 {
 	unlockablesDataAvailable = false;
-	unlockablesTeamKnowledge = TEAM_NONE;
+	unlockablesTeamKnowledge = 0;
 
 	memset( unlockables, 0, sizeof( unlockables ) );
 	memset( unlockablesMask, 0, sizeof( unlockablesMask ) );
@@ -321,7 +321,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 
 #ifdef BUILD_CGAME
 			// notify client about single status change
-			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
+			if ( unlockablesTeamKnowledge == (1 << team) && unlockable->statusKnown &&
 			     unlockable->unlocked != newStatus )
 			{
 				statusChanges[ unlockableNum ] = newStatus ? 1 : -1;
@@ -353,7 +353,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 
 	// we only know the state for one team
 	unlockablesDataAvailable = true;
-	unlockablesTeamKnowledge = (team_t) team;
+	unlockablesTeamKnowledge = 1 << team;
 
 	// save mask for later use
 	unlockablesMask[ team ] = mask;
@@ -361,7 +361,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 
 int BG_UnlockablesMask( int team )
 {
-	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
+	if ( !( unlockablesTeamKnowledge & ( 1 << team ) ) )
 	{
 		Sys::Error( "BG_UnlockablesMask: Requested mask for a team with unknown unlockable status" );
 	}
@@ -578,7 +578,7 @@ void G_UpdateUnlockables()
 
 	// GAME knows about all teams
 	unlockablesDataAvailable = true;
-	unlockablesTeamKnowledge = TEAM_ALL;
+	unlockablesTeamKnowledge = ~0;
 
 	// generate masks for network transmission
 	UpdateUnlockablesMask();

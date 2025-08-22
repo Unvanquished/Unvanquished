@@ -123,7 +123,7 @@ void BuildableComponent::Think(int timeDelta) {
 					switch (entity.oldEnt->buildableTeam) {
 						case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
 						case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
-						default:          regenWait = 0;                          break;
+						case TEAM_NONE: ASSERT_UNREACHABLE();
 					}
 
 					if (regenRate && (entity.oldEnt->lastDamageTime + regenWait) < level.time) {

@@ -559,7 +559,7 @@ AINodeStatus_t BotSpawnNode( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_SUCCESS;
 		}
 		break;
-	default:
+	case TEAM_NONE:
 		break;
 	}
 

@@ -229,13 +229,11 @@ struct evolveInfo_t {
 // player teams
 enum team_t
 {
-  TEAM_ALL = -1,
   TEAM_NONE,
   TEAM_ALIENS,
   TEAM_HUMANS,
-
-  NUM_TEAMS
 };
+#define NUM_TEAMS 3
 
 //
 // config strings are a general means of communicating variable length strings
@@ -1872,7 +1870,7 @@ const emoticonData_t* BG_EmoticonAt( const char *s );
 const char *BG_TeamName( int team );
 const char *BG_TeamNamePlural( int team );
 
-team_t BG_PlayableTeamFromString( const char* s );
+team_t BG_PlayableTeamFromString( Str::StringRef s );
 
 struct dummyCmd_t
 {

@@ -2525,13 +2525,18 @@ const char *BG_TeamNamePlural( int team )
 
 // Matches a playable team i.e. humans or aliens
 // Return of TEAM_NONE means no match rather than spectator
-team_t BG_PlayableTeamFromString( const char* s )
+// See also G_TeamFromString
+team_t BG_PlayableTeamFromString( Str::StringRef s )
 {
-	if ( !Q_stricmp( s, "a" ) || !Q_stricmp( s, "aliens" ) )
+	if ( s.empty() )
+	{
+		return TEAM_NONE;
+	}
+	if ( Str::IsIPrefix( s, "aliens" ) || s == "1" )
 	{
 		return team_t::TEAM_ALIENS;
 	}
-	if ( !Q_stricmp( s, "h" ) || !Q_stricmp( s, "humans" ) )
+	if ( Str::IsIPrefix( s, "humans" ) || s == "2" )
 	{
 		return team_t::TEAM_HUMANS;
 	}

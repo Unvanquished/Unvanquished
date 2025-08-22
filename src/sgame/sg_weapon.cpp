@@ -915,7 +915,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 					buildTime *= HUMAN_BUILDDELAY_MOD;
 					break;
 
-				default:
+				case TEAM_NONE:
 					break;
 			}
 
