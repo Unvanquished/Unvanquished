@@ -4520,6 +4520,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 bool G_admin_admintest( gentity_t *ent )
 {
 	g_admin_level_t *l;
+	int namelen;
 
 	if ( !ent )
 	{
@@ -4528,13 +4529,14 @@ bool G_admin_admintest( gentity_t *ent )
 	}
 
 	l = G_admin_level( ent->client->pers.admin ? ent->client->pers.admin->level : 0 );
+	namelen = strlen( l -> name );
 
 	AP( va( "print_tr %s %s %d %s %s %s", QQ( N_("^3admintest:^* $1$^* is a level $2$ admin $3$$4$^7$5$") ),
 	        Quote( ent->client->pers.netname ),
 	        l ? l->level : 0,
-	        l ? "(" : "",
-	        l ? Quote( l->name ) : "",
-	        l ? ")" : "" ) );
+	        ( l && namelen > 0 ) ? "(" : Quote( "" ),
+	        ( l && namelen > 0 ) ? Quote( l->name ) : Quote( "" ),
+	        ( l && namelen > 0 ) ? ")" : Quote( "" ) ) );
 	return true;
 }
 

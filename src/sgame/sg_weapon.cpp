@@ -1091,7 +1091,7 @@ static void CreateNewZap( gentity_t *creator, const glm::vec3 &muzzle,
 
 		zap->effectChannel = G_NewEntity( NO_CBSE );
 		zap->effectChannel->s.eType = entityType_t::ET_LEV2_ZAP_CHAIN;
-		zap->effectChannel->classname = "lev2zapchain";
+		zap->effectChannel->classname = BG_strdup( "lev2zapchain" );
 		UpdateZapEffect( zap, muzzle );
 
 		return;

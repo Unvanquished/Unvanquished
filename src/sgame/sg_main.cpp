@@ -394,6 +394,10 @@ static void G_FindEntityGroups()
 				// make sure that targets only point at the master
 				for (int k = 0; comparedEntity->mapEntity.names[k]; k++)
 				{
+					if ( masterEntity->mapEntity.names[k] ) {
+						BG_Free( masterEntity->mapEntity.names[k] );
+					}
+
 					masterEntity->mapEntity.names[k] = comparedEntity->mapEntity.names[k];
 					comparedEntity->mapEntity.names[k] = nullptr;
 				}
@@ -589,7 +593,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	for( int i = 0; i < MAX_CLIENTS; i++ )
 	{
-		g_entities[ i ].classname = "clientslot";
+		g_entities[ i ].classname = BG_strdup( "clientslot" );
 	}
 
 	// let the server system know where the entites are

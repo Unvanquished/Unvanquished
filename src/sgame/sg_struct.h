@@ -120,7 +120,7 @@ struct gentity_t
 	// New style entity
 	Entity* entity;
 
-	const char   *classname; //used by buildables & other spawned at start of map
+	char *classname; //used by buildables & other spawned at start of map
 	mapEntity_t mapEntity; // fields only used by BSP entities (not counting layout buildables)
 
 	gclient_t *client; // nullptr if not a client

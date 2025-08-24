@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "common/Common.h"
 #include "sg_local.h"
 #include "sg_entities.h"
+#include "sg_spawn.h"
 #include "CBSE.h"
 
 #include <glm/geometric.hpp>
@@ -63,7 +64,7 @@ void G_InitGentity( gentity_t *entity )
 	++entity->generation;
 	entity->inuse = true;
 	entity->enabled = true;
-	entity->classname = "noclass";
+	entity->classname = BG_strdup( "noclass" );
 	entity->s.number = entity->num();
 	entity->r.ownerNum = ENTITYNUM_NONE;
 	entity->creationTime = level.time;
@@ -195,9 +196,15 @@ void G_FreeEntity( gentity_t *entity )
 
 	unsigned generation = entity->generation;
 
-	if ( entity->id )
-	{
-		BG_Free( entity->id );
+	for ( const fieldDescriptor_t* field = fields; field < fields + fieldsSize; field++ ) {
+		if ( field->type == F_STRING ) {
+			char* string = *( char** ) ( ( byte* ) entity + field->offset );
+
+			if ( string ) {
+				BG_Free( string );
+				string = nullptr;
+			}
+		}
 	}
 
 	entity->~gentity_t();
@@ -205,7 +212,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	entity->generation = generation + 1;
 	entity->entity = nullptr;
-	entity->classname = "freent";
+	entity->classname = BG_strdup( "freent" );
 	entity->freetime = level.time;
 	entity->inuse = false;
 }
@@ -227,7 +234,7 @@ gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 	newEntity = G_NewEntity( NO_CBSE );
 	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
-	newEntity->classname = "tempEntity";
+	newEntity->classname = BG_strdup( "tempEntity" );
 	newEntity->eventTime = level.time;
 	newEntity->freeAfterEvent = true;
 
@@ -248,20 +255,11 @@ gentity debugging
 =================================================================================
 */
 
-/*
-=============
-EntityToString
-
-Convenience function for printing entities
-=============
-*/
-//assuming MAX_GENTITIES to be 5 digits or less
-#define MAX_ETOS_LENGTH (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5)
 static bool matchesName( mapEntity_t const& ent, std::string const& name )
 {
 	for ( char const* n : ent.names )
 	{
-		if ( !Q_stricmp( name.c_str(), n ) )
+		if ( n && !Q_stricmp( name.c_str(), n ) )
 		{
 			return true;
 		}
@@ -269,37 +267,17 @@ static bool matchesName( mapEntity_t const& ent, std::string const& name )
 	return false;
 }
 
-static char const* name0( mapEntity_t const& ent )
+std::string etos( const gentity_t *entity )
 {
-	static std::string buffer;
-	if ( ent.names[0] == nullptr )
-	{
-		return "";
-	}
-	buffer = ent.names[0];
-	buffer += ' ';
-	return buffer.c_str();
-}
-
-const char *etos( const gentity_t *entity )
-{
-	static  int  index;
-	static  char str[ 4 ][ MAX_ETOS_LENGTH ];
-	char         *resultString;
-
-	if(!entity)
+	if ( !entity ) {
 		return "<NULL>";
+	}
 
-	// use an array so that multiple etos have smaller chance of colliding
-	resultString = str[ index ];
-	index = ( index + 1 ) & 3;
+	if ( entity->mapEntity.names[0] ) {
+		return Str::Format( "%s ^7(^5%s^*|^5#%i^*)", entity->mapEntity.names[0], entity->classname, entity->num() );
+	}
 
-	Com_sprintf( resultString, MAX_ETOS_LENGTH,
-			"%s^7(^5%s^*|^5#%i^*)",
-			name0( entity->mapEntity ), entity->classname, entity->num()
-			);
-
-	return resultString;
+	return Str::Format( "^7(^5%s^*|^5#%i^*)", entity->classname, entity->num() );
 }
 
 void G_PrintEntityNameList(gentity_t *entity)
@@ -310,8 +288,7 @@ void G_PrintEntityNameList(gentity_t *entity)
 		return;
 	}
 
-	char const* names = entity->mapEntity.nameList();
-	Log::Notice("{ %s }", names);
+	Log::Notice( "{ %s }", entity->mapEntity.GetNamesString() );
 }
 
 /*

@@ -169,7 +169,7 @@ namespace Beacon //this should eventually become a class
 
 		ent = G_NewEntity( NO_CBSE );
 		ent->s.eType = entityType_t::ET_BEACON;
-		ent->classname = "beacon";
+		ent->classname = BG_strdup( "beacon" );
 
 		ent->s.bc_type = type;
 		ent->s.bc_data = data;

@@ -958,6 +958,11 @@ struct weaponInfo_t
 	qhandle_t        barrelModel3rdPerson;
 	qhandle_t        flashModel3rdPerson;
 
+	int rotationBoneIndex;
+	int rotationBoneIndex3rdPerson;
+
+	bool rotationBoneAlreadyWarned;
+
 	animation_t      animations[ MAX_WEAPON_ANIMATIONS ];
 	bool         noDrift;
 
