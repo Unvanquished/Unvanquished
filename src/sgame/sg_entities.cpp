@@ -198,7 +198,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	for ( const fieldDescriptor_t* field = fields; field < fields + fieldsSize; field++ ) {
 		if ( field->type == F_STRING ) {
-			char* string = *( char** ) ( ( byte* ) entity + field->offset );
+			char* &string = *( char** ) ( ( byte* ) entity + field->offset );
 
 			if ( string ) {
 				BG_Free( string );
