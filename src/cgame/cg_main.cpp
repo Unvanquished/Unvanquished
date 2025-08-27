@@ -714,6 +714,22 @@ static void CG_RegisterReverb( int slot, const char *str )
 	cgs.gameReverbIntensities[ slot ] = intensity;
 }
 
+void CG_RegisterBinaryShaders()
+{
+	cgs.media.binaryShadersLoaded = true;
+	cgs.media.binaryAlpha1Shader = trap_R_RegisterShader("gfx/binary/alpha1", RSF_DEFAULT);
+
+	for ( int i = 0; i < NUM_BINARY_SHADERS; ++i )
+	{
+		cgs.media.binaryShaders[ i ].f1 = trap_R_RegisterShader(va("gfx/binary/%03i_F1", i), RSF_DEFAULT);
+		cgs.media.binaryShaders[ i ].f2 = trap_R_RegisterShader(va("gfx/binary/%03i_F2", i), RSF_DEFAULT);
+		cgs.media.binaryShaders[ i ].f3 = trap_R_RegisterShader(va("gfx/binary/%03i_F3", i), RSF_DEFAULT);
+		cgs.media.binaryShaders[ i ].b1 = trap_R_RegisterShader(va("gfx/binary/%03i_B1", i), RSF_DEFAULT);
+		cgs.media.binaryShaders[ i ].b2 = trap_R_RegisterShader(va("gfx/binary/%03i_B2", i), RSF_DEFAULT);
+		cgs.media.binaryShaders[ i ].b3 = trap_R_RegisterShader(va("gfx/binary/%03i_B3", i), RSF_DEFAULT);
+	}
+}
+
 /*
 =================
 CG_RegisterGraphics
@@ -840,16 +856,10 @@ static void CG_RegisterGraphics()
 	cgs.media.sphericalCone240Model = trap_R_RegisterModel( "models/generic/sphericalCone240.md3" );
 
 	cgs.media.plainColorShader = trap_R_RegisterShader("gfx/colors/plain", RSF_DEFAULT);
-	cgs.media.binaryAlpha1Shader = trap_R_RegisterShader("gfx/binary/alpha1", RSF_DEFAULT);
-
-	for ( i = 0; i < NUM_BINARY_SHADERS; ++i )
+	
+	if ( cg_rangeMarkerDrawFrontline.Get() || cg_rangeMarkerDrawIntersection.Get() )
 	{
-		cgs.media.binaryShaders[ i ].f1 = trap_R_RegisterShader(va("gfx/binary/%03i_F1", i), RSF_DEFAULT);
-		cgs.media.binaryShaders[ i ].f2 = trap_R_RegisterShader(va("gfx/binary/%03i_F2", i), RSF_DEFAULT);
-		cgs.media.binaryShaders[ i ].f3 = trap_R_RegisterShader(va("gfx/binary/%03i_F3", i), RSF_DEFAULT);
-		cgs.media.binaryShaders[ i ].b1 = trap_R_RegisterShader(va("gfx/binary/%03i_B1", i), RSF_DEFAULT);
-		cgs.media.binaryShaders[ i ].b2 = trap_R_RegisterShader(va("gfx/binary/%03i_B2", i), RSF_DEFAULT);
-		cgs.media.binaryShaders[ i ].b3 = trap_R_RegisterShader(va("gfx/binary/%03i_B3", i), RSF_DEFAULT);
+		CG_RegisterBinaryShaders();
 	}
 
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
