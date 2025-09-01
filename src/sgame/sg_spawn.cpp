@@ -819,7 +819,7 @@ level.spawnVars[], then call the class specfic spawn function
 */
 static void G_SpawnGEntityFromSpawnVars()
 {
-	int       i, j;
+	int       i;
 	gentity_t *spawningEntity;
 
 	// get the next free entity
@@ -860,14 +860,13 @@ static void G_SpawnGEntityFromSpawnVars()
 	VectorCopy( spawningEntity->s.origin, spawningEntity->s.pos.trBase );
 	VectorCopy( spawningEntity->s.origin, spawningEntity->r.currentOrigin );
 
-	// don't leave any "gaps" between multiple names
-	j = 0;
-	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
-	{
-		if (spawningEntity->mapEntity.names[i])
-			spawningEntity->mapEntity.names[j++] = spawningEntity->mapEntity.names[i];
-	}
-	spawningEntity->mapEntity.names[ j ] = nullptr;
+	// don't leave any "gaps" between multiple names or targets
+	std::stable_partition( std::begin( spawningEntity->mapEntity.names ),
+	                       std::end( spawningEntity->mapEntity.names ),
+	                       []( char *p ) { return p != nullptr; } );
+	std::stable_partition( std::begin( spawningEntity->mapEntity.targets ),
+	                       std::end( spawningEntity->mapEntity.targets ),
+	                       []( char *p ) { return p != nullptr; } );
 
 	/*
 	 * for backward compatbility, since before targets were used for calling,
@@ -878,24 +877,16 @@ static void G_SpawnGEntityFromSpawnVars()
 		for (i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
 		{
 			if (!spawningEntity->mapEntity.targets[i])
-				continue;
+				break;
 
 			spawningEntity->mapEntity.calltargets[i].event = "target";
 			spawningEntity->mapEntity.calltargets[i].eventType = ON_DEFAULT;
 			spawningEntity->mapEntity.calltargets[i].actionType = ECA_DEFAULT;
+			// TODO: free F_CALLTARGET strings; then this should be a strdup
 			spawningEntity->mapEntity.calltargets[i].name = spawningEntity->mapEntity.targets[i];
 			spawningEntity->mapEntity.callTargetCount++;
 		}
 	}
-
-	// don't leave any "gaps" between multiple targets
-	j = 0;
-	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
-	{
-		if (spawningEntity->mapEntity.targets[i])
-			spawningEntity->mapEntity.targets[j++] = spawningEntity->mapEntity.targets[i];
-	}
-	spawningEntity->mapEntity.targets[ j ] = nullptr;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
 	if ( !G_CallSpawnFunction( spawningEntity ) )
