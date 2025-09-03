@@ -2085,7 +2085,7 @@ void CG_Buildable( centity_t *cent )
 		case TEAM_ALIENS:
 			prebuildSound = cgs.media.alienBuildablePrebuild;
 			break;
-		default:
+		case TEAM_NONE:
 			ASSERT_UNREACHABLE();
 		}
 
