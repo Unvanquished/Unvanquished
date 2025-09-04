@@ -1018,8 +1018,6 @@ static void BinaryMover_reached( gentity_t *ent )
 			master->nextthink = std::max( master->nextthink, level.time + static_cast<int>( ent->mapEntity.config.wait.time ) );
 		}
 
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
-
 		// fire targets
 		if ( !ent->activator )
 		{
