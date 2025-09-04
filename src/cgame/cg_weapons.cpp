@@ -1416,9 +1416,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	// Lucifer cannon charge warning beep
 	if ( weaponNum == WP_LUCIFER_CANNON && ( cent->currentState.eFlags & EF_WARN_CHARGE ) )
 	{
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
-		                        vec3_origin, ps ? cgs.media.lCannonWarningSound :
-		                        cgs.media.lCannonWarningSound2 );
+		if ( cent->currentState.clientNum != cg.predictedPlayerState.clientNum || ps ) {
+			trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin,
+				vec3_origin, ps ? cgs.media.lCannonWarningSound :
+				cgs.media.lCannonWarningSound2 );
+		}
 	}
 
 	if ( !noGunModel )
