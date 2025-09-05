@@ -47,7 +47,6 @@ Maryland 20850 USA.
 #include "rocketProgressBar.h"
 #include "rocketDataSelect.h"
 #include "rocketConsoleTextElement.h"
-#include "rocketDataSourceSingle.h"
 #include "rocketFocusManager.h"
 #include "rocketDataSource.h"
 #include "rocketKeyBinder.h"
@@ -405,10 +404,9 @@ void Rocket_Init()
 	menuContext->EnableMouseCursor( true );
 
 	// Add the listener so we know where to give mouse/keyboard control to
-	menuContext->GetRootElement()->AddEventListener( "show", &fm, true );
-	menuContext->GetRootElement()->AddEventListener( "hide", &fm, true );
-	menuContext->GetRootElement()->AddEventListener( "close", &fm, true );
-	menuContext->GetRootElement()->AddEventListener( "load", &fm, true );
+	menuContext->GetRootElement()->AddEventListener( Rml::EventId::Show, &fm, true );
+	menuContext->GetRootElement()->AddEventListener( Rml::EventId::Hide, &fm, true );
+	menuContext->GetRootElement()->AddEventListener( Rml::EventId::Load, &fm, true );
 
 	// Create the HUD context
 	hudContext = Rml::CreateContext( "hudContext", Rml::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
@@ -420,7 +418,6 @@ void Rocket_Init()
 	RegisterElement<RocketProgressBar>( "progress" );
 	RegisterElement<RocketDataSelect>( "dataselect" );
 	RegisterElement<RocketConsoleTextElement>( "console_text" );
-	RegisterElement<RocketDataSourceSingle>( "datasource_single" );
 	RegisterElement<RocketDataSource>( "datasource" );
 	RegisterElement<RocketKeyBinder>( "keybind" );
 	RegisterElement<RocketChatField>( "chatfield" );

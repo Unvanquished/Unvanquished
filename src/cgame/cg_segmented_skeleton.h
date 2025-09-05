@@ -33,8 +33,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 class HumanSkeletonRotations : public SkeletonModifier
 {
 public:
-	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+	bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
+	void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
 
 private:
 	int torsoControlBone = -1;
@@ -45,8 +45,8 @@ private:
 class BsuitSkeletonRotations : public SkeletonModifier
 {
 public:
-	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+	bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
+	void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
 
 private:
 	int torsoControlBone = -1;
@@ -58,8 +58,8 @@ private:
 class SegmentedSkeletonCombiner : public SkeletonModifier
 {
 public:
-	virtual bool ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p) override;
-	virtual void Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton) override;
+	bool ParseConfiguration(clientInfo_t* ci, const char* token, const char** data_p) override;
+	void Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton) override;
 
 private:
 	std::vector<int> legBoneIndices;

@@ -45,7 +45,7 @@ public:
 		: Rml::ElementFormControlDataSelect( tag ), selectionInit( false ), owner( nullptr ) { }
 	~RocketDataSelect() { }
 
-	virtual void OnChildAdd( Element *child )
+	void OnChildAdd( Element *child ) override
 	{
 		ElementFormControlDataSelect::OnChildAdd( child );
 
@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	virtual void OnChildRemove( Element *child )
+	void OnChildRemove( Element *child ) override
 	{
 		ElementFormControlDataSelect::OnChildRemove( child );
 
@@ -69,7 +69,7 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
 		ElementFormControlDataSelect::OnAttributeChange( changed_attributes );
 		auto it = changed_attributes.find( "source" );
@@ -82,7 +82,7 @@ public:
 		}
 	}
 
-	virtual void ProcessEvent( Rml::Event &event )
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		extern std::queue< RocketEvent_t * > eventQueue;
 

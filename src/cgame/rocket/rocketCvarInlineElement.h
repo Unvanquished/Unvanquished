@@ -49,7 +49,7 @@ public:
 	    STRING
 	};
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes& changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		Rml::Element::OnAttributeChange( changed_attributes );
 
@@ -81,7 +81,7 @@ public:
 		}
 	}
 
-	virtual void OnUpdate()
+	void OnUpdate() override
 	{
 		Rml::String value;
 		bool modified = false;

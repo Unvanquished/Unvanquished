@@ -43,7 +43,7 @@ class RocketConditionalElement : public Rml::Element
 public:
 	RocketConditionalElement( const std::string &tag ) : Rml::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
 		Rml::Element::OnAttributeChange( changed_attributes );
 		Rml::ElementAttributes::const_iterator it;
@@ -88,7 +88,7 @@ public:
 		}
 	}
 
-	virtual void OnUpdate()
+	void OnUpdate() override
 	{
 		Rml::String value;
 		bool modified = false;

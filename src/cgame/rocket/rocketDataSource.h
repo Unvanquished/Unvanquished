@@ -62,7 +62,7 @@ public:
 		dirty_query = true;
 	}
 
-	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
 		Rml::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
@@ -84,28 +84,28 @@ public:
 		}
 	}
 
-	void OnRowAdd( Rml::DataSource*, const Rml::String&, int, int )
+	void OnRowAdd( Rml::DataSource*, const Rml::String&, int, int ) override
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rml::DataSource*, const Rml::String&, int, int )
+	void OnRowChange( Rml::DataSource*, const Rml::String&, int, int ) override
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rml::DataSource*, const Rml::String& )
+	void OnRowChange( Rml::DataSource*, const Rml::String& ) override
 	{
 		dirty_query = true;
 	}
 
-	void OnRowRemove( Rml::DataSource*, const Rml::String&, int, int )
+	void OnRowRemove( Rml::DataSource*, const Rml::String&, int, int ) override
 	{
 		dirty_query = true;
 	}
 
 
-	void OnUpdate()
+	void OnUpdate() override
 	{
 		if ( dirty_query )
 		{
@@ -158,7 +158,7 @@ public:
 		}
 	}
 
-	virtual void ProcessDefaultAction( Rml::Event &event )
+	void ProcessDefaultAction( Rml::Event &event ) override
 	{
 		Element::ProcessDefaultAction( event );
 		if ( event == "mouseover" )

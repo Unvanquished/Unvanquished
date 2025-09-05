@@ -124,30 +124,5 @@ public:
 
 		}
 	}
-
-private:
-	// Checks if parents are visible as well
-	bool IsTreeVisible( Rml::Element *element )
-	{
-		if ( element && element->IsVisible() )
-		{
-			Rml::Element *parent = element;
-
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( !parent->IsVisible() )
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		else
-		{
-			return false;
-		}
-	}
 };
 #endif

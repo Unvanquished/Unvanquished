@@ -1602,7 +1602,7 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const c
 
 	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
-	if ( cmd && cmd->sort )
+	if ( cmd )
 	{
 		cmd->sort( name, sortBy );
 	}
@@ -1614,7 +1614,7 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, in
 
 	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
-	if ( cmd && cmd->set )
+	if ( cmd )
 	{
 		cmd->set( table, index );
 	}
@@ -1626,7 +1626,7 @@ void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, cons
 
 	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
-	if ( cmd && cmd->filter )
+	if ( cmd )
 	{
 		cmd->filter( table, filter );
 	}
@@ -1638,7 +1638,7 @@ void CG_Rocket_ExecDataSource( const char *dataSource, const char *table )
 
 	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
-	if ( cmd && cmd->exec )
+	if ( cmd )
 	{
 		cmd->exec( table );
 	}
@@ -1650,7 +1650,7 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table )
 
 	cmd = ( dataSourceCmd_t * ) bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
-	if ( cmd && cmd->get )
+	if ( cmd )
 	{
 		return cmd->get( table );
 	}
