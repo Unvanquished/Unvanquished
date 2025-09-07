@@ -13,6 +13,11 @@ REPLACEMENTS = [
         r'\1"{version}"'
     ),
     (
+        "daemon/src/common/Defs.h",
+        r'(#define\s+PRODUCT_YEAR\s+)".+"',
+        r'\1"{year}"'
+    ),
+    (
         "macosx/Info.plist",
         r"(<key>CFBundleVersion</key>\s*)<string>[^<]+</string>",
         r"\1<string>{version}</string>"
@@ -39,14 +44,19 @@ MAJOR_REPLACEMENTS = [
 ]
 
 import argparse
+import datetime
 import difflib
 import os
 import re
 
 
-def update_version(version, majorness, dry_run):
+def update_version(version, year, majorness, dry_run):
     changes = {} # filename -> [original content, new content]
     root = os.path.dirname(__file__)
+
+    if not year:
+        year = datetime.date.today().year
+
     replacements = {
         "minor": REPLACEMENTS,
         "major": REPLACEMENTS + MAJOR_REPLACEMENTS,
@@ -61,7 +71,7 @@ def update_version(version, majorness, dry_run):
         if not re.search(pattern, changes[filename][1]):
             raise Exception("Replacement for %s matched nothing" % filename)
         changes[filename][1] = re.sub(
-            pattern, replacement.format(version=version), changes[filename][1])
+            pattern, replacement.format(version=version, year=year), changes[filename][1])
 
     if dry_run:
         for filename, (old, new) in changes.items():
@@ -80,5 +90,6 @@ if __name__ == "__main__":
     parser.add_argument("version")
     parser.add_argument("minorOrMajor", choices=["minor", "major"])
     parser.add_argument("-d", "--dry-run", action="store_true", help="Show diffs instead of writing files")
+    parser.add_argument("-Y", "--year", default=None, help="Year to use instead of current year")
     args = parser.parse_args()
-    update_version(args.version, args.minorOrMajor, args.dry_run)
+    update_version(args.version, args.year, args.minorOrMajor, args.dry_run)
