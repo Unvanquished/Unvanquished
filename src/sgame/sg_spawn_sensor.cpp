@@ -134,7 +134,7 @@ static void trigger_multiple_touch( gentity_t *self, gentity_t *other )
 
 static void trigger_multiple_compat_reset( gentity_t *self )
 {
-	if (!!( self->mapEntity.spawnflags & 1 ) != !!( self->mapEntity.spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
+	if (!!( self->mapEntity.spawnflags & 1 ) != !!( self->mapEntity.spawnflags & 2 )) //if both are set or none are set we assume all teams
 	{
 		if ( self->mapEntity.spawnflags & 1 )
 			self->mapEntity.conditions.team = TEAM_HUMANS;
@@ -562,7 +562,7 @@ static void sensor_support_think( gentity_t *self )
 
 	bool powered;
 
-	switch (self->mapEntity.conditions.team) {
+	switch ( static_cast<int>( self->mapEntity.conditions.team ) ) {
 		case TEAM_HUMANS:
 			powered = (G_ActiveReactor() != nullptr);
 			break;
@@ -571,7 +571,7 @@ static void sensor_support_think( gentity_t *self )
 			powered = (G_ActiveOvermind() != nullptr);
 			break;
 
-		case TEAM_ALL:
+		case SENSOR_SUPPORT_BOTH_TEAMS:
 			powered = (G_ActiveReactor() != nullptr && G_ActiveOvermind() != nullptr);
 			break;
 

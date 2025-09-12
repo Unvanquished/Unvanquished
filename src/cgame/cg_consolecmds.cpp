@@ -117,9 +117,7 @@ static void CG_ClientList_f()
 				            ci->name );
 				break;
 
-			default:
 			case TEAM_NONE:
-			case NUM_TEAMS:
 				Log::Notice( "%2d S   %s", i, ci->name );
 				break;
 		}

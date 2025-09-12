@@ -275,7 +275,7 @@ void              G_RegisterCommands();
 void              G_UnregisterCommands();
 
 // sg_team.c
-team_t            G_TeamFromString( const char *str );
+bool              G_TeamFromString( const char *str, team_t &team );
 void              G_TeamCommand( team_t team, const char *cmd );
 void              G_AreaTeamCommand( const gentity_t *ent, const char *cmd );
 team_t            G_Team( const gentity_t *ent );
