@@ -849,16 +849,12 @@ bool G_admin_permission( gentity_t *ent, const char *flag )
 	return false;
 }
 
-bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
+bool G_admin_name_check( gentity_t *ent, const std::string name, std::string& err )
 {
-	int             i;
-	gclient_t       *client;
-	char            testName[ MAX_NAME_LENGTH ] = { "" };
-	char            name2[ MAX_NAME_LENGTH ] = { "" };
-	g_admin_admin_t *admin;
-	int             alphaCount = 0;
+	char testName[ MAX_NAME_LENGTH ] = { "" };
+	char name2[ MAX_NAME_LENGTH ] = { "" };
 
-	G_SanitiseString( name, name2, sizeof( name2 ) );
+	G_SanitiseString( name.c_str(), name2, sizeof( name2 ) );
 
 	if ( !Q_stricmp( name2, UNNAMED_PLAYER ) )
 	{
@@ -867,27 +863,22 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 
 	if ( !strcmp( name2, "console" ) )
 	{
-		if ( err && len > 0 )
-		{
-			Q_strncpyz( err, N_("This name is not allowed:"), len );
-		}
+		err = N_( "This name is not allowed:" );
 
 		return false;
 	}
 
-	Color::StripColors( name, testName, sizeof( testName ) );
+	Color::StripColors( name.c_str(), testName, sizeof(testName));
 
 	if ( Str::cisdigit( testName[ 0 ] ) )
 	{
-		if ( err && len > 0 )
-		{
-			Q_strncpyz( err, N_("Names cannot begin with numbers:"), len );
-		}
+		err = N_( "Names cannot begin with numbers:" );
 
 		return false;
 	}
 
-	for ( i = 0; testName[ i ]; )
+	int alphaCount = 0;
+	for ( int i = 0; testName[ i ]; )
 	{
 		int cp = Q_UTF8_CodePoint( testName + i );
 
@@ -901,17 +892,14 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 
 	if ( alphaCount == 0 )
 	{
-		if ( err && len > 0 )
-		{
-			Q_strncpyz( err, N_("Names must contain letters:"), len );
-		}
+		err = N_( "Names must contain letters:" );
 
 		return false;
 	}
 
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		client = &level.clients[ i ];
+		gclient_t* client = &level.clients[ i ];
 
 		if ( client->pers.connected == CON_DISCONNECTED )
 		{
@@ -928,16 +916,13 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 
 		if ( !strcmp( name2, testName ) )
 		{
-			if ( err && len > 0 )
-			{
-				Q_strncpyz( err, N_("This name is already in use:"), len );
-			}
+			err = N_( "This name is already in use" );
 
 			return false;
 		}
 	}
 
-	for ( admin = g_admin_admins; admin; admin = admin->next )
+	for ( g_admin_admin_t* admin = g_admin_admins; admin; admin = admin->next )
 	{
 		if ( admin->level < 1 )
 		{
@@ -948,11 +933,7 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 
 		if ( !strcmp( name2, testName ) && ent->client->pers.admin != admin )
 		{
-			if ( err && len > 0 )
-			{
-				Q_strncpyz( err, N_("Please use another name. This name "
-								       "belongs to an admin:"), len );
-			}
+			err = N_( "Please use another name. This name belongs to an admin:" );
 
 			return false;
 		}
@@ -1692,16 +1673,13 @@ void G_admin_duration( int secs, char *time, int timesize, char *duration, int d
 }
 
 static void G_admin_ban_message(
-  gentity_t     *ent,
-  g_admin_ban_t *ban,
-  char          *creason,
-  int           clen,
-  char          *areason,
-  int           alen )
+	gentity_t     *ent,
+	g_admin_ban_t *ban,
+	char          *creason,
+	int           clen,
+	char          *areason,
+	int           alen )
 {
-	char userinfo[ MAX_INFO_STRING ];
-	char name[ MAX_NAME_LENGTH ];
-
 	if ( creason )
 	{
 		char  duration[ MAX_DURATION_LENGTH ];
@@ -1718,17 +1696,18 @@ static void G_admin_ban_message(
 
 	if ( areason && ent )
 	{
-		trap_GetUserinfo( ent->num(), userinfo, sizeof( userinfo ) );
+		InfoMap userinfo = InfoStringToMap( trap_GetUserinfo( ent->num() ) );
 
-		const char *s = Info_ValueForKey( userinfo, "name" );
+		const std::string s = userinfo["name"];
 
-		G_ClientCleanName( s, name, sizeof( name ), nullptr );
+		char name[MAX_NAME_LENGTH];
+		G_ClientCleanName( s.c_str(), name, sizeof(name), nullptr );
 
 		Com_sprintf( areason, alen,
 		             "^3Banned player ^*%s^3 tried to connect from %s (ban #%d)",
 		             ( !Q_stricmp( name, ban->name )
 		               ? ban->name
-		               : va( "%s ^3(a.k.a. ^*%s^3)", name, ban->name ) ),
+		               : Str::Format( "%s ^3(a.k.a. ^*%s^3)", name, ban->name ) ),
 		             ent->client->pers.ip.str,
 		             ban->id );
 	}
@@ -4660,40 +4639,37 @@ bool G_admin_spec999( gentity_t *ent )
 
 bool G_admin_rename( gentity_t *ent )
 {
-	int       pid;
-	char      name[ MAX_NAME_LENGTH ];
-	char      newname[ MAX_NAME_LENGTH ];
-	char      err[ MAX_STRING_CHARS ];
-	char      userinfo[ MAX_INFO_STRING ];
-	gentity_t *victim = nullptr;
-
 	if ( trap_Argc() < 3 )
 	{
 		ADMP( QQ( N_("^3rename:^* usage: rename [name] [newname]") ) );
 		return false;
 	}
 
+	char name[MAX_NAME_LENGTH];
 	trap_Argv( 1, name, sizeof( name ) );
-	Q_strncpyz( newname, ConcatArgs( 2 ), sizeof( newname ) );
+	std::string newname = ConcatArgs( 2 );
 
+	int pid;
+	char err[MAX_STRING_CHARS];
 	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
 	{
-		ADMP( va( "%s %s %s %s", QQ( "^3$1$: $2t$ $3$" ), "rename", Quote( err ), Quote( name ) ) );
+		ADMP( Str::Format( "%s %s %s %s", QQ( "^3$1$: $2t$ $3$" ), "rename", Quote( err ), Quote( name ) ) );
 		return false;
 	}
 
-	victim = &g_entities[ pid ];
+	gentity_t* victim = &g_entities[ pid ];
 
 	if ( !admin_higher( ent, victim ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
+		ADMP( Str::Format( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
 		          " level than you") ), "rename" ) );
 		return false;
 	}
 
-	if ( !G_admin_name_check( victim, newname, err, sizeof( err ) ) )
+	std::string err2;
+	if ( !G_admin_name_check( victim, newname, err2 ) )
 	{
-		ADMP( va( "%s %s %s %s", QQ( "^3$1$:^* $2t$ $3$" ), "rename", Quote( err ), Quote( name ) ) );
+		ADMP( Str::Format( "%s %s %s %s", QQ( "^3$1$:^* $2t$ $3$" ), "rename", Quote( err2 ), Quote( name ) ) );
 		return false;
 	}
 
@@ -4703,15 +4679,19 @@ bool G_admin_rename( gentity_t *ent )
 		return false;
 	}
 
-	admin_log( va( "%d (%s) \"%s^7\"", pid,
-	               victim->client->pers.guid, victim->client->pers.netname ) );
-	admin_log( newname );
-	trap_GetUserinfo( pid, userinfo, sizeof( userinfo ) );
+	admin_log( Str::Format( "%d (%s) \"%s^7\"", pid,
+	               victim->client->pers.guid, victim->client->pers.netname ).c_str() );
+
+	admin_log( newname.c_str() );
+
+	InfoMap userinfo = InfoStringToMap( trap_GetUserinfo( pid ) );
 	G_admin_action( QQ( N_("^3rename:^* $2$^* has been renamed to $3$^* by $1$") ),
 	                "%s %s %s", ent, Quote( victim->client->pers.netname ), Quote( newname ) );
-	Info_SetValueForKey( userinfo, "name", newname, false );
-	trap_SetUserinfo( pid, userinfo );
+
+	userinfo["name"] = newname;
+	trap_SetUserinfo( pid, InfoMapToString( userinfo ) );
 	ClientUserinfoChanged( pid, true );
+
 	return true;
 }
 

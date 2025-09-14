@@ -692,40 +692,27 @@ static void Svcmd_EjectClient_f()
 
 static void Svcmd_DumpUser_f()
 {
-	char       name[ MAX_STRING_CHARS ], userinfo[ MAX_INFO_STRING ];
-	char       key[ BIG_INFO_KEY ], value[ BIG_INFO_VALUE ];
-	const char *info;
-	gclient_t  *cl;
-
 	if ( trap_Argc() != 2 )
 	{
 		Log::Notice( "usage: dumpuser <player>" );
 		return;
 	}
 
+	char name[MAX_STRING_CHARS];
 	trap_Argv( 1, name, sizeof( name ) );
-	cl = ClientForString( name );
+	gclient_t * cl = ClientForString( name );
 
 	if ( !cl )
 	{
 		return;
 	}
 
-	trap_GetUserinfo( cl->num(), userinfo, sizeof( userinfo ) );
-	info = &userinfo[ 0 ];
+	InfoMap userinfo = InfoStringToMap( trap_GetUserinfo( cl->num() ) );
+
 	Log::Notice( "userinfo--------" );
 
-	//Info_Print( userinfo );
-	while ( 1 )
-	{
-		Info_NextPair( &info, key, value );
-
-		if ( !*info )
-		{
-			return;
-		}
-
-		Log::Notice( "%-20s%s", key, value );
+	for ( std::pair<const std::string, const std::string> pair : userinfo ) {
+		Log::Notice( "%-20s%s", pair.first, pair.second );
 	}
 }
 

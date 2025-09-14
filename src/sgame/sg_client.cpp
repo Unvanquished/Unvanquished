@@ -795,91 +795,88 @@ if desired.
 const char *ClientUserinfoChanged( int clientNum, bool forceName )
 {
 	gentity_t *ent;
-	const char      *s;
 	char      model[ MAX_QPATH ];
 	char      buffer[ MAX_QPATH ];
-	char      oldname[ MAX_NAME_LENGTH ];
-	char      newname[ MAX_NAME_LENGTH ];
-	char      err[ MAX_STRING_CHARS ];
 	bool  revertName = false;
 	gclient_t *client;
-	char      userinfo[ MAX_INFO_STRING ];
 
 	ent = g_entities + clientNum;
 	client = ent->client;
 
-	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+	InfoMap userinfo = InfoStringToMap( trap_GetUserinfo( clientNum ) );
 
-	// check for malformed or illegal info strings
-	if ( !Info_Validate( userinfo ) )
-	{
-		trap_SendServerCommand( ent->num(),
-		                        "disconnect \"illegal or malformed userinfo\"" );
-		trap_DropClient( ent->num(),
-		                 "dropped: illegal or malformed userinfo" );
-		return "Illegal or malformed userinfo";
-	}
 	// If their userinfo overflowed, tremded is in the process of disconnecting them.
 	// If we send our own disconnect, it won't work, so just return to prevent crashes later
 	//  in this function. This check must come after the Info_Validate call.
-	else if ( !userinfo[ 0 ] )
+	if ( userinfo.empty() )
 	{
-		return "Empty (overflowed) userinfo";
+		return "Empty userinfo";
 	}
 
 	// stickyspec toggle
-	s = Info_ValueForKey( userinfo, "cg_stickySpec" );
-	client->pers.stickySpec = atoi( s ) != 0;
+	std::string value = userinfo["cg_stickySpec"];
+	client->pers.stickySpec = atoi( value.c_str() ) != 0;
 
 	// set name
-	Q_strncpyz( oldname, client->pers.netname, sizeof( oldname ) );
-	s = Info_ValueForKey( userinfo, "name" );
-	G_ClientCleanName( s, newname, sizeof( newname ), client );
+	const std::string oldname = client->pers.netname;
+	value = userinfo["name"];
 
-	if ( strcmp( oldname, newname ) )
+	char newname[MAX_NAME_LENGTH];
+	G_ClientCleanName( value.c_str(), newname, sizeof( newname ), client );
+
+	if ( strcmp( oldname.c_str(), newname ) )
 	{
+		std::string err;
 		if ( !forceName && client->pers.namelog->nameChangeTime &&
 		     level.time - client->pers.namelog->nameChangeTime <=
 		     g_minNameChangePeriod.Get() * 1000 )
 		{
-			trap_SendServerCommand( ent->num(), va("print_tr %s %s %g",
-				QQ( N_("Name change spam protection ($1$ = $2$)") ),
-				"g_minNameChangePeriod",
-				g_minNameChangePeriod.Get() ) );
+			trap_SendServerCommand( ent->num(),
+				Str::Format(
+					"print_tr %s %s %g",
+					QQ( N_( "Name change spam protection ($1$ = $2$)" ) ),
+					"g_minNameChangePeriod",
+					g_minNameChangePeriod.Get()
+				).c_str() );
 			revertName = true;
 		}
 		else if ( !forceName && g_maxNameChanges.Get() > 0 &&
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.Get() )
 		{
-			trap_SendServerCommand( ent->num(), va("print_tr %s %s %d",
-				QQ( N_("Maximum name changes reached ($1$ = $2$)") ),
-				"g_maxNameChanges",
-				g_maxNameChanges.Get() ) );
+			trap_SendServerCommand( ent->num(),
+				Str::Format( "print_tr %s %s %d",
+					QQ( N_( "Maximum name changes reached ($1$ = $2$)" ) ),
+					"g_maxNameChanges",
+					g_maxNameChanges.Get()
+				).c_str() );
 			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent->num(),
-			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted") ) ) );
+				Str::Format( "print_tr %s", QQ( N_("You cannot change your name while you are muted" ) ) ).c_str() );
 			revertName = true;
 		}
-		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
+		else if ( !G_admin_name_check( ent, newname, err ) )
 		{
-			trap_SendServerCommand( ent->num(), va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
+			trap_SendServerCommand( ent->num(),
+				Str::Format( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ).c_str() );
 			revertName = true;
 		}
 		else if ( NameLength( newname ) > MAX_NAME_CHARACTERS )
 		{
-			trap_SendServerCommand( ent->num(), va(
-				"print_tr %s %d",
-				QQ( N_("Name is too long! Must be less than $1$ characters or color codes.") ),
-				MAX_NAME_CHARACTERS ) );
+			trap_SendServerCommand( ent->num(),
+				Str::Format(
+					"print_tr %s %d",
+					QQ( N_("Name is too long! Must be less than $1$ characters or color codes.") ),
+					MAX_NAME_CHARACTERS
+				).c_str() );
 			revertName = true;
 		}
 
 		if ( revertName )
 		{
-			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
+			Q_strncpyz( client->pers.netname, oldname.size() ? oldname.c_str() : G_UnnamedClientName(client),
 			            sizeof( client->pers.netname ) );
 		}
 		else
@@ -899,7 +896,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 				client->pers.namelog->nameChanges++;
 			}
 
-			if ( *oldname )
+			if ( oldname.size() )
 			{
 				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^*\" -> \"%s^*\" \"%s^*\"",
 				             clientNum, client->pers.ip.str, client->pers.guid,
@@ -910,8 +907,8 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 
 		G_namelog_update_name( client );
 
-		Info_SetValueForKey(userinfo, "name", client->pers.netname, false);
-		trap_SetUserinfo(clientNum, userinfo);
+		userinfo["name"] = client->pers.netname;
+		trap_SetUserinfo( clientNum, InfoMapToString( userinfo ) );
 	}
 
 	if ( client->pers.classSelection == PCL_NONE )
@@ -941,9 +938,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	Q_strncpyz( model, buffer, sizeof( model ) );
 
 	// wallwalk follow
-	s = Info_ValueForKey( userinfo, "cg_wwFollow" );
+	value = userinfo["cg_wwFollow"];
 
-	if ( atoi( s ) )
+	if ( atoi( value.c_str() ) )
 	{
 		client->ps.persistant[ PERS_STATE ] |= PS_WALLCLIMBINGFOLLOW;
 	}
@@ -953,9 +950,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	}
 
 	// wallwalk toggle
-	s = Info_ValueForKey( userinfo, "cg_wwToggle" );
+	value = userinfo["cg_wwToggle"];
 
-	if ( atoi( s ) )
+	if ( atoi( value.c_str() ) )
 	{
 		client->ps.persistant[ PERS_STATE ] |= PS_WALLCLIMBINGTOGGLE;
 	}
@@ -965,9 +962,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	}
 
 	// always sprint
-	s = Info_ValueForKey( userinfo, "cg_sprintToggle" );
+	value = userinfo["cg_sprintToggle"];
 
-	if ( atoi( s ) )
+	if ( atoi( value.c_str() ) )
 	{
 		client->ps.persistant[ PERS_STATE ] |= PS_SPRINTTOGGLE;
 	}
@@ -977,11 +974,11 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	}
 
 	// fly speed
-	s = Info_ValueForKey( userinfo, "cg_flySpeed" );
+	value = userinfo["cg_flySpeed"];
 
-	if ( *s )
+	if ( value.size() )
 	{
-		client->pers.flySpeed = atoi( s );
+		client->pers.flySpeed = atoi( value.c_str() );
 	}
 	else
 	{
@@ -989,9 +986,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	}
 
 	// disable blueprint errors
-	s = Info_ValueForKey( userinfo, "cg_disableBlueprintErrors" );
+	value = userinfo["cg_disableBlueprintErrors"];
 
-	if ( atoi( s ) )
+	if ( atoi( value.c_str() ) )
 	{
 		client->pers.disableBlueprintErrors = true;
 	}
@@ -1001,9 +998,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	}
 
 	// teamInfo
-	s = Info_ValueForKey( userinfo, "teamoverlay" );
+	value = userinfo["teamoverlay"];
 
-	if ( atoi( s ) != 0 )
+	if ( atoi( value.c_str() ) != 0 )
 	{
 		// teamoverlay was enabled so we need an update
 		if ( client->pers.teamInfo == 0 )
@@ -1016,9 +1013,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		client->pers.teamInfo = 0;
 	}
 
-	s = Info_ValueForKey( userinfo, "cg_unlagged" );
+	value = userinfo["cg_unlagged"];
 
-	if ( !s[ 0 ] || atoi( s ) != 0 )
+	if ( value.empty() || atoi( value.c_str() ) != 0 )
 	{
 		client->pers.useUnlagged = true;
 	}
@@ -1027,19 +1024,19 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		client->pers.useUnlagged = false;
 	}
 
-	Q_strncpyz( client->pers.voice, Info_ValueForKey( userinfo, "voice" ),
+	Q_strncpyz( client->pers.voice, userinfo["voice"].c_str(),
 	            sizeof( client->pers.voice ) );
 
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
 
-	Com_sprintf( userinfo, sizeof( userinfo ),
-	             "n\\%s\\t\\%i\\model\\%s\\ig\\%16s\\v\\%s",
-	             client->pers.netname, client->pers.team, model,
-	             Com_ClientListString( &client->sess.ignoreList ),
-	             client->pers.voice );
+	const std::string userinfoSubset = Str::Format(
+		"n\\%s\\t\\%i\\model\\%s\\ig\\%16s\\v\\%s",
+		client->pers.netname, client->pers.team, model,
+		Com_ClientListString( &client->sess.ignoreList ),
+		client->pers.voice );
 
-	trap_SetConfigstring( CS_PLAYERS + clientNum, userinfo );
+	trap_SetConfigstring( CS_PLAYERS + clientNum, userinfoSubset.c_str() );
 
 	/*G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, userinfo );*/
 
@@ -1068,14 +1065,12 @@ restarts.
 */
 const char *ClientConnect( int clientNum, bool firstTime )
 {
-	const char      *value;
 	const char      *userInfoError;
 	gclient_t       *client;
-	char            userinfo[ MAX_INFO_STRING ];
+	std::string userinfo;
 	char            pubkey[ RSA_STRING_LENGTH ];
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
-	int             i;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
@@ -1089,17 +1084,17 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	ent->client = client;
 	ResetStruct( *client );
 
-	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+	userinfo = trap_GetUserinfo( clientNum );
 
-	value = Info_ValueForKey( userinfo, "ip" );
+	std::string value = InfoStringToMap( userinfo )["ip"];
 
 	// check for local client
-	if ( !strcmp( value, "localhost" ) || !strcmp( value, "loopback" ) )
+	if ( value == "localhost" || value == "loopback" )
 	{
 		client->pers.localClient = true;
 	}
 
-	G_AddressParse( value, &client->pers.ip );
+	G_AddressParse( value.c_str(), &client->pers.ip);
 
 	trap_GetPlayerPubkey( clientNum, pubkey, sizeof( pubkey ) );
 
@@ -1125,7 +1120,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	}
 
 	// check for a password
-	value = Info_ValueForKey( userinfo, "password" );
+	value = InfoStringToMap( userinfo )["password"];
 
 	if ( g_needpass.Get() && g_password.Get() != value )
 	{
@@ -1140,7 +1135,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 		ClientDisconnect( ent-g_entities );
 	}
 
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].pers.connected == CON_DISCONNECTED )
 		{
@@ -1472,7 +1467,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                flags;
 	int                teamLocal;
 	int                eventSequence;
-	char               userinfo[ MAX_INFO_STRING ];
+	std::string userinfo;
 	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
@@ -1601,7 +1596,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.persistant[ PERS_SPAWN_COUNT ]++;
 	client->ps.persistant[ PERS_SPECSTATE ] = client->sess.spectatorState;
 
-	trap_GetUserinfo( index, userinfo, sizeof( userinfo ) );
+	userinfo = trap_GetUserinfo( index );
 	client->ps.eFlags = flags;
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;

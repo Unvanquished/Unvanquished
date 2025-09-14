@@ -246,7 +246,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, Str::StringRef behavior )
 
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler )
 {
-	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
 	bool autoname = false;
 
@@ -275,23 +274,23 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	bool okay = G_BotSetDefaults( clientNum, team, behavior );
 
 	// register user information
-	userinfo[0] = '\0';
-	Info_SetValueForKey( userinfo, "cg_unlagged", "0", false ); // bots do not lag
-	Info_SetValueForKey( userinfo, "name", name ? name : "", false ); // allow defaulting
-	Info_SetValueForKey( userinfo, "rate", "25000", false );
-	Info_SetValueForKey( userinfo, "snaps", "20", false );
+	InfoMap userinfo;
+	userinfo["cg_unlagged"] = "0"; // bots do not lag
+	userinfo["name"] = name ? name : ""; // allow defaulting
+	userinfo["rate"] = "25000";
+	userinfo["snaps"] = "20";
 	if ( autoname )
 	{
-		Info_SetValueForKey( userinfo, "autoname", name, false );
+		userinfo["autoname"] = name;
 	}
 
 	//so we can connect if server is password protected
 	if ( g_needpass.Get() )
 	{
-		Info_SetValueForKey( userinfo, "password", g_password.Get().c_str(), false );
+		userinfo["password"] = g_password.Get();
 	}
 
-	trap_SetUserinfo( clientNum, userinfo );
+	trap_SetUserinfo( clientNum, InfoMapToString( userinfo ) );
 
 	// have it connect to the game as a normal client
 	if ( ( s = ClientBotConnect( clientNum, true ) ) )
@@ -323,7 +322,6 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 void G_BotDel( int clientNum )
 {
 	gentity_t *bot = &g_entities[clientNum];
-	char userinfo[MAX_INFO_STRING];
 	const char *autoname;
 
 	if ( !g_clients[ clientNum ].pers.isBot )
@@ -332,9 +330,9 @@ void G_BotDel( int clientNum )
 		return;
 	}
 
-	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+	InfoMap userinfo = InfoStringToMap( trap_GetUserinfo( clientNum ) );
 
-	autoname = Info_ValueForKey( userinfo, "autoname" );
+	autoname = userinfo["autoname"].c_str();
 	if ( autoname && *autoname )
 	{
 		G_BotNameUsed( G_Team( bot ), autoname, false );
