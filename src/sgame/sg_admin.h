@@ -138,7 +138,7 @@ bool        G_admin_ban_check( gentity_t *ent, char *reason, int rlen );
 bool        G_admin_cmd_check( gentity_t *ent );
 bool        G_admin_readconfig( gentity_t *ent );
 bool        G_admin_permission( gentity_t *ent, const char *flag );
-bool        G_admin_name_check( gentity_t *ent, const char *name, char *err, int len );
+bool        G_admin_name_check( gentity_t *ent, const std::string name, std::string& err );
 g_admin_admin_t *G_admin_admin( const char *guid );
 void            G_admin_authlog( gentity_t *ent );
 
