@@ -1468,7 +1468,7 @@ struct rocketInfo_t
 	int serverStatusLastRefresh;
 	int realtime;
 	int keyCatcher;
-	char downloadName[ MAX_STRING_CHARS ];
+	std::string downloadName;
 	cgClientState_t cstate;
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];

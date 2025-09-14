@@ -83,9 +83,7 @@ static void CG_Rocket_SetServerListServer( const char *table, int index )
 #define MAX_SERVERSTATUS_LINES 4096
 void CG_Rocket_BuildServerInfo()
 {
-	static char serverInfoText[ MAX_SERVERSTATUS_LINES ];
 	char buf[ MAX_INFO_STRING ];
-	const char *p;
 	server_t *server;
 	int netSrc = rocketInfo.currentNetSrc;
 
@@ -112,8 +110,8 @@ void CG_Rocket_BuildServerInfo()
 
 	server = &rocketInfo.data.servers[ netSrc ][ serverIndex ];
 
-
-	if ( trap_LAN_ServerStatus( server->addr, serverInfoText, sizeof( serverInfoText ) ) )
+	std::string serverInfoText;
+	if ( trap_LAN_ServerStatus( server->addr, serverInfoText ) )
 	{
 		int i = 0, score, ping;
 		const char *start, *end;
@@ -123,7 +121,7 @@ void CG_Rocket_BuildServerInfo()
 		Rocket_DSClearTable( "server_browser", "serverInfo" );
 		Rocket_DSClearTable( "server_browser", "serverPlayers" );
 
-		p = serverInfoText;
+		const char* p = serverInfoText.c_str();
 
 		while ( *p )
 		{
