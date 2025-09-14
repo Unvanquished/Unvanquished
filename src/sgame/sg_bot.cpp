@@ -347,11 +347,11 @@ void G_BotDel( int clientNum )
 
 void G_BotDelAllBots()
 {
-	for ( int i = 0; i < MAX_CLIENTS; i++ )
-	{
-		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED && level.clients[ i ].pers.isBot )
-		{
-			G_BotDel( i );
+	if ( level.clients ) {
+		for ( int i = 0; i < MAX_CLIENTS; i++ ) {
+			if ( level.clients[i].pers.connected != CON_DISCONNECTED && level.clients[i].pers.isBot ) {
+				G_BotDel( i );
+			}
 		}
 	}
 

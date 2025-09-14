@@ -3752,10 +3752,10 @@ static void CG_Rocket_DrawDownloadName()
 
 	trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
 
-	if ( Q_stricmp( downloadName, rocketInfo.downloadName ) )
+	if ( Q_stricmp( downloadName, rocketInfo.downloadName.c_str() ) )
 	{
-		Q_strncpyz( rocketInfo.downloadName, downloadName, sizeof( rocketInfo.downloadName ) );
-		Rocket_SetInnerRML( rocketInfo.downloadName, RP_QUAKE );
+		rocketInfo.downloadName = downloadName;
+		Rocket_SetInnerRML( rocketInfo.downloadName.c_str(), RP_QUAKE);
 	}
 }
 
@@ -3766,7 +3766,7 @@ static void CG_Rocket_DrawDownloadTime()
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
 
-	if ( !*rocketInfo.downloadName )
+	if ( rocketInfo.downloadName.empty() )
 	{
 		Rocket_SetInnerRMLRaw( "" );
 		return;
@@ -3804,7 +3804,7 @@ static void CG_Rocket_DrawDownloadTotalSize()
 	char totalSizeBuf[ MAX_STRING_CHARS ];
 	float downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
 
-	if ( !*rocketInfo.downloadName )
+	if ( rocketInfo.downloadName.empty() )
 	{
 		Rocket_SetInnerRMLRaw( "" );
 		return;
@@ -3822,7 +3822,7 @@ static void CG_Rocket_DrawDownloadSpeed()
 	float downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
 	int xferRate;
 
-	if ( !*rocketInfo.downloadName )
+	if ( rocketInfo.downloadName.empty() )
 	{
 		Rocket_SetInnerRMLRaw ( "" );
 		return;
