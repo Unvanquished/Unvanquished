@@ -900,7 +900,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 			{
 				G_LogPrintf( "ClientRename: %i [%s] (%s) \"%s^*\" -> \"%s^*\" \"%s^*\"",
 				             clientNum, client->pers.ip.str, client->pers.guid,
-				             oldname, client->pers.netname,
+				             oldname.c_str(), client->pers.netname,
 				             client->pers.netname );
 			}
 		}
