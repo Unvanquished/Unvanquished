@@ -3220,20 +3220,20 @@ static void CG_Rocket_DrawConnectText()
 	char       rml[ MAX_STRING_CHARS ];
 	const char *s;
 
-	if ( !Q_stricmp( rocketInfo.cstate.servername, "localhost" ) )
+	if ( !Q_stricmp( rocketInfo.cstate.servername.c_str(), "localhost" ) )
 	{
 		Q_strncpyz( rml, "Starting up…", sizeof( rml ) );
 	}
 
 	else
 	{
-		Q_strncpyz( rml, va( "Connecting to %s <br/>", rocketInfo.cstate.servername ), sizeof( rml ) );
+		Q_strncpyz( rml, Str::Format( "Connecting to %s <br/>", rocketInfo.cstate.servername ).c_str(), sizeof(rml));
 	}
 
-	if ( rocketInfo.cstate.connState < connstate_t::CA_CONNECTED && *rocketInfo.cstate.messageString )
+	if ( rocketInfo.cstate.connState < connstate_t::CA_CONNECTED && rocketInfo.cstate.messageString.size() )
 	{
 		Q_strcat( rml, sizeof( rml ), "<br />" );
-		Q_strcat( rml, sizeof( rml ), rocketInfo.cstate.messageString );
+		Q_strcat( rml, sizeof( rml ), rocketInfo.cstate.messageString.c_str() );
 	}
 
 	switch ( rocketInfo.cstate.connState )
