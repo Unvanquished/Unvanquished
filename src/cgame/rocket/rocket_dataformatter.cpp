@@ -47,10 +47,10 @@ void Rocket_RegisterDataFormatter( const char *name )
 	dataFormatterList.push_back( new RocketDataFormatter( name, dataFormatterList.size() ) );
 }
 
-void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
+void Rocket_DataFormatterRawData( int handle, std::string& name, std::string& data )
 {
-	Q_strncpyz( name, dataFormatterList[ handle ]->name.c_str(), nameLength );
-	Q_strncpyz( data, dataFormatterList[ handle ]->data, dataLength );
+	name = dataFormatterList[handle]->name;
+	data = InfoMapToString( dataFormatterList[handle]->data );
 }
 
 void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake )

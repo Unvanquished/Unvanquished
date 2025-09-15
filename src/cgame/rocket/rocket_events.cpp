@@ -75,17 +75,20 @@ void Rocket_DeleteEvent()
 	delete event;
 }
 
-void Rocket_GetEventParameters( char *params, int /*length*/ )
+InfoMap Rocket_GetEventParameters()
 {
 	RocketEvent_t *event = eventQueue.front();
-	*params = '\0';
+	
+	InfoMap params;
 	if ( !eventQueue.empty() )
 	{
 		for ( const auto& it : event->Parameters )
 		{
-			Info_SetValueForKeyRocket( params, it.first.c_str(), it.second.Get<Rml::String>().c_str(), true );
+			params[it.first] = it.second.Get<Rml::String>();
 		}
 	}
+
+	return params;
 }
 
 void Rocket_AddEvent( RocketEvent_t *event )

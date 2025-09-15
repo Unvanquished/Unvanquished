@@ -45,19 +45,19 @@ class RocketDataFormatter : public Rml::DataFormatter
 public:
 	Rml::String name;
 	int handle;
-	char data[ BIG_INFO_STRING ];
 	Rml::String out;
+	InfoMap data;
 
 	RocketDataFormatter( const char *name, int handle ) : Rml::DataFormatter( name ), name( name ), handle( handle ) { }
 	~RocketDataFormatter() { }
 
 	void FormatData( Rml::String &formatted_data, const Rml::StringList &raw_data )
 	{
-		data[ 0 ] = '\0';
+		data.clear();
 
 		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{
-			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].c_str(), true );
+			data[std::to_string( i + 1 )] = raw_data[i];
 		}
 		CG_Rocket_FormatData(handle);
 		formatted_data = out;
