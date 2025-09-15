@@ -80,11 +80,9 @@ static void CG_Rocket_SetServerListServer( const char *table, int index )
 	rocketInfo.currentNetSrc = netSrc;
 	CG_Rocket_BuildServerInfo();
 }
-#define MAX_SERVERSTATUS_LINES 4096
+
 void CG_Rocket_BuildServerInfo()
 {
-	char buf[ MAX_INFO_STRING ];
-	server_t *server;
 	int netSrc = rocketInfo.currentNetSrc;
 
 	int serverIndex = rocketInfo.data.serverIndex[ netSrc ];
@@ -99,8 +97,6 @@ void CG_Rocket_BuildServerInfo()
 		return;
 	}
 
-	buf[0] = 0;
-
 	rocketInfo.serverStatusLastRefresh = rocketInfo.realtime;
 
 	if ( !rocketInfo.data.buildingServerInfo )
@@ -108,128 +104,51 @@ void CG_Rocket_BuildServerInfo()
 		rocketInfo.data.buildingServerInfo = true;
 	}
 
-	server = &rocketInfo.data.servers[ netSrc ][ serverIndex ];
+	server_t* server = &rocketInfo.data.servers[ netSrc ][ serverIndex ];
 
+	// FIXME: This was already broken and might need to be redone entirely
 	std::string serverInfoText;
 	if ( trap_LAN_ServerStatus( server->addr, serverInfoText ) )
 	{
-		int i = 0, score, ping;
-		const char *start, *end;
-		static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
-		char name[ MAX_STRING_CHARS ];
-
 		Rocket_DSClearTable( "server_browser", "serverInfo" );
 		Rocket_DSClearTable( "server_browser", "serverPlayers" );
 
-		const char* p = serverInfoText.c_str();
+		InfoMap info = InfoStringToMap( serverInfoText );
 
-		while ( *p )
+		for ( const std::pair<std::string, std::string>& pair : info )
 		{
-			Info_NextPair( &p, key, value );
-
-			if ( key[ 0 ] )
-			{
-				Info_SetValueForKey( buf, "cvar", key, false );
-				Info_SetValueForKey( buf, "value", value, false );
-				Rocket_DSAddRow( "server_browser", "serverInfo", buf );
-				*buf = '\0';
-			}
-
-			else
-			{
-				break;
-			}
+			const std::string buf = "\\cvar\\" + pair.first + "\\value\\" + pair.second;
+			Rocket_DSAddRow( "server_browser", "serverInfo", buf.c_str() );
 		}
 
-		// Parse first set of players
-		sscanf( value, "%d %d", &score, &ping );
-		start = strchr( value, '"' );
-
-		if ( !start )
+		int i = 0;
+		for( const std::pair<std::string, std::string>& pair : info )
 		{
-			trap_LAN_ResetServerStatus();
-			rocketInfo.data.buildingServerInfo = false;
-			return;
-		}
+			int score;
+			int ping;
+			sscanf( pair.first.c_str(), "%d %d", &score, &ping);
 
-		end = strchr( start + 1, '"' );
+			uint32_t start = pair.first.find( "\"" );
+			uint32_t end   = pair.first.find( "\"", start );
 
-		if ( !end )
-		{
-			trap_LAN_ResetServerStatus();
-			rocketInfo.data.buildingServerInfo = false;
-			return;
-		}
-
-		Q_strncpyz( name, start + 1, end - start );
-		start = end = NULL;
-		Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
-		Info_SetValueForKeyRocket( buf, "name", name, false );
-		Info_SetValueForKey( buf, "score", va( "%d", score ), false );
-		Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
-		Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
-
-		while ( *p )
-		{
-			Info_NextPair( &p, key, value );
-
-			if ( key[ 0 ] )
-			{
-				sscanf( key, "%d %d", &score, &ping );
-				start = strchr( key, '"' );
-
-				if ( !start )
-				{
-					break;
-				}
-
-				end = strchr( start + 1, '"' );
-
-				if ( !end )
-				{
-					break;
-				}
-
-				Q_strncpyz( name, start + 1, end - start );
-				start = end = NULL;
-				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
-				Info_SetValueForKeyRocket( buf, "name", name, false );
-				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
-				Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
-				Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
+			if ( start == std::string::npos || end == std::string::npos ) {
+				continue;
 			}
 
-			if ( value[ 0 ] )
-			{
-				sscanf( value, "%d %d", &score, &ping );
-				start = strchr( value, '"' );
+			info["num"] = std::to_string( i );
+			i++;
+			info["name"] = pair.first.substr( start + 1, end - start - 1 );
 
-				if ( !start )
-				{
-					break;
-				}
+			const uint32_t offset = pair.first.find( " " );
+			info["score"] = pair.first.substr( 0, offset );
+			info["ping"] = pair.first.substr( offset + 1, pair.first.find( " ", offset ) );
 
-				end = strchr( start + 1, '"' );
-
-				if ( !end )
-				{
-					break;
-				}
-
-				Q_strncpyz( name, start + 1, end - start );
-				start = end = NULL;
-				Info_SetValueForKey( buf, "num", va( "%d", i++ ), false );
-				Info_SetValueForKeyRocket( buf, "name", name, false );
-				Info_SetValueForKey( buf, "score", va( "%d", score ), false );
-				Info_SetValueForKey( buf, "ping", va( "%d", ping ), false );
-				Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
-			}
+			Rocket_DSAddRow( "server_browser", "serverPlayers", InfoMapToString( info ).c_str() );
 		}
 
 		trap_LAN_ResetServerStatus();
 		rocketInfo.data.buildingServerInfo = false;
 	}
-
 }
 
 static void CG_Rocket_BuildServerList( const char *args )
@@ -329,16 +248,14 @@ void CG_Rocket_BuildServerList()
 			continue;
 		}
 
-		char data[ MAX_INFO_STRING ];
-		data[ 0 ] = '\0';
-
-		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
-		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
-		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
-		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
-		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
-		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
-		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+		InfoMap info;
+		info["name"] = rocketInfo.data.servers[ netSrc ][ i ].name;
+		info["players"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].clients );
+		info["bots"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].bots );
+		info["ping"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].ping );
+		info["maxClients"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].maxClients );
+		info["addr"] = rocketInfo.data.servers[ netSrc ][ i ].addr;
+		info["label"] = rocketInfo.data.servers[ netSrc ][ i ].label;
 
 		std::string version;
 		if ( !Q_stricmp( rocketInfo.data.servers[netSrc][i].abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION) ) {
@@ -347,10 +264,10 @@ void CG_Rocket_BuildServerList()
 			version = Str::Format( "^1!%s!", rocketInfo.data.servers[netSrc][i].version );
 		}
 
-		Info_SetValueForKey( data, "version", version.c_str(), false);
-		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
+		info["version"] = version;
+		info["map"] = rocketInfo.data.servers[ netSrc ][ i ].mapName;
 
-		Rocket_DSAddRow( "server_browser", srcName, data );
+		Rocket_DSAddRow( "server_browser", srcName, InfoMapToString( info ).c_str() );
 	}
 }
 
@@ -405,9 +322,7 @@ static int ServerListCmpByPlayers( const void* one, const void* two )
 
 static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 {
-	char data[ MAX_INFO_STRING ] = { 0 };
 	int netSrc = CG_StringToNetSource( name );
-	int  i;
 
 	if ( !Q_stricmp( sortBy, "ping" ) )
 	{
@@ -428,24 +343,25 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 
 	Rocket_DSClearTable( "server_browser", name );
 
-	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
+	for ( int i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
 		if ( rocketInfo.data.servers[ netSrc ][ i ].ping <= 0 )
 		{
 			continue;
 		}
 
-		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
-		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
-		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
-		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
-		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
-		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
-		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
-		Info_SetValueForKey( data, "version", rocketInfo.data.servers[netSrc][i].version.c_str(), false );
-		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
+		InfoMap info;
+		info["name"] = rocketInfo.data.servers[netSrc][i].name;
+		info["players"] = std::to_string( rocketInfo.data.servers[netSrc][i].clients );
+		info["bots"] = std::to_string( rocketInfo.data.servers[netSrc][i].bots );
+		info["ping"] = std::to_string( rocketInfo.data.servers[netSrc][i].ping );
+		info["maxClients"] = std::to_string( rocketInfo.data.servers[netSrc][i].maxClients );
+		info["addr"] = rocketInfo.data.servers[netSrc][i].addr;
+		info["label"] = rocketInfo.data.servers[netSrc][i].label;
+		info["version"] = rocketInfo.data.servers[netSrc][i].version.c_str();
+		info["map"] = rocketInfo.data.servers[netSrc][i].mapName;
 
-		Rocket_DSAddRow( "server_browser", name, data );
+		Rocket_DSAddRow( "server_browser", name, InfoMapToString( info ).c_str() );
 	}
 }
 
@@ -476,29 +392,27 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 {
 	const char *str = ( table && *table ) ? table : CG_NetSourceToString( rocketInfo.currentNetSrc );
 	int netSrc = CG_StringToNetSource( str );
-	int i;
 
 	Rocket_DSClearTable( "server_browser", str );
 
-	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
+	for ( int i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
 		char name[ MAX_INFO_VALUE ];
 		Color::StripColors( rocketInfo.data.servers[ netSrc ][ i ].name, name, sizeof( name ) );
 
 		if ( Q_stristr( name, filter ) )
 		{
-			char data[ MAX_INFO_STRING ] = { 0 };
+			InfoMap info;
+			info["name"] = rocketInfo.data.servers[ netSrc ][ i ].name;
+			info["players"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].clients );
+			info["bots"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].bots );
+			info["ping"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].ping );
+			info["maxClients"] = std::to_string( rocketInfo.data.servers[ netSrc ][ i ].maxClients );
+			info["addr"] = rocketInfo.data.servers[ netSrc ][ i ].addr;
+			info["label"] = rocketInfo.data.servers[ netSrc ][ i ].label;
+			info["version"] = rocketInfo.data.servers[netSrc][i].version;
 
-			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
-			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
-			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
-			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
-			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
-			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
-			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
-			Info_SetValueForKey( data, "version", rocketInfo.data.servers[netSrc][i].version.c_str(), false );
-
-			Rocket_DSAddRow( "server_browser", str, data );
+			Rocket_DSAddRow( "server_browser", str, InfoMapToString( info ).c_str() );
 		}
 	}
 }
@@ -604,11 +518,11 @@ static void CG_Rocket_BuildResolutionList( const char* )
 	Rocket_DSClearTable( "resolutions", "default" );
 	for ( const resolution_t &res : rocketInfo.data.resolutions )
 	{
-		char buf[ MAX_INFO_STRING ];
-		buf[ 0 ] = '\0';
-		Info_SetValueForKey( buf, "width", va( "%d", res.width ), false );
-		Info_SetValueForKey( buf, "height", va( "%d", res.height ), false );
-		Rocket_DSAddRow( "resolutions", "default", buf );
+		InfoMap info;
+		info["width"] = std::to_string( res.width );
+		info["height"] = std::to_string( res.height );
+
+		Rocket_DSAddRow( "resolutions", "default", InfoMapToString( info ).c_str() );
 	}
 }
 
@@ -825,13 +739,6 @@ static void CG_Rocket_CleanUpDemoList( const char* )
 
 void CG_Rocket_BuildPlayerList( const char* )
 {
-	char buf[ MAX_INFO_STRING ] = { 0 };
-	clientInfo_t *ci;
-	score_t *score;
-	int i;
-
-	//CG_RequestScores();
-
 	// Do not build list if not currently playing
 	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
 	{
@@ -843,18 +750,19 @@ void CG_Rocket_BuildPlayerList( const char* )
 	Rocket_DSClearTable( "playerList", "aliens" );
 	Rocket_DSClearTable( "playerList", "humans" );
 
-	for ( i = 0; i < cg.numScores; ++i )
+	InfoMap info;
+	for ( int i = 0; i < cg.numScores; ++i )
 	{
-		score = &cg.scores[ i ];
-		ci = &cgs.clientinfo[ score->client ];
+		score_t* score = &cg.scores[ i ];
+		clientInfo_t* ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
 		{
 			continue;
 		}
 
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
+		info["num"] = Str::Format( "%d", score->client );
+		info["score"] = Str::Format( "%d", score->score );
 
 		const char* B = Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ),"B" );
 		const char bot_status = B[ score->client ];
@@ -863,41 +771,41 @@ void CG_Rocket_BuildPlayerList( const char* )
 		if ( bot_status == '-' )
 		{
 			// This player is not a bot.
-			Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+			info["ping"] = Str::Format( "%d", score->ping );
 		}
 		// Bot skill can be 0 while spawning, just before skill is set.
 		else if ( bot_status >= '0' && bot_status <= '9' )
 		{
 			// Bot skill.
-			Info_SetValueForKey( buf, "ping", va( "sk%c", bot_status ), false );
+			info["ping"] = Str::Format( "sk%c", bot_status );
 		}
 		else
 		{
 			// Example: “G” is for “Generating navmeshes”.
-			Info_SetValueForKey( buf, "ping", va( "%c", bot_status ), false );
+			info["ping"] = Str::Format( "%c", bot_status );
 		}
 
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
+		info["weapon"] = Str::Format( "%d", score->weapon );
+		info["upgrade"] = Str::Format( "%d", score->upgrade );
+		info["time"] = Str::Format( "%d", score->time );
+		info["credits"] = Str::Format( "%d", ci->credit );
+		info["location"] = CG_ConfigString( CS_LOCATIONS + ci->location );
 
 		switch ( score->team )
 		{
 			case TEAM_ALIENS:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_ALIENS ]++ ] = i;
-				Rocket_DSAddRow( "playerList", "aliens", buf );
+				Rocket_DSAddRow( "playerList", "aliens", InfoMapToString( info ).c_str() );
 				break;
 
 			case TEAM_HUMANS:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerIndex[ TEAM_HUMANS ]++ ] = i;
-				Rocket_DSAddRow( "playerList", "humans", buf );
+				Rocket_DSAddRow( "playerList", "humans", InfoMapToString( info ).c_str() );
 				break;
 
 			case TEAM_NONE:
 				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_NONE ]++ ] = i;
-				Rocket_DSAddRow( "playerList", "spectators", buf );
+				Rocket_DSAddRow( "playerList", "spectators", InfoMapToString( info ).c_str() );
 				break;
 		}
 	}
@@ -918,20 +826,36 @@ static int PlayerListCmpByScore( const void *one, const void *two )
 	return 0; // silence compiler
 }
 
+static void AddPlayerListRow( const std::string& name, const std::string& table, const team_t team ) {
+	for ( int i = 0; i < rocketInfo.data.playerCount[team]; ++i ) {
+		score_t* score = &cg.scores[rocketInfo.data.playerList[team][i]];
+		clientInfo_t* ci = &cgs.clientinfo[score->client];
+
+		if ( !ci->infoValid ) {
+			continue;
+		}
+
+		InfoMap info;
+		info["num"] = std::to_string( score->client );
+		info["score"] = std::to_string( score->score );
+		info["ping"] = std::to_string( score->ping );
+		info["weapon"] = std::to_string( score->weapon );
+		info["upgrade"] = std::to_string( score->upgrade );
+		info["time"] = std::to_string( score->time );
+		info["credits"] = std::to_string( ci->credit );
+		info["location"] = CG_ConfigString( CS_LOCATIONS + ci->location );
+
+		Rocket_DSAddRow( name.c_str(), table.c_str(), InfoMapToString( info ).c_str() );
+	}
+}
+
 static void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 {
-	int i;
-	clientInfo_t *ci;
-	score_t *score;
-	char buf[ MAX_INFO_STRING ];
-
 	// Do not sort list if not currently playing
 	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
 	{
 		return;
 	}
-
-
 
 	if ( !Q_stricmp( "score", sortBy ) )
 	{
@@ -945,70 +869,9 @@ static void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 	Rocket_DSClearTable( "playerList", "aliens" );
 	Rocket_DSClearTable( "playerList", "humans" );
 
-	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
-	{
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
-		ci = &cgs.clientinfo[ score->client ];
-
-		if ( !ci->infoValid )
-		{
-			continue;
-		}
-
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
-
-		Rocket_DSAddRow( "playerList", "spectators", buf );
-	}
-
-	for ( i = 0; i < rocketInfo.data.playerIndex[ TEAM_HUMANS ]; ++i )
-	{
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
-		ci = &cgs.clientinfo[ score->client ];
-
-		if ( !ci->infoValid )
-		{
-			continue;
-		}
-
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
-		Rocket_DSAddRow( "playerList", "humans", buf );
-	}
-
-	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_ALIENS ]; ++i )
-	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
-
-		if ( !ci->infoValid )
-		{
-			continue;
-		}
-
-		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
-		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
-		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
-		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
-		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
-		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), false );
-		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), false );
-
-		Rocket_DSAddRow( "playerList", "aliens", buf );
-	}
+	AddPlayerListRow( "playerList", "spectators", TEAM_NONE );
+	AddPlayerListRow( "playerList", "humans",     TEAM_HUMANS );
+	AddPlayerListRow( "playerList", "aliens",     TEAM_ALIENS );
 }
 
 static void CG_Rocket_BuildMapList( const char* )
@@ -1018,12 +881,12 @@ static void CG_Rocket_BuildMapList( const char* )
 
 	for ( size_t i = 0; i < rocketInfo.data.mapList.size(); ++i )
 	{
-		char buf[ MAX_INFO_STRING ] = { 0 };
-		Info_SetValueForKey( buf, "num", std::to_string( i ).c_str(), false );
-		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapLoadName.c_str(), false );
-		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName.c_str(), false );
+		InfoMap info;
+		info["num"] = std::to_string( i );
+		info["mapName"] = rocketInfo.data.mapList[ i ].mapLoadName;
+		info["mapLoadName"] = rocketInfo.data.mapList[ i ].mapLoadName;
 
-		Rocket_DSAddRow( "mapList", "default", buf );
+		Rocket_DSAddRow( "mapList", "default", InfoMapToString( info ).c_str() );
 	}
 
 	rocketInfo.data.mapIndex = -1;
