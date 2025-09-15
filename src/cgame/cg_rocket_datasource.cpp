@@ -56,7 +56,7 @@ static bool AddToServerList( const char *name, const char *label, std::string ve
 	node.mapName = BG_strdup( mapName );
 	node.abiVersion = abiVersion;
 
-	rocketInfo.data.servers->push_back( node );
+	rocketInfo.data.servers[netSrc].push_back( node );
 	return true;
 }
 
@@ -760,14 +760,6 @@ static void CG_Rocket_SetMapListIndex( const char*, int index )
 	rocketInfo.data.mapIndex = index;
 }
 
-
-static void CG_Rocket_CleanUpPlayerList( const char* )
-{
-	rocketInfo.data.playerCount[ TEAM_ALIENS ] = 0;
-	rocketInfo.data.playerIndex[ TEAM_HUMANS ] = 0;
-	rocketInfo.data.playerCount[ TEAM_NONE ] = 0;
-}
-
 static void CG_Rocket_SetPlayerListPlayer( const char*, int )
 {
 }
@@ -960,26 +952,9 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 
 static void CG_Rocket_BuildArmouryBuyList( const char *table )
 {
-	char c = table ? *table : 'd';
+	CG_Rocket_CleanUpArmouryBuyList( table );
+
 	int tblIndex = -1;
-
-	switch ( c ) {
-		case 'W':
-		case 'w':
-			tblIndex = ROCKETDS_WEAPONS;
-			break;
-
-		case 'U':
-		case 'u':
-			tblIndex = ROCKETDS_UPGRADES;
-			break;
-
-		default:
-			return;
-	}
-
-	rocketInfo.data.selectedArmouryBuyItem[tblIndex] = 0;
-	rocketInfo.data.armouryBuyListCount[tblIndex] = 0;
 
 	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
 	{
@@ -1303,10 +1278,6 @@ struct dataSourceCmd_t
 	void ( *exec )( const char *table );
 	int  ( *get )( const char *table );
 };
-
-static void nullCleanFunc( char const* )
-{
-}
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
