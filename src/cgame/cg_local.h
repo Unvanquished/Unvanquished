@@ -1362,12 +1362,6 @@ struct rocketMenu_t
 	bool passthrough; // whether binds can be used while the menu is open
 };
 
-#define MAX_SERVERS 2048
-#define MAX_LANGUAGES 64
-#define MAX_OUTPUTS 16
-#define MAX_MODS 64
-#define MAX_DEMOS 256
-
 struct server_t
 {
 	char *name;
@@ -1405,8 +1399,8 @@ struct language_t
 
 struct modInfo_t
 {
-	char *name;
-	char *description;
+	std::string name;
+	std::string description;
 };
 
 struct arenaInfo_t
@@ -1423,8 +1417,7 @@ struct mapInfo_t
 
 struct rocketDataSource_t
 {
-	server_t servers[ AS_NUM_TYPES ][ MAX_SERVERS ];
-	int serverCount[ AS_NUM_TYPES ];
+	std::vector<server_t> servers[ AS_NUM_TYPES ];
 	std::vector<bool> haveServerInfo[ AS_NUM_TYPES ];
 	int serverIndex[ AS_NUM_TYPES ];
 	bool buildingServerInfo;
@@ -1433,24 +1426,20 @@ struct rocketDataSource_t
 	std::vector<resolution_t> resolutions;
 	int resolutionIndex;
 
-	language_t languages[ MAX_LANGUAGES ];
 	int languageCount;
 	int languageIndex;
 
-	modInfo_t modList[ MAX_MODS ];
-	int modCount;
+	std::vector<modInfo_t> modList;
 	int modIndex;
 
-	char *alOutputs[ MAX_OUTPUTS ];
-	int alOutputsCount;
+	std::vector<std::string> alOutputs;
 	int alOutputIndex;
 
 	int playerList[ NUM_TEAMS ][ MAX_CLIENTS ];
 	int playerCount[ NUM_TEAMS ];
 	int playerIndex[ NUM_TEAMS ];
 
-	char *demoList[ MAX_DEMOS ];
-	int demoCount;
+	std::vector<std::string> demoList;
 	int demoIndex;
 
 	std::vector<mapInfo_t> mapList;
@@ -2362,9 +2351,7 @@ void CG_Rocket_RegisterElements( void );
 //
 void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table );
 void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy );
-void CG_Rocket_CleanUpServerList( const char *table );
 void CG_Rocket_RegisterDataSources();
-void CG_Rocket_CleanUpDataSources();
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
 int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );

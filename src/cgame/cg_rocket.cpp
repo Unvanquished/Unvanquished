@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "common/FileSystem.h"
 #include "cg_local.h"
 
-rocketInfo_t rocketInfo = {};
+rocketInfo_t rocketInfo;
 
 Cvar::Cvar<std::string> rocket_menuFile("rocket_menuFile", "VFS path of config file for menus", Cvar::CHEAT, "ui/rocket.txt");
 Cvar::Cvar<std::string> rocket_hudFile("rocket_hudFile", "VFS path of config file for HUD", Cvar::CHEAT, "ui/rockethud.txt");
@@ -50,6 +50,8 @@ void CG_Rocket_Init( const WindowConfig& windowConfig )
 
 	oldConnState = connstate_t::CA_UNINITIALIZED;
 	cgs.windowConfig = windowConfig;
+
+	ResetStruct( rocketInfo.data );
 	rocketInfo.keyCatcher = trap_Key_GetCatcher();
 
 	Trans_Init();
