@@ -1082,7 +1082,7 @@ CG_SetWeaponLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, int newAnimation )
+static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, refEntity_t* ent, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 	bool toggle = false;
@@ -1108,11 +1108,16 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 
 	if ( /*&cg_weapons[ weapon ].md5 &&*/ !toggle && lf->old_animation && lf->old_animation->handle )
 	{
-		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
+		/* if ( !trap_R_BuildSkeleton(&oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin) )
 		{
 			Log::Warn( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton" );
 			return;
-		}
+		} */
+		ent->animationHandle2 = lf->old_animation->handle;
+		ent->startFrame2 = lf->oldFrame;
+		ent->endFrame2 = lf->frame;
+		ent->lerp2 = lf->backlerp;
+		ent->clearOrigin2 = lf->old_animation->clearOrigin;
 	}
 }
 
@@ -1121,7 +1126,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 CG_WeaponAnimation
 ===============
 */
-static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_WeaponAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
 {
 	lerpFrame_t   *lf = &cent->pe.weapon;
 	entityState_t *es = &cent->currentState;
@@ -1129,7 +1134,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	// see if the animation sequence is switching
 	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ es->weapon ].md5 && !lf->animation->handle ) )
 	{
-		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, lf, es->weaponAnim );
+		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, ent, lf, es->weaponAnim );
 	}
 
 	CG_RunLerpFrame( lf );
@@ -1142,7 +1147,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, &gunSkeleton, &oldGunSkeleton );
+		CG_BuildAnimSkeleton( lf, ent, &gunSkeleton, &oldGunSkeleton, false );
 	}
 }
 
@@ -1312,7 +1317,7 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
+void CG_AddPlayerWeapon( refEntity_t *parent, const int parentEntityID, playerState_t *ps, centity_t *cent )
 {
 	vec3_t       angles;
 	weapon_t     weaponNum;
@@ -1423,12 +1428,13 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 	}
 
+	int entID;
 	if ( !noGunModel )
 	{
-		CG_PositionEntityOnTag( &gun, parent, "tag_weapon" );
+		CG_PositionEntityOnTag( &gun, parentEntityID, "tag_weapon" );
 		if ( ps )
 		{
-			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+			CG_WeaponAnimation( cent, &gun, &gun.oldframe, &gun.frame, &gun.backlerp );
 		}
 
 		if ( weapon->md5 )
@@ -1441,18 +1447,27 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				matrix_t mat;
 				vec3_t   nBounds[ 2 ];
 
+				BoneMod boneMod;
 				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
-				QuatMultiply2( gun.skeleton.bones[rotationBone].t.rot, rotation );
+				QuatMultiply2( gun.skeleton.bones[ rotationBone ].t.rot, rotation );
+				boneMod.index = rotationBone;
+				VectorCopy( vec3_origin, boneMod.translation );
+				QuatCopy( rotation, boneMod.rotation );
+				gun.boneMods.push_back( boneMod );
 
 				// Update bounds to reflect rotation
 				MatrixFromAngles( mat, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
 
-				MatrixTransformBounds(mat, gun.skeleton.bounds[0], gun.skeleton.bounds[1], nBounds[0], nBounds[1]);
+				MatrixTransformBounds( mat, gun.skeleton.bounds[0], gun.skeleton.bounds[1], nBounds[0], nBounds[1] );
 
 				BoundsAdd( gun.skeleton.bounds[ 0 ], gun.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
+
+				gun.boundsAdd = 1;
+				VectorSet( gun.boundsRotation, weapon->rotation[0], weapon->rotation[1], weapon->rotation[2] );
 			}
 
-			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
+			// CG_TransformSkeleton( &gun.skeleton, weapon->scale );
+			gun.scale = weapon->scale;
 		}
 
 		if ( cg_drawGun.Get() >= 3 && ps ) {
@@ -1461,7 +1476,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			gun.customShader = cgs.media.plainColorShader;
 		}
 
-		trap_R_AddRefEntityToScene( &gun );
+		entID = trap_R_AddRefEntityToScene( &gun );
 
 		if ( !ps )
 		{
@@ -1494,7 +1509,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			angles[ ROLL ] = CG_MachinegunSpinAngle( cent, firing );
 			AnglesToAxis( angles, barrel.axis );
 
-			CG_PositionRotatedEntityOnTag( &barrel, &gun, "tag_barrel" );
+			CG_PositionRotatedEntityOnTag( &barrel, entID, "tag_barrel" );
 
 			trap_R_AddRefEntityToScene( &barrel );
 		}
@@ -1563,11 +1578,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		if ( noGunModel )
 		{
-			CG_PositionRotatedEntityOnTag( &flash, parent, "tag_weapon" );
+			CG_PositionRotatedEntityOnTag( &flash, parentEntityID, "tag_weapon" );
 		}
 		else
 		{
-			CG_PositionRotatedEntityOnTag( &flash, &gun, "tag_flash" );
+			CG_PositionRotatedEntityOnTag( &flash, entID, "tag_flash" );
 		}
 
 		if ( flash.hModel )
@@ -1789,7 +1804,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// add everything onto the hand
 	if ( weapon )
 	{
-		CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity );
+		const int entID = trap_R_AddRefEntityToScene( &hand );
+		CG_AddPlayerWeapon( &hand, entID, ps, &cg.predictedPlayerEntity );
 	}
 }
 

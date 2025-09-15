@@ -41,6 +41,7 @@ public:
 	// ParseConfiguration: Return true if firstToken is consumed
 	virtual bool ParseConfiguration( clientInfo_t*, const char* /*firstToken*/, const char**) { return false; }
 	virtual bool LoadData( clientInfo_t* ) { return true; }
-	virtual void Apply(const SkeletonModifierContext&, refSkeleton_t*) {}
+	virtual void Apply(const SkeletonModifierContext&, refEntity_t* ent, refSkeleton_t*) {}
+	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) { return 0; }
 };
 #endif  // CG_SKELETON_MODIFIER_H

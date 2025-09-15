@@ -140,26 +140,12 @@ Modifies the entities position and axis by the given
 tag location
 ======================
 */
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionEntityOnTag( refEntity_t *entity, const int parent,
                              const char *tagName )
 {
-	int           i;
-	orientation_t lerped;
-
-	// lerp the tag
-	trap_R_LerpTag( &lerped, parent, tagName, 0 );
-
-	// FIXME: allow origin offsets along tag?
-	VectorCopy( parent->origin, entity->origin );
-
-	for ( i = 0; i < 3; i++ )
-	{
-		VectorMA( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
-	}
-
-	// had to cast away the const to avoid compiler problems...
-	AxisMultiply( lerped.axis, ( ( refEntity_t * ) parent )->axis, entity->axis );
-	entity->backlerp = parent->backlerp;
+	entity->positionOnTag = EntityTag::ON_TAG;
+	entity->attachmentEntity = parent;
+	entity->tag = tagName;
 }
 
 /*
@@ -170,15 +156,22 @@ Modifies the entities position and axis by the given
 tag location
 ======================
 */
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const int parent,
                                     const char *tagName )
 {
+	entity->positionOnTag = EntityTag::ON_TAG_ROTATED;
+	entity->attachmentEntity = parent;
+	entity->tag = tagName;
+}
+
+void CG_PositionRotatedEntityOnTagSync( refEntity_t* entity, const refEntity_t* parent,
+	const char* tagName ) {
 	int           i;
 	orientation_t lerped;
-	vec3_t        tempAxis[ 3 ];
+	vec3_t        tempAxis[3];
 
-//AxisClear( entity->axis );
-	// lerp the tag
+	//AxisClear( entity->axis );
+		// lerp the tag
 	trap_R_LerpTag( &lerped, parent, tagName, 0 );
 
 	// FIXME: allow origin offsets along tag?
