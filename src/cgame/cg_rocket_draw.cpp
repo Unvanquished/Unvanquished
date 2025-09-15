@@ -3217,37 +3217,36 @@ static void CG_Rocket_DrawFollow()
 
 static void CG_Rocket_DrawConnectText()
 {
-	char       rml[ MAX_STRING_CHARS ];
-	const char *s;
+	std::string rml;
 
-	if ( !Q_stricmp( rocketInfo.cstate.servername, "localhost" ) )
+	if ( rocketInfo.cstate.servername == "localhost" )
 	{
-		Q_strncpyz( rml, "Starting up…", sizeof( rml ) );
+		rml = "Starting up…";
 	}
 
 	else
 	{
-		Q_strncpyz( rml, va( "Connecting to %s <br/>", rocketInfo.cstate.servername ), sizeof( rml ) );
+		rml = Str::Format( "Connecting to %s <br/>", rocketInfo.cstate.servername );
 	}
 
-	if ( rocketInfo.cstate.connState < connstate_t::CA_CONNECTED && *rocketInfo.cstate.messageString )
+	if ( rocketInfo.cstate.connState < connstate_t::CA_CONNECTED && rocketInfo.cstate.messageString.size() )
 	{
-		Q_strcat( rml, sizeof( rml ), "<br />" );
-		Q_strcat( rml, sizeof( rml ), rocketInfo.cstate.messageString );
+		rml += "<br />";
+		rml += rocketInfo.cstate.messageString;
 	}
 
 	switch ( rocketInfo.cstate.connState )
 	{
 		case connstate_t::CA_CONNECTING:
-			s = va( _( "Awaiting connection…%i" ), rocketInfo.cstate.connectPacketCount );
+			rml += Str::Format( _( "Awaiting connection…%i" ), rocketInfo.cstate.connectPacketCount );
 			break;
 
 		case connstate_t::CA_CHALLENGING:
-			s = va( _( "Awaiting challenge…%i" ), rocketInfo.cstate.connectPacketCount );
+			rml += Str::Format( _( "Awaiting challenge…%i" ), rocketInfo.cstate.connectPacketCount );
 			break;
 
 		case connstate_t::CA_CONNECTED:
-			s = _( "Awaiting gamestate…" );
+			rml += _( "Awaiting gamestate…" );
 		break;
 
 		case connstate_t::CA_LOADING:
@@ -3260,9 +3259,7 @@ static void CG_Rocket_DrawConnectText()
 			return;
 	}
 
-	Q_strcat( rml, sizeof( rml ), s );
-
-	Rocket_SetInnerRMLRaw( rml );
+	Rocket_SetInnerRMLRaw( rml.c_str() );
 }
 
 static struct tm GetLocalTime()

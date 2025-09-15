@@ -193,51 +193,40 @@ static void CG_Rocket_SetChatCommand()
 
 static void CG_Rocket_EventExecForm()
 {
-	static char params[ BIG_INFO_STRING ];
-	char cmd[ MAX_STRING_CHARS ]  = { 0 };
-	char Template[ MAX_STRING_CHARS ];
-	char *k = Template;
-	char *s = Template;
+	std::string execFormTemplate = CG_Argv( 1 );
+	InfoMap params = Rocket_GetEventParameters();
 
-	Q_strncpyz( Template, CG_Argv( 1 ), sizeof( Template ) );
-	Rocket_GetEventParameters( params, sizeof( params ) );
-
-	if ( !*params )
+	if ( params.empty() )
 	{
-		Log::Warn( "Invalid form submit.  No named values exist." );
+		Log::Warn( "Invalid form submit. No named values exist." );
 		return;
 	}
 
-	while ( k && *k )
-	{
-		s = strchr( k, '$' );
-		if ( s )
-		{
-			char *ss = strchr( s + 1, '$' );
-			if ( ss )
-			{
-				*s =  0;
-				*ss = 0;
-				Q_strcat( cmd, sizeof( cmd ), k );
-				Q_strcat( cmd, sizeof( cmd ), Info_ValueForKey( params, s + 1 ) );
-				k = ss + 1;
-			}
-			else
-			{
-				Log::Warn("Unterminated $ in execForm: %s", CG_Argv( 1 ) );
+	uint32_t offset = 0;
+	std::string cmd;
+	while ( offset < execFormTemplate.size() ) {
+		uint32_t execFormStart = execFormTemplate.find( "$", offset );
+
+		if ( execFormStart != std::string::npos ) {
+			execFormStart++;
+			uint32_t execFormEnd = execFormTemplate.find( "$", execFormStart );
+
+			if ( execFormEnd != std::string::npos ) {
+				cmd += execFormTemplate.substr( offset, execFormStart )
+					+ params[execFormTemplate.substr( execFormStart, execFormEnd - execFormStart - 1 )];
+			} else {
+				Log::Warn( "Unterminated $ in execForm: %s", CG_Argv( 1 ) );
 				return;
 			}
-		}
-		else
-		{
-			Q_strcat( cmd, sizeof( cmd ), k );
+		} else {
+			cmd += execFormTemplate;
 			break;
 		}
 	}
 
-	if ( cmd[0] != '\0' )
+	if ( cmd.size() )
 	{
-		trap_SendConsoleCommand( cmd );
+		trap_SendConsoleCommand( cmd.c_str() );
 	}
 }
 

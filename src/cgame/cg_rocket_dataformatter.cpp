@@ -180,16 +180,16 @@ static int dataFormatterCmdCmp( const void *a, const void *b )
 
 void CG_Rocket_FormatData( int handle )
 {
-	static char name[ 200 ], data[ BIG_INFO_STRING ];
-	dataFormatterCmd_t *cmd;
+	std::string name;
+	std::string data;
+	Rocket_DataFormatterRawData( handle, name, data );
 
-	Rocket_DataFormatterRawData( handle, name, sizeof( name ), data, sizeof( data ) );
-
-	cmd = (dataFormatterCmd_t*) bsearch( name, dataFormatterCmdList, dataFormatterCmdListCount, sizeof( dataFormatterCmd_t ), dataFormatterCmdCmp );
+	dataFormatterCmd_t* cmd = ( dataFormatterCmd_t* )
+		bsearch( name.c_str(), dataFormatterCmdList, dataFormatterCmdListCount, sizeof( dataFormatterCmd_t ), dataFormatterCmdCmp );
 
 	if ( cmd )
 	{
-		cmd->exec( handle, data );
+		cmd->exec( handle, data.c_str() );
 	}
 }
 
