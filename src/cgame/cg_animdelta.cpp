@@ -93,16 +93,39 @@ bool AnimDelta::LoadData(clientInfo_t* ci)
 	return true;
 }
 
-void AnimDelta::Apply(const SkeletonModifierContext& ctx, refSkeleton_t* skeleton)
+void AnimDelta::Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refEntity_t* )
 {
-	if ( ( CG_AnimNumber( ctx.es->torsoAnim ) ) < TORSO_ATTACK ) return;
-	auto it = deltas_.find( ctx.es->weapon );
-	if ( it == deltas_.end() ) return;
-	for ( size_t i = 0; i < it->second.size(); ++i )
-	{
-		VectorAdd( it->second[ i ].delta, skeleton->bones[ boneIndicies_[ i ] ].t.trans, skeleton->bones[ boneIndicies_[ i ] ].t.trans );
-		QuatMultiply2( skeleton->bones[ boneIndicies_[ i ] ].t.rot, it->second[ i ].rot );
+	if ( ( CG_AnimNumber( ctx.es->torsoAnim ) ) < TORSO_ATTACK ) {
+		return;
 	}
+
+	auto it = deltas_.find( ctx.es->weapon );
+
+	if ( it == deltas_.end() ) {
+		return;
+	}
+
+	BoneMod mod;
+	for ( size_t i = 0; i < it->second.size(); ++i ) {
+		mod.index = boneIndicies_[i];
+		VectorCopy( it->second[i].delta, mod.translation );
+		QuatCopy( it->second[i].rot, mod.rotation );
+
+		ent->boneMods.emplace_back( mod );
+	}
+}
+
+uint32_t AnimDelta::GetBoneModCount( const SkeletonModifierContext& ctx ) {
+	if ( ( CG_AnimNumber( ctx.es->torsoAnim ) ) < TORSO_ATTACK ) {
+		return 0;
+	}
+
+	auto it = deltas_.find( ctx.es->weapon );
+	if ( it == deltas_.end() ) {
+		return 0;
+	}
+
+	return it->second.size();
 }
 
 
