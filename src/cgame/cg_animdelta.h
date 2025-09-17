@@ -38,7 +38,8 @@ class AnimDelta : public SkeletonModifier
 public:
 	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
 	virtual bool LoadData( clientInfo_t* ci ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+	virtual void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refEntity_t* unused ) override;
+	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) override;
 
 private:
 	struct delta_t {
