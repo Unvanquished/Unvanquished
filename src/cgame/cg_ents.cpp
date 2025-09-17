@@ -24,10 +24,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// cg_ents.c -- present snapshot entities, happens every single frame
+// cg_ents.cpp -- present snapshot entities, happens every single frame
 
 #include "common/Common.h"
 #include "cg_local.h"
+
+#include "EntityCache.h"
 
 /* It is dynamically adjusted in CG_AddPacketEntities() to avoid looping
 over unused entities. It can be zero before the first frame starts adding
@@ -140,26 +142,12 @@ Modifies the entities position and axis by the given
 tag location
 ======================
 */
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionEntityOnTag( refEntity_t *entity, const int parent,
                              const char *tagName )
 {
-	int           i;
-	orientation_t lerped;
-
-	// lerp the tag
-	trap_R_LerpTag( &lerped, parent, tagName, 0 );
-
-	// FIXME: allow origin offsets along tag?
-	VectorCopy( parent->origin, entity->origin );
-
-	for ( i = 0; i < 3; i++ )
-	{
-		VectorMA( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
-	}
-
-	// had to cast away the const to avoid compiler problems...
-	AxisMultiply( lerped.axis, ( ( refEntity_t * ) parent )->axis, entity->axis );
-	entity->backlerp = parent->backlerp;
+	entity->positionOnTag = EntityTag::ON_TAG;
+	entity->attachmentEntity = parent;
+	entity->tag = tagName;
 }
 
 /*
@@ -170,28 +158,12 @@ Modifies the entities position and axis by the given
 tag location
 ======================
 */
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const int parent,
                                     const char *tagName )
 {
-	int           i;
-	orientation_t lerped;
-	vec3_t        tempAxis[ 3 ];
-
-//AxisClear( entity->axis );
-	// lerp the tag
-	trap_R_LerpTag( &lerped, parent, tagName, 0 );
-
-	// FIXME: allow origin offsets along tag?
-	VectorCopy( parent->origin, entity->origin );
-
-	for ( i = 0; i < 3; i++ )
-	{
-		VectorMA( entity->origin, lerped.origin[ i ], parent->axis[ i ], entity->origin );
-	}
-
-	// had to cast away the const to avoid compiler problems...
-	AxisMultiply( entity->axis, lerped.axis, tempAxis );
-	AxisMultiply( tempAxis, ( ( refEntity_t * ) parent )->axis, entity->axis );
+	entity->positionOnTag = EntityTag::ON_TAG_ROTATED;
+	entity->attachmentEntity = parent;
+	entity->tag = tagName;
 }
 
 /*
@@ -345,7 +317,7 @@ static void CG_General( centity_t *cent )
 	AnglesToAxis( cent->lerpAngles, ent.axis );
 
 	// add to refresh list
-	trap_R_AddRefEntityToScene( &ent );
+	AddRefEntity( cent, ent );
 }
 
 /*
@@ -491,7 +463,7 @@ static void CG_Missile( centity_t *cent )
 			}
 		}
 
-		ent.skeleton.scale = ma->modelScale;
+		ent.scale = ma->modelScale;
 	}
 
 	// Add particle system.
@@ -545,7 +517,7 @@ static void CG_Missile( centity_t *cent )
 	// Only refresh if there is something to display.
 	if ( ma->sprite || ma->model )
 	{
-		trap_R_AddRefEntityToScene( &ent );
+		AddRefEntity( cent, ent );
 	}
 }
 
@@ -556,9 +528,7 @@ CG_Mover
 */
 static void CG_Mover( centity_t *cent )
 {
-	entityState_t *s1;
-
-	s1 = &cent->currentState;
+	entityState_t* s1 = &cent->currentState;
 
 	// create the render entity
 	refEntity_t ent{};
@@ -581,15 +551,16 @@ static void CG_Mover( centity_t *cent )
 		ent.hModel = cgs.gameModels[ s1->modelindex ];
 	}
 
-	// add to refresh list
-	trap_R_AddRefEntityToScene( &ent );
-
 	// add the secondary model
 	if ( s1->modelindex2 )
 	{
-		ent.skinNum = 0;
-		ent.hModel = cgs.gameModels[ s1->modelindex2 ];
-		trap_R_AddRefEntityToScene( &ent );
+		refEntity_t ent2 = ent;
+		ent2.skinNum = 0;
+		ent2.hModel = cgs.gameModels[ s1->modelindex2 ];
+		// trap_R_AddRefEntityToScene( &ent );
+		AddRefEntities( cent, { ent, ent2 } );
+	} else {
+		AddRefEntity( cent, ent );
 	}
 }
 
@@ -600,9 +571,7 @@ CG_Portal
 */
 static void CG_Portal( centity_t *cent )
 {
-	entityState_t *s1;
-
-	s1 = &cent->currentState;
+	entityState_t* s1 = &cent->currentState;
 
 	// create the render entity
 	refEntity_t ent{};
@@ -615,7 +584,7 @@ static void CG_Portal( centity_t *cent )
 	ent.frame = s1->frame; // rotation speed
 
 	// add to refresh list
-	trap_R_AddRefEntityToScene( &ent );
+	AddRefEntity( cent, ent );
 }
 
 //============================================================================
@@ -800,7 +769,7 @@ static void CG_LightFlare( centity_t *cent )
 		return;
 	}
 
-	trap_R_AddRefEntityToScene( &flare );
+	AddRefEntity( cent, flare );
 }
 
 /*
@@ -1280,6 +1249,8 @@ void CG_AddPacketEntities()
 	ps = &cg.predictedPlayerState;
 	BG_PlayerStateToEntityState( ps, &cg.predictedPlayerEntity.currentState, false );
 	cg.predictedPlayerEntity.valid = true;
+	cg.predictedPlayerEntity.refEntitiesFrame ^= 1;
+	cg.predictedPlayerEntity.refEntitiesFrameCount[cg.predictedPlayerEntity.refEntitiesFrame] = 0;
 	CG_AddCEntity( &cg.predictedPlayerEntity );
 
 	// lerp the non-predicted value for lightning gun origins
@@ -1307,7 +1278,18 @@ void CG_AddPacketEntities()
 
 		cent->valid = true;
 
+		cent->refEntitiesFrame ^= 1;
+		cent->refEntitiesFrameCount[cent->refEntitiesFrame] = 0;
 		CG_AddCEntity( cent );
+
+		if ( cent != &cg.predictedPlayerEntity ) {
+			uint8_t lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
+
+			if ( cent->refEntitiesCount > lastFrameCount ) {
+				entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
+				cent->refEntitiesCount = lastFrameCount;
+			}
+		}
 
 		done[ num ] = true;
 
@@ -1336,6 +1318,9 @@ void CG_AddPacketEntities()
 
 		if ( cent->valid )
 		{
+			entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, true );
+			cent->refEntitiesOffset = 0;
+			cent->refEntitiesCount  = 0;
 			CG_CEntityPVSLeave( cent );
 		}
 

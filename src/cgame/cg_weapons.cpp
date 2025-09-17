@@ -30,8 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/FileSystem.h"
 #include "cg_local.h"
 
-static refSkeleton_t gunSkeleton;
-static refSkeleton_t oldGunSkeleton;
+#include "EntityCache.h"
 
 /*
 =================
@@ -1082,7 +1081,7 @@ CG_SetWeaponLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, int newAnimation )
+static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, refEntity_t* ent, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 	bool toggle = false;
@@ -1106,13 +1105,13 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 		Log::Debug( "Anim: %i", newAnimation );
 	}
 
-	if ( /*&cg_weapons[ weapon ].md5 &&*/ !toggle && lf->old_animation && lf->old_animation->handle )
+	if ( !toggle && lf->old_animation && lf->old_animation->handle )
 	{
-		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
-		{
-			Log::Warn( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton" );
-			return;
-		}
+		ent->animationHandle2 = lf->old_animation->handle;
+		ent->startFrame2 = lf->oldFrame;
+		ent->endFrame2 = lf->frame;
+		ent->lerp2 = lf->backlerp;
+		ent->clearOrigin2 = lf->old_animation->clearOrigin;
 	}
 }
 
@@ -1121,7 +1120,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 CG_WeaponAnimation
 ===============
 */
-static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_WeaponAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
 {
 	lerpFrame_t   *lf = &cent->pe.weapon;
 	entityState_t *es = &cent->currentState;
@@ -1129,7 +1128,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	// see if the animation sequence is switching
 	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ es->weapon ].md5 && !lf->animation->handle ) )
 	{
-		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, lf, es->weaponAnim );
+		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, ent, lf, es->weaponAnim );
 	}
 
 	CG_RunLerpFrame( lf );
@@ -1142,7 +1141,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, &gunSkeleton, &oldGunSkeleton );
+		CG_BuildAnimSkeleton( lf, ent );
 	}
 }
 
@@ -1312,23 +1311,18 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
+std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t* ps, centity_t* cent,
+	const int entID, const uint16_t entOffset )
 {
-	vec3_t       angles;
-	weapon_t     weaponNum;
-	weaponMode_t weaponMode;
-	weaponInfo_t *weapon;
-	bool     noGunModel;
-	bool     firing;
-
-	weaponNum = (weapon_t) cent->currentState.weapon;
-	weaponMode = (weaponMode_t) cent->currentState.generic1;
+	weapon_t weaponNum = (weapon_t) cent->currentState.weapon;
+	weaponMode_t weaponMode = (weaponMode_t) cent->currentState.generic1;
 
 	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
 	{
 		weaponMode = WPM_PRIMARY;
 	}
 
+	bool firing;
 	if ( ( ( cent->currentState.eFlags & EF_FIRING ) && weaponMode == WPM_PRIMARY ) ||
 	     ( ( cent->currentState.eFlags & EF_FIRING2 ) && weaponMode == WPM_SECONDARY ) ||
 	     ( ( cent->currentState.eFlags & EF_FIRING3 ) && weaponMode == WPM_TERTIARY ) )
@@ -1340,13 +1334,13 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		firing = false;
 	}
 
-	weapon = &cg_weapons[ weaponNum ];
+	weaponInfo_t* weapon = &cg_weapons[ weaponNum ];
 
 	if ( !weapon->registered )
 	{
 		Log::Warn( "CG_AddPlayerWeapon: weapon %d (%s) "
 		            "is not registered", weaponNum, BG_Weapon( weaponNum )->name );
-		return;
+		return {};
 	}
 
 	// add the weapon
@@ -1397,7 +1391,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		rotationBone = weapon->rotationBoneIndex;
 	}
 
-	noGunModel = ( ( !ps || cg.renderingThirdPerson ) && weapon->disableIn3rdPerson ) || !gun.hModel;
+	bool noGunModel = ( ( !ps || cg.renderingThirdPerson ) && weapon->disableIn3rdPerson ) || !gun.hModel;
 
 	if ( !ps )
 	{
@@ -1423,36 +1417,35 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 	}
 
+	std::vector<refEntity_t> ents;
 	if ( !noGunModel )
 	{
-		CG_PositionEntityOnTag( &gun, parent, "tag_weapon" );
-		if ( ps )
-		{
-			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+		CG_PositionEntityOnTag( &gun, entID, "tag_weapon" );
+		if ( ps ) {
+			CG_WeaponAnimation( cent, &gun, &gun.oldframe, &gun.frame, &gun.backlerp );
 		}
 
 		if ( weapon->md5 )
 		{
-			gun.skeleton = gunSkeleton;
-
 			if ( ps && rotationBone >= 0 )
 			{
-				quat_t rotation;
 				matrix_t mat;
-				vec3_t   nBounds[ 2 ];
 
-				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
-				QuatMultiply2( gun.skeleton.bones[rotationBone].t.rot, rotation );
+				BoneMod boneMod;
+				boneMod.index = rotationBone;
+				QuatFromAngles( boneMod.rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
+				VectorCopy( vec3_origin, boneMod.translation );
+
+				gun.boneMods.push_back( boneMod );
 
 				// Update bounds to reflect rotation
 				MatrixFromAngles( mat, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
 
-				MatrixTransformBounds(mat, gun.skeleton.bounds[0], gun.skeleton.bounds[1], nBounds[0], nBounds[1]);
-
-				BoundsAdd( gun.skeleton.bounds[ 0 ], gun.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
+				gun.boundsAdd = 1;
+				VectorSet( gun.boundsRotation, weapon->rotation[0], weapon->rotation[1], weapon->rotation[2] );
 			}
 
-			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
+			gun.scale = weapon->scale;
 		}
 
 		if ( cg_drawGun.Get() >= 3 && ps ) {
@@ -1461,7 +1454,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			gun.customShader = cgs.media.plainColorShader;
 		}
 
-		trap_R_AddRefEntityToScene( &gun );
+		ents.push_back( gun );
 
 		if ( !ps )
 		{
@@ -1489,14 +1482,16 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			VectorCopy( parent->lightingOrigin, barrel.lightingOrigin );
 			barrel.renderfx = parent->renderfx;
 
+			vec3_t angles;
 			angles[ YAW ] = 0;
 			angles[ PITCH ] = 0;
 			angles[ ROLL ] = CG_MachinegunSpinAngle( cent, firing );
 			AnglesToAxis( angles, barrel.axis );
 
-			CG_PositionRotatedEntityOnTag( &barrel, &gun, "tag_barrel" );
+			CG_PositionRotatedEntityOnTag( &barrel, entOffset, "tag_barrel" );
 
-			trap_R_AddRefEntityToScene( &barrel );
+			// trap_R_AddRefEntityToScene( &barrel );
+			ents.push_back( barrel );
 		}
 	}
 
@@ -1507,11 +1502,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		{
 			if ( noGunModel )
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, parent, parent->hModel, "tag_weapon" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entID, parent->hModel, "tag_weapon" );
 			}
 			else
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, &gun, gun.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entOffset, gun.hModel, "tag_flash" );
 			}
 		}
 
@@ -1528,7 +1523,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		// impulse flash
 		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME )
 		{
-			return;
+			return ents;
 		}
 	}
 
@@ -1556,6 +1551,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	// If there is no model, we may still use flash.origin for a light.
 	if ( flash.hModel || flashDlight )
 	{
+		vec3_t angles;
 		angles[ YAW ] = 0;
 		angles[ PITCH ] = 0;
 		angles[ ROLL ] = crandom() * 10;
@@ -1563,16 +1559,16 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		if ( noGunModel )
 		{
-			CG_PositionRotatedEntityOnTag( &flash, parent, "tag_weapon" );
+			CG_PositionRotatedEntityOnTag( &flash, entID, "tag_weapon" );
 		}
 		else
 		{
-			CG_PositionRotatedEntityOnTag( &flash, &gun, "tag_flash" );
+			CG_PositionRotatedEntityOnTag( &flash, entOffset, "tag_flash" );
 		}
 
 		if ( flash.hModel )
 		{
-			trap_R_AddRefEntityToScene( &flash );
+			ents.push_back( flash );
 		}
 	}
 
@@ -1587,11 +1583,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			{
 				if ( noGunModel )
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, parent, parent->hModel, "tag_weapon" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entID, parent->hModel, "tag_weapon" );
 				}
 				else
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &gun, gun.hModel, "tag_flash" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entOffset, gun.hModel, "tag_flash" );
 				}
 
 				CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );
@@ -1611,6 +1607,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			                        weapon->wim[ weaponMode ].flashDlightColor[ 2 ], 0 );
 		}
 	}
+
+	return ents;
 }
 
 /*
@@ -1753,16 +1751,13 @@ void CG_AddViewWeapon( playerState_t *ps )
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
 	VectorMA( hand.origin, ( cg_gun_x.Get() + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
-	VectorMA( hand.origin, (cg_mirrorgun.Get() ? -1 : 1) * ( cg_gun_y.Get() + wi->posOffs[ 1 ] ),
+	VectorMA( hand.origin, ( cg_mirrorgun.Get() ? -1 : 1 ) * ( cg_gun_y.Get() + wi->posOffs[ 1 ] ),
 			cg.refdef.viewaxis[ 1 ], hand.origin );
 	VectorMA( hand.origin, ( cg_gun_z.Get() + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
-	if ( weapon == WP_LUCIFER_CANNON && ps->weaponCharge > 0 )
-	{
-		float fraction;
-
-		fraction = ( float ) ps->weaponCharge / LCANNON_CHARGE_TIME_MAX;
+	if ( weapon == WP_LUCIFER_CANNON && ps->weaponCharge > 0 ) {
+		float fraction = ( float ) ps->weaponCharge / LCANNON_CHARGE_TIME_MAX;
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 0 ],
 		          hand.origin );
 		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
@@ -1783,13 +1778,20 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
-	if( cg_mirrorgun.Get() )
+	if ( cg_mirrorgun.Get() ) {
 		hand.renderfx |= RF_SWAPCULL;
+	}
 
 	// add everything onto the hand
 	if ( weapon )
 	{
-		CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity );
+		std::vector<refEntity_t> ents{ hand };
+		ents.reserve( 4 );
+		
+		std::vector<refEntity_t> ents2 = CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, 0, ents.size() );
+		ents.insert( ents.end(), std::make_move_iterator( ents2.begin() ), std::make_move_iterator( ents2.end() ) );
+
+		AddRefEntities( cent, ents, true );
 	}
 }
 

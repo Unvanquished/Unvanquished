@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "cg_local.h"
 
+#include "EntityCache.h"
+
 /*
 ===============
 CG_DoorAnimation
@@ -98,7 +100,7 @@ void CG_ModelDoor( centity_t *cent )
 	//run animation
 	CG_DoorAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
-	trap_R_AddRefEntityToScene( &ent );
+	AddRefEntity( cent, ent );
 }
 
 /*
@@ -148,7 +150,7 @@ void CG_AnimMapObj( centity_t *cent )
 	}
 
 	refEntity_t ent{};
-	ent.skeleton.scale = 1.0f; // make (non-animated?) skeletal models work
+	ent.scale = 1.0f; // make (non-animated?) skeletal models work
 
 	VectorCopy( es->angles, cent->lerpAngles );
 	AnglesToAxis( cent->lerpAngles, ent.axis );
@@ -235,5 +237,5 @@ void CG_AnimMapObj( centity_t *cent )
 	}
 
 	// add to refresh list
-	trap_R_AddRefEntityToScene( &ent );
+	AddRefEntity( cent, ent );
 }
