@@ -722,7 +722,7 @@ static EngineCursor engineCursor;
 
 void Rocket_SetActiveContext( int catcher )
 {
-	engineCursor.Show( catcher );
+	engineCursor.Show( catcher & KEYCATCH_UI_MOUSE );
 }
 
 void CG_FocusEvent( bool has_focus )
