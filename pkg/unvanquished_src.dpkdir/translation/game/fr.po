@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-24 21:59+0200\n"
-"PO-Revision-Date: 2025-05-12 05:13+0000\n"
-"Last-Translator: Mel420-star <roaakolyyy@gmail.com>\n"
+"PO-Revision-Date: 2025-09-24 20:13+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -61,15 +61,15 @@ msgstr "Retour à la sélection de l’équipe"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Vous avez été banni"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "Banni par :"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Durée :"
 
 #: ui/banned.rml:63
 msgid "Reason:"
@@ -933,7 +933,7 @@ msgstr "Ultra"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Tout activé."
 
 # Cette traduction est incorrecte car selon le contexte il faut tantôt du masculin (élevé) tantôt du féminin (élevée).
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
@@ -943,7 +943,7 @@ msgstr "Haut"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "Lumières dynamiques, effets spéciaux, grandes textures…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -951,7 +951,7 @@ msgstr "Moyen"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "Détails de surface, bonnes textures…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:382 ui/options_graphics.rml:391
@@ -960,13 +960,16 @@ msgstr "Faible"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "La préconfiguration la plus rapide qui ne rend pas laid le jeu."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"Lorsque vous cherchez des optimisations, essayez d'abord le préréglage bas. "
+"Lorsque le préréglage bas fonctionne correctement, le préréglage le plus bas "
+"n'est pas plus rapide."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
@@ -975,10 +978,11 @@ msgstr "Le plus bas"
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
 msgstr ""
+"Textures et géométries laides, pas de ciel, pas de rebond de particules…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Seulement destiné à des appareils très lents, en dernier recours."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
@@ -1044,23 +1048,20 @@ msgid "Gamma"
 msgstr "Gamma"
 
 #: ui/options_graphics.rml:91
-#, fuzzy
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
-"Méthode dégueulasse pour augmenter la luminosité\n"
-"(Envisage de réinitialiser et d’utiliser la cartographie des tons à la "
-"place.)"
+"Méthode laide pour augmenter la luminosité. (Envisagez de réinitialiser et d’"
+"utiliser le mappage de tonalité à la place.)"
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
 msgstr "Gamma :"
 
 #: ui/options_graphics.rml:98
-#, fuzzy
 msgid "Tone mapping"
-msgstr "Ajustement de l’éclairage"
+msgstr "Mappage de tonalité"
 
 #: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
@@ -2660,19 +2661,16 @@ msgid "Armors"
 msgstr "Armures"
 
 #: ui/server_setup.rml:312
-#, fuzzy
 msgid "whether bots buy Light Armour"
-msgstr "Si les robots achètent des Armures Légères"
+msgstr "Si les bots achètent des Armures Légères"
 
 #: ui/server_setup.rml:316
-#, fuzzy
 msgid "whether bots buy Medium Armour"
-msgstr "Si les robots achètent des Armures Moyenne"
+msgstr "Si les bots achètent des Armures Moyenne"
 
 #: ui/server_setup.rml:320
-#, fuzzy
 msgid "whether bots buy the Battlesuit"
-msgstr "Si les robots achètent une combinaison de combat"
+msgstr "Si les bots achètent une combinaison de combat"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
@@ -2687,9 +2685,8 @@ msgid "Radar"
 msgstr "Radar"
 
 #: ui/server_setup.rml:342
-#, fuzzy
 msgid "Alien bots morph"
-msgstr "Les robots aliens se transforment"
+msgstr "Les bots aliens se transforment"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
