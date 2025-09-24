@@ -3500,9 +3500,7 @@ bool G_admin_putteam( gentity_t *ent )
 		return false;
 	}
 
-	teamnum = G_TeamFromString( team );
-
-	if ( teamnum == NUM_TEAMS )
+	if ( !G_TeamFromString( team, teamnum ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3putteam:^* unknown team $1$") ), team ) );
 		return false;
@@ -4587,9 +4585,7 @@ bool G_admin_endvote( gentity_t *ent )
 		trap_Argv( 1, teamName, sizeof( teamName ) );
 	}
 
-	team = G_TeamFromString( teamName );
-
-	if ( team == NUM_TEAMS )
+	if ( !G_TeamFromString( teamName, team ) )
 	{
 		ADMP( va( "%s %s %s", QQ( N_( "^3$1$:^* invalid team '$2$'" ) ), command, teamName ) );
 		return false;
@@ -5091,7 +5087,7 @@ bool G_admin_lock( gentity_t *ent )
 
 	lock = !Q_stricmp( command, "lock" );
 	trap_Argv( 1, teamName, sizeof( teamName ) );
-	team = G_TeamFromString( teamName );
+	team = BG_PlayableTeamFromString( teamName );
 
 	if ( G_IsPlayableTeam( team ) )
 	{

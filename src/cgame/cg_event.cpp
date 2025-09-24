@@ -1226,7 +1226,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					                1.5f );
 					break;
 
-				default:
+				case TEAM_NONE:
 					break;
 			}
 
@@ -1246,7 +1246,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					CG_CenterPrint( va( "^1%s", _( "The reactor is going down!" ) ), 1.5f );
 					break;
 
-				default:
+				case TEAM_NONE:
 					break;
 			}
 
@@ -1298,7 +1298,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					CG_CenterPrint( "There are no telenodes left!", 1.5f );
 					break;
 
-				default:
+				case TEAM_NONE:
 					break;
 			}
 

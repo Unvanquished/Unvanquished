@@ -570,6 +570,11 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 	if ( cg_rangeMarkerDrawIntersection.Get() || cg_rangeMarkerDrawFrontline.Get() )
 	{
+		if ( !cgs.media.binaryShadersLoaded )
+		{
+			CG_RegisterBinaryShaders();
+		}
+
 		float                       lineOpacity, lineThickness;
 		const cgMediaBinaryShader_t *mbsh;
 		cgBinaryShaderSetting_t     *bshs;

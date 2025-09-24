@@ -550,7 +550,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 		return;
 	}
 
-	switch ( G_TeamFromString( ConcatArgs( 1 ) ) )
+	switch ( BG_PlayableTeamFromString( ConcatArgs( 1 ) ) )
 	{
 		case TEAM_ALIENS:
 			G_LeaveTeam( ent );
@@ -565,7 +565,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 			ent->client->pers.classSelection = PCL_HUMAN_NAKED;
 			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
 			break;
-		default:
+		case TEAM_NONE:
 			ADMP( "\"" N_("usage: devteam [a|h]") "\"" );
 			return;
 	}
@@ -974,10 +974,16 @@ static void Cmd_Team_f( gentity_t *ent )
 	}
 	else
 	{
-		switch ( G_TeamFromString( s ) )
+		if ( !G_TeamFromString( s, team ) )
+		{
+			trap_SendServerCommand( ent->num(),
+				va( "print_tr %s %s", QQ( N_("Unknown team: $1$") ), Quote( s ) ) );
+			return;
+		}
+
+		switch ( team )
 		{
 			case TEAM_NONE:
-				team = TEAM_NONE;
 				break;
 
 			case TEAM_ALIENS:
@@ -1010,7 +1016,6 @@ static void Cmd_Team_f( gentity_t *ent )
 					}
 				}
 
-				team = TEAM_ALIENS;
 				break;
 
 			case TEAM_HUMANS:
@@ -1043,13 +1048,7 @@ static void Cmd_Team_f( gentity_t *ent )
 					}
 				}
 
-				team = TEAM_HUMANS;
 				break;
-
-			default:
-				trap_SendServerCommand( ent->num(),
-				                        va( "print_tr %s %s", QQ( N_("Unknown team: $1$") ), Quote( s ) ) );
-				return;
 		}
 	}
 

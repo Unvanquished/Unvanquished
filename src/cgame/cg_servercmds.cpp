@@ -418,8 +418,6 @@ static void CG_MapRestart()
 	// we really should clear more parts of cg here and stop sounds
 
 	cg_thirdPerson.Set(false);
-
-	CG_OnMapRestart();
 }
 
 /*

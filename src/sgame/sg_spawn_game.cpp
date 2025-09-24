@@ -97,6 +97,16 @@ void SP_game_end( gentity_t *self )
 	{
 		self->mapEntity.conditions.team = TEAM_ALIENS;
 	}
+	else
+	{
+		if ( self->mapEntity.conditions.team <= TEAM_NONE ||
+		     self->mapEntity.conditions.team >= NUM_TEAMS )
+		{
+			Log::Warn( S_GAME_END ": invalid team" );
+			G_FreeEntity( self );
+			return;
+		}
+	}
 
 	self->act = game_end_act;
 }

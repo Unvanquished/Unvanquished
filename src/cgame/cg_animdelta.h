@@ -36,9 +36,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 class AnimDelta : public SkeletonModifier
 {
 public:
-	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual bool LoadData( clientInfo_t* ci ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
+	bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
+	bool LoadData( clientInfo_t* ci ) override;
+	void Apply( const SkeletonModifierContext& ctx, refSkeleton_t* skeleton ) override;
 
 private:
 	struct delta_t {

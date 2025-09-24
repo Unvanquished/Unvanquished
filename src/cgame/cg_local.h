@@ -1533,6 +1533,7 @@ struct cgMedia_t
 	qhandle_t             sphericalCone240Model;
 
 	qhandle_t             plainColorShader;
+	bool binaryShadersLoaded;
 	qhandle_t             binaryAlpha1Shader;
 	cgMediaBinaryShader_t binaryShaders[ NUM_BINARY_SHADERS ];
 
@@ -1951,6 +1952,7 @@ void       CG_BuildSpectatorString();
 
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
+void CG_RegisterBinaryShaders();
 
 void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gameState );
 void CG_Shutdown();

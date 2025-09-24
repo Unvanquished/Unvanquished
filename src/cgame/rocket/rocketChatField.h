@@ -54,7 +54,7 @@ public:
 		text_element = AppendChild( Rml::Factory::InstanceElement( this, "div", "*", Rml::XMLAttributes() ) );
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		UpdateCursorPosition();
 		if ( cursor_geometry.GetVertices().empty() )
@@ -64,20 +64,20 @@ public:
 		cursor_geometry.Render( cursor_position );
 	}
 
-	virtual void OnChildAdd( Element *child )
+	void OnChildAdd( Element *child ) override
 	{
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
-			this->AddEventListener( "focus", this );
-			this->AddEventListener( "mousemove", this );
-			this->AddEventListener( "textinput", this );
-			this->AddEventListener( "keydown", this );
-			this->AddEventListener( "resize", this );
+			this->AddEventListener( Rml::EventId::Focus, this );
+			this->AddEventListener( Rml::EventId::Mousemove, this );
+			this->AddEventListener( Rml::EventId::Textinput, this );
+			this->AddEventListener( Rml::EventId::Keydown, this );
+			this->AddEventListener( Rml::EventId::Resize, this );
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes& changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		Element::OnAttributeChange( changed_attributes );
 		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
@@ -86,17 +86,17 @@ public:
 		}
 	}
 
-	void ProcessEvent( Rml::Event &event )
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		// Cannot move mouse while this element is in view
 		// FIXME: Does not work? You can move the mouse out of the window.
-		if ( event == "mousemove" )
+		if ( event == Rml::EventId::Mousemove )
 		{
 			event.StopPropagation();
 			return;
 		}
 
-		if ( event == "focus" )
+		if ( event == Rml::EventId::Focus )
 		{
 			CG_Rocket_EnableCursor( false );
 
@@ -108,14 +108,14 @@ public:
 		}
 
 		{
-			if ( event == "resize" )
+			if ( event == Rml::EventId::Resize )
 			{
 				CG_Rocket_EnableCursor( false );
 				GenerateCursor();
 			}
 
 			// Handle key presses
-			else if ( event == "keydown" )
+			else if ( event == Rml::EventId::Keydown )
 			{
 				Rml::Input::KeyIdentifier key_identifier = ( Rml::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
 
@@ -194,7 +194,7 @@ public:
 				}
 			}
 
-			else if ( event == "textinput" )
+			else if ( event == Rml::EventId::Textinput )
 			{
 				if ( event.GetParameter< int >( "ctrl_key", 0 ) == 0 &&
 				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
@@ -219,7 +219,7 @@ public:
 		}
 	}
 
-	bool GetIntrinsicDimensions( Rml::Vector2f &dimension, float& /*ratio*/ )
+	bool GetIntrinsicDimensions( Rml::Vector2f &dimension, float& /*ratio*/ ) override
 	{
 		Rml::FontFaceHandle font = text_element->GetFontFaceHandle();
 		if ( font == 0 )

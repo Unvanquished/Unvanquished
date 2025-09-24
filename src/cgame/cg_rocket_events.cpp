@@ -241,26 +241,19 @@ static void CG_Rocket_EventExecForm()
 	}
 }
 
+// Specify multiple files to randomly select between
 static void CG_Rocket_EventPlay()
 {
-	const char *track = nullptr;
+	const Cmd::Args &args = trap_Args();
+	int numSounds = args.Argc() - 1;
 
-	// Specifying multiple files to randomly select between
-	if ( trap_Argc() > 2 )
+	if ( numSounds < 1 )
 	{
-		int numSounds = atoi( CG_Argv( 1 ) );
-		if ( numSounds > 0 )
-		{
-			int selection = rand() % numSounds + 1;
-			track = CG_Argv( 1 + selection );
-			trap_S_StartBackgroundTrack( track, track );
-		}
+		return;
 	}
-	else
-	{
-		track = CG_Argv( 1 );
-		trap_S_StartBackgroundTrack( track, track );
-	}
+
+	const char *track = args.Argv( rand() % numSounds + 1 ).c_str();
+	trap_S_StartBackgroundTrack( track, track );
 }
 
 static void CG_Rocket_ResetPings()

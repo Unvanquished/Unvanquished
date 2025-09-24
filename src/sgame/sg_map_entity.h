@@ -100,7 +100,9 @@ struct variatingTime_t
  */
 struct gentityConditions_t
 {
+	// Normally this should be a valid team but for sensor_support it may also be -1
 	team_t   team;
+
 	int      stage;
 
 	BoundedVector<class_t,     PCL_NUM_CLASSES>   classes;
