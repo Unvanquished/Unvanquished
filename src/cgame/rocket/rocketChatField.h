@@ -102,13 +102,14 @@ public:
 	{
 		if ( event == Rml::EventId::Focus )
 		{
-			CG_Rocket_EnableCursor( false );
-
 			if ( cg_chatAutoClear.Get() ) {
 				text.clear();
 				cursor_character_index = 0;
 				UpdateText();
 			}
+
+			// Make the mouse pointer invisible
+			rocketInfo.cursorFreezeX = rocketInfo.cursorFreezeY = -100;
 
 			focused = true;
 			return;
@@ -123,7 +124,6 @@ public:
 		{
 			if ( event == Rml::EventId::Resize )
 			{
-				CG_Rocket_EnableCursor( false );
 				GenerateCursor();
 			}
 
