@@ -179,8 +179,6 @@ void G_FreeEntity( gentity_t *entity )
 
 	G_BotRemoveObstacle( entity->num() );
 
-	entity->mapEntity.deinstantiate();
-
 	if ( entity->s.eType == entityType_t::ET_BEACON && entity->s.modelindex == BCT_TAG )
 	{
 		// It's possible that this happened before, but we need to be sure.
