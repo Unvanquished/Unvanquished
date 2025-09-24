@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-29 18:48+0200\n"
+"POT-Creation-Date: 2025-09-24 21:59+0200\n"
 "PO-Revision-Date: 2025-06-23 09:01+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -4086,7 +4086,7 @@ msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
 
-#: src/cgame/cg_consolecmds.cpp:130
+#: src/cgame/cg_consolecmds.cpp:128
 #, c-format
 msgid "Listed %2d clients"
 msgstr "Luetteloitu %2d käyttäjää"
@@ -4234,11 +4234,11 @@ msgstr "Tähyillään kenttää…"
 msgid "Done!"
 msgstr "Valmis!"
 
-#: src/cgame/cg_main.cpp:1143
+#: src/cgame/cg_main.cpp:1153
 msgid "Generating bot navigation meshes"
 msgstr "Generoidaan bottien navigaatiokaaviot"
 
-#: src/cgame/cg_main.cpp:1187
+#: src/cgame/cg_main.cpp:1197
 #, c-format
 msgid "by %s"
 msgstr "%s:lta / -ltä"
@@ -4402,7 +4402,7 @@ msgstr "TAISTELE!"
 msgid "estimating"
 msgstr "arvioidaan"
 
-#: src/cgame/cg_servercmds.cpp:471
+#: src/cgame/cg_servercmds.cpp:469
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -4410,11 +4410,11 @@ msgstr ""
 "Alienien joukkueessa on liikaa pelaajia. Odotathan kunnes paikkoja vapautuu "
 "tai liity ihmisten joukkueeseen."
 
-#: src/cgame/cg_servercmds.cpp:473
+#: src/cgame/cg_servercmds.cpp:471
 msgid "The alien team has too many players"
 msgstr "Alienien joukkueessa on liikaa pelaajia"
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:475
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -4422,52 +4422,52 @@ msgstr ""
 "Ihmisten joukkueessa on liikaa pelaajia. Odotathan kunnes paikkoja vapautuu "
 "tai liity alienien joukkueeseen."
 
-#: src/cgame/cg_servercmds.cpp:479
+#: src/cgame/cg_servercmds.cpp:477
 msgid "The human team has too many players"
 msgstr "Ihmisten joukkueessa on liikaa pelaajia"
 
-#: src/cgame/cg_servercmds.cpp:483
+#: src/cgame/cg_servercmds.cpp:481
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr "Alienien joukkue on lukittu. Et voi liittyä alieneihin juuri nyt."
 
-#: src/cgame/cg_servercmds.cpp:485
+#: src/cgame/cg_servercmds.cpp:483
 msgid "The alien team is locked"
 msgstr "Alienien joukkue on lukittu"
 
-#: src/cgame/cg_servercmds.cpp:489
+#: src/cgame/cg_servercmds.cpp:487
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr "Ihmisten joukkue on lukittu. Et voi liittyä ihmisiin juuri nyt."
 
-#: src/cgame/cg_servercmds.cpp:491
+#: src/cgame/cg_servercmds.cpp:489
 msgid "The human team is locked"
 msgstr "Ihmisten joukkue on lukittu"
 
-#: src/cgame/cg_servercmds.cpp:495
+#: src/cgame/cg_servercmds.cpp:493
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
 "Pelaajapaikkojen maksimimäärä on täynnä. Odotathan paikkojen vapautumista."
 
-#: src/cgame/cg_servercmds.cpp:497
+#: src/cgame/cg_servercmds.cpp:495
 msgid "No free player slots"
 msgstr "Ei vapaita pelaajapaikkoja"
 
-#: src/cgame/cg_servercmds.cpp:501
+#: src/cgame/cg_servercmds.cpp:499
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Sinun täytyy odottaa, että lämmittelyaika päättyy ennen joukkueeseen "
 "liittymistä."
 
-#: src/cgame/cg_servercmds.cpp:503
+#: src/cgame/cg_servercmds.cpp:501
 msgid "You cannot join a team during warmup."
 msgstr "Et voi liittyä joukkueeseen lämmittelyajalla."
 
-#: src/cgame/cg_servercmds.cpp:511
+#: src/cgame/cg_servercmds.cpp:509
 msgid "Cheats are not enabled on this server"
 msgstr "Huijaustoiminnot eivät ole käytössä tällä palvelimella"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:513
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -4475,27 +4475,27 @@ msgstr ""
 "Huijaustoiminnot eivät ole käytössä tällä palvelimella, joten et voi käyttää "
 "tätä komentoa, kun olet joukkueessa"
 
-#: src/cgame/cg_servercmds.cpp:522
+#: src/cgame/cg_servercmds.cpp:520
 msgid "Join a team first"
 msgstr "Liity ensin joukkueeseen"
 
-#: src/cgame/cg_servercmds.cpp:528
+#: src/cgame/cg_servercmds.cpp:526
 msgid "You can only use this command when spectating"
 msgstr "Voit käyttää tätä komentoa vain katsojana"
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:531
 msgid "Must be alien to use this command"
 msgstr "Täytyy kuulua alieneihin käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:538
+#: src/cgame/cg_servercmds.cpp:536
 msgid "Must be human to use this command"
 msgstr "Täytyy kuulua ihmisiin käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:543
+#: src/cgame/cg_servercmds.cpp:541
 msgid "Must be alive to use this command"
 msgstr "Täytyy olla elossa käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:549
+#: src/cgame/cg_servercmds.cpp:547
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -4503,11 +4503,11 @@ msgstr ""
 "Tässä ei ole tilaa rakennelmalle. Liiku, kunnes kuvajainen muuttuu vihreäksi "
 "merkiten sopivaa rakennuspaikkaa."
 
-#: src/cgame/cg_servercmds.cpp:551
+#: src/cgame/cg_servercmds.cpp:549
 msgid "There is no room to build here"
 msgstr "Tässä ei ole tilaa rakennelmalle"
 
-#: src/cgame/cg_servercmds.cpp:555
+#: src/cgame/cg_servercmds.cpp:553
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -4515,15 +4515,15 @@ msgstr ""
 "Ei voi rakentaa tälle pinnalle. Pinta on liian jyrkkä taikka sopimaton "
 "rakennelmille. Valitse toinen paikka rakennelmalle."
 
-#: src/cgame/cg_servercmds.cpp:558
+#: src/cgame/cg_servercmds.cpp:556
 msgid "Cannot build on this surface"
 msgstr "Ei voi rakentaa tälle pinnalle"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:561
 msgid "You cannot build that structure"
 msgstr "Et voi tehdä tuota rakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:567
+#: src/cgame/cg_servercmds.cpp:565
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -4531,11 +4531,11 @@ msgstr ""
 "Tämä toimi poistaisi joukkueesi viimeisen tukijoukkopisteen, joka usein "
 "nopeasti johtaa häviöön. Yritä tehdä enemmän tukijoukkorakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:570
+#: src/cgame/cg_servercmds.cpp:568
 msgid "You may not deconstruct the last spawn"
 msgstr "Et voi purkaa viimeistä tukijoukkorakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:574
+#: src/cgame/cg_servercmds.cpp:572
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -4543,27 +4543,27 @@ msgstr ""
 "Päärakennelma on suojattu välittömältä poistamiselta. Sitä voi siirtää ensin "
 "merkkaamalla, sitten rakentamalla sen toiseen paikkaan."
 
-#: src/cgame/cg_servercmds.cpp:577
+#: src/cgame/cg_servercmds.cpp:575
 msgid "You may not deconstruct this structure"
 msgstr "Et voi purkaa tätä rakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:581
+#: src/cgame/cg_servercmds.cpp:579
 msgid "Building has been disabled on the server for your team."
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä palvelimen kautta."
 
-#: src/cgame/cg_servercmds.cpp:582
+#: src/cgame/cg_servercmds.cpp:580
 msgid "Building has been disabled for your team"
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä"
 
-#: src/cgame/cg_servercmds.cpp:586
+#: src/cgame/cg_servercmds.cpp:584
 msgid "You are no longer permitted to build."
 msgstr "Sinulla ei enää ole lupaa rakentaa."
 
-#: src/cgame/cg_servercmds.cpp:587
+#: src/cgame/cg_servercmds.cpp:585
 msgid "You are no longer permitted to build"
 msgstr "Sinulla ei enää ole lupaa rakentaa"
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:589
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4571,11 +4571,11 @@ msgstr ""
 "Joukkueesi on päättänyt myöntää tappion ja luovuttaa pelin; Rakentelusta ei "
 "ole hyötyä tässä vaiheessa."
 
-#: src/cgame/cg_servercmds.cpp:593
+#: src/cgame/cg_servercmds.cpp:591
 msgid "Cannot build after admitting defeat"
 msgstr "Ei voi rakentaa tappion myöntämisen jälkeen"
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:595
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4583,19 +4583,19 @@ msgstr ""
 "Resursseja ei ole jäjellä. Vapauta resursseja merkkaamalla nykyisiä "
 "rakennelmia korvattaviksi."
 
-#: src/cgame/cg_servercmds.cpp:599
+#: src/cgame/cg_servercmds.cpp:597
 msgid "There are no resources remaining"
 msgstr "Resursseja ei ole jäljellä"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:601
 msgid "This buildable is not powered."
 msgstr "Tähän rakennelmaan ei tule voimaa."
 
-#: src/cgame/cg_servercmds.cpp:604
+#: src/cgame/cg_servercmds.cpp:602
 msgid "This buildable is not powered"
 msgstr "Tähän rakennelmaan ei tule voimaa"
 
-#: src/cgame/cg_servercmds.cpp:608
+#: src/cgame/cg_servercmds.cpp:606
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -4603,26 +4603,26 @@ msgstr ""
 "Reaktoria ei ole. Reaktori täytyy rakentaa ennen kuin voit asettaa mitään "
 "muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:610
+#: src/cgame/cg_servercmds.cpp:608
 msgid "There is no reactor"
 msgstr "Reaktoria ei ole"
 
-#: src/cgame/cg_servercmds.cpp:614
+#: src/cgame/cg_servercmds.cpp:612
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Reaktoreita voi olla vain yksi. Merkkaa nykyinen reaktori jos aiot siirtää "
 "sitä."
 
-#: src/cgame/cg_servercmds.cpp:616
+#: src/cgame/cg_servercmds.cpp:614
 msgid "There can only be one Reactor"
 msgstr "Reaktoreita voi olla vain yksi"
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:619
 msgid "Your team cannot have any more drills"
 msgstr "Joukkueellasi ei voi olla enempää poria"
 
-#: src/cgame/cg_servercmds.cpp:625
+#: src/cgame/cg_servercmds.cpp:623
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4630,32 +4630,32 @@ msgstr ""
 "Sinulla ei ole tilaa tämän kantamiseen. Myythän ristiriitaiset päivitykset "
 "ennen tämän ostamista."
 
-#: src/cgame/cg_servercmds.cpp:627
+#: src/cgame/cg_servercmds.cpp:625
 msgid "You have no room to carry this"
 msgstr "Sinulla ei ole tilaa tämän kantamiseen"
 
-#: src/cgame/cg_servercmds.cpp:631
+#: src/cgame/cg_servercmds.cpp:629
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 "Rahat eivät riitä. Sinulla ei ole tarpeeksi krediittejä tämän toiminnon "
 "suorittamiseen."
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:631
 msgid "Insufficient funds"
 msgstr "Riittämättömät varat"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:635
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr "Sinulla on jo tämä esine. Et voi kantaa useampaa samanlaista esinettä."
 
-#: src/cgame/cg_servercmds.cpp:639
+#: src/cgame/cg_servercmds.cpp:637
 msgid "You already hold this item"
 msgstr "Sinulla on jo tämä esine"
 
-#: src/cgame/cg_servercmds.cpp:643
+#: src/cgame/cg_servercmds.cpp:641
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4663,11 +4663,11 @@ msgstr ""
 "Sinun täytyy olla käynnissäolevalla asevarikolla ostaaksesi aseita, "
 "päivityksiä tai ammuksia."
 
-#: src/cgame/cg_servercmds.cpp:645
+#: src/cgame/cg_servercmds.cpp:643
 msgid "You must be near a powered Armoury"
 msgstr "Sinun täytyy olla käynnissäolevalla asevarikolla"
 
-#: src/cgame/cg_servercmds.cpp:649
+#: src/cgame/cg_servercmds.cpp:647
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4675,43 +4675,43 @@ msgstr ""
 "Sinun täytyy olla reaktorilla, poralla tai käynnissäolevalla asevarikolla "
 "ostaaksesi energia-ammuksia."
 
-#: src/cgame/cg_servercmds.cpp:651
+#: src/cgame/cg_servercmds.cpp:649
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 "Sinun täytyy olla reaktorilla, poralla tai käynnissäolevalla asevarikolla"
 
-#: src/cgame/cg_servercmds.cpp:655
+#: src/cgame/cg_servercmds.cpp:653
 msgid "There is not enough room here to change armour."
 msgstr "Panssaripuvun vaihtamiseen ei ole täällä tilaa."
 
-#: src/cgame/cg_servercmds.cpp:656
+#: src/cgame/cg_servercmds.cpp:654
 msgid "Not enough room here to change armour."
 msgstr "Ei riittävästi tilaa täällä panssaripuvun vaihtoon."
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:658
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 "Et saa ostaa tai myydä aseita ennen kuin rakennusajastimesi on nollilla."
 
-#: src/cgame/cg_servercmds.cpp:662
+#: src/cgame/cg_servercmds.cpp:660
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr "Et voi ostaa tai myydä aseita ennen kuin rakennusajastimesi nollaantuu"
 
-#: src/cgame/cg_servercmds.cpp:667
+#: src/cgame/cg_servercmds.cpp:665
 msgid "You must be dead to use the class command"
 msgstr "Sinun täytyy olla kuollut käyttääksesi luokkakomentoa"
 
-#: src/cgame/cg_servercmds.cpp:671
+#: src/cgame/cg_servercmds.cpp:669
 msgid "Unknown starting item"
 msgstr "Tuntematon aloitusesine"
 
-#: src/cgame/cg_servercmds.cpp:675
+#: src/cgame/cg_servercmds.cpp:673
 msgid "Starting item not allowed"
 msgstr "Aloitusesine ei sallittu"
 
-#: src/cgame/cg_servercmds.cpp:681
+#: src/cgame/cg_servercmds.cpp:679
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4719,11 +4719,11 @@ msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa ennen kuin voit asettaa "
 "mitään muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:683 src/cgame/cg_servercmds.cpp:723
+#: src/cgame/cg_servercmds.cpp:681 src/cgame/cg_servercmds.cpp:721
 msgid "There is no Overmind"
 msgstr "Ylihallitsijaa ei ole"
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:685
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4731,15 +4731,15 @@ msgstr ""
 "Ylihallitsijoita voi olla vain yksi. Merkkaa nykyinen ylihallitsija jos aiot "
 "siirtää sitä."
 
-#: src/cgame/cg_servercmds.cpp:689
+#: src/cgame/cg_servercmds.cpp:687
 msgid "There can only be one Overmind"
 msgstr "Ylihallitsijoita voi olla vain yksi"
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:692
 msgid "Your team cannot have any more leeches"
 msgstr "Joukkueellasi ei voi olla enempää loisia"
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:696
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4747,11 +4747,11 @@ msgstr ""
 "Ylihallitsija ei voi hallita enempää rakennelmia. Merkkaa nykyisiä "
 "rakennelmia korvattavaksi rakentaaksesi uusia."
 
-#: src/cgame/cg_servercmds.cpp:700
+#: src/cgame/cg_servercmds.cpp:698
 msgid "The Overmind cannot control any more structures"
 msgstr "Ylihallitsija ei voi hallita enempää rakennelmia"
 
-#: src/cgame/cg_servercmds.cpp:704
+#: src/cgame/cg_servercmds.cpp:702
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4759,11 +4759,11 @@ msgstr ""
 "Täällä ei ole tilaa kehittyä. Siirry kauemmaksi seinistä tai läheisistä "
 "esineistä ja yritä uudelleen."
 
-#: src/cgame/cg_servercmds.cpp:706
+#: src/cgame/cg_servercmds.cpp:704
 msgid "There is no room to evolve here"
 msgstr "Täällä ei ole tilaa kehittyä"
 
-#: src/cgame/cg_servercmds.cpp:710
+#: src/cgame/cg_servercmds.cpp:708
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4771,80 +4771,80 @@ msgstr ""
 "Tämä paikka on liian lähellä vihollista kehittymiseen. Siirry kauemmas "
 "vihollisista ja yritä uudelleen."
 
-#: src/cgame/cg_servercmds.cpp:712
+#: src/cgame/cg_servercmds.cpp:710
 msgid "This location is too close to the enemy to evolve"
 msgstr "Tämä paikka on liian lähellä vihollista kehittymiseen"
 
-#: src/cgame/cg_servercmds.cpp:716 src/cgame/cg_servercmds.cpp:717
+#: src/cgame/cg_servercmds.cpp:714 src/cgame/cg_servercmds.cpp:715
 msgid "The Overmind is too far away to devolve."
 msgstr "Ylihallitsija on liian kaukana alkeellistumiseen."
 
-#: src/cgame/cg_servercmds.cpp:721
+#: src/cgame/cg_servercmds.cpp:719
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa jotta voit päivittyä."
 
-#: src/cgame/cg_servercmds.cpp:727
+#: src/cgame/cg_servercmds.cpp:725
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Et voi kehittyä ennen kuin rakennusajastimesi on nollilla."
 
-#: src/cgame/cg_servercmds.cpp:728
+#: src/cgame/cg_servercmds.cpp:726
 msgid "You cannot evolve until your build timer expires"
 msgstr "Et voi kehittyä ennen kuin rakennusajastimesi nollaantuu"
 
-#: src/cgame/cg_servercmds.cpp:732
+#: src/cgame/cg_servercmds.cpp:730
 msgid "Wait a second after attacking or evolving"
 msgstr "Odota sekunti hyökkäämisen tai kehittymisen jälkeen"
 
-#: src/cgame/cg_servercmds.cpp:740
+#: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Et voi kehittyä %siksi"
 
-#: src/cgame/cg_servercmds.cpp:745
+#: src/cgame/cg_servercmds.cpp:743
 msgid "You cannot evolve while wallwalking"
 msgstr "Et voi kehittyä seinilläkävellessäsi"
 
-#: src/cgame/cg_servercmds.cpp:749
+#: src/cgame/cg_servercmds.cpp:747
 msgid "Unknown class"
 msgstr "Tuntematon luokka"
 
-#: src/cgame/cg_servercmds.cpp:753
+#: src/cgame/cg_servercmds.cpp:751
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Et voi aloittaa %sina"
 
-#: src/cgame/cg_servercmds.cpp:758
+#: src/cgame/cg_servercmds.cpp:756
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s ei ole sallittu"
 
-#: src/cgame/cg_servercmds.cpp:763
+#: src/cgame/cg_servercmds.cpp:761
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "%s ei ole vielä avautunut käyttöön"
 
-#: src/cgame/cg_servercmds.cpp:768
+#: src/cgame/cg_servercmds.cpp:766
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame: debug: ei valikkoa %d"
 
-#: src/cgame/cg_servercmds.cpp:871
+#: src/cgame/cg_servercmds.cpp:869
 msgid "^1*DEAD*^*"
 msgstr "^1*KUOLLUT*^*"
 
-#: src/cgame/cg_servercmds.cpp:932
+#: src/cgame/cg_servercmds.cpp:930
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sYksityisviesti pelaajalta ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:940
+#: src/cgame/cg_servercmds.cpp:938
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ">> vastaa sanomalla: '/m %d [viestisi]' tai '/r [viestisi]' <<"
 
-#: src/cgame/cg_servercmds.cpp:1430
+#: src/cgame/cg_servercmds.cpp:1428
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Tuntematon pelaajan pelikomento: %s"
@@ -5262,49 +5262,49 @@ msgstr "$2$ ^3PURKI RAKENNELMAN^* $1$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$2$ ^3TUHOSI RAKENNELMAN^* $1$"
 
-#: src/sgame/sg_main.cpp:1994
+#: src/sgame/sg_main.cpp:1997
 msgid "Timelimit hit"
 msgstr "Aikaraja tullut vastaan"
 
-#: src/sgame/sg_main.cpp:2005
+#: src/sgame/sg_main.cpp:2008
 msgid "$1$ minutes remaining!"
 msgstr "$1$ minuuttia jäljellä!"
 
-#: src/sgame/sg_main.cpp:2013
+#: src/sgame/sg_main.cpp:2016
 msgid "1 minute remaining!"
 msgstr "1 minuutti jäljellä!"
 
-#: src/sgame/sg_main.cpp:2026
+#: src/sgame/sg_main.cpp:2029
 msgid "Humans win"
 msgstr "Ihmiset voitti"
 
-#: src/sgame/sg_main.cpp:2040
+#: src/sgame/sg_main.cpp:2043
 msgid "Aliens win"
 msgstr "Alienit voitti"
 
-#: src/sgame/sg_main.cpp:2054
+#: src/sgame/sg_main.cpp:2057
 msgid "Empty teams skip map time exceeded."
 msgstr "Kentän ohitus tyhjillä joukkueilla -aikaraja ylitetty."
 
-#: src/sgame/sg_main.cpp:2220
+#: src/sgame/sg_main.cpp:2223
 msgid "The game has been paused. Please wait."
 msgstr "Erä on keskeytetty. Ole hyvä ja odota."
 
-#: src/sgame/sg_main.cpp:2224
+#: src/sgame/sg_main.cpp:2227
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Palvelin: Erä jatkuu automaattisesti $1$ sekunnin kuluttua"
 
-#: src/sgame/sg_main.cpp:2243
+#: src/sgame/sg_main.cpp:2246
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 "Palvelin: Erä on laitettu jatkumaan automaattisesti ($1$ minuutin "
 "taukorajoitus)"
 
-#: src/sgame/sg_main.cpp:2246
+#: src/sgame/sg_main.cpp:2249
 msgid "The game has been unpaused!"
 msgstr "Erä jatkuu!"
 
-#: src/sgame/sg_spawn_mover.cpp:1078
+#: src/sgame/sg_spawn_mover.cpp:1076
 msgid "^1This door is locked!"
 msgstr "^1Tämä ovi on lukossa!"
 
@@ -5312,19 +5312,19 @@ msgstr "^1Tämä ovi on lukossa!"
 msgid "Alien team has admitted defeat"
 msgstr "Alienien joukkue myönsi tappion"
 
-#: src/sgame/sg_svcmds.cpp:544
+#: src/sgame/sg_svcmds.cpp:543
 msgid "Human team has admitted defeat"
 msgstr "Ihmisten joukkue myönsi tappion"
 
-#: src/sgame/sg_svcmds.cpp:577
+#: src/sgame/sg_svcmds.cpp:575
 msgid "Evacuation ordered"
 msgstr "Evakuaatio käsketty"
 
-#: src/sgame/sg_team.cpp:604
+#: src/sgame/sg_team.cpp:608
 msgid "Teams are imbalanced. Humans have more players."
 msgstr "Joukkueet ovat epätasapainoiset. Ihmisillä on enemmän pelaajia."
 
-#: src/sgame/sg_team.cpp:611
+#: src/sgame/sg_team.cpp:615
 msgid "Teams are imbalanced. Aliens have more players."
 msgstr "Joukkueet ovat epätasapainoiset. Alieneilla on enemmän pelaajia."
 
@@ -5369,8 +5369,8 @@ msgid "$1$: map name not specified"
 msgstr "$1$: kentän nimi puuttuu"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
-msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
-msgstr "$1$: 'maps/$2$.bsp' ei löytynyt palvelimesta"
+msgid "$1$: map '$2$' could not be found on the server"
+msgstr ""
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"
@@ -5543,6 +5543,9 @@ msgstr "alienit"
 #: src/shared/bg_misc.cpp:2520
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
+#~ msgstr "$1$: 'maps/$2$.bsp' ei löytynyt palvelimesta"
 
 #~ msgid ""
 #~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
