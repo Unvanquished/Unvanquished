@@ -185,19 +185,15 @@ static KeyModifier Rocket_GetKeyModifiers()
 	return static_cast< KeyModifier >( mod );
 }
 
-static void Rocket_ProcessMouseClick( int button, bool down )
+static bool Rocket_ProcessMouseClick( int button, bool down )
 {
 	static bool wasDownBefore = false;
-	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
-	{
-		return;
-	}
 
 	if ( button == K_MOUSE1 )
 	{
 		if ( !down && !wasDownBefore )
 		{
-			return;
+			return false;
 		} else if ( !down && wasDownBefore )
 		{
 			wasDownBefore = false;
@@ -220,41 +216,37 @@ static void Rocket_ProcessMouseClick( int button, bool down )
 
 	if ( down )
 	{
-		menuContext->ProcessMouseButtonDown( idx, Rocket_GetKeyModifiers() );
+		return !menuContext->ProcessMouseButtonDown( idx, Rocket_GetKeyModifiers() );
 	}
 	else
 	{
-		menuContext->ProcessMouseButtonUp( idx, Rocket_GetKeyModifiers() );
+		return !menuContext->ProcessMouseButtonUp( idx, Rocket_GetKeyModifiers() );
 	}
 }
 
 #define MOUSEWHEEL_DELTA 5
-bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
-{
-	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !CG_AnyMenuOpen() )
-	{
-		return false;
-	}
 
+// Process input events other than bindable keys
+static bool ProcessNormalInput( Keyboard::Key key, bool down )
+{
+	bool useMouseInput = ( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE )
+		&& rocketInfo.cursorFreezeTime != rocketInfo.realtime;
 	keyNum_t keynum = key.AsKeynum();
+
 	// Our input system sends mouse events as key presses.
 	if ( ( keynum >= K_MOUSE1 && keynum <= K_MOUSE5 ) || ( keynum >= K_AUX1 && keynum <= K_AUX16 ) )
 	{
-		if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+		if ( !useMouseInput )
 		{
 			return false;
 		}
 
-		Rocket_ProcessMouseClick( keynum, down );
-		// TODO detect whether mouse click is consumed?
-		// Well it would probably be weird and bad if MOUSE1 were not consumed by the menu,
-		// but like MOUSE3 could be useful
-		return true;
+		return Rocket_ProcessMouseClick( keynum, down );
 	}
 
 	if ( ( keynum == K_MWHEELDOWN || keynum == K_MWHEELUP ) )
 	{
-		if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+		if ( !useMouseInput )
 		{
 			return false;
 		}
@@ -268,32 +260,61 @@ bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 
 		return !menuContext->ProcessMouseWheel( keynum == K_MWHEELDOWN ? MOUSEWHEEL_DELTA : -MOUSEWHEEL_DELTA, Rocket_GetKeyModifiers() );
 	}
+
 	KeyIdentifier rocketKey = Rocket_FromQuake( key.AsLegacyInt() );
+	if ( rocketKey != KI_UNKNOWN )
+	{
+		if ( down )
+		{
+			return !menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
+		}
+		else
+		{
+			return !menuContext->ProcessKeyUp( rocketKey, Rocket_GetKeyModifiers() );
+		}
+	}
+
+	return false;
+}
+
+bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
+{
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !CG_AnyMenuOpen() )
+	{
+		return false;
+	}
+
+	if ( ProcessNormalInput( key, down ) )
+	{
+		return true;
+	}
+
+	// Send bindable keys after the rocket key event so that if Escape is pressed,
+	// it will cancel the binding and not bind Escape.
 	if ( down )
 	{
-		bool consumed = false;
-		if (rocketKey != KI_UNKNOWN) {
-			consumed = !menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
-		}
 		Rml::Element* focus = menuContext->GetFocusElement();
 		if ( focus != nullptr ) {
 			Rml::Dictionary dict;
 			dict[ BINDABLE_KEY_KEY ] = key.PackIntoInt();
-			// Send after the rocket key event so that if Escape is pressed,
-			// it will cancel the binding and not bind Escape.
 			focus->DispatchEvent( BINDABLE_KEY_EVENT, dict );
 		}
-		// This will be incorrect if it was consumed by the bind menu, but the bind
-		// menu should have KEYCATCH_UI_KEY on so it doesn't matter
-		return consumed;
 	}
-	else
+
+	if ( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE )
 	{
-		if (rocketKey != KI_UNKNOWN) {
-			return !menuContext->ProcessKeyUp( rocketKey, Rocket_GetKeyModifiers() );
+		// Force some mouse buttons to be consumed if there is a menu accepting mouse input. It
+		// would surely seem buggy and wrong if MOUSE1 passed through a
+		// passthrough menu. Not sure about MOUSE2
+		if ( key == Keyboard::Key(K_MOUSE1) || key == Keyboard::Key(K_MOUSE2) )
+		{
+			return true;
 		}
-		return false;
 	}
+
+	// This does not consider whether a bindable key was consumed, but the bind
+	// menu should have KEYCATCH_UI_KEY on so it doesn't matter.
+	return false;
 }
 
 
