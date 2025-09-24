@@ -1469,7 +1469,7 @@ struct rocketInfo_t
 	rocketDataSource_t data;
 	bool renderCursor;
 	qhandle_t cursor;
-	int cursorFreezeTime = -1;
+	int cursorFreezeTime = -1; // mouse input is ignored and cursor is locked in place when cursorFreezeTime = realtime
 	int cursorFreezeX, cursorFreezeY;
 	rectDef_t cursor_pos;
 };

@@ -141,17 +141,6 @@ public:
 			return;
 		}
 
-		else if ( waitingForKeypress && event == Rml::EventId::Mousedown && event.GetTargetElement() == this )
-		{
-			int button = event.GetParameter<int>( "button", 0 );
-
-			// Convert from Rocket mouse buttons to Quake mouse buttons
-			BindKey( Keyboard::Key( keyNum_t( button < 5 ? K_MOUSE1 + button : ( button - 5 ) + K_AUX1 ) ) );
-
-			event.StopPropagation();
-			return;
-		}
-
 		else if ( waitingForKeypress && event == BINDABLE_KEY_EVENT )
 		{
 			auto key = Keyboard::Key::UnpackFromInt( event.GetParameter<int>( BINDABLE_KEY_KEY, 0 ) );
