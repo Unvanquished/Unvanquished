@@ -56,7 +56,7 @@
 					<p><translate>Show how long a match has lasted.</translate></p>
 				</row>
 				<row>
-					<h3><translate>map change-persistent console input</translate></h3>
+					<h3><translate>Console input persistence on map change</translate></h3>
 					<input cvar="con_persistOnMapChange " type="checkbox" />
 					<p><translate>Current console input will be restored the first time the console is opened after a new map is loaded.</translate></p>
 				</row>
