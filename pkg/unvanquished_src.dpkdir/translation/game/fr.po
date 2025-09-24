@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-24 22:19+0200\n"
-"PO-Revision-Date: 2025-09-24 20:13+0000\n"
+"PO-Revision-Date: 2025-09-24 20:28+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -2100,14 +2100,16 @@ msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
 msgstr ""
+"L’entrée courante de la console sera restaurée la première fois que la "
+"console sera ouverte après qu’une nouvelle carte soit chargée."
 
 #: ui/options_ui.rml:64
 msgid "Chat field auto-clear"
-msgstr ""
+msgstr "Auto-vidage de l’entrée de discussion"
 
 #: ui/options_ui.rml:66
 msgid "Clear chat field when closed."
-msgstr ""
+msgstr "Vider l’entrée de discussion à la fermeture."
 
 #: ui/options_ui.rml:70
 msgid "Show ping"
