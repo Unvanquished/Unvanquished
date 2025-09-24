@@ -45,6 +45,14 @@ function detectEscape(event, document)
 	end
 end
 
+-- For circle menus
+function RightClickClose(event, document)
+	if event.parameters.button == 1 then
+		document:Hide()
+		event:StopPropagation()
+	end
+end
+
 function AvailabilityIcon(availability)
 	if availability == "active" then
 		-- Check mark icon. UTF-8 encoding of \uf00c
