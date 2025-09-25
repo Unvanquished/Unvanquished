@@ -1914,7 +1914,7 @@ public:
 			const FS::PakInfo &pak = *FS::FindPak( "map-" + mapName );
 			FS::PakPath::LoadPakPrefix( pak, Str::Format( "meta/%s/", mapName ), ignored );
 			// Unfortunately this spams the console with a 2nd "Loading pak" message
-			FS::PakPath::LoadPakPrefix( pak, Str::Format( "levelshots/", mapName ), ignored );
+			FS::PakPath::LoadPakPrefix( pak, "levelshots/", ignored );
 			SetInnerRML( Str::Format( "<img class='levelshot' src='/$levelshot/%s' />", mapName ) );
 		}
 	}
