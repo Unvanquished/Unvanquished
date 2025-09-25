@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-24 22:19+0200\n"
+"POT-Creation-Date: 2025-09-25 21:18+0200\n"
 "PO-Revision-Date: 2025-03-31 04:35+0000\n"
 "Last-Translator: \"Camilo Abraão (Chacal)\" <camiloabraaosr@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -2054,7 +2054,7 @@ msgid "Show how long a match has lasted."
 msgstr "Mostrar quanto tempo uma partida durou."
 
 #: ui/options_ui.rml:59
-msgid "map change-persistent console input"
+msgid "Console input persistence on map change"
 msgstr ""
 
 #: ui/options_ui.rml:61

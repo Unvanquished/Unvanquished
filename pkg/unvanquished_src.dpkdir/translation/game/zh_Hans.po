@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-24 22:19+0200\n"
+"POT-Creation-Date: 2025-09-25 21:18+0200\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -1971,7 +1971,7 @@ msgid "Show how long a match has lasted."
 msgstr "显示游戏耗时。"
 
 #: ui/options_ui.rml:59
-msgid "map change-persistent console input"
+msgid "Console input persistence on map change"
 msgstr ""
 
 #: ui/options_ui.rml:61

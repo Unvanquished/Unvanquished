@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-24 22:19+0200\n"
+"POT-Creation-Date: 2025-09-25 21:18+0200\n"
 "PO-Revision-Date: 2023-06-23 01:47+0000\n"
 "Last-Translator: memespider <crucisdeus@gmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/unvanquished/"
@@ -1903,7 +1903,7 @@ msgid "Show how long a match has lasted."
 msgstr ""
 
 #: ui/options_ui.rml:59
-msgid "map change-persistent console input"
+msgid "Console input persistence on map change"
 msgstr ""
 
 #: ui/options_ui.rml:61
