@@ -243,7 +243,7 @@ void SP_env_afx_hurt( gentity_t *self )
 	self->mapEntity.soundIndex = G_SoundIndex( "sound/misc/electro" );
 	self->touch = env_afx_hurt_touch;
 
-	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 5);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, 5);
 
 	self->act = env_afx_toggle;
 
@@ -260,7 +260,7 @@ trigger_gravity
 
 static void env_afx_gravity_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->mapEntity.amount, false, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, g_gravity.Get());
+	G_ResetIntField(&self->mapEntity.amount, false, self->mapEntity.config.amount, g_gravity.Get());
 }
 
 static void env_afx_gravity_touch( gentity_t *ent, gentity_t *other )

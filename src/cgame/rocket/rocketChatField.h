@@ -48,7 +48,8 @@ public:
 			Rml::Element( tag ),
 			font_engine_interface( Rml::GetFontEngineInterface() ),
 			cursor_character_index( 0 ),
-			text_element( nullptr )
+			text_element( nullptr ),
+			focused( false )
 	{
 		// Spawn text container and add it to this element
 		text_element = AppendChild( Rml::Factory::InstanceElement( this, "div", "*", Rml::XMLAttributes() ) );
@@ -64,13 +65,24 @@ public:
 		cursor_geometry.Render( cursor_position );
 	}
 
+	void OnUpdate() override
+	{
+		Element::OnUpdate();
+
+		if ( focused )
+		{
+			// filter out mouse click events
+			rocketInfo.cursorFreezeTime = rocketInfo.realtime;
+		}
+	}
+
 	void OnChildAdd( Element *child ) override
 	{
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
 			this->AddEventListener( Rml::EventId::Focus, this );
-			this->AddEventListener( Rml::EventId::Mousemove, this );
+			this->AddEventListener( Rml::EventId::Blur, this );
 			this->AddEventListener( Rml::EventId::Textinput, this );
 			this->AddEventListener( Rml::EventId::Keydown, this );
 			this->AddEventListener( Rml::EventId::Resize, this );
@@ -88,29 +100,30 @@ public:
 
 	void ProcessEvent( Rml::Event &event ) override
 	{
-		// Cannot move mouse while this element is in view
-		// FIXME: Does not work? You can move the mouse out of the window.
-		if ( event == Rml::EventId::Mousemove )
-		{
-			event.StopPropagation();
-			return;
-		}
-
 		if ( event == Rml::EventId::Focus )
 		{
-			CG_Rocket_EnableCursor( false );
-
 			if ( cg_chatAutoClear.Get() ) {
 				text.clear();
 				cursor_character_index = 0;
 				UpdateText();
 			}
+
+			// Make the mouse pointer invisible
+			rocketInfo.cursorFreezeX = rocketInfo.cursorFreezeY = -100;
+
+			focused = true;
+			return;
+		}
+
+		if ( event == Rml::EventId::Blur )
+		{
+			focused = false;
+			return;
 		}
 
 		{
 			if ( event == Rml::EventId::Resize )
 			{
-				CG_Rocket_EnableCursor( false );
 				GenerateCursor();
 			}
 
@@ -445,7 +458,7 @@ private:
 	Rml::Vector2f cursor_position;
 	size_t cursor_character_index;
 	Rml::Element *text_element;
-
+	bool focused;
 	Rml::Geometry cursor_geometry;
 	Rml::Vector2f cursor_size;
 	Rml::Vector2f dimensions;

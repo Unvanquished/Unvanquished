@@ -121,15 +121,11 @@ shared reset functions
 =================================================================================
 */
 
-void G_ResetIntField( int* result, bool fallbackIfNegative, int instanceField, int classField, int fallback )
+void G_ResetIntField( int* result, bool fallbackIfNegative, int instanceField, int fallback )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
 		*result = instanceField;
-	}
-	else if (classField && (classField > 0 || !fallbackIfNegative))
-	{
-		*result = classField;
 	}
 	else
 	{

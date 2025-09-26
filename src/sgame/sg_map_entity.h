@@ -145,16 +145,6 @@ struct gentityConfig_t
 	int triggerRange;
 };
 
-struct entityClass_t
-{
-	int instanceCounter;
-	/**
-	 * default config
-	 * entities might fallback to their classwide config if their individual is not set
-	 */
-	gentityConfig_t config;
-};
-
 enum gentityCallEvent_t
 {
 	ON_DEFAULT = 0,
@@ -189,12 +179,6 @@ struct gentityCallDefinition_t
 
 struct mapEntity_t
 {
-	/*
-	 * the class of the entity
-	 * this is shared among all instances of this type
-	 */
-	entityClass_t *eclass;
-
 	int spawnflags;
 	char *names[ MAX_ENTITY_ALIASES + 1 ];
 
@@ -299,14 +283,6 @@ struct mapEntity_t
 		return moverState == MOVER_POS1 || moverState == ROTATOR_POS1;
 	}
 
-	inline void deinstantiate()
-	{
-		if ( eclass && eclass->instanceCounter > 0 )
-		{
-			eclass->instanceCounter--;
-		}
-	}
-
 	std::string GetNamesString() const
 	{
 		if ( !names[0] ) {
@@ -330,6 +306,6 @@ struct mapEntity_t
 
 };
 
-void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
+void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int fallback );
 
 #endif // SG_MAP_ENTITY_H
