@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-25 21:18+0200\n"
-"PO-Revision-Date: 2025-09-24 22:39+0000\n"
+"PO-Revision-Date: 2025-09-26 20:02+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -1742,7 +1742,7 @@ msgstr "Menu balise :"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr "Menu des vocaux:"
+msgstr "Menu des vocaux :"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
@@ -2092,7 +2092,7 @@ msgstr "Afficher la durée d'un match."
 
 #: ui/options_ui.rml:59
 msgid "Console input persistence on map change"
-msgstr ""
+msgstr "Persistance de l’entrée de console au changement de carte"
 
 #: ui/options_ui.rml:61
 msgid ""
@@ -5468,7 +5468,7 @@ msgstr "$1$: nom de carte non précisé"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: map '$2$' could not be found on the server"
-msgstr "$1$: la carte '$2$' ne peut être trouvée sur le serveur"
+msgstr "$1$ : la carte '$2$' ne peut être trouvée sur le serveur"
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"

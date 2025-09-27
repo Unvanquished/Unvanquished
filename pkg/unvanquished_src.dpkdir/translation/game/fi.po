@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-25 21:18+0200\n"
-"PO-Revision-Date: 2025-06-23 09:01+0000\n"
+"PO-Revision-Date: 2025-09-26 20:02+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -2059,21 +2059,23 @@ msgstr "Näytä meneillä olevan erän kesto."
 
 #: ui/options_ui.rml:59
 msgid "Console input persistence on map change"
-msgstr ""
+msgstr "Säilytä konsolin syöte kenttää vaihtaessa"
 
 #: ui/options_ui.rml:61
 msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
 msgstr ""
+"Konsolin tekstikenttään kirjoittamasi teksti palautuu seuraavan pelikentän "
+"latautumisen jälkeen."
 
 #: ui/options_ui.rml:64
 msgid "Chat field auto-clear"
-msgstr ""
+msgstr "Keskustelutekstikentän automaattityhjennys"
 
 #: ui/options_ui.rml:66
 msgid "Clear chat field when closed."
-msgstr ""
+msgstr "Tyhjennä keskusteluviestikenttä suljettaessa."
 
 #: ui/options_ui.rml:70
 msgid "Show ping"
@@ -5370,7 +5372,7 @@ msgstr "$1$: kentän nimi puuttuu"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: map '$2$' could not be found on the server"
-msgstr ""
+msgstr "$1$: kenttää '$2$' ei löytynyt palvelimelta"
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"
