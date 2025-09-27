@@ -145,7 +145,6 @@ namespace BaseClustering {
 	void Init();
 	void Update(gentity_t *beacon);
 	void Remove(gentity_t *beacon);
-	void Debug();
 }
 
 // sg_cmds.c
