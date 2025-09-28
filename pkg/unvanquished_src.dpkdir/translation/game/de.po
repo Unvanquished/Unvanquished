@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 21:18+0200\n"
+"POT-Creation-Date: 2025-09-28 19:10+0200\n"
 "PO-Revision-Date: 2025-06-29 16:49+0000\n"
 "Last-Translator: 4a-47-48 <schafallein@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -839,7 +839,7 @@ msgstr "Grad"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -915,7 +915,7 @@ msgid "Everything enabled."
 msgstr "Alles aktiviert."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
 msgstr "Hoch"
 
@@ -932,7 +932,7 @@ msgid "Surface details, good textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
 msgstr "Niedrig"
 
@@ -974,7 +974,7 @@ msgstr "Vollbild Fenster"
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
 msgstr "Aus"
 
@@ -1008,7 +1008,7 @@ msgstr "Schnelle Annäherung für Kantenglättung (FXAA)"
 #: ui/options_graphics.rml:83 ui/options_graphics.rml:149
 #: ui/options_graphics.rml:213 ui/options_graphics.rml:252
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:361
 msgid "Apply now"
 msgstr "Jetzt anwenden"
 
@@ -1125,7 +1125,7 @@ msgstr "Kleckse"
 msgid "low"
 msgstr "niedrig"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "kein"
@@ -1138,7 +1138,8 @@ msgstr "Schatten"
 msgid "Textures"
 msgstr "Texturen"
 
-#: ui/options_graphics.rml:155 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/server_setup.rml:13
 msgid "General"
 msgstr "Allgemeines"
 
@@ -1212,8 +1213,8 @@ msgstr ""
 "Dies kann Einfluss auf die Performance haben."
 
 #: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
-#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
 msgid "Experimental."
 msgstr "Experimentell."
 
@@ -1329,7 +1330,7 @@ msgstr ""
 msgid "Very low"
 msgstr "Sehr niedrig"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
 msgstr "Mäßig"
 
@@ -1337,7 +1338,7 @@ msgstr "Mäßig"
 msgid "Very high"
 msgstr "Sehr hoch"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
 msgid "Quality"
 msgstr "Qualität"
 
@@ -1353,7 +1354,7 @@ msgstr ""
 msgid "Cubemap grid spacing"
 msgstr ""
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Aktuell:"
@@ -1436,11 +1437,15 @@ msgstr "Erlaube Partikeln, von Oberflächen abzuprallen."
 msgid "Renderer"
 msgstr "Renderer"
 
-#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
+#: ui/options_graphics.rml:342
+msgid "Read-only depth buffer"
+msgstr ""
+
+#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
 msgstr ""
 
-#: ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1448,91 +1453,91 @@ msgstr ""
 "Verwende ein neues System mit stark verbesserter Leistung. Manche Treiber "
 "können hiermit Probleme haben (z.b. Mesa und proprietäre AMD Treiber)."
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:351
 msgid "GPU frustum culling"
 msgstr "GPU Frustrum Culling"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353
 msgid "Cull surfaces that are out of view."
 msgstr "Oberflächen, die nicht gesehen werden nicht rendern."
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356
 msgid "GPU occlusion culling"
 msgstr "GPU Occlusion Culling"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:358
 msgid "Cull hidden surfaces."
 msgstr "Verhindert das Rendern verdeckter Oberflächen."
 
-#: ui/options_graphics.rml:360
+#: ui/options_graphics.rml:365
 msgid "Gameplay"
 msgstr "Spielerfahrung"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:367
 msgid "Building markers"
 msgstr "Bau-Marker"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:370
 msgid "disabled"
 msgstr "ausgeschaltet"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:371
 msgid "All structures"
 msgstr "alle Strukturen"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:372
 msgid "Support structures"
 msgstr "Unterstützungsstrukturen"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:373
 msgid "Offensive structures"
 msgstr "Offensive Strukturen"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:374
 msgid "Alien structures"
 msgstr "Außerirdische-Strukturen"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:375
 msgid "Human structures"
 msgstr "Menschen-Strukturen"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:376
 msgid "Alien support structures"
 msgstr "Außerirdische-Unterstützungsstrukturen"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:377
 msgid "Human support structures"
 msgstr "Menschen-Unterstützungsstrukturen"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:378
 msgid "Offensive alien structures"
 msgstr "Außerirdische-Angriffs-Strukturen"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:379
 msgid "Offensive human structures"
 msgstr "Menschen-Angriffs-Strukturen"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:381
 msgid "Building ranges"
 msgstr "Bauwerkbereiche"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:383
 msgid "Models"
 msgstr "Modelle"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:391
 msgid "Motion blur"
 msgstr "Bewegungsunschärfe"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:399
 msgid "Intensity"
 msgstr "Intensität"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
 msgstr "Stärke der Bewegungsunschärfe."
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Minimale Bewegungsgeschwindigkeit um Bewegungsunschärfe zu aktivieren"
 
@@ -4989,12 +4994,12 @@ msgstr "SHIFT-ESCAPE"
 msgid "ESCAPE"
 msgstr "ESCAPE"
 
-#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
 msgid "%s or %s"
 msgstr "%s oder %s"
 
-#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -5243,7 +5248,7 @@ msgstr "Drücke %s, um die Konsole zu öffnen."
 msgid "Press %s for the menu."
 msgstr "Drücke %s für das Menü."
 
-#: src/cgame/rocket/rocket_keys.cpp:343
+#: src/cgame/rocket/rocket_keys.cpp:364
 msgid "Unbound"
 msgstr "Ungebunden"
 

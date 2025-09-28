@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 21:18+0200\n"
+"POT-Creation-Date: 2025-09-28 19:10+0200\n"
 "PO-Revision-Date: 2025-06-16 01:02+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
@@ -846,7 +846,7 @@ msgstr "градусов"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -922,7 +922,7 @@ msgid "Everything enabled."
 msgstr "Всё включено."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
 msgstr "Высокая"
 
@@ -939,7 +939,7 @@ msgid "Surface details, good textures…"
 msgstr "Детали поверхности, хорошие текстуры…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
 msgstr "Низкая"
 
@@ -983,7 +983,7 @@ msgstr "Окно без рамки"
 msgid "Fullscreen"
 msgstr "Полный экран"
 
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
 msgstr "Откл"
 
@@ -1017,7 +1017,7 @@ msgstr "Быстрое приблизительное сглаживание (FX
 #: ui/options_graphics.rml:83 ui/options_graphics.rml:149
 #: ui/options_graphics.rml:213 ui/options_graphics.rml:252
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:361
 msgid "Apply now"
 msgstr "Применить"
 
@@ -1137,7 +1137,7 @@ msgstr "Пятна"
 msgid "low"
 msgstr "низкие"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "Нет"
@@ -1150,7 +1150,8 @@ msgstr "Тени"
 msgid "Textures"
 msgstr "Текстуры"
 
-#: ui/options_graphics.rml:155 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/server_setup.rml:13
 msgid "General"
 msgstr "Общие"
 
@@ -1225,8 +1226,8 @@ msgstr ""
 "драйвером. Это может повысить производительность."
 
 #: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
-#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
 msgid "Experimental."
 msgstr "Экспериментально."
 
@@ -1346,7 +1347,7 @@ msgstr ""
 msgid "Very low"
 msgstr "Очень низкое"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
 msgstr "Среднее"
 
@@ -1354,7 +1355,7 @@ msgstr "Среднее"
 msgid "Very high"
 msgstr "Очень высокое"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
 msgid "Quality"
 msgstr "Качество"
 
@@ -1370,7 +1371,7 @@ msgstr ""
 msgid "Cubemap grid spacing"
 msgstr "Расстояние между сетками кубических карт"
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Текущее:"
@@ -1453,11 +1454,15 @@ msgstr "Позволить частицам отскакивать от пове
 msgid "Renderer"
 msgstr "Отрисовщик"
 
-#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
+#: ui/options_graphics.rml:342
+msgid "Read-only depth buffer"
+msgstr ""
+
+#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
 msgstr "Система материалов"
 
-#: ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1466,91 +1471,91 @@ msgstr ""
 "Некоторые драйверы могут не работать в этом режиме (например, Mesa и "
 "проприетарные драйверы AMD)."
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:351
 msgid "GPU frustum culling"
 msgstr "Уборка фрагментов графического процессора"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353
 msgid "Cull surfaces that are out of view."
 msgstr "Убирать поверхности, которые вне видимости."
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356
 msgid "GPU occlusion culling"
 msgstr "Устранение окклюзии графического процессора"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:358
 msgid "Cull hidden surfaces."
 msgstr "Убирать скрытые поверхности."
 
-#: ui/options_graphics.rml:360
+#: ui/options_graphics.rml:365
 msgid "Gameplay"
 msgstr "Игровой процесс"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:367
 msgid "Building markers"
 msgstr "Строительные метки"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:370
 msgid "disabled"
 msgstr "отключено"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:371
 msgid "All structures"
 msgstr "Все структуры"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:372
 msgid "Support structures"
 msgstr "Структуры поддержки"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:373
 msgid "Offensive structures"
 msgstr "Атакующие структуры"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:374
 msgid "Alien structures"
 msgstr "Структуры Чужих"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:375
 msgid "Human structures"
 msgstr "Структуры Людей"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:376
 msgid "Alien support structures"
 msgstr "Структуры поддержки Чужих"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:377
 msgid "Human support structures"
 msgstr "Структуры поддержки Людей"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:378
 msgid "Offensive alien structures"
 msgstr "Атакующие структуры Чужих"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:379
 msgid "Offensive human structures"
 msgstr "Атакующие структуры Людей"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:381
 msgid "Building ranges"
 msgstr "Радиус построек"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:383
 msgid "Models"
 msgstr "Модели"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:391
 msgid "Motion blur"
 msgstr "Размытие движения"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:399
 msgid "Intensity"
 msgstr "Интенсивность"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
 msgstr "Степень размытия движения."
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Мин. скорость движения для активации размытия движения"
 
@@ -4933,12 +4938,12 @@ msgstr "SHIFT-ESCAPE"
 msgid "ESCAPE"
 msgstr "ESCAPE"
 
-#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
 msgid "%s or %s"
 msgstr "%s или %s"
 
-#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -5183,7 +5188,7 @@ msgstr "Нажмите %s для открытия консоли."
 msgid "Press %s for the menu."
 msgstr "Нажмите %s для открытия меню."
 
-#: src/cgame/rocket/rocket_keys.cpp:343
+#: src/cgame/rocket/rocket_keys.cpp:364
 msgid "Unbound"
 msgstr "Оставить тело"
 
