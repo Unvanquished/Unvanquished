@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "common/Common.h"
 #include "sg_local.h"
+#include "sg_entities.h"
 #include "engine/qcommon/q_unicode.h"
 #include "botlib/bot_api.h"
 #include <common/FileSystem.h>
@@ -1667,7 +1668,7 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 			return;
 		}
 
-		VectorCopy( selection->s.origin, origin );
+		G_GetEntityOrigin( selection, origin );
 		VectorCopy( selection->s.angles, angles );
 	}
 	else

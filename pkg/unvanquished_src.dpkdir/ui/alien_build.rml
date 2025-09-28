@@ -121,7 +121,7 @@
 	end
 </script>
 </head>
-<body id="alien_build" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, AlienBuildableClick)" onshow="CloseOtherCirclemenus(event) BuildAlienBuildMenu(document)">
+<body id="alien_build" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, AlienBuildableClick)" onmousedown="RightClickClose(event, document)" onshow="CloseOtherCirclemenus(event) BuildAlienBuildMenu(document)">
 <tabset class="circlemenu">
 <tab><translate>Build</translate></tab>
 <panel>

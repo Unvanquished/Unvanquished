@@ -122,7 +122,7 @@
 	end
 </script>
 </head>
-<body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onshow="CloseOtherCirclemenus(event) BuildHumanBuildMenu(document)">
+<body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onmousedown="RightClickClose(event, document)" onshow="CloseOtherCirclemenus(event) BuildHumanBuildMenu(document)">
 <tabset class="circlemenu">
 <tab><translate>Build</translate></tab>
 <panel>

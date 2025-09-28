@@ -136,7 +136,7 @@
 	end
 </script>
 </head>
-<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="CloseOtherCirclemenus(event) BuildEvolveMenu(document)">
+<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onmousedown="RightClickClose(event, document)" onshow="CloseOtherCirclemenus(event) BuildEvolveMenu(document)">
 <tabset class="circlemenu">
 <tab><translate>Evolve</translate></tab>
 <panel>
