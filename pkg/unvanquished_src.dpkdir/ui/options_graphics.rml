@@ -336,6 +336,11 @@
 
 			<tab><translate>Renderer</translate></tab>
 			<panel>
+				<h2><translate>General</translate></h2>
+				<row>
+					<input cvar="r_readonlyDepthBuffer" type="checkbox" />
+					<h3><translate>Read-only depth buffer</translate></h3>
+				</row>
 				<h2><translate>Material system</translate></h2>
 				<row>
 					<h3><translate>Material system</translate></h3>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 21:18+0200\n"
+"POT-Creation-Date: 2025-09-28 19:10+0200\n"
 "PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
@@ -834,7 +834,7 @@ msgstr "டிகிரி"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -910,7 +910,7 @@ msgid "Everything enabled."
 msgstr "எல்லாம் செயல்படுத்தப்பட்டது."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
 msgstr "உயர்ந்த"
 
@@ -927,7 +927,7 @@ msgid "Surface details, good textures…"
 msgstr "மேற்பரப்பு விவரங்கள், நல்ல அமைப்புகள்…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
 msgstr "குறைந்த"
 
@@ -971,7 +971,7 @@ msgstr "எல்லையற்ற சாளரம்"
 msgid "Fullscreen"
 msgstr "முழு திரை"
 
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
 msgstr "அணை"
 
@@ -1004,7 +1004,7 @@ msgstr "வேகமாக தோராயமான எதிர்ப்பு 
 #: ui/options_graphics.rml:83 ui/options_graphics.rml:149
 #: ui/options_graphics.rml:213 ui/options_graphics.rml:252
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:361
 msgid "Apply now"
 msgstr "இப்பொழுது இடு"
 
@@ -1119,7 +1119,7 @@ msgstr "குமிழ்கள்"
 msgid "low"
 msgstr "குறைந்த"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "எதுவுமில்லை"
@@ -1132,7 +1132,8 @@ msgstr "நிழல்கள்"
 msgid "Textures"
 msgstr "கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:155 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/server_setup.rml:13
 msgid "General"
 msgstr "பொது"
 
@@ -1206,8 +1207,8 @@ msgstr ""
 "மேம்படுத்தக்கூடும்."
 
 #: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
-#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
 msgid "Experimental."
 msgstr "சோதனை."
 
@@ -1324,7 +1325,7 @@ msgstr ""
 msgid "Very low"
 msgstr "மிகக் குறைவு"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
 msgstr "மிதமான"
 
@@ -1332,7 +1333,7 @@ msgstr "மிதமான"
 msgid "Very high"
 msgstr "மிக உயர்ந்த"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
 msgid "Quality"
 msgstr "தகுதி"
 
@@ -1348,7 +1349,7 @@ msgstr ""
 msgid "Cubemap grid spacing"
 msgstr "க்யூப்மேப் கட்டம் இடைவெளி"
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "நடப்பு:"
@@ -1430,11 +1431,15 @@ msgstr "துகள்கள் மேற்பரப்புகளைத் �
 msgid "Renderer"
 msgstr "ரெண்டரர்"
 
-#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
+#: ui/options_graphics.rml:342
+msgid "Read-only depth buffer"
+msgstr ""
+
+#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
 msgstr "பொருள் அமைப்பு"
 
-#: ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1442,91 +1447,91 @@ msgstr ""
 "செயல்திறனை கணிசமாக மேம்படுத்தும் புதிய அமைப்பைப் பயன்படுத்தவும். சில ஓட்டுநர்கள் இதில் "
 "தோல்வியடையக்கூடும் (எ.கா. சி. மேசா மற்றும் ஏஎம்டி தனியுரிம ஓட்டுநர்கள்)."
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:351
 msgid "GPU frustum culling"
 msgstr "Finu freustum culling"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353
 msgid "Cull surfaces that are out of view."
 msgstr "பார்வைக்கு வெளியே இருக்கும் குல் மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356
 msgid "GPU occlusion culling"
 msgstr "சி.பீ.யூ மறைவு"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:358
 msgid "Cull hidden surfaces."
 msgstr "மறைக்கப்பட்ட மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:360
+#: ui/options_graphics.rml:365
 msgid "Gameplay"
 msgstr "விளையாட்டு"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:367
 msgid "Building markers"
 msgstr "கட்டிட குறிப்பான்கள்"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:370
 msgid "disabled"
 msgstr "முடக்கப்பட்டது"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:371
 msgid "All structures"
 msgstr "அனைத்து கட்டமைப்புகளும்"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:372
 msgid "Support structures"
 msgstr "உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:373
 msgid "Offensive structures"
 msgstr "கெட்ட கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:374
 msgid "Alien structures"
 msgstr "அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:375
 msgid "Human structures"
 msgstr "மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:376
 msgid "Alien support structures"
 msgstr "அன்னிய உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:377
 msgid "Human support structures"
 msgstr "மனித உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:378
 msgid "Offensive alien structures"
 msgstr "தாக்குதல் அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:379
 msgid "Offensive human structures"
 msgstr "தாக்குதல் மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:381
 msgid "Building ranges"
 msgstr "கட்டிட வரம்புகள்"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:383
 msgid "Models"
 msgstr "மாதிரிகள்"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:391
 msgid "Motion blur"
 msgstr "இயக்க மங்கலானது"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:399
 msgid "Intensity"
 msgstr "தீவிரம்"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
 msgstr "மோசன்-ப்ளூரின் நிலை."
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "இயக்க-BLUR ஐ செயல்படுத்த குறைந்தபட்ச இயக்க விரைவு"
 
@@ -4914,12 +4919,12 @@ msgstr "சிப்ட்-எச்கேப்"
 msgid "ESCAPE"
 msgstr "தப்பிக்கும்"
 
-#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
 msgid "%s or %s"
 msgstr "%s அல்லது %s"
 
-#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -5163,7 +5168,7 @@ msgstr "கன்சோலைத் திறக்க %s ஐ அழுத்த
 msgid "Press %s for the menu."
 msgstr "மெனுவுக்கு %s ஐ அழுத்தவும்."
 
-#: src/cgame/rocket/rocket_keys.cpp:343
+#: src/cgame/rocket/rocket_keys.cpp:364
 msgid "Unbound"
 msgstr "வரம்பற்ற"
 

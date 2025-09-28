@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 21:18+0200\n"
+"POT-Creation-Date: 2025-09-28 19:10+0200\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Traditional Han script, Hong Kong) <https://hosted."
@@ -786,7 +786,7 @@ msgstr "度"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -862,7 +862,7 @@ msgid "Everything enabled."
 msgstr ""
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
 msgstr "高"
 
@@ -879,7 +879,7 @@ msgid "Surface details, good textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
 msgstr "低"
 
@@ -921,7 +921,7 @@ msgstr "無邊框窗口"
 msgid "Fullscreen"
 msgstr "全屏"
 
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
 msgstr "關"
 
@@ -953,7 +953,7 @@ msgstr "快速近似抗锯齿 (FXAA)"
 #: ui/options_graphics.rml:83 ui/options_graphics.rml:149
 #: ui/options_graphics.rml:213 ui/options_graphics.rml:252
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:361
 msgid "Apply now"
 msgstr "立即應用"
 
@@ -1064,7 +1064,7 @@ msgstr "圓狀"
 msgid "low"
 msgstr "低質量"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "無"
@@ -1077,7 +1077,8 @@ msgstr "陰影"
 msgid "Textures"
 msgstr "貼圖"
 
-#: ui/options_graphics.rml:155 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/server_setup.rml:13
 msgid "General"
 msgstr "通用"
 
@@ -1148,8 +1149,8 @@ msgid ""
 msgstr "若硬件或驅動支持，使用無綁定貼圖。可能提升性能。"
 
 #: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
-#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
 msgid "Experimental."
 msgstr "實驗性的。"
 
@@ -1266,7 +1267,7 @@ msgstr ""
 msgid "Very low"
 msgstr "極低"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
 msgstr "少量"
 
@@ -1274,7 +1275,7 @@ msgstr "少量"
 msgid "Very high"
 msgstr "極高"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
 msgid "Quality"
 msgstr "質量"
 
@@ -1288,7 +1289,7 @@ msgstr "靜態倒影立方貼圖的質量。較高的質量會佔用很多磁盤
 msgid "Cubemap grid spacing"
 msgstr "立方貼圖網格間隔"
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "當前:"
@@ -1370,102 +1371,106 @@ msgstr "允許粒子在平面彈跳。"
 msgid "Renderer"
 msgstr "渲染器"
 
-#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
+#: ui/options_graphics.rml:342
+msgid "Read-only depth buffer"
+msgstr ""
+
+#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
 msgstr "物質系統"
 
-#: ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
 "使用能夠極度增強性能的系統。一些驅動可能不支持 (如 Mesa 和 AMD 專有驅動) 。"
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:351
 msgid "GPU frustum culling"
 msgstr "GPU 視錐體剔除"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353
 msgid "Cull surfaces that are out of view."
 msgstr "剔除不在視野內的平面。"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356
 msgid "GPU occlusion culling"
 msgstr "GPU 遮擋剔除"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:358
 msgid "Cull hidden surfaces."
 msgstr "剔除隱藏的平面。"
 
-#: ui/options_graphics.rml:360
+#: ui/options_graphics.rml:365
 msgid "Gameplay"
 msgstr "遊戲"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:367
 msgid "Building markers"
 msgstr "建築標識"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:370
 msgid "disabled"
 msgstr "禁用"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:371
 msgid "All structures"
 msgstr "所有設施"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:372
 msgid "Support structures"
 msgstr "支援設施"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:373
 msgid "Offensive structures"
 msgstr "攻擊設施"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:374
 msgid "Alien structures"
 msgstr "異形設施"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:375
 msgid "Human structures"
 msgstr "人類設施"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:376
 msgid "Alien support structures"
 msgstr "異形支援設施"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:377
 msgid "Human support structures"
 msgstr "人類支援設施"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:378
 msgid "Offensive alien structures"
 msgstr "異形攻擊設施"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:379
 msgid "Offensive human structures"
 msgstr "人類攻擊設施"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:381
 msgid "Building ranges"
 msgstr "建築範圍"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:383
 msgid "Models"
 msgstr "模型"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:391
 msgid "Motion blur"
 msgstr "動態模糊"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:399
 msgid "Intensity"
 msgstr "密集度"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
 msgstr "動態模糊等級。"
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "激活動態模糊的最小移動速度"
 
@@ -4773,12 +4778,12 @@ msgstr "Shift+Esc"
 msgid "ESCAPE"
 msgstr "Esc"
 
-#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
 msgid "%s or %s"
 msgstr "%s 或 %s"
 
-#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -5021,7 +5026,7 @@ msgstr "按 %s 打開控制枱。"
 msgid "Press %s for the menu."
 msgstr "按 %s 打開菜單。"
 
-#: src/cgame/rocket/rocket_keys.cpp:343
+#: src/cgame/rocket/rocket_keys.cpp:364
 msgid "Unbound"
 msgstr "取消綁定"
 

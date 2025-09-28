@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-25 21:18+0200\n"
+"POT-Creation-Date: 2025-09-28 19:10+0200\n"
 "PO-Revision-Date: 2025-09-26 20:02+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -859,7 +859,7 @@ msgstr "degrés"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:403 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
@@ -936,7 +936,7 @@ msgstr "Tout activé."
 
 # Cette traduction est incorrecte car selon le contexte il faut tantôt du masculin (élevé) tantôt du féminin (élevée).
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:381 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
 msgstr "Haut"
 
@@ -953,7 +953,7 @@ msgid "Surface details, good textures…"
 msgstr "Détails de surface, bonnes textures…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:382 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
 msgstr "Faible"
 
@@ -1000,7 +1000,7 @@ msgid "Fullscreen"
 msgstr "Plein écran"
 
 # Cette traduction est incorrecte car non accordée selon le contexte.
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
 msgstr "Désactivé(e)"
 
@@ -1034,7 +1034,7 @@ msgstr "Anticrénelage approximatif rapide"
 #: ui/options_graphics.rml:83 ui/options_graphics.rml:149
 #: ui/options_graphics.rml:213 ui/options_graphics.rml:252
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:361
 msgid "Apply now"
 msgstr "Appliquer"
 
@@ -1154,7 +1154,7 @@ msgstr "Tâches"
 msgid "low"
 msgstr "basse"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:365
+#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "Aucune"
@@ -1167,7 +1167,8 @@ msgstr "Ombres"
 msgid "Textures"
 msgstr "Textures"
 
-#: ui/options_graphics.rml:155 ui/server_setup.rml:13
+#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/server_setup.rml:13
 msgid "General"
 msgstr "Général"
 
@@ -1242,8 +1243,8 @@ msgstr ""
 "Cela pourrait améliorer les performances."
 
 #: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:343
-#: ui/options_graphics.rml:348 ui/options_graphics.rml:353
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
 msgid "Experimental."
 msgstr "Expérimental."
 
@@ -1362,7 +1363,7 @@ msgstr ""
 msgid "Very low"
 msgstr "Très bas"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:390
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
 msgstr "Modéré"
 
@@ -1370,7 +1371,7 @@ msgstr "Modéré"
 msgid "Very high"
 msgstr "Thès haut"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:384
+#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
 msgid "Quality"
 msgstr "Qualité"
 
@@ -1386,7 +1387,7 @@ msgstr ""
 msgid "Cubemap grid spacing"
 msgstr "Espacement de la grille de cubemap"
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:402
+#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Réglage :"
@@ -1471,11 +1472,15 @@ msgstr "Permettre aux particules de rebondir sur les surfaces."
 msgid "Renderer"
 msgstr "Moteur de rendu"
 
-#: ui/options_graphics.rml:339 ui/options_graphics.rml:341
+#: ui/options_graphics.rml:342
+msgid "Read-only depth buffer"
+msgstr ""
+
+#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
 msgstr "Système de matériaux"
 
-#: ui/options_graphics.rml:343
+#: ui/options_graphics.rml:348
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1484,91 +1489,91 @@ msgstr ""
 "Certains pilotes peuvent échouer si cette option est activée (ex, les "
 "pilotes propriétaires Mesa et AMD)."
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:351
 msgid "GPU frustum culling"
 msgstr "Élimination du frustum sur GPU"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:353
 msgid "Cull surfaces that are out of view."
 msgstr "Éliminer les surfaces qui sont hors de vue."
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356
 msgid "GPU occlusion culling"
 msgstr "Élimination de l'occlusion du GPU"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:358
 msgid "Cull hidden surfaces."
 msgstr "Éliminer les surfaces cachées."
 
-#: ui/options_graphics.rml:360
+#: ui/options_graphics.rml:365
 msgid "Gameplay"
 msgstr "Gameplay"
 
-#: ui/options_graphics.rml:362
+#: ui/options_graphics.rml:367
 msgid "Building markers"
 msgstr "Marqueurs de construction"
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:370
 msgid "disabled"
 msgstr "désactivé"
 
-#: ui/options_graphics.rml:366
+#: ui/options_graphics.rml:371
 msgid "All structures"
 msgstr "Toute les structures"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:372
 msgid "Support structures"
 msgstr "Structures de soutien"
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:373
 msgid "Offensive structures"
 msgstr "Structures offensives"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:374
 msgid "Alien structures"
 msgstr "Structures extraterrestres"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:375
 msgid "Human structures"
 msgstr "Structures humaines"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:376
 msgid "Alien support structures"
 msgstr "Structures extraterrestres de soutien"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:377
 msgid "Human support structures"
 msgstr "Structures humaines de soutien"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:378
 msgid "Offensive alien structures"
 msgstr "Structures offensives extraterrestres"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:379
 msgid "Offensive human structures"
 msgstr "Structures offensives humaines"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:381
 msgid "Building ranges"
 msgstr "Portées des constructions"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:383
 msgid "Models"
 msgstr "Modèles"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:391
 msgid "Motion blur"
 msgstr "Flou de mouvement"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:399
 msgid "Intensity"
 msgstr "Intensité"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
 msgstr "Niveau de flou de mouvement."
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Vitesse de déplacement minimale pour activer le flou de mouvement"
 
@@ -5018,12 +5023,12 @@ msgstr "SHIFT-ECHAP"
 msgid "ESCAPE"
 msgstr "ECHAP"
 
-#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:356
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
 msgid "%s or %s"
 msgstr "%s ou %s"
 
-#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:360
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -5269,7 +5274,7 @@ msgstr "Appuyez sur %s pour ouvrir la console."
 msgid "Press %s for the menu."
 msgstr "Appuyez sur %s pour voir le menu."
 
-#: src/cgame/rocket/rocket_keys.cpp:343
+#: src/cgame/rocket/rocket_keys.cpp:364
 msgid "Unbound"
 msgstr "délier"
 
