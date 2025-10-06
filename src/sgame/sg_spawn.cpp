@@ -537,8 +537,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 
 		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
 		{
-			spawnedEntity->s.angles[ YAW ] += 180.0f;
-			AngleNormalize360( spawnedEntity->s.angles[ YAW ] );
+			spawnedEntity->s.angles[ YAW ] = AngleNormalize360( spawnedEntity->s.angles[ YAW ] + 180.0f );
 		}
 
 		G_SpawnBuildable( spawnedEntity, buildable );
