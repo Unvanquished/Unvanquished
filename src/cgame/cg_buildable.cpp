@@ -2179,6 +2179,7 @@ void CG_Buildable( centity_t *cent )
 #define OVERMIND_EYE_LAMBDA   10.0f
 #define OVERMIND_IDLE_ANGLE   ( 0.3f * OVERMIND_EYE_CLAMP )
 #define OVERMIND_EYE_Z_OFFSET 64.0f
+#define OVERMIND_EYE_Y_OFFSET 31.2f
 
 		// Handle overmind eye movement.
 		if( es->modelindex == BA_A_OVERMIND )
@@ -2206,6 +2207,9 @@ void CG_Buildable( centity_t *cent )
 				// TODO: Retrieve eye origin from skeleton.
 				VectorCopy( es->origin, eyeOrigin );
 				eyeOrigin[ 2 ] += OVERMIND_EYE_Z_OFFSET;
+				vec3_t axis[ 3 ];
+				AnglesToAxis( cent->lerpAngles, axis );
+				VectorMA( eyeOrigin, OVERMIND_EYE_Y_OFFSET, axis[1], eyeOrigin );
 
 				vec3_t targetEyes;
 				VectorCopy( cg_entities[ es->otherEntityNum ].lerpOrigin, targetEyes );
