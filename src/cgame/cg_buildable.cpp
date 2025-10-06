@@ -2235,12 +2235,8 @@ void CG_Buildable( centity_t *cent )
 				angles[ ROLL ]  = 0;
 
 				// Limit angles.
-				if ( angles[ PITCH ] < -180.0f ) angles[ PITCH ] += 360.0f;
-				if ( angles[ PITCH ] >  180.0f ) angles[ PITCH ] -= 360.0f;
-				if ( angles[ YAW ]   < -180.0f ) angles[ YAW ]   += 360.0f;
-				if ( angles[ YAW ]   >  180.0f ) angles[ YAW ]   -= 360.0f;
-				angles[ PITCH ] = Math::Clamp( angles[ PITCH ], -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
-				angles[ YAW ]   = Math::Clamp( angles[ YAW ],   -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+				angles[ PITCH ] = Math::Clamp( AngleNormalize180( angles[ PITCH ] ), -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+				angles[ YAW ]   = Math::Clamp( AngleNormalize180( angles[ YAW ] ),   -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
 			}
 
 			// Smooth out movement.
