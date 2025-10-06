@@ -2207,8 +2207,25 @@ void CG_Buildable( centity_t *cent )
 				VectorCopy( es->origin, eyeOrigin );
 				eyeOrigin[ 2 ] += OVERMIND_EYE_Z_OFFSET;
 
+				vec3_t targetEyes;
+				VectorCopy( cg_entities[ es->otherEntityNum ].lerpOrigin, targetEyes );
+
+				if (es->otherEntityNum == cg.snap->ps.clientNum)
+				{
+					// We have improved information on the view height, let's use it
+					vec3_t normal;
+					BG_GetClientNormal( &cg.snap->ps, normal );
+					VectorMA( targetEyes, cg.snap->ps.viewheight, normal, targetEyes );
+				}
+				else
+				{
+					float viewheight = static_cast<float>( BG_ClassModelConfig( es->otherEntityNum )->viewheight );
+					// This assumes that the normal is vertical and that the client is not crouching. Good enough
+					targetEyes[2] += viewheight;
+				}
+
 				// Get absolute angles to target.
-				VectorSubtract( cg_entities[ es->otherEntityNum ].lerpOrigin, eyeOrigin, dirToTarget );
+				VectorSubtract( targetEyes, eyeOrigin, dirToTarget );
 				VectorNormalize( dirToTarget );
 				vectoangles( dirToTarget, angles );
 
