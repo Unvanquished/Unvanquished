@@ -2206,9 +2206,9 @@ void CG_Buildable( centity_t *cent )
 				// HACK: Fixed offset for eye height.
 				// TODO: Retrieve eye origin from skeleton.
 				VectorCopy( es->origin, eyeOrigin );
-				eyeOrigin[ 2 ] += OVERMIND_EYE_Z_OFFSET;
 				vec3_t axis[ 3 ];
 				AnglesToAxis( cent->lerpAngles, axis );
+				VectorMA( eyeOrigin, OVERMIND_EYE_Z_OFFSET, axis[2], eyeOrigin );
 				VectorMA( eyeOrigin, OVERMIND_EYE_Y_OFFSET, axis[1], eyeOrigin );
 
 				vec3_t targetEyes;
