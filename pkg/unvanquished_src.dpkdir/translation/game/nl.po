@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: 2025-09-30 12:39+0000\n"
+"PO-Revision-Date: 2025-10-10 13:07+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/nl/>\n"
@@ -289,9 +289,10 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Pawn-structuren ([ei] eieren en [telenode] telenodes), mijnbouwstructuren ("
-"bloedzuiger en boor) en unieke structuren ([overmind] overmind en [reactor] "
-"reactor) worden NIET beïnvloed door het gebrek aan BP's."
+"Pawn-structuren ([egg] eieren en [telenode] telenodes), mijnbouwstructuren "
+"(bloedzuiger en boor) en unieke structuren "
+"([overmind] overmind en [reactor] reactor) worden NIET beïnvloed door het "
+"gebrek aan BP's."
 
 #: ui/help_gameplay.rml:73
 msgid "Mining structures"
@@ -1344,7 +1345,7 @@ msgstr "Zeer laag"
 
 #: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
-msgstr "Modereren"
+msgstr "Gematigd"
 
 #: ui/options_graphics.rml:270
 msgid "Very high"
