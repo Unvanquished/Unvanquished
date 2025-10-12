@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: 2025-09-26 20:02+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2025-10-12 16:59+0000\n"
+"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -5281,8 +5281,8 @@ msgstr "délier"
 #: src/sgame/sg_active.cpp:730
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
 msgstr ""
-"$1$^* à quitté les $2$ et à rejoint les spectateurs en raison de son "
-"inactivitée"
+"$1$^* a quitté les $2$ et a rejoint les spectateurs en raison de son "
+"inactivité"
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity spectate!"
@@ -5352,7 +5352,7 @@ msgstr "$1$^* se connecte…"
 
 #: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
-msgstr "$1$ ^* a rejoint la partie"
+msgstr "$1$^* a rejoint la partie"
 
 #: src/sgame/sg_combat.cpp:629
 msgid "Your killer, $1$^*, had $2$ HP."
