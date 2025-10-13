@@ -26,6 +26,9 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 
 See below for [build](#building-the-game-binaries) and [launch](#running-the-game) instructions.
 
+If you are interested in creating or using Unvanquished packages for package managers, see
+[wiki:Linux packages](https://wiki.unvanquished.net/wiki/Linux_packages).
+
 ## Translating the game
 
 [![Weblate](https://hosted.weblate.org/widgets/unvanquished/-/multi-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
