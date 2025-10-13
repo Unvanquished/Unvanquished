@@ -57,13 +57,11 @@ Required:
 `libgmp`,
 `libnettle`,
 `libcurl`,
-`SDL2`,
+`SDL3`,
 `GLEW`,
 `libpng`,
 `libjpeg` ≥ 8,
 `libwebp` ≥ 0.2.0,
-`Freetype`,
-`Lua`,
 `OpenAL`,
 `libogg`,
 `libvorbis`,
@@ -71,6 +69,8 @@ Required:
 `libopusfile`.
 
 Optional:
+`Freetype` (submodule will be used if not available),
+`Lua` (submodule will be used if not available),
 `ncurses`.
 
 ### MSYS2
