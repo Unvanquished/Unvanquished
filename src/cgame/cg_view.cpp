@@ -319,7 +319,6 @@ void CG_OffsetThirdPersonView()
 	int           cmdNum;
 	usercmd_t     cmd, oldCmd;
 	float         range;
-	vec3_t        mouseInputAngles;
 	vec3_t        rotationAngles;
 	vec3_t        axis[ 3 ], rotaxis[ 3 ];
 	float         deltaPitch;
@@ -383,23 +382,14 @@ void CG_OffsetThirdPersonView()
 		trap_GetUserCmd( cmdNum, &cmd );
 		trap_GetUserCmd( cmdNum - 1, &oldCmd );
 
-		// Prevent pitch from wrapping and clamp it within a [-75, 90] range.
+		// Prevent pitch from wrapping and clamp it within a [-75, 75] range.
 		// Cgame has no access to ps.delta_angles[] here, so we need to reproduce
 		// it ourselves.
 		deltaPitch = SHORT2ANGLE( cmd.angles[ PITCH ] - oldCmd.angles[ PITCH ] );
 
 		if ( fabs( deltaPitch ) < 200.0f )
 		{
-			pitch += deltaPitch;
-		}
-
-		mouseInputAngles[ PITCH ] = pitch;
-		mouseInputAngles[ YAW ] = -1.0f * SHORT2ANGLE( cmd.angles[ YAW ] );  // yaw is inverted
-		mouseInputAngles[ ROLL ] = 0.0f;
-
-		for ( i = 0; i < 3; i++ )
-		{
-			mouseInputAngles[ i ] = AngleNormalize180( mouseInputAngles[ i ] );
+			pitch = Math::Clamp( pitch + deltaPitch, -75.0f, 75.0f );
 		}
 
 		// Set the rotation angles to be the view angles offset by the mouse input
@@ -409,11 +399,9 @@ void CG_OffsetThirdPersonView()
 			cg.refdefViewAngles[ PITCH ] = 0.0f;
 		}
 
-		for ( i = 0; i < 3; i++ )
-		{
-			rotationAngles[ i ] = AngleNormalize180( cg.refdefViewAngles[ i ] ) + mouseInputAngles[ i ];
-			AngleNormalize180( rotationAngles[ i ] );
-		}
+		rotationAngles[ PITCH ] = cg.refdefViewAngles[ PITCH ] + pitch;
+		rotationAngles[ YAW ] = AngleNormalize180( cg.refdefViewAngles[ YAW ] - SHORT2ANGLE( cmd.angles[ YAW ] ) );  // yaw is inverted
+		rotationAngles[ ROLL ] = cg.refdefViewAngles[ ROLL ];
 
 		// Don't let pitch go too high/too low or the camera flips around and
 		// that's really annoying.
@@ -421,7 +409,7 @@ void CG_OffsetThirdPersonView()
 		// may not be pitch, so just let it go.
 		if ( surfNormal[ 2 ] > 0.5f || surfNormal[ 2 ] < -0.5f )
 		{
-			rotationAngles[ PITCH ] = Math::Clamp( rotationAngles[ PITCH ], -85.0f, 85.0f );
+			rotationAngles[ PITCH ] = Math::Clamp( rotationAngles[ PITCH ], -75.0f, 75.0f );
 		}
 
 		// Perform the rotations specified by rotationAngles.
