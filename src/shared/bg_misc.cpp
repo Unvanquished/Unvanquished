@@ -1714,7 +1714,6 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 	vec3_t ceilingNormal = { 0.0f, 0.0f, -1.0f };
 	vec3_t localNormal, xNormal;
-	float  rotAngle;
 
 	//the grapplePoint being a surfNormal rotation Normal hack... see above :)
 	if ( ceiling )
@@ -1733,14 +1732,12 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	//can't rotate with no rotation vector
 	if ( VectorLength( xNormal ) != 0.0f )
 	{
-		rotAngle = RAD2DEG( acosf( DotProduct( localNormal, refNormal ) ) );
+		float rotAngle = RAD2DEG( acosf( DotProduct( localNormal, refNormal ) ) );
 
 		if ( inverse )
 		{
 			rotAngle = -rotAngle;
 		}
-
-		AngleNormalize180( rotAngle );
 
 		//hmmm could get away with only one rotation and some clever stuff later... but i'm lazy
 		RotatePointAroundVector( outAxis[ 0 ], xNormal, inAxis[ 0 ], -rotAngle );
