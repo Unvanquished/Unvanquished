@@ -15,7 +15,6 @@ DEB_HOST_GNU_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.8
 
 NACL_HOST_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.86/x86/')
 NACL_SIZE_CPU := $(shell dpkg-architecture -qDEB_HOST_GNU_CPU | sed -e 's/i.86/32/;s/x86_64/64/')
-NACL_STRIP := daemon/external_deps/linux${NACL_SIZE_CPU}-5/pnacl/bin/pnacl-strip
 
 %:
 	dh $@ --parallel
@@ -39,42 +38,15 @@ override_dh_auto_configure:
 		-DUSE_GEOIP=ON \
 		-DUSE_SMP=ON \
 		-DUSE_BREAKPAD=OFF
-	mkdir -pv obj-${DEB_HOST_GNU_TYPE}/nacl
-	set
-	cd obj-${DEB_HOST_GNU_TYPE}/nacl && \
-	cmake ../.. -DCMAKE_BUILD_TYPE=Release \
-		-DBUILD_CLIENT=OFF \
-		-DBUILD_SERVER=OFF \
-		-DBUILD_TTY_CLIENT=OFF \
-		-DBUILD_CGAME=ON \
-		-DBUILD_SGAME=ON \
-		-DBUILD_GAME_NACL=ON \
-		-DBUILD_GAME_NACL_NEXE=ON \
-		-DBUILD_GAME_NATIVE_EXE=OFF \
-		-DBUILD_GAME_NATIVE_DLL=OFF \
-		-DUSE_CURSES=OFF \
-		-DUSE_GEOIP=OFF \
-		-DUSE_SMP=ON \
-		-DUSE_BREAKPAD=OFF
 
 override_dh_auto_build:
 	dh_auto_build
-	cd obj-${DEB_HOST_GNU_TYPE}/nacl && \
-	unset LDFLAGS && \
-	make -j$(nproc)
 	./download-paks obj-${DEB_HOST_GNU_TYPE}/pkg
 
 override_dh_auto_install:
 
 override_dh_install:
 	dh_install
-
-override_dh_strip:
-	dh_strip -Xnacl_ -X.nexe --dbg-package=unvanquished-dbg
-	PNACLPYTHON=python3 ${NACL_STRIP} \
-		obj-${DEB_HOST_GNU_TYPE}/irt_core-${NACL_HOST_CPU}.nexe \
-		obj-${DEB_HOST_GNU_TYPE}/nacl/cgame-${NACL_HOST_CPU}.nexe \
-		obj-${DEB_HOST_GNU_TYPE}/nacl/sgame-${NACL_HOST_CPU}.nexe
 
 override_dh_auto_clean:
 	dh_auto_clean
