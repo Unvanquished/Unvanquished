@@ -5,9 +5,6 @@ dist/scripts/unvanquished-migrate-profile  usr/lib/games/unvanquished/
 obj-*-*-*/cgame-native-dll.so    usr/lib/games/unvanquished/
 obj-*-*-*/sgame-native-dll.so    usr/lib/games/unvanquished/
 
-obj-*-*-*/nacl/cgame-i686.nexe   usr/lib/games/unvanquished/
-obj-*-*-*/nacl/sgame-i686.nexe   usr/lib/games/unvanquished/
-
 obj-*-*-*/irt_core-i686.nexe     usr/lib/games/unvanquished/
 
 obj-*-*-*/nacl_loader            usr/lib/games/unvanquished/
