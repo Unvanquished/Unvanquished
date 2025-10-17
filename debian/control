@@ -13,15 +13,11 @@ Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libogg-dev,
 	libopenal-dev,
 	libpng-dev | libpng12-dev,
-	libsdl2-dev,
-	libtheora-dev,
 	libvorbis-dev,
 	libopusfile-dev,
 	libwebp-dev (>> 0.2),
-	libgeoip-dev,
 	nettle-dev,
 	zlib1g-dev,
-	python2.7,
 	python3,
 	aria2 | curl | wget
 Standards-Version: 3.9.5
@@ -56,7 +52,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, adduser,
 	unvanquished-common (= ${binary:Version}),
 	unvanquished-data (= ${binary:Version})
-Suggests: unvanquished, geoip-database | geoip-database-contrib
+Suggests: unvanquished
 Conflicts: unvanquished (<< 0.3.5-2~)
 Replaces: unvanquished (<< 0.3.5-2~)
 Description: Team-based FPS/RTS Game, Aliens vs. Humans - dedicated server

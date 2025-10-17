@@ -71,7 +71,7 @@ override_dh_install:
 
 override_dh_strip:
 	dh_strip -Xnacl_ -X.nexe --dbg-package=unvanquished-dbg
-	PNACLPYTHON=python2.7 ${NACL_STRIP} \
+	PNACLPYTHON=python3 ${NACL_STRIP} \
 		obj-${DEB_HOST_GNU_TYPE}/irt_core-${NACL_HOST_CPU}.nexe \
 		obj-${DEB_HOST_GNU_TYPE}/nacl/cgame-${NACL_HOST_CPU}.nexe \
 		obj-${DEB_HOST_GNU_TYPE}/nacl/sgame-${NACL_HOST_CPU}.nexe
