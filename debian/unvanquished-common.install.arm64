@@ -1,0 +1,23 @@
+debian/paths.conf                          etc/unvanquished/
+dist/scripts/unvanquished                  usr/lib/games/unvanquished/
+dist/scripts/unvanquished-migrate-profile  usr/lib/games/unvanquished/
+
+obj-*-*-*/cgame-native-dll.so     usr/lib/games/unvanquished/
+obj-*-*-*/sgame-native-dll.so     usr/lib/games/unvanquished/
+
+obj-*-*-*/nacl/cgame-armhf.nexe   usr/lib/games/unvanquished/
+obj-*-*-*/nacl/sgame-armhf.nexe   usr/lib/games/unvanquished/
+
+obj-*-*-*/irt_core-armhf.nexe     usr/lib/games/unvanquished/
+
+obj-*-*-*/nacl_loader             usr/lib/games/unvanquished/
+obj-*-*-*/nacl_helper_bootstrap   usr/lib/games/unvanquished/
+
+obj-*-*-*/nacl_helper_bootstrap-armhf usr/lib/games/unvanquished/
+obj-*-*-*/lib-armhf/ld-linux-armhf    usr/lib/games/unvanquished/lib-armhf/
+obj-*-*-*/lib-armhf/libc.so.6         usr/lib/games/unvanquished/lib-armhf/
+obj-*-*-*/lib-armhf/libgcc_s.so.1     usr/lib/games/unvanquished/lib-armhf/
+obj-*-*-*/lib-armhf/libm.so.6         usr/lib/games/unvanquished/lib-armhf/
+obj-*-*-*/lib-armhf/libpthread.so.0   usr/lib/games/unvanquished/lib-armhf/
+obj-*-*-*/lib-armhf/librt.so.1        usr/lib/games/unvanquished/lib-armhf/
+obj-*-*-*/lib-armhf/libstdc++.so.6    usr/lib/games/unvanquished/lib-armhf/
