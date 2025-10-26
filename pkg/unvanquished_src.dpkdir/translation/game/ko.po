@@ -8,57 +8,59 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-10-26 16:58+0000\n"
+"Last-Translator: 이정희 <daemul72@gmail.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.14.1-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "빌드"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr ""
+msgstr "가격 :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "참여하기"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "모프 포인트"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "시작 형태를 선택하세요:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "드레치"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "그레인저"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr ""
+msgstr "드레치는 은신 공격 유닛이고, 그레인저는 외계 종족의 건설 유닛입니다."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "팀 선택으로 돌아가기"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "당신은 차단되었습니다"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
@@ -66,53 +68,53 @@ msgstr ""
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "지속시간:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr ""
+msgstr "이유:"
 
 #: ui/banned.rml:65
 msgid "Close"
-msgstr ""
+msgstr "닫기"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "무승부 투표를 요청합니다"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "이유"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "투표 요청하기"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr ""
+msgstr "봇으로 채우기"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "몇 명의 플레이어 (사용자 및 봇) 팀이 있습니까?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "두 팀"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:116
 msgid "Aliens"
-msgstr ""
+msgstr "외계인"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "인간"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "팀"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
@@ -120,85 +122,90 @@ msgstr ""
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr ""
+msgstr "맵 변경하기"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "투표: 넥스트맵 변경하기"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "투표: 현재 맵 지정하기"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "현재 맵 지정하기 (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "메서드"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr ""
+msgstr "맵"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "작업 수행"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "오류!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "확인"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "게임플레이 가이드"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "환영합니다"
 
 #: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
-msgstr ""
+msgstr "이 섹션에서는 성공적인 플레이어가 되기 위해 알아야 할 주요 게임플레이 요소를 "
+"요약해서 소개합니다."
 
 #: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "더 많은 내용은 당사 웹사이트와 다른 커뮤니티에서 확인하실 수 있습니다!"
 
 #: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Libera.Chat IRC, Matrix, Discord 중 원하는 채널에 접속해서 개발자와 사용자들"
+"과 대화하기: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "포럼에서 뉴스 토론하기: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "위키에서 게임에 대해 자세히 알아보기: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "버그를 신고해주세요: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "획득 &amp; 진화"
 
 #: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"외계인은 인간을 죽임으로써 진화 포인트를 얻을 수 있습니다. 그리고 그 진화 포"
+"인트를 사용하여 더욱 진보된 형태의 [dragoon]으로 진화할 수 있습니다."
 
 #: ui/help_gameplay.rml:48
 msgid ""
@@ -206,12 +213,16 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"외계인은 인간 플레이어나 건설 가능한 물체의 시야에 들어오지 않는 곳에서도 진"
+"화할 수 있습니다. 또한, 외계인은 [overmind] 초월체 근처에 있을 경우 (어느 정"
+"도의 대가를 치르더라도) [granger] 수준의 덜 발전된 형태로 퇴화할 수 있습니다."
 
 #: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
-msgstr ""
+msgstr "[granger] 그레인저로 오버마인드를 만드세요. 파괴되면 진화하려면 살아있는 오버"
+"마인드가 필요합니다!"
 
 #: ui/help_gameplay.rml:55
 msgid ""
@@ -256,7 +267,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:73
 msgid "Mining structures"
-msgstr ""
+msgstr "채광 구조물"
 
 #: ui/help_gameplay.rml:76
 msgid ""
@@ -290,7 +301,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
-msgstr ""
+msgstr "스테이지 &amp; 모멘텀"
 
 #: ui/help_gameplay.rml:92
 msgid ""
@@ -335,7 +346,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:115
 msgid "Under attack"
-msgstr ""
+msgstr "공격받는 중"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -459,63 +470,63 @@ msgstr ""
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr ""
+msgstr "게임"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr ""
+msgstr "생명"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "빌드 포인트"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "크레딧"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr ""
+msgstr "무기"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "탭"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr ""
+msgstr "범위:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr ""
+msgstr "손상:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
-msgstr ""
+msgstr "발사 속도:"
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr ""
+msgstr "업그레이드"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "시작 장비를 선택하세요:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr ""
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "건설 키트"
 
 #: ui/human_spawn.rml:48
 msgid ""
