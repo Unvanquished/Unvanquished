@@ -2179,6 +2179,7 @@ void CG_Buildable( centity_t *cent )
 #define OVERMIND_EYE_LAMBDA   10.0f
 #define OVERMIND_IDLE_ANGLE   ( 0.3f * OVERMIND_EYE_CLAMP )
 #define OVERMIND_EYE_Z_OFFSET 64.0f
+#define OVERMIND_EYE_Y_OFFSET 31.2f
 
 		// Handle overmind eye movement.
 		if( es->modelindex == BA_A_OVERMIND )
@@ -2205,10 +2206,30 @@ void CG_Buildable( centity_t *cent )
 				// HACK: Fixed offset for eye height.
 				// TODO: Retrieve eye origin from skeleton.
 				VectorCopy( es->origin, eyeOrigin );
-				eyeOrigin[ 2 ] += OVERMIND_EYE_Z_OFFSET;
+				vec3_t axis[ 3 ];
+				AnglesToAxis( cent->lerpAngles, axis );
+				VectorMA( eyeOrigin, OVERMIND_EYE_Z_OFFSET, axis[2], eyeOrigin );
+				VectorMA( eyeOrigin, OVERMIND_EYE_Y_OFFSET, axis[1], eyeOrigin );
+
+				vec3_t targetEyes;
+				VectorCopy( cg_entities[ es->otherEntityNum ].lerpOrigin, targetEyes );
+
+				if (es->otherEntityNum == cg.snap->ps.clientNum)
+				{
+					// We have improved information on the view height, let's use it
+					vec3_t normal;
+					BG_GetClientNormal( &cg.snap->ps, normal );
+					VectorMA( targetEyes, cg.snap->ps.viewheight, normal, targetEyes );
+				}
+				else
+				{
+					float viewheight = static_cast<float>( BG_ClassModelConfig( es->otherEntityNum )->viewheight );
+					// This assumes that the normal is vertical and that the client is not crouching. Good enough
+					targetEyes[2] += viewheight;
+				}
 
 				// Get absolute angles to target.
-				VectorSubtract( cg_entities[ es->otherEntityNum ].lerpOrigin, eyeOrigin, dirToTarget );
+				VectorSubtract( targetEyes, eyeOrigin, dirToTarget );
 				VectorNormalize( dirToTarget );
 				vectoangles( dirToTarget, angles );
 
@@ -2218,12 +2239,8 @@ void CG_Buildable( centity_t *cent )
 				angles[ ROLL ]  = 0;
 
 				// Limit angles.
-				if ( angles[ PITCH ] < -180.0f ) angles[ PITCH ] += 360.0f;
-				if ( angles[ PITCH ] >  180.0f ) angles[ PITCH ] -= 360.0f;
-				if ( angles[ YAW ]   < -180.0f ) angles[ YAW ]   += 360.0f;
-				if ( angles[ YAW ]   >  180.0f ) angles[ YAW ]   -= 360.0f;
-				angles[ PITCH ] = Math::Clamp( angles[ PITCH ], -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
-				angles[ YAW ]   = Math::Clamp( angles[ YAW ],   -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+				angles[ PITCH ] = Math::Clamp( AngleNormalize180( angles[ PITCH ] ), -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
+				angles[ YAW ]   = Math::Clamp( AngleNormalize180( angles[ YAW ] ),   -OVERMIND_EYE_CLAMP, OVERMIND_EYE_CLAMP );
 			}
 
 			// Smooth out movement.
