@@ -8,15 +8,8 @@ body.ingame {
 	background-color: rgba(0%, 0%, 0%, 0%);
 }
 
-/* Block-style links */
-blocklink {
-	display: block;
-	color: #999999;
-	tab-index: auto;
-}
 /* Ugly table-like hacks to have two options side-by-side */
-
-blocklink.leftalign {
+.leftalign {
 	margin-top: 0.5em;
 	margin-left: 0em;
 }
