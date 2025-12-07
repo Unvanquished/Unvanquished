@@ -21,9 +21,8 @@
 				<sidesection  id="sidebar_ingame">
 					<h1><translate>Match</translate></h1>
 					<div style="display:flex;align-items: stretch;">
-						<!--Don't put  ' class="rightfloat ' on the first button because this is allready defined in the "button-menu"-->
 						<button-menu style="width:39%;" onclick='Cmd.exec("disconnect")'><translate>Leave match</translate></button-menu>
-						<button-menu class="leftalign" style="width:39%;" onclick='Events.pushcmd("blurall")'><translate>Resume action</translate></button-menu>
+						<button-menu style="width:39%;" onclick='Events.pushcmd("blurall")'><translate>Resume action</translate></button-menu>
 					</div>
 					<indent>
 						<button-menu style="width:87%"  onclick='Events.pushcmd("exec team alien; hide ingame_menu")'><translate>Join Aliens</translate></button-menu>
@@ -39,9 +38,9 @@
 						<indent>
                                                         <button-menu style="width:87%" onclick='Events.pushcmd("show server_setup")'><translate>Server setup</translate></button-menu>
                                                         <br/>
-							<button-menu style="width:87%"  class="rightfloat" onclick='Cmd.exec("disconnect")'><translate>Stop server</translate></button-menu>
+							<button-menu style="width:87%" onclick='Cmd.exec("disconnect")'><translate>Stop server</translate></button-menu>
 							<br/>
-							<button-menu style="width:87%"  class="leftalign" onclick='Cmd.exec("pause")'><translate>Pause server</translate></button-menu>
+							<button-menu style="width:87%" onclick='Cmd.exec("pause")'><translate>Pause server</translate></button-menu>
                                                         <br/>
 					                <button-menu style="width:87%" onclick='Events.pushcmd("show options_bots")'><translate>Bots</translate></button-menu>
 						</indent>
@@ -55,7 +54,7 @@
 						<button-menu style="width:87%" onclick='Events.pushcmd("show help_gameplay")'><translate>Gameplay guide</translate></button-menu>
 					</indent>
 					<br/>
-					<button-menu style="width:50%" class="rightfloat" onclick='Cmd.exec("quit")'><translate>Quit game</translate></button-menu>
+					<button-menu style="width:50%" onclick='Cmd.exec("quit")'><translate>Quit game</translate></button-menu>
 					<blocklink class="leftalign fake" style="color: #ffffff;">
 						<translate>Beta</translate>&nbsp;<version/>
 					</blocklink>
