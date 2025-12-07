@@ -8,10 +8,10 @@ body.ingame {
 	background-color: rgba(0%, 0%, 0%, 0%);
 }
 
-/* Ugly table-like hacks to have two options side-by-side */
-.leftalign {
-	margin-top: 0.5em;
-	margin-left: 0em;
+.versionlabel {
+	display: block;
+	color: #ffffff;
+	margin-bottom: -1em;
 }
 
 /* innersidebar is grey box, sidebar holds this for scrolling */
