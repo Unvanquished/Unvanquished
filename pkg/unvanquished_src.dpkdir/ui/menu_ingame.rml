@@ -18,7 +18,7 @@
 			<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 			<window id="innersidebar" class="innersidebar" >
 
-				<sidesection  id="sidebar_ingame">
+				<sidesection id="sidebar_ingame" style="position:relative;">
 					<h1><translate>Match</translate></h1>
 					<div style="display:flex;align-items: stretch;">
 						<button-menu style="width:39%;" onclick='Cmd.exec("disconnect")'><translate>Leave match</translate></button-menu>
@@ -55,7 +55,7 @@
 					</indent>
 					<br/>
 					<button-menu style="width:50%" onclick='Cmd.exec("quit")'><translate>Quit game</translate></button-menu>
-					<div class="leftalign" style="display: block; color: #ffffff;">
+					<div class="versionlabel" style="position:absolute; bottom:0em;">
 						<translate>Beta</translate>&nbsp;<version/>
 					</div>
 				</sidesection>
