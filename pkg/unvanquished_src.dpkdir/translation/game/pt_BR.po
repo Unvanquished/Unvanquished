@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: 2025-03-31 04:35+0000\n"
-"Last-Translator: \"Camilo Abraão (Chacal)\" <camiloabraaosr@gmail.com>\n"
+"PO-Revision-Date: 2025-12-08 06:01+0000\n"
+"Last-Translator: slipher <slipher@protonmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "unvanquished/unvanquished/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.15-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -693,7 +693,7 @@ msgstr "Alternativamente, você pode assistir ao jogo sem jogar."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr "Assitir"
+msgstr "Assistir"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
