@@ -1469,6 +1469,7 @@ struct rocketInfo_t
 	rocketDataSource_t data;
 	bool renderCursor;
 	qhandle_t cursor;
+	int keyBindingTime = -1; // enable bindable key events and disable normal key events when keyBindingTime = realtime
 	int cursorFreezeTime = -1; // mouse input is ignored and cursor is locked in place when cursorFreezeTime = realtime
 	int cursorFreezeX, cursorFreezeY;
 	rectDef_t cursor_pos;
