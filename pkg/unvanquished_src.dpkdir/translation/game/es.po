@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: 2025-09-26 20:01+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2025-10-01 14:02+0000\n"
+"Last-Translator: Tom <tomiguillot@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -159,7 +159,7 @@ msgstr "De acuerdo"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Guía de jugabilidad"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
@@ -646,7 +646,7 @@ msgstr "Balizas"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Tácticas de bots"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
@@ -924,7 +924,7 @@ msgstr "Ultra"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Todo activado."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:386 ui/options_graphics.rml:394
@@ -933,7 +933,7 @@ msgstr "Alta"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "Iluminación dinámica, efectos especiales, texturas de gran resolución…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -941,7 +941,7 @@ msgstr "Media"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "Detalles de superficie, buenas texturas…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:387 ui/options_graphics.rml:396
@@ -950,13 +950,16 @@ msgstr "Baja"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "La configuración más rápida y que evita que el juego se vea mal."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"Si buscas optimización, prueba la preconfiguración baja primero. Cuando la "
+"preconfiguración baja corre bien, la preconfiguración más baja no es más "
+"rápida."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
@@ -964,11 +967,11 @@ msgstr "Más bajo"
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
-msgstr ""
+msgstr "Geometría y texturas feas, sin cielo, sin rebote de partículas…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Solo pensado para dispositivos muy lentos, como última instancia."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
@@ -1049,6 +1052,8 @@ msgstr ""
 #: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
+"Ajustar el rango dinámico para disminuir decoloración o áreas demasiado "
+"oscuras."
 
 #: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
@@ -1371,7 +1376,7 @@ msgstr "Nunca"
 
 #: ui/options_graphics.rml:287
 msgid "Cache on disk"
-msgstr ""
+msgstr "Caché en disco"
 
 #: ui/options_graphics.rml:288
 msgid "Always rebuild"
@@ -1720,7 +1725,7 @@ msgstr ""
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
-msgstr ""
+msgstr "Menú de tácticas de bot:"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
@@ -2027,7 +2032,7 @@ msgstr "Idioma"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr ""
+msgstr "Algunos idiomas no están totalmente traducidos."
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
@@ -2073,7 +2078,7 @@ msgstr ""
 
 #: ui/options_ui.rml:66
 msgid "Clear chat field when closed."
-msgstr ""
+msgstr "Limpiar el campo de chat al cerrarlo."
 
 #: ui/options_ui.rml:70
 msgid "Show ping"
@@ -2125,7 +2130,7 @@ msgstr "Punto de mira"
 
 #: ui/options_ui.rml:110
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "AVISO: La previsualización solo funciona dentro del juego."
 
 #: ui/options_ui.rml:114
 msgid "Weapon"
@@ -2221,15 +2226,15 @@ msgstr "Colores del punto de mira"
 
 #: ui/options_ui.rml:185
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "Color de borde de la retícula"
 
 #: ui/options_ui.rml:188
 msgid "Auto colour"
-msgstr ""
+msgstr "Color automático"
 
 #: ui/options_ui.rml:194
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "Tamaño del borde de la retícula"
 
 #: ui/options_ui.rml:196
 msgid "Negative values will change the outline to be inside the crosshair."
@@ -2245,7 +2250,7 @@ msgstr ""
 
 #: ui/options_ui.rml:208
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "Colores del borde de la retícula"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2476,7 +2481,7 @@ msgstr "Multiplicador de recompensa de momento por destrucción de estructuras"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Sistema de construcción"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2500,7 +2505,7 @@ msgstr "Velocidad de regeneración inicial"
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
-msgstr ""
+msgstr "La velocidad inicial a la que se recuperan BP (en BP por minuto)"
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
@@ -2516,11 +2521,11 @@ msgstr ""
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr ""
+msgstr "Cantidad mínima de bots por equipo"
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "Rellenar equipos hasta que tengan suficientes jugadores"
 
 #: ui/server_setup.rml:196
 msgid "bots"
