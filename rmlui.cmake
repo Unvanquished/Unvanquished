@@ -589,7 +589,6 @@ set_property(TARGET srclibs-rmlui PROPERTY
 )
 
 set_target_properties(srclibs-rmlui PROPERTIES
-    POSITION_INDEPENDENT_CODE ${GAME_PIE}
     FOLDER "libs"
 )
 
