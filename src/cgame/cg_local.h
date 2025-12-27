@@ -150,6 +150,7 @@ enum attachmentType_t
 
 //forward declaration for particle_t
 struct particle_t;
+struct centity_t;
 
 struct attachment_t
 {
@@ -168,12 +169,14 @@ struct attachment_t
 
 	//AT_STATIC
 	vec3_t origin;
+	axis_t axis;
 
 	//AT_TAG
-	refEntity_t re; //FIXME: should be pointers?
-	refEntity_t parent; //
+	orientation_t orientation;
+	centity_t* centity;
+	uint16_t entity;
 	qhandle_t   model;
-	char        tagName[ MAX_STRING_CHARS ];
+	std::string tagName;
 
 	//AT_CENT
 	int centNum;
@@ -762,6 +765,11 @@ struct centity_t
 	int            snapShotTime; // last time this entity was found in a snapshot
 
 	playerEntity_t pe;
+
+	uint16_t refEntitiesOffset        = 0;
+	uint8_t  refEntitiesCount         = 0;
+	uint8_t  refEntitiesFrame         = 0;
+	uint8_t  refEntitiesFrameCount[2] { 0, 0 };
 
 	bool       extrapolated; // false if origin / angles is an interpolation
 	vec3_t         rawOrigin;
@@ -1929,9 +1937,7 @@ extern Cvar::Cvar<std::string> cg_sayCommand;
 extern Cvar::Cvar<bool> cg_lazyLoadModels;
 extern Cvar::Cvar<bool> cg_lowQualityModels;
 
-//
-// cg_main.c
-//
+// cg_main.cpp
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();
@@ -1957,9 +1963,7 @@ void CG_RegisterBinaryShaders();
 void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gameState );
 void CG_Shutdown();
 
-//
-// cg_view.c
-//
+// cg_view.cpp
 void     CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
 void     CG_TestModel_f();
 void     CG_TestGun_f();
@@ -1976,9 +1980,7 @@ void     CG_OffsetShoulderView();
 void     CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     CG_EndShadowCaster();
 
-//
-// cg_drawtools.c
-//
+// cg_drawtools.cpp
 void     CG_DrawPlane( vec3_t origin, vec3_t down, vec3_t right, qhandle_t shader );
 void     CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void     CG_FillRect( float x, float y, float width, float height, const Color::Color& color );
@@ -2008,10 +2010,7 @@ void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float ra
 #define CG_ExponentialFade( value, target, lambda ) \
 		ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001f );
 
-//
-// cg_draw.c
-//
-
+// cg_draw.cpp
 void CG_AddLagometerFrameInfo();
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed();
@@ -2023,9 +2022,7 @@ void       CG_DrawField( float x, float y, int width, float cw, float ch, int va
 bool CG_ClampToRectangleAlongLine(
 	const glm::vec2 &mins, const glm::vec2 &maxs, const glm::vec2 &center, bool allowInterior, glm::vec2 &point );
 
-//
-// cg_players.c
-//
+// cg_players.cpp
 void        CG_Player( centity_t *cent );
 void        CG_Corpse( centity_t *cent );
 void        CG_ResetPlayerEntity( centity_t *cent );
@@ -2038,9 +2035,7 @@ centity_t   *CG_GetPlayerLocation();
 
 void        CG_InitClasses();
 
-//
-// cg_buildable.c
-//
+// cg_buildable.cpp
 void     CG_GhostBuildable( int buildableInfo );
 void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
@@ -2053,25 +2048,18 @@ void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 const centity_t *CG_LookupMainBuildable();
 float    CG_DistanceToBase();
 
-//
-// cg_animation.c
-//
+// cg_animation.cpp
 int CG_AnimNumber( int anim );
 void CG_RunLerpFrame( lerpFrame_t *lf );
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, bool animChanged );
 void CG_BlendLerpFrame( lerpFrame_t *lf );
-void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton );
+void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refEntity_t* ent, const bool useAnim2 = false );
 
-//
-// cg_animmapobj.c
-//
+// cg_animmapobj.cpp
 void CG_AnimMapObj( centity_t *cent );
 void CG_ModelDoor( centity_t *cent );
 
-//
-// cg_predict.c
-//
-
+// cg_predict.cpp
 void CG_BuildSolidList();
 int  CG_PointContents( const vec3_t point, int passEntityNum );
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
@@ -2080,9 +2068,7 @@ void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const 
                   const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_PredictPlayerState();
 
-//
-// cg_events.c
-//
+// cg_events.cpp
 void CG_CheckEvents( centity_t *cent );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
@@ -2090,17 +2076,15 @@ void CG_OnPlayerWeaponChange();
 void CG_Rocket_UpdateArmouryMenu();
 void CG_OnMapRestart();
 
-//
-// cg_ents.c
-//
+// cg_ents.cpp
 void CG_DrawBoundingBox( int type, vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities();
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionEntityOnTag( refEntity_t *entity, const int parent,
                              const char *tagName );
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const int parent,
                                     const char *tagName );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 
@@ -2160,7 +2144,8 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
 void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
+std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent,
+	const int entID, const uint16_t entOffset );
 void CG_DrawHumanInventory();
 float CG_ChargeProgress();
 
@@ -2233,8 +2218,8 @@ void     CG_AttachToTag( attachment_t *a );
 void     CG_AttachToParticle( attachment_t *a );
 void     CG_SetAttachmentPoint( attachment_t *a, vec3_t v );
 void     CG_SetAttachmentCent( attachment_t *a, centity_t *cent );
-void     CG_SetAttachmentTag( attachment_t *a, refEntity_t *parent,
-                              qhandle_t model, const char *tagName );
+void     CG_SetAttachmentTag( attachment_t *a, centity_t* centity, const uint16_t entity,
+                              qhandle_t model, const std::string& tagName );
 void     CG_SetAttachmentParticle( attachment_t *a, particle_t *p );
 
 void     CG_SetAttachmentOffset( attachment_t *a, vec3_t v );
