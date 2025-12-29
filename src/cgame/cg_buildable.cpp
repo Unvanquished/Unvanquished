@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/parse.h"
 #include "cg_local.h"
 
+#include "EntityCache.h"
+
 static const char *const cg_buildableSoundNames[ MAX_BUILDABLE_ANIMATIONS ] =
 {
 	"idle1",
@@ -169,9 +171,6 @@ static bool IsReversed( buildable_t buildable, buildableAnimNumber_t animNumber 
 
 static sfxHandle_t defaultAlienSounds[ MAX_BUILDABLE_ANIMATIONS ];
 static sfxHandle_t defaultHumanSounds[ MAX_BUILDABLE_ANIMATIONS ];
-
-static refSkeleton_t bSkeleton;
-static refSkeleton_t oldbSkeleton;
 
 /*
 =================
@@ -837,7 +836,7 @@ CG_SetBuildableLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_t *lf, int newAnimation )
+static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, refEntity_t* ent, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 
@@ -853,16 +852,13 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		if ( bSkeleton.type != refSkeletonType_t::SK_INVALID )
+		if ( lf->old_animation != nullptr && lf->old_animation->handle )
 		{
-			if ( lf->old_animation != nullptr && lf->old_animation->handle )
-			{
-				if ( !trap_R_BuildSkeleton( &oldbSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
-				{
-					Log::Warn( "Can't build old buildable bSkeleton" );
-					return;
-				}
-			}
+			ent->animationHandle = lf->old_animation->handle;
+			ent->startFrame = lf->oldFrame;
+			ent->endFrame = lf->frame;
+			ent->lerp = lf->blendlerp;
+			ent->clearOrigin = lf->old_animation->clearOrigin;
 		}
 	}
 
@@ -922,7 +918,7 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static void CG_RunBuildableLerpFrame( centity_t *cent )
+static void CG_RunBuildableLerpFrame( centity_t *cent, refEntity_t* ent )
 {
 	buildable_t           buildable = (buildable_t) cent->currentState.modelindex;
 	lerpFrame_t           *lf = &cent->lerpFrame;
@@ -931,7 +927,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		CG_SetBuildableLerpFrameAnimation( buildable, lf, newAnimation );
+		CG_SetBuildableLerpFrameAnimation( buildable, ent, lf, newAnimation );
 
 		if ( !cg_buildables[ buildable ].sounds[ newAnimation ].looped &&
 		     cg_buildables[ buildable ].sounds[ newAnimation ].enabled )
@@ -962,7 +958,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 CG_BuildableAnimation
 ===============
 */
-static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_BuildableAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
 {
 	entityState_t *es = &cent->currentState;
 	lerpFrame_t   *lf = &cent->lerpFrame;
@@ -1024,7 +1020,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 			cent->buildableAnim = (buildableAnimNumber_t) es->torsoAnim;
 		}
 
-		CG_RunBuildableLerpFrame( cent );
+		CG_RunBuildableLerpFrame( cent, ent );
 
 		*old = cent->lerpFrame.oldFrame;
 		*now = cent->lerpFrame.frame;
@@ -1035,7 +1031,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	{
 		CG_BlendLerpFrame( lf );
 
-		CG_BuildAnimSkeleton( lf, &bSkeleton, &oldbSkeleton );
+		CG_BuildAnimSkeleton( lf, ent );
 	}
 }
 
@@ -1195,8 +1191,14 @@ void CG_GhostBuildable( int buildableInfo )
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
-		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, false );
-		CG_TransformSkeleton( &ent.skeleton, scale );
+		// trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, false );
+		// CG_TransformSkeleton( &ent.skeleton, scale );
+		ent.animationHandle = cg_buildables[buildable].animations[BANIM_IDLE1].handle;
+		ent.startFrame = 0;
+		ent.endFrame = 0;
+		ent.lerp = 0;
+		ent.clearOrigin = 0;
+		ent.scale = scale;
 	}
 
 	// Apply rotation from config.
@@ -2092,7 +2094,7 @@ void CG_Buildable( centity_t *cent )
 		trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, prebuildSound );
 	}
 
-	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
+	CG_BuildableAnimation( cent, &ent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
 	// TODO: Merge the scaling and rotation of (non-)ghost buildables.
 
@@ -2134,13 +2136,11 @@ void CG_Buildable( centity_t *cent )
 
 		float adjustScale = spawned ? 1.0f :
 			sinf( static_cast<float>(cg.time - es->time) / ba->buildTime * M_PI/2.0f );
-		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
 		{
 			quat_t   rotation;
 			matrix_t mat;
-			vec3_t   nBounds[ 2 ];
 			float    yaw, pitch, roll;
 
 			yaw   = es->angles2[ YAW ];
@@ -2148,13 +2148,19 @@ void CG_Buildable( centity_t *cent )
 
 			// TODO: Access bones by name instead of by number.
 
+			BoneMod boneMod;
 			// The roll of Bone_platform is the turrets' yaw.
 			QuatFromAngles( rotation, 0, 0, yaw );
-			QuatMultiply2( ent.skeleton.bones[ 1 ].t.rot, rotation );
+			boneMod.index = 1;
+			VectorCopy( vec3_origin, boneMod.translation );
+			QuatCopy( rotation, boneMod.rotation );
+			ent.boneMods.push_back( boneMod );
 
 			// The roll of Bone_gatlin is the turrets' pitch.
 			QuatFromAngles( rotation, 0, 0, pitch );
-			QuatMultiply2( ent.skeleton.bones[ 2 ].t.rot, rotation );
+			boneMod.index = 2;
+			QuatCopy( rotation, boneMod.rotation );
+			ent.boneMods.push_back( boneMod );
 
 			// The roll of Bone_barrel is the mgturret's barrel roll.
 			if ( es->modelindex == BA_H_MGTURRET )
@@ -2163,16 +2169,18 @@ void CG_Buildable( centity_t *cent )
 				        120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
 
 				QuatFromAngles( rotation, 0, 0, roll );
-				QuatMultiply2( ent.skeleton.bones[ 3 ].t.rot, rotation );
+
+				boneMod.index = 3;
+				QuatCopy( rotation, boneMod.rotation );
+				ent.boneMods.push_back( boneMod );
 			}
 
 			// transform bounds so they more accurately reflect the turrets' new transformation
 			// TODO: Evaluate
 			MatrixFromAngles( mat, pitch, yaw, 0 );
 
-			MatrixTransformBounds(mat, ent.skeleton.bounds[0], ent.skeleton.bounds[1], nBounds[0], nBounds[1]);
-
-			BoundsAdd( ent.skeleton.bounds[ 0 ], ent.skeleton.bounds[ 1 ], nBounds[ 0 ], nBounds[ 1 ] );
+			ent.boundsAdd = 1;
+			VectorSet( ent.boundsRotation, pitch, yaw, 0 );
 		}
 
 #define OVERMIND_EYE_CLAMP    43.0f // 45° shows seams due to imperfections of the low poly version.
@@ -2252,11 +2260,16 @@ void CG_Buildable( centity_t *cent )
 			// TODO: Access bone by name instead of by number.
 			// Note that rotation's pitch is the eye's roll and vice versa.
 			// Also the yaw needs to be inverted.
+			BoneMod boneMod;
 			QuatFromAngles( rotation, 0, -cent->overmindEyeAngle[ YAW ], cent->overmindEyeAngle[ PITCH ] );
-			QuatMultiply2( ent.skeleton.bones[ 38 ].t.rot, rotation );
+			boneMod.index = 38;
+			VectorCopy( vec3_origin, boneMod.translation );
+			QuatCopy( rotation, boneMod.rotation );
+			ent.boneMods.push_back( boneMod );
 		}
 
-		CG_TransformSkeleton( &ent.skeleton, adjustScale );
+		// CG_TransformSkeleton( &ent.skeleton, adjustScale );
+		ent.scale = adjustScale;
 	}
 
 	if ( health <= 0 )
@@ -2278,7 +2291,7 @@ void CG_Buildable( centity_t *cent )
 
 
 	// add to refresh list
-	trap_R_AddRefEntityToScene( &ent );
+	// trap_R_AddRefEntityToScene( &ent );
 
 	CrossProduct( surfNormal, refNormal, xNormal );
 	VectorNormalize( xNormal );
@@ -2309,19 +2322,19 @@ void CG_Buildable( centity_t *cent )
 							int num = ( cent->muzzleFlashTime / ROCKETPOD_ATTACK_PERIOD ) % 6;
 							const char *side = ( num % 2 == 0 ) ? "left" : "right";
 							num = ( num % 3 ) + 1;
-							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel,
-							                     va( "Bone_fire_%s_%d", side, num ) );
+							CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, 0, ent.hModel,
+							                     Str::Format( "Bone_fire_%s_%d", side, num ) );
 							break;
 						}
 
 						default:
-							CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "Bone_fire" );
+							CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, 0, ent.hModel, "Bone_fire" );
 							break;
 					}
 				}
 				else
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, &ent, ent.hModel, "tag_flash" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, 0, ent.hModel, "tag_flash" );
 				}
 
 				CG_AttachToTag( &cent->muzzlePS->attachment );
@@ -2377,6 +2390,8 @@ void CG_Buildable( centity_t *cent )
 			cent->lastBuildableDamageSoundTime = cg.time;
 		}
 	}
+
+	AddRefEntity( cent, ent );
 
 	cent->lastBuildableHealth = health;
 

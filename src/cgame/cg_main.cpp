@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/navgen/navgen.h"
 #include "shared/parse.h"
 
+#include "EntityCache.h"
+
 cg_t            cg;
 cgs_t           cgs;
 centity_t       cg_entities[ MAX_GENTITIES ];
@@ -767,6 +769,8 @@ static void CG_RegisterGraphics()
 	// clear any references to old media
 	cg.refdef = {};
 	trap_R_ClearScene();
+
+	ClearRefEntityCache();
 
 	for ( i = 0; i < 11; i++ )
 	{

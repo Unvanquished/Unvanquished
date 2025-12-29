@@ -149,6 +149,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/translation.cpp
     ${GAMELOGIC_DIR}/cgame/Filter.h
     ${GAMELOGIC_DIR}/cgame/CombatFeedback.cpp
+    ${GAMELOGIC_DIR}/cgame/EntityCache.cpp
+    ${GAMELOGIC_DIR}/cgame/EntityCache.h
 
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.h

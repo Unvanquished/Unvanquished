@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "cg_local.h"
 
+#include "EntityCache.h"
+
 /*
 ===============
 CG_AttachmentPoint
@@ -64,9 +66,7 @@ bool CG_AttachmentPoint( attachment_t *a, vec3_t v )
 				return false;
 			}
 
-			AxisCopy( axisDefault, a->re.axis );
-			CG_PositionRotatedEntityOnTag( &a->re, &a->parent, a->tagName );
-			VectorCopy( a->re.origin, v );
+			VectorCopy( a->origin, v );
 			break;
 
 		case AT_CENT:
@@ -149,7 +149,7 @@ bool CG_AttachmentDir( attachment_t *a, vec3_t v )
 				return false;
 			}
 
-			VectorCopy( a->re.axis[ 0 ], v );
+			VectorCopy( a->orientation.axis[ 0 ], v );
 			break;
 
 		case AT_CENT:
@@ -217,7 +217,7 @@ bool CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 				return false;
 			}
 
-			AxisCopy( a->re.axis, axis );
+			AxisCopy( a->orientation.axis, axis );
 			break;
 
 		case AT_CENT:
@@ -414,18 +414,21 @@ void CG_SetAttachmentCent( attachment_t *a, centity_t *cent )
 CG_SetAttachmentTag
 ===============
 */
-void CG_SetAttachmentTag( attachment_t *a, refEntity_t *parent,
-                          qhandle_t model, const char *tagName )
+void CG_SetAttachmentTag( attachment_t *a, centity_t* centity, const uint16_t entity,
+                          qhandle_t model, const std::string& tagName )
 {
 	if ( !a )
 	{
 		return;
 	}
 
-	a->parent = *parent;
+	a->centity = centity;
+	a->entity = entity + centity->refEntitiesFrameCount[centity->refEntitiesFrame];
 	a->model = model;
-	Q_strncpyz( a->tagName, tagName, MAX_STRING_CHARS );
+	a->tagName = tagName;
 	a->tagValid = true;
+
+	AddAttachment( a );
 }
 
 /*

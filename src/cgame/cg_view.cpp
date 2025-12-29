@@ -24,12 +24,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// cg_view.c -- setup all the parameters (position, angle, etc)
+// cg_view.cpp -- setup all the parameters (position, angle, etc)
 // for a 3D rendering
 
 #include "common/Common.h"
 #include "common/cm/cm_public.h"
 #include "cg_local.h"
+
+#include "EntityCache.h"
 
 /*
 =============================================================================
@@ -127,7 +129,7 @@ void CG_TestModel_f()
 		AnglesToAxis( angles, cg.testModelBarrelEntity.axis );
 	}
 
-	cg.testModelEntity.skeleton.scale = 1.0f;
+	cg.testModelEntity.scale = 1.0f;
 }
 
 /*
@@ -211,11 +213,11 @@ static void CG_AddTestModel()
 		}
 	}
 
-	trap_R_AddRefEntityToScene( &cg.testModelEntity );
+	const int testModel = trap_R_AddRefEntityToScene( &cg.testModelEntity );
 
 	if ( cg.testModelBarrelEntity.hModel )
 	{
-		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, &cg.testModelEntity,
+		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, testModel,
 		                        "tag_barrel" );
 
 		trap_R_AddRefEntityToScene( &cg.testModelBarrelEntity );
@@ -1934,6 +1936,18 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	}
 
 	CG_AddViewWeapon( &cg.predictedPlayerState );
+
+	centity_t* cent = &cg.predictedPlayerEntity;
+
+	uint8_t lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
+
+	if ( cent->refEntitiesCount > lastFrameCount ) {
+		entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
+		cent->refEntitiesCount = lastFrameCount;
+	}
+
+	SyncEntityCacheToEngine();
+	SyncEntityCacheFromEngine();
 
 	//after CG_AddViewWeapon
 	if ( !cg.hyperspace )
