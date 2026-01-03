@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-10-10 13:07+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/unvanquished/"
@@ -16,9 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural="
-"(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? "
-"1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.14-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -280,10 +279,9 @@ msgid ""
 "have enough energy to remain operational."
 msgstr ""
 "Kada koristite više BP (Tačaka Gradnje) nego što rudarske strukture "
-"([pijavica] Pijavica, [bušilica] Bušilica) mogu da pruže "
-"(trenutne BP + BP koje ćete oporaviti tokom vremena), gradive strukture će "
-"se isključiti dok ostale gradive strukture ne sakupe dovoljno energije da "
-"ostanu operativne."
+"([pijavica] Pijavica, [bušilica] Bušilica) mogu da pruže (trenutne BP + BP "
+"koje ćete oporaviti tokom vremena), gradive strukture će se isključiti dok "
+"ostale gradive strukture ne sakupe dovoljno energije da ostanu operativne."
 
 #: ui/help_gameplay.rml:69
 msgid ""
@@ -291,10 +289,9 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Nedostatak BP-ova NISU pogođene strukture za mriješćenje "
-"([egg] jaja i [telenode] telenode), strukture za rudarenje "
-"(pijavica i bušilica) i jedinstvene strukture "
-"([overmind] overmind i [reactor] reaktor)."
+"Nedostatak BP-ova NISU pogođene strukture za mriješćenje ([egg] jaja i "
+"[telenode] telenode), strukture za rudarenje (pijavica i bušilica) i "
+"jedinstvene strukture ([overmind] overmind i [reactor] reaktor)."
 
 #: ui/help_gameplay.rml:73
 msgid "Mining structures"
@@ -1035,8 +1032,8 @@ msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
-"Ružna metoda za povećanje svjetline. "
-"(Razmislite o resetiranju i korištenju mapiranja tonova umjesto toga.)"
+"Ružna metoda za povećanje svjetline. (Razmislite o resetiranju i korištenju "
+"mapiranja tonova umjesto toga.)"
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
@@ -2241,7 +2238,8 @@ msgstr "Skala obrisa križića"
 
 #: ui/options_ui.rml:196
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr "Negativne vrijednosti će promijeniti obris tako da bude unutar križića."
+msgstr ""
+"Negativne vrijednosti će promijeniti obris tako da bude unutar križića."
 
 #: ui/options_ui.rml:199
 msgid "Scale:"
@@ -2507,8 +2505,8 @@ msgstr "Početna brzina regeneracije"
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr ""
-"Početna brzina kojom će se krvni pritisak oporaviti "
-"(u krvnim pritiskom u minuti)"
+"Početna brzina kojom će se krvni pritisak oporaviti (u krvnim pritiskom u "
+"minuti)"
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
@@ -2516,7 +2514,8 @@ msgstr "Polovično vrijeme regeneracije"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
-msgstr "Period čekanja prije oporavka krvnog pritiska postaje dvostruko sporiji"
+msgstr ""
+"Period čekanja prije oporavka krvnog pritiska postaje dvostruko sporiji"
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
@@ -3535,12 +3534,14 @@ msgstr "%s%s ^*je dignut u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 #: src/cgame/cg_event.cpp:455
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*je dignuta u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
+msgstr ""
+"%s%s ^*je dignuta u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*su dignuti u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
+msgstr ""
+"%s%s ^*su dignuti u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "male"
@@ -3990,8 +3991,8 @@ msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
-"%s%s ^*je trebao koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; %s%s%s^*"
-" su pomogli"
+"%s%s ^*je trebao koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
+"%s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "female"
@@ -5569,26 +5570,26 @@ msgstr "Glasanje nije uspjelo ($1$ — $2$; potrebno $3$% n)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Glasanje tima nije uspjelo ($1$ — $2$; potrebno $3$% n)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "gledalac"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "vanzemaljac"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "čovjek"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "gledaoci"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "vanzemaljci"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "ljudi"

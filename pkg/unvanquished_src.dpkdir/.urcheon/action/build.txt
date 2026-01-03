@@ -11,6 +11,7 @@ ignore translation/game/ia.po
 ignore translation/game/id.po
 ignore translation/game/ja.po
 ignore translation/game/ka.po
+ignore translation/game/ko.po
 ignore translation/game/pl.po
 ignore translation/game/ro.po
 ignore translation/game/uk.po

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-04-27 08:30+0000\n"
 "Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -5354,26 +5354,26 @@ msgstr ""
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "tilskuer"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "utenomjordisk"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "menneske"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "tilskuere"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "utenomjordiske"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "mennesker"

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-10-13 18:07+0000\n"
 "Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -4651,8 +4651,8 @@ msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
-"Votre équipe a décidé d’admettre la défaite et de concéder la partie : il n’"
-"y a plus d'intérêt à construire quelque chose."
+"Votre équipe a décidé d’admettre la défaite et de concéder la partie : il "
+"n’y a plus d'intérêt à construire quelque chose."
 
 #: src/cgame/cg_servercmds.cpp:591
 msgid "Cannot build after admitting defeat"
@@ -5626,27 +5626,27 @@ msgstr "Échec du vote ($1$ — $2$ ; $3$% requis)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Échec du vote d’équipe ($1$ - $2$ ; $3$ % requis)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "spectateur"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "extraterrestre"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "humain"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "spectateurs"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "extraterrestres"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "humains"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-10-02 15:02+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -5527,27 +5527,27 @@ msgstr "Äänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Joukkueäänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "katsoja"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "alieni"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "ihminen"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "katsojat"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "alienit"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "ihmiset"
 

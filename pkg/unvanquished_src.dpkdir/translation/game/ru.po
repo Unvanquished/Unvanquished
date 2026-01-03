@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-09-30 11:02+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
@@ -5537,27 +5537,27 @@ msgstr "Голосование не удалось ($1$ — $2$; требует�
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Командное голосование не удалось ($1$ — $2$; требуется $3$%)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "наблюдатель"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "пришелец"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "человек"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "наблюдатели"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "пришельцы"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "люди"
 

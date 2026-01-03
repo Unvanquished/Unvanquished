@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-10-26 16:58+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/unvanquished/"
@@ -168,7 +168,8 @@ msgstr "환영합니다"
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
-msgstr "이 섹션에서는 성공적인 플레이어가 되기 위해 알아야 할 주요 게임플레이 요소를 "
+msgstr ""
+"이 섹션에서는 성공적인 플레이어가 되기 위해 알아야 할 주요 게임플레이 요소를 "
 "요약해서 소개합니다."
 
 #: ui/help_gameplay.rml:31
@@ -221,7 +222,8 @@ msgstr ""
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
-msgstr "[granger] 그레인저로 오버마인드를 만드세요. 파괴되면 진화하려면 살아있는 오버"
+msgstr ""
+"[granger] 그레인저로 오버마인드를 만드세요. 파괴되면 진화하려면 살아있는 오버"
 "마인드가 필요합니다!"
 
 #: ui/help_gameplay.rml:55
@@ -5306,26 +5308,26 @@ msgstr ""
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr ""
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr ""

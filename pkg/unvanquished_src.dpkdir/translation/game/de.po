@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
 "PO-Revision-Date: 2025-10-01 14:01+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -4926,8 +4926,8 @@ msgstr "%sPrivate Nachricht von: ^7%s"
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
-">> um zu antworten, sagen Sie: '/m %d [Ihre Nachricht]' oder '/r "
-"[Ihre Nachricht]' <<"
+">> um zu antworten, sagen Sie: '/m %d [Ihre Nachricht]' oder '/r [Ihre "
+"Nachricht]' <<"
 
 #: src/cgame/cg_servercmds.cpp:1428
 #, c-format
@@ -5612,27 +5612,27 @@ msgstr "Abstimmung gescheitert ($1$ — $2$; $3$% nötig)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Teamabstimmung gescheitert ($1$ — $2$; $3$% nötig)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "Zuschauer"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "Außerirdischer"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "Mensch"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "Zuschauer"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "Außerirdische"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "Menschen"
 
