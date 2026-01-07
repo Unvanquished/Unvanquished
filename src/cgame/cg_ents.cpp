@@ -1142,6 +1142,8 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	//       entity types (e.g. particle entities)
 }
 
+static std::vector<centity_t*> buildings;
+
 /*
 ===============
 CG_AddCEntity
@@ -1187,7 +1189,8 @@ static void CG_AddCEntity( centity_t *cent )
 			break;
 
 		case entityType_t::ET_BUILDABLE:
-			CG_Buildable( cent );
+			// CG_Buildable( cent );
+			buildings.push_back( cent );
 			break;
 
 		case entityType_t::ET_MISSILE:
@@ -1289,6 +1292,8 @@ void CG_AddPacketEntities()
 
 	int highest = 0;
 
+	buildings.clear();
+
 	// add each entity sent over by the server
 	for ( const entityState_t &ent : cg.snap->entities )
 	{
@@ -1316,6 +1321,8 @@ void CG_AddPacketEntities()
 			highest = num;
 		}
 	}
+
+	CG_AllBuildables( buildings );
 
 	/* We assume cg_highestActiveEntity is never greater
 	than MAX_GENTITIES. cg_highestActiveEntity carries the
