@@ -29,11 +29,11 @@
 				</row>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/high.cfg")'><translate>High</translate></button>
-					<span><translate>Dynamic lights, special effects, large textures…</translate></span>
+					<span><translate>Special effects, large textures…</translate></span>
 				</row>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/medium.cfg")'><translate>Medium</translate></button>
-					<span><translate>Surface details, good textures…</translate></span>
+					<span><translate>Dynamic lights, surface details, good textures…</translate></span>
 				</row>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/low.cfg")'><translate>Low</translate></button>
