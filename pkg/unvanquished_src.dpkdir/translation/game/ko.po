@@ -8,61 +8,59 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-04 00:45+0100\n"
-"PO-Revision-Date: 2024-10-24 07:15+0000\n"
-"Last-Translator: Boyan Alexiev <nneauu@gmail.com>\n"
-"Language-Team: Bulgarian <https://hosted.weblate.org/projects/unvanquished/"
-"unvanquished/bg/>\n"
-"Language: bg\n"
+"PO-Revision-Date: 2025-10-26 16:58+0000\n"
+"Last-Translator: 이정희 <daemul72@gmail.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ko/>\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.14.1-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr "Билд"
+msgstr "빌드"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr "Цена:"
+msgstr "가격 :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr "Еволюция"
+msgstr "참여하기"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "морфологични точки"
+msgstr "모프 포인트"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Изберете началната форма:"
+msgstr "시작 형태를 선택하세요:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr "Дребосък"
+msgstr "드레치"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr "Грейнджър"
+msgstr "그레인저"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr ""
-"Дребосъците са форма за скрита атака, а грейнджърите са извънземна "
-"строителна форма."
+msgstr "드레치는 은신 공격 유닛이고, 그레인저는 외계 종족의 건설 유닛입니다."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "Обратно към избор на отбор"
+msgstr "팀 선택으로 돌아가기"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "당신은 차단되었습니다"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
@@ -70,148 +68,145 @@ msgstr ""
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "지속시간:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr ""
+msgstr "이유:"
 
 #: ui/banned.rml:65
 msgid "Close"
-msgstr ""
+msgstr "닫기"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Започни гласуване за равенство"
+msgstr "무승부 투표를 요청합니다"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr "Причина"
+msgstr "이유"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "Започни гласуване"
+msgstr "투표 요청하기"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr "Напълни с ботове"
+msgstr "봇으로 채우기"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "몇 명의 플레이어 (사용자 및 봇) 팀이 있습니까?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr "Двата отбора"
+msgstr "두 팀"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:116
 msgid "Aliens"
-msgstr "Извънземни"
+msgstr "외계인"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr "Хора"
+msgstr "인간"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr "Отбор"
+msgstr "팀"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr "Количество"
+msgstr ""
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr "Смяна на картата"
+msgstr "맵 변경하기"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Гласуване: промяна на следваща карта"
+msgstr "투표: 넥스트맵 변경하기"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "Гласуване: задаване на текуща карта"
+msgstr "투표: 현재 맵 지정하기"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "Задаване на текуща карта (хост)"
+msgstr "현재 맵 지정하기 (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr "Метод"
+msgstr "메서드"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr "Карта"
+msgstr "맵"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr "Извършване на действие"
+msgstr "작업 수행"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr "Грешка!"
+msgstr "오류!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr "Ок"
+msgstr "확인"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "게임플레이 가이드"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
-msgstr "Добре дошли"
+msgstr "환영합니다"
 
 #: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
-"В този раздел ще намерите обобщение на основните елементи на геймплея, които "
-"трябва да знаете, за да станете успешен играч."
+"이 섹션에서는 성공적인 플레이어가 되기 위해 알아야 할 주요 게임플레이 요소를 "
+"요약해서 소개합니다."
 
 #: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
-msgstr ""
-"Повече информация можете да намерите на нашия уебсайт и на други места в "
-"общността!"
+msgstr "더 많은 내용은 당사 웹사이트와 다른 커뮤니티에서 확인하실 수 있습니다!"
 
 #: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Разговаряйте с играчи и разработчици в Libera.Chat IRC, Matrix или Discord: "
-"<web dest=\"chat\" />"
+"Libera.Chat IRC, Matrix, Discord 중 원하는 채널에 접속해서 개발자와 사용자들"
+"과 대화하기: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr "Обсъждайте новините във форумите: <web dest=\"forums\" />"
+msgstr "포럼에서 뉴스 토론하기: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr "Научете повече за играта в уикито: <web dest=\"wiki\" />"
+msgstr "위키에서 게임에 대해 자세히 알아보기: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Моля, докладвайте за грешки на: <web dest=\"bugs\" />"
+msgstr "버그를 신고해주세요: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
-msgstr "Доходи &amp; развитие"
+msgstr "획득 &amp; 진화"
 
 #: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
-"Извънземните могат да печелят точки за еволюция, като убиват хора. След това "
-"те могат да използват тези еволюционни точки, за да еволюират в [dragoon] по-"
-"усъвършенствани форми."
+"외계인은 인간을 죽임으로써 진화 포인트를 얻을 수 있습니다. 그리고 그 진화 포"
+"인트를 사용하여 더욱 진보된 형태의 [dragoon]으로 진화할 수 있습니다."
 
 #: ui/help_gameplay.rml:48
 msgid ""
@@ -219,18 +214,17 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"Извънземните могат да се развиват отвсякъде, ако не са в зоната на видимост "
-"на човешки играч или не могат да бъдат построени. Извънземните могат също "
-"така да се превърнат в [granger] по-малко напреднали форми (на определена "
-"цена), когато са в близост до [overmind] свръхразум."
+"외계인은 인간 플레이어나 건설 가능한 물체의 시야에 들어오지 않는 곳에서도 진"
+"화할 수 있습니다. 또한, 외계인은 [overmind] 초월체 근처에 있을 경우 (어느 정"
+"도의 대가를 치르더라도) [granger] 수준의 덜 발전된 형태로 퇴화할 수 있습니다."
 
 #: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Изградете свръхразум с [granger] грейнджър, ако той бъде унищожен, имате "
-"нужда от жив свръхразум, за да се развивате!"
+"[granger] 그레인저로 오버마인드를 만드세요. 파괴되면 진화하려면 살아있는 오버"
+"마인드가 필요합니다!"
 
 #: ui/help_gameplay.rml:55
 msgid ""
@@ -238,23 +232,16 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
-"Хората могат да печелят кредити, като убиват извънземни и унищожават "
-"извънземни строителни обекти, след което могат да използват тези кредити, за "
-"да си купят нови оръжия [lcannon], броня или боен костюм [bsuit], както и "
-"аксесоари като радар или реактивна раница."
 
 #: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Хората купуват и продават оръжия в [armoury] оръжейницата, уверете се, че е "
-"построена такава! Използвайте строителния комплект, за да построите "
-"оръжейница, ако липсва такава."
 
 #: ui/help_gameplay.rml:62
 msgid "Powering buildables"
-msgstr "Захранване на продукти за изграждане"
+msgstr ""
 
 #: ui/help_gameplay.rml:65
 msgid ""
@@ -264,12 +251,6 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"Изграждането на структура изисква точки за изграждане. Вашият отбор ще "
-"започне с малък брой точки за изграждане, но ако искате да поставите по-"
-"голям брой обекти за изграждане в дадена област, можете да изградите "
-"[пиявица] минна структура, за да увеличите наличната мощност и да осигурите "
-"повече точки за изграждане. Имайте предвид, че ще загубите точките за "
-"изграждане, ако минните структури бъдат разрушени."
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -278,11 +259,6 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
-"Когато използвате повече BP (точки за изграждане), отколкото могат да "
-"осигурят минните структури ([leech] Пиявица, [drill]Сонда) (текущи BP + BP, "
-"които ще възстановите с течение на времето), структурите за изграждане ще се "
-"изключат, докато другите структури за изграждане имат достатъчно енергия, за "
-"да продължат да работят."
 
 #: ui/help_gameplay.rml:69
 msgid ""
@@ -290,13 +266,10 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Структурите за зараждане ([egg] яйца и [telenode] теленоди), структурите за "
-"добив (пиявица и бормашина) и уникалните структури ([overmind] свръхразум и "
-"[reactor] реактор) НЕ се влияят от липсата на BP."
 
 #: ui/help_gameplay.rml:73
 msgid "Mining structures"
-msgstr "Миньорски структури"
+msgstr "채광 구조물"
 
 #: ui/help_gameplay.rml:76
 msgid ""
@@ -304,18 +277,12 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
-"Точките за изграждане се придобиват чрез две минни структури: човешката "
-"[drill] сонда и извънземната [пиявица] пиявица. Тези сгради трябва да бъдат "
-"разпределени за по-голяма ефективност."
 
 #: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
-"Не изграждайте минни структури твърде близо една до друга, защото в противен "
-"случай те ще се конкурират помежду си и в крайна сметка ще струват ресурси "
-"за изграждане!"
 
 #: ui/help_gameplay.rml:82
 msgid ""
@@ -325,12 +292,6 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
-"Строителите ще видят още една лента над лентата за състоянието на генератора "
-"на ресурси, която представлява неговата ефективност. Прогнозата ще бъде "
-"показана, когато позиционирате строителния обект. Точките за строеж са "
-"налични незабавно, когато минната структура завърши строежа, и ще бъдат "
-"извадени обратно, ако сградата бъде разрушена. Не изграждайте незащитени "
-"сондажи!"
 
 #: ui/help_gameplay.rml:85
 msgid ""
@@ -339,14 +300,10 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"Когато дадена сграда бъде разрушена, миньорите ще възстановят бавно точките "
-"ѝ за строеж. Скоростта на възстановяване на мините намалява с течение на "
-"времето, така че става все по-трудно да се възстановят разрушените сгради в "
-"продължителен мач. Това замества внезапната смърт."
 
 #: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
-msgstr "Етапи &amp; Инерция"
+msgstr "스테이지 &amp; 모멘텀"
 
 #: ui/help_gameplay.rml:92
 msgid ""
@@ -354,59 +311,44 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
-"Изграждането и разрушаването на структури, както и убиването на врагове, "
-"носи на екипа ви нов ресурс, наречен инерция. Ако натрупате достатъчно "
-"инерция, ще се отключат нови оръжия, структури или класове."
 
 #: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"Инерцията намалява експоненциално с времето, така че ако бездействате, "
-"екипът ви ще загуби достъп до нови елементи. Съществуващите подобрения ще "
-"останат функционални."
 
 #: ui/help_gameplay.rml:99
 msgid "Wildfire"
-msgstr "Пожар"
+msgstr ""
 
 #: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
-"Извънземните постройки могат да се запалят, когато бъдат ударени с [flamer] "
-"огнехвъргачката или с огнехвъргачката [firebomb]."
 
 #: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
-"Ако постройките са построени твърде близо, огънят може да прескочи към "
-"нещастните съседи."
 
 #: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
-"Малък [fire] пожар има голям шанс да угасне след известно време, но група "
-"горящи постройки ще се запазят достатъчно горещи, за да предизвикат по-голям "
-"хаос."
 
 #: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
-"Атаката [advgranger] с плюене на усъвършенствания Грейнджър може да се "
-"използва за гасене на пожари или забавяне на натрапници!"
 
 #: ui/help_gameplay.rml:115
 msgid "Under attack"
-msgstr "Под обстрел"
+msgstr "공격받는 중"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -415,18 +357,14 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"Реакторът [reactor] и [overmind] свръхумът ще издават предупреждения на "
-"екипа при 75% здраве, 50% здраве, 25% здраве и при разрушаване.Унищожаването "
-"на други сгради ще задейства предупреждения \"под обстрел\" за екипа, който "
-"ги притежава."
 
 #: ui/help_gameplay.rml:122
 msgid "Healing"
-msgstr "Лечение"
+msgstr ""
 
 #: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr "Смъртта подхранва врага, може да искате да запазите живота си!"
+msgstr ""
 
 #: ui/help_gameplay.rml:129
 msgid ""
@@ -435,10 +373,6 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
-"Извънземните се лекуват бавно, където и да се намират, но се лекуват по-"
-"бързо в групи и в близост до извънземни сгради. Изграждането на предни "
-"такива може да бъде решаващо! Лекуването по какъвто и да е начин също ще "
-"допринесе за възстановяването на [advdragoon]куршумите на напредналия драгун."
 
 #: ui/help_gameplay.rml:133
 msgid ""
@@ -446,10 +380,6 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"Усилвателят дава бързо изцеление на близките извънземни, постройте го "
-"възможно най-скоро и се опитайте да го отключите възможно най-скоро. "
-"Усилвателят ще ви даде и малко отрова, за да направите атаките си по-"
-"смъртоносни."
 
 #: ui/help_gameplay.rml:136
 msgid ""
@@ -457,9 +387,6 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
-"Ако останете на междинно разстояние от [overmind] свръхразум или [egg] яйца, "
-"също ще получите леко подобрено изцеление, макар и по-ниско от това при "
-"пълзене. Това може да помогне при защитата на бази."
 
 #: ui/help_gameplay.rml:139
 msgid ""
@@ -468,182 +395,150 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Извънземните имат трети лечебен стимул: близост с други извънземни. Ако сте "
-"в близост до приятелски настроени извънземни, ще се излекувате малко по-"
-"бързо, а с двама съотборници ще се излекувате толкова бързо, колкото бихте "
-"се излекували, ако докоснете извънземна сграда. С малко работа в екип това е "
-"чудесен начин да обсадите враговете!"
 
 #: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
-"Хората носят със себе си аптечка, която могат да използват, за да се "
-"излекуват веднъж, след което трябва да се върнат в медицинския пункт "
-"[medstat], за да се излекуват и да попълнят аптечката си."
 
 #: ui/help_gameplay.rml:147
 msgid "Wallwalking"
-msgstr "Стеноходене"
+msgstr ""
 
 #: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
-"Някои извънземни форми като [dretch] Дребосък, [mantis] Богомол и "
-"[advgranger] надграден Грейнджър могат да ходят по стени!"
 
 #: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
-"Използвайте го, за да достигнете до специални места или да използвате преки "
-"пътища през вентилационните отвори."
 
 #: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
-"Защитните структури на извънземните, като трапер и шип, работят по-добре на "
-"стени, а изграждането им на таван ще ги предпази от гранати."
 
 #: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
-msgstr "Усъвършенстваният Грейнджър може да бъде отключен с инерция."
+msgstr ""
 
 #: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
-msgstr "След Тремулус"
+msgstr ""
 
 #: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "След появата на Тремулус, издръжливостта е увеличена."
+msgstr ""
 
 #: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
-"Всички разходи и печалби от еволюцията на извънземните са удвоени. Новият "
-"максимален брой еволюции, които едно извънземно може да съхранява, е 20 "
-"(преди 9)."
 
 #: ui/help_gameplay.rml:172
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
-"Етапите са заменени с динамика, а точките за изграждане зависят пряко от "
-"броя на тренировките."
 
 #: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
-"Хората вече не разполагат със защитната кула на Тесла, нито с компютъра за "
-"защита, но могат да строят ракетни капсули."
 
 #: ui/help_gameplay.rml:178
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Извънземните имат възможност за изграждане на шипове, които могат да наранят "
-"дълбоко непредпазливите хора, но това е много уязвима структура, не я "
-"поставяйте на видно място!"
 
 #: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
-"Базилискът е заменен от богомолката, която вече не може да хваща, но "
-"захапката ѝ забавя жертвите и може да се хвърля за много бързо приближаване."
 
 #: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
-"Извънземните могат да се развият в близост до свръхразума, а "
-"усъвършенстваната плюнка на Грейнджър може да направи интересни неща, "
-"опитайте я върху огън или хора!"
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr "Игра"
+msgstr "게임"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr "Живот"
+msgstr "생명"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr "кадри/секунда"
+msgstr "fps"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr "мс"
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "точки за изграждане"
+msgstr "빌드 포인트"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr "Кредити"
+msgstr "크레딧"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr "Оръжия"
+msgstr "무기"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr "ТАБ"
+msgstr "탭"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr "Обхват:"
+msgstr "범위:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr "Щета:"
+msgstr "손상:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
-msgstr "Скорост на стреляне:"
+msgstr "발사 속도:"
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr "Ъпгрейди"
+msgstr "업그레이드"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr "Изберете стартовата екипировка:"
+msgstr "시작 장비를 선택하세요:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr "автомат"
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "Комплект за конструиране"
+msgstr "건설 키트"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
-"Автомата е скорострелно стартово оръжие, а строителният комплект изгражда и "
-"ремонтира човешки структури. Цялото оборудване може да се търгува в "
-"оръжейницата."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr "Маяк"
+msgstr ""
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
@@ -651,53 +546,48 @@ msgstr ""
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr "Зрители"
+msgstr ""
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr "Карта:"
+msgstr ""
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr "Заглавие:"
+msgstr ""
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr "Автоматичен избор на отбор"
+msgstr ""
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
-"Извънземните са много мобилни и притежават голямо разнообразие от атаки, "
-"базирани на движението. Те са издръжливи, но трябва да разчитат на "
-"прикриване и избягване."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
-"Хората могат да се оборудват с разнообразни оръжия и екипировка. Те са "
-"гъвкави и смъртоносни на разстояние, но крехки."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr "Присъедини се към Извънземни"
+msgstr ""
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
-msgstr "Присъедини се към Хора"
+msgstr ""
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr "Освен това можете да гледате играта, без да играете."
+msgstr ""
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr "Наблюдаване"
+msgstr ""
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
@@ -708,147 +598,142 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"Това е бета версия на Unvanquished. Моля, съобщавайте за всички открити "
-"проблеми на адрес <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr "Мач"
+msgstr ""
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr "Напусни мача"
+msgstr ""
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
-msgstr "Възобновяване на действието"
+msgstr ""
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr "Демокрация"
+msgstr ""
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr "Меню на домакина"
+msgstr ""
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr "Настройка на сървър"
+msgstr ""
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr "Спиране сървър"
+msgstr ""
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr "Пауза сървър"
+msgstr ""
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr "Ботове"
+msgstr ""
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr "Главно меню"
+msgstr ""
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr "Списъци със сървъри"
+msgstr ""
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr "Начало на локална/LAN игра"
+msgstr ""
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr "Опции"
+msgstr ""
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
-msgstr "Ръководство за игра"
+msgstr ""
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
-msgstr "Изход игра"
+msgstr ""
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr "Бета"
+msgstr ""
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr "Поле на видимост"
+msgstr ""
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr "Добави извънземен бот"
+msgstr ""
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr "Добави човешки бот"
+msgstr ""
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr "Премахване на всички ботове"
+msgstr ""
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
-msgstr "Глобален вот:"
+msgstr ""
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr "да"
+msgstr ""
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr "или"
+msgstr ""
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr "не"
+msgstr ""
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
-msgstr "Гласуване за отбора:"
+msgstr ""
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr "Изритай ботове"
+msgstr ""
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr "Продължение на времевия лимит"
+msgstr ""
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
-msgstr "Заявка за равенство"
+msgstr ""
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr "Приеми загуба"
+msgstr ""
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr "Ъгъл на видимост"
+msgstr ""
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
 msgstr ""
-"Поле на видимост = широчината на зрението на играча, измерена в градуси."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
-"Много играчи могат да изпитат морска болест от играене на шутъри от първо "
-"лице. По-висок ъгъл на видимост може да пребори това."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr "градуса"
+msgstr ""
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -857,72 +742,72 @@ msgstr "градуса"
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr "рестарт"
+msgstr ""
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr "Богомолка"
+msgstr ""
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr "Марудер"
+msgstr ""
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
-msgstr "Драгуун"
+msgstr ""
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
-msgstr "Тиранин"
+msgstr ""
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr "Подскачащ изглед"
+msgstr ""
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr "Накланяне на камерата"
+msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr "Забранен"
+msgstr ""
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr "Меко"
+msgstr ""
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "Default"
-msgstr "Подразбиране"
+msgstr ""
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr "Силно"
+msgstr ""
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr "Движение нагоре и надолу"
+msgstr ""
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr "Превъртане на камерата"
+msgstr ""
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr "Усукващо движение"
+msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr "Графика"
+msgstr ""
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr "Предефинирани настройки"
+msgstr ""
 
 #: ui/options_graphics.rml:27
 msgid "Ultra"
-msgstr "Ултра"
+msgstr ""
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
@@ -931,7 +816,7 @@ msgstr ""
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
-msgstr "Висока"
+msgstr ""
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
@@ -939,7 +824,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr "Средно"
+msgstr ""
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
@@ -948,7 +833,7 @@ msgstr ""
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
-msgstr "Ниско"
+msgstr ""
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
@@ -962,7 +847,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
-msgstr "Най-ниско"
+msgstr ""
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
@@ -974,35 +859,35 @@ msgstr ""
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
-msgstr "Видео"
+msgstr ""
 
 #: ui/options_graphics.rml:56
 msgid "Screen Resolution"
-msgstr "Екранна Резолюция"
+msgstr ""
 
 #: ui/options_graphics.rml:60
 msgid "Borderless window"
-msgstr "Безрамков прозорец"
+msgstr ""
 
 #: ui/options_graphics.rml:64
 msgid "Fullscreen"
-msgstr "Цял екран"
+msgstr ""
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
-msgstr "Изключен"
+msgstr ""
 
 #: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
-msgstr "Гъвкав Vsync"
+msgstr ""
 
 #: ui/options_graphics.rml:71
 msgid "Full Vsync"
-msgstr "Пълен Vsync"
+msgstr ""
 
 #: ui/options_graphics.rml:73
 msgid "Vsync"
-msgstr "Vsync"
+msgstr ""
 
 #: ui/options_graphics.rml:74
 msgid ""
@@ -1024,7 +909,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:87
 msgid "Brightness"
-msgstr "Яркост"
+msgstr ""
 
 #: ui/options_graphics.rml:90
 msgid "Gamma"
@@ -1038,7 +923,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
-msgstr "Гама:"
+msgstr ""
 
 #: ui/options_graphics.rml:98
 msgid "Tone mapping"
@@ -5446,41 +5331,3 @@ msgstr ""
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr ""
-
-#~ msgid ""
-#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-#~ "textures…"
-#~ msgstr ""
-#~ "Малък брой подразделения, без небе, без сянка, без скачащи частици, 16-"
-#~ "пикселови текстури…"
-
-#~ msgid ""
-#~ "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-#~ "pixel textures…"
-#~ msgstr ""
-#~ "Мултисемплинг, анизотропно мип-мапинг, сенки, скачащи частици, 256-"
-#~ "пикселови текстури…"
-
-#~ msgid ""
-#~ "Normal, specular and physical mapping, bloom, trilinear filtering, 512-"
-#~ "pixel textures…"
-#~ msgstr ""
-#~ "Нормално, огледално и физическо картографиране, разцвет, трилинейно "
-#~ "филтриране, 512-пикселови текстури…"
-
-#~ msgid ""
-#~ "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-#~ "pixel textures…"
-#~ msgstr ""
-#~ "Динамични светлини, топлинна мъгла, замъгляване при движение, по-добро "
-#~ "мултисемплиране, текстури с до 2048 пиксела…"
-
-#~ msgid ""
-#~ "Relief mapping and other features and effects enabled, up to 4096-pixel "
-#~ "textures…"
-#~ msgstr ""
-#~ "Възможност за картографиране на релефа и други функции и ефекти, текстури "
-#~ "до 4096 пиксела…"
-
-#~ msgid "Dying feeds the ennemy, you may want to save your life!"
-#~ msgstr "Умирането подхранва врага, може да искате да запазите живота си!"

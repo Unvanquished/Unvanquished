@@ -5,9 +5,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: 2025-09-26 20:02+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
+"PO-Revision-Date: 2025-10-13 18:07+0000\n"
+"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -404,7 +404,7 @@ msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
-"L’attaque au crachat de granger avancé [advgranger] peut être utilisée pour "
+"L’attaque crachat du granger avancé [advgranger] peut être utilisée pour "
 "éteindre les incendies ou ralentir les intrus !"
 
 #: ui/help_gameplay.rml:115
@@ -1563,7 +1563,7 @@ msgstr "Modèles"
 
 #: ui/options_graphics.rml:391
 msgid "Motion blur"
-msgstr "Flou de mouvement"
+msgstr "Flou cinétique"
 
 #: ui/options_graphics.rml:399
 msgid "Intensity"
@@ -1571,11 +1571,11 @@ msgstr "Intensité"
 
 #: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
-msgstr "Niveau de flou de mouvement."
+msgstr "Niveau de flou cinétique."
 
 #: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr "Vitesse de déplacement minimale pour activer le flou de mouvement"
+msgstr "Vitesse de déplacement minimale pour activer le flou cinétique"
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
@@ -1743,7 +1743,7 @@ msgstr "Maintenir la touche pour déconstruire la structure."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr "Menu balise :"
+msgstr "Menu des balises :"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
@@ -1755,7 +1755,7 @@ msgstr "Menu de tactiques du bot :"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
-msgstr "Alterner la console :"
+msgstr "Ouvrir/Fermer la console :"
 
 #: ui/options_keys.rml:171
 msgid "Screenshot:"
@@ -1783,11 +1783,11 @@ msgstr "Regarder vers le bas :"
 
 #: ui/options_keys.rml:187
 msgid "Turn left:"
-msgstr "Tourner à gauche :"
+msgstr "Regarder à gauche :"
 
 #: ui/options_keys.rml:191
 msgid "Turn right:"
-msgstr "Tourner à droite :"
+msgstr "Regarder à droite :"
 
 #: ui/options_keys.rml:195
 msgid "Mouse look:"
@@ -1823,7 +1823,7 @@ msgstr "Sensibilité de la souris"
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
-msgstr "Filtre de la souris"
+msgstr "Filtrage de la souris"
 
 #: ui/options_mouse.rml:27
 msgid "Smooth out sudden mouse movements."
@@ -1883,7 +1883,7 @@ msgstr "Alterner la marche murale"
 
 #: ui/options_movements_cosmetic.rml:27 ui/options_movements_cosmetic.rml:32
 msgid "Tap key instead of hold key to activate."
-msgstr "Appuyez la touche sans la maintenir pour activer."
+msgstr "Pressez la touche sans la maintenir pour activer."
 
 #: ui/options_movements_cosmetic.rml:30
 msgid "Sprint toggles"
@@ -1907,11 +1907,11 @@ msgstr "Humains et extraterrestres"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr "Humains (transparent)"
+msgstr "Humains (translucide)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr "Humains et extraterrestres (transparent)"
+msgstr "Humains et extraterrestres (translucide)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -4197,31 +4197,31 @@ msgstr "%s attaqué"
 
 #: src/cgame/cg_main.cpp:471
 msgid "Calling home…"
-msgstr "Nous appelons chez vous…"
+msgstr "Communication…"
 
 #: src/cgame/cg_main.cpp:471
 msgid "Sending to the front…"
-msgstr "Nous vous envoyons au front…"
+msgstr "Envoi des soldats au front…"
 
 #: src/cgame/cg_main.cpp:476
 msgid "Tracking your movements…"
-msgstr "Nous suivons vos déplacements…"
+msgstr "Suivi des déplacements…"
 
 #: src/cgame/cg_main.cpp:476
 msgid "Letting out the magic smoke…"
-msgstr "Laissons échapper la fumée magique…"
+msgstr "Génération de fumée magique…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Collecting bees for the hives…"
-msgstr "Collecte des abeilles pour les ruches…"
+msgstr "Collecte d'abeilles pour les ruches…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Initialising fireworks…"
-msgstr "Initialisation des feux d'artifice…"
+msgstr "Préparation de feux d'artifice…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Causing electrical faults…"
-msgstr "faisons des pannes électriques…"
+msgstr "Préparation de pannes électriques…"
 
 #: src/cgame/cg_main.cpp:484
 msgid "Reading the manual…"
@@ -4229,7 +4229,7 @@ msgstr "Lecture du manuel…"
 
 #: src/cgame/cg_main.cpp:484
 msgid "Looking at blueprints…"
-msgstr "Regarde les plans…"
+msgstr "Vérification des plans…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Generating annoying noises…"
@@ -4237,7 +4237,7 @@ msgstr "Génération de bruits gênants…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Recording granger purring…"
-msgstr "Enregistrement du ronronnement de Granger…"
+msgstr "Enregistrement de ronronnements de Granger…"
 
 #: src/cgame/cg_main.cpp:492
 msgid "Hello World!"
@@ -4245,19 +4245,19 @@ msgstr "Bonjour tout le monde !"
 
 #: src/cgame/cg_main.cpp:492
 msgid "Making a scene…"
-msgstr "Création de la scène…"
+msgstr "Mise en place de la scène…"
 
 #: src/cgame/cg_main.cpp:496
 msgid "Taking pictures of the world…"
-msgstr "Prendre des photos du monde…"
+msgstr "Prise de vue du monde…"
 
 #: src/cgame/cg_main.cpp:496
 msgid "Drawing smiley faces…"
-msgstr "Dessiner des smileys…"
+msgstr "Dessin de smileys…"
 
 #: src/cgame/cg_main.cpp:500
 msgid "Sharpening the aliens' claws…"
-msgstr "Aiguiser les griffes des extraterrestres…"
+msgstr "Aiguisage des griffes extraterrestres…"
 
 #: src/cgame/cg_main.cpp:500
 msgid "Overloading lucifer cannons…"
@@ -4269,7 +4269,7 @@ msgstr "Déballage des jetpacks…"
 
 #: src/cgame/cg_main.cpp:504
 msgid "Spinning silk for reticles…"
-msgstr "File la soie pour les réticules…"
+msgstr "File la soie des réticules…"
 
 #: src/cgame/cg_main.cpp:508
 msgid "Adding turret spam…"
@@ -4281,7 +4281,7 @@ msgstr "Éveil de l'Overmind…"
 
 #: src/cgame/cg_main.cpp:512
 msgid "Teleporting soldiers…"
-msgstr "Téléporter des soldats…"
+msgstr "Téléportation des soldats…"
 
 #: src/cgame/cg_main.cpp:512
 msgid "Replicating alien DNA…"
@@ -4297,7 +4297,7 @@ msgstr "Compilation des nuanceurs GLSL (veuillez patienter)…"
 
 #: src/cgame/cg_main.cpp:524
 msgid "Surveying the map…"
-msgstr "Arpenter la carte…"
+msgstr "Arpentage de la carte…"
 
 #: src/cgame/cg_main.cpp:528
 msgid "Done!"
@@ -4305,7 +4305,7 @@ msgstr "Terminé !"
 
 #: src/cgame/cg_main.cpp:1153
 msgid "Generating bot navigation meshes"
-msgstr "Génération du maillages de navigation des Robots"
+msgstr "Génération du maillages de navigation des robots"
 
 #: src/cgame/cg_main.cpp:1197
 #, c-format
@@ -4389,7 +4389,7 @@ msgstr "Défendez notre base !!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack!"
-msgstr "À l’attaque !"
+msgstr "À l’attaque !"
 
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow me!"
@@ -4423,7 +4423,7 @@ msgstr "Vous êtes en tête de la file d’attente pour réapparaître"
 #: src/cgame/cg_rocket_draw.cpp:2648
 #, c-format
 msgid "You are at position %d in the spawn queue"
-msgstr "Vous êtes en position %d de la file d’attente pour réapparaître"
+msgstr "Vous êtes en position %d de la file de réapparition"
 
 #: src/cgame/cg_rocket_draw.cpp:2688
 msgid "There are no spawns remaining"
@@ -4651,8 +4651,8 @@ msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
-"Votre équipe a décidé d'admettre la défaite et de concéder la partie : il "
-"n y a plus d'intérêt à construire quelque chose."
+"Votre équipe a décidé d’admettre la défaite et de concéder la partie : il "
+"n’y a plus d'intérêt à construire quelque chose."
 
 #: src/cgame/cg_servercmds.cpp:591
 msgid "Cannot build after admitting defeat"
@@ -4746,7 +4746,7 @@ msgid ""
 "ammunition."
 msgstr ""
 "Vous devez être à côté d’une armurerie alimentée pour pouvoir acheter des "
-"armes, des évolutions ou des munitions."
+"armes, de l’équipement ou des munitions."
 
 #: src/cgame/cg_servercmds.cpp:643
 msgid "You must be near a powered Armoury"
@@ -5281,8 +5281,8 @@ msgstr "délier"
 #: src/sgame/sg_active.cpp:730
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
 msgstr ""
-"$1$^* à quitté les $2$ et à rejoint les spectateurs en raison de son "
-"inactivitée"
+"$1$^* a quitté les $2$ et a rejoint les spectateurs en raison de son "
+"inactivité"
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity spectate!"
@@ -5352,7 +5352,7 @@ msgstr "$1$^* se connecte…"
 
 #: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
-msgstr "$1$ ^* a rejoint la partie"
+msgstr "$1$^* a rejoint la partie"
 
 #: src/sgame/sg_combat.cpp:629
 msgid "Your killer, $1$^*, had $2$ HP."
@@ -5626,27 +5626,27 @@ msgstr "Échec du vote ($1$ — $2$ ; $3$% requis)"
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Échec du vote d’équipe ($1$ - $2$ ; $3$ % requis)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "spectateur"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "extraterrestre"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "humain"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "spectateurs"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "extraterrestres"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "humains"
 

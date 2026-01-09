@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 19:10+0200\n"
-"PO-Revision-Date: 2025-06-16 01:02+0000\n"
+"POT-Creation-Date: 2026-01-04 00:45+0100\n"
+"PO-Revision-Date: 2025-09-30 11:02+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1456,7 +1456,7 @@ msgstr "Отрисовщик"
 
 #: ui/options_graphics.rml:342
 msgid "Read-only depth buffer"
-msgstr ""
+msgstr "Буфер глубины только для чтения"
 
 #: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
@@ -2074,21 +2074,23 @@ msgstr "Показывает длительность матча."
 
 #: ui/options_ui.rml:59
 msgid "Console input persistence on map change"
-msgstr ""
+msgstr "Сохранение ввода консоли при смене карты"
 
 #: ui/options_ui.rml:61
 msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
 msgstr ""
+"Текущий ввод консоли будет восстановлен в первый раз, когда консоль будет "
+"открыта после загрузки новой карты."
 
 #: ui/options_ui.rml:64
 msgid "Chat field auto-clear"
-msgstr ""
+msgstr "Автоочистка поля чата"
 
 #: ui/options_ui.rml:66
 msgid "Clear chat field when closed."
-msgstr ""
+msgstr "Очищать поле чата при закрытии."
 
 #: ui/options_ui.rml:70
 msgid "Show ping"
@@ -5383,7 +5385,7 @@ msgstr "$1 $: имя карты не указано"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: map '$2$' could not be found on the server"
-msgstr ""
+msgstr "$1$: карта «$2$» не найдена на сервере"
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"
@@ -5535,27 +5537,27 @@ msgstr "Голосование не удалось ($1$ — $2$; требует�
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Командное голосование не удалось ($1$ — $2$; требуется $3$%)"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2487
 msgid "spectator"
 msgstr "наблюдатель"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2492
 msgid "alien"
 msgstr "пришелец"
 
-#: src/shared/bg_misc.cpp:2500
+#: src/shared/bg_misc.cpp:2497
 msgid "human"
 msgstr "человек"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2507
 msgid "spectators"
 msgstr "наблюдатели"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2512
 msgid "aliens"
 msgstr "пришельцы"
 
-#: src/shared/bg_misc.cpp:2520
+#: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "люди"
 

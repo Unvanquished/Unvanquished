@@ -8,210 +8,210 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-04 00:45+0100\n"
-"PO-Revision-Date: 2024-10-24 07:15+0000\n"
-"Last-Translator: Boyan Alexiev <nneauu@gmail.com>\n"
-"Language-Team: Bulgarian <https://hosted.weblate.org/projects/unvanquished/"
-"unvanquished/bg/>\n"
-"Language: bg\n"
+"PO-Revision-Date: 2025-10-10 13:07+0000\n"
+"Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
+"Language-Team: Bosnian <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/bs/>\n"
+"Language: bs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr "Билд"
+msgstr "Verzija"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
 msgid "Price:"
-msgstr "Цена:"
+msgstr "Cijena:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr "Еволюция"
+msgstr "Razvijaj se"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "морфологични точки"
+msgstr "tačke morfinga"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Изберете началната форма:"
+msgstr "Odaberite početni obrazac:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr "Дребосък"
+msgstr "Drač"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr "Грейнджър"
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
-"Дребосъците са форма за скрита атака, а грейнджърите са извънземна "
-"строителна форма."
+"Dretcheovi su prikriveni napadni oblik, a grangeri su vanzemaljski "
+"građevinski oblik."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "Обратно към избор на отбор"
+msgstr "Nazad na odabir tima"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Banovan/a si"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "Zabranjeno od strane:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Trajanje:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr ""
+msgstr "Razlog:"
 
 #: ui/banned.rml:65
 msgid "Close"
-msgstr ""
+msgstr "Zatvori"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Започни гласуване за равенство"
+msgstr "Pozovite na glasanje za neriješen rezultat"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr "Причина"
+msgstr "Razlog"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "Започни гласуване"
+msgstr "Pozovite glasanje"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr "Напълни с ботове"
+msgstr "Napuni botovima"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Koliko igrača (korisnika i botova) timovi trebaju imati?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr "Двата отбора"
+msgstr "Oba tima"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:116
 msgid "Aliens"
-msgstr "Извънземни"
+msgstr "Vanzemaljci"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr "Хора"
+msgstr "Ljudi"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr "Отбор"
+msgstr "Tim"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr "Количество"
+msgstr "Iznos"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr "Смяна на картата"
+msgstr "Promijeni mapu"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Гласуване: промяна на следваща карта"
+msgstr "Glasajte: promijenite sljedeću mapu"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "Гласуване: задаване на текуща карта"
+msgstr "Glasajte: postavite trenutnu mapu"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "Задаване на текуща карта (хост)"
+msgstr "Postavi trenutnu mapu (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr "Метод"
+msgstr "Metoda"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:59
 msgid "Map"
-msgstr "Карта"
+msgstr "Mapa"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr "Извършване на действие"
+msgstr "Izvrši radnju"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr "Грешка!"
+msgstr "Greška!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr "Ок"
+msgstr "Uredu"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Vodič za igranje"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
-msgstr "Добре дошли"
+msgstr "Dobrodošli"
 
 #: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
-"В този раздел ще намерите обобщение на основните елементи на геймплея, които "
-"трябва да знаете, за да станете успешен играч."
+"U ovom odjeljku naći ćete sažetak glavnih elemenata igre koje trebate znati "
+"da biste postali uspješan igrač."
 
 #: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
 msgstr ""
-"Повече информация можете да намерите на нашия уебсайт и на други места в "
-"общността!"
+"Više informacija možete pronaći na našoj web stranici i drugim mjestima u "
+"zajednici!"
 
 #: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Разговаряйте с играчи и разработчици в Libera.Chat IRC, Matrix или Discord: "
-"<web dest=\"chat\" />"
+"Čavrljajte s igračima i programerima na Libera.Chat IRC-u, Matrixu ili "
+"Discordu:<web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr "Обсъждайте новините във форумите: <web dest=\"forums\" />"
+msgstr "Raspravite o novostima na forumima:<web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr "Научете повече за играта в уикито: <web dest=\"wiki\" />"
+msgstr "Saznajte više o igri na wiki stranici:<web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Моля, докладвайте за грешки на: <web dest=\"bugs\" />"
+msgstr "Molimo prijavite greške na:<web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
-msgstr "Доходи &amp; развитие"
+msgstr "Prihod i evolucija"
 
 #: ui/help_gameplay.rml:45
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
-"Извънземните могат да печелят точки за еволюция, като убиват хора. След това "
-"те могат да използват тези еволюционни точки, за да еволюират в [dragoon] по-"
-"усъвършенствани форми."
+"Vanzemaljci mogu zaraditi evolucijske bodove ubijajući ljude. Zatim mogu "
+"koristiti te evolucijske bodove da evoluiraju u [zmajske] naprednije oblike."
 
 #: ui/help_gameplay.rml:48
 msgid ""
@@ -219,18 +219,18 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"Извънземните могат да се развиват отвсякъде, ако не са в зоната на видимост "
-"на човешки играч или не могат да бъдат построени. Извънземните могат също "
-"така да се превърнат в [granger] по-малко напреднали форми (на определена "
-"цена), когато са в близост до [overmind] свръхразум."
+"Vanzemaljci se mogu razvijati odasvud, osim ako nisu u vidokrugu ljudskog "
+"igrača ili izgradive građevine. Vanzemaljci se također mogu degenerirati u "
+"[granger] manje napredne oblike (uz određenu cijenu) kada su u blizini "
+"[overmind] nadsvjesnog uma."
 
 #: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Изградете свръхразум с [granger] грейнджър, ако той бъде унищожен, имате "
-"нужда от жив свръхразум, за да се развивате!"
+"Izgradite nadsvijest s [granger] grangerom, ako bude uništena, potreban vam "
+"je živi nadsvijest da biste evoluirali!"
 
 #: ui/help_gameplay.rml:55
 msgid ""
@@ -238,23 +238,23 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
-"Хората могат да печелят кредити, като убиват извънземни и унищожават "
-"извънземни строителни обекти, след което могат да използват тези кредити, за "
-"да си купят нови оръжия [lcannon], броня или боен костюм [bsuit], както и "
-"аксесоари като радар или реактивна раница."
+"Ljudi mogu zaraditi kredite ubijanjem vanzemaljaca i uništavanjem "
+"vanzemaljskih objekata, a zatim te kredite mogu koristiti za kupovinu novog "
+"oružja [lcannon], pancira ili borbenog odijela [bsuit] i dodataka poput "
+"radara ili jetpacka."
 
 #: ui/help_gameplay.rml:58
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Хората купуват и продават оръжия в [armoury] оръжейницата, уверете се, че е "
-"построена такава! Използвайте строителния комплект, за да построите "
-"оръжейница, ако липсва такава."
+"Ljudi kupuju i prodaju oružje u oružarnici [armourmy], pobrinite se da je "
+"jedna izgrađena! Koristite komplet za konstrukciju da izgradite oružarnicu "
+"ako nedostaje."
 
 #: ui/help_gameplay.rml:62
 msgid "Powering buildables"
-msgstr "Захранване на продукти за изграждане"
+msgstr "Napajanje gradivih elemenata"
 
 #: ui/help_gameplay.rml:65
 msgid ""
@@ -264,12 +264,12 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"Изграждането на структура изисква точки за изграждане. Вашият отбор ще "
-"започне с малък брой точки за изграждане, но ако искате да поставите по-"
-"голям брой обекти за изграждане в дадена област, можете да изградите "
-"[пиявица] минна структура, за да увеличите наличната мощност и да осигурите "
-"повече точки за изграждане. Имайте предвид, че ще загубите точките за "
-"изграждане, ако минните структури бъдат разрушени."
+"Izgradnja strukture zahtijeva bodove za izgradnju. Vaš tim će početi s malim "
+"brojem bodova za izgradnju, ali ako želite postaviti veći broj objekata za "
+"izgradnju u određenom području, možete izgraditi rudarsku strukturu "
+"[pijavica] kako biste povećali dostupnu snagu i osigurali više bodova za "
+"izgradnju. Budite oprezni jer ćete izgubiti bodove za izgradnju ako se "
+"rudarske strukture unište."
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -278,11 +278,10 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
-"Когато използвате повече BP (точки за изграждане), отколкото могат да "
-"осигурят минните структури ([leech] Пиявица, [drill]Сонда) (текущи BP + BP, "
-"които ще възстановите с течение на времето), структурите за изграждане ще се "
-"изключат, докато другите структури за изграждане имат достатъчно енергия, за "
-"да продължат да работят."
+"Kada koristite više BP (Tačaka Gradnje) nego što rudarske strukture "
+"([pijavica] Pijavica, [bušilica] Bušilica) mogu da pruže (trenutne BP + BP "
+"koje ćete oporaviti tokom vremena), gradive strukture će se isključiti dok "
+"ostale gradive strukture ne sakupe dovoljno energije da ostanu operativne."
 
 #: ui/help_gameplay.rml:69
 msgid ""
@@ -290,13 +289,13 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Структурите за зараждане ([egg] яйца и [telenode] теленоди), структурите за "
-"добив (пиявица и бормашина) и уникалните структури ([overmind] свръхразум и "
-"[reactor] реактор) НЕ се влияят от липсата на BP."
+"Nedostatak BP-ova NISU pogođene strukture za mriješćenje ([egg] jaja i "
+"[telenode] telenode), strukture za rudarenje (pijavica i bušilica) i "
+"jedinstvene strukture ([overmind] overmind i [reactor] reaktor)."
 
 #: ui/help_gameplay.rml:73
 msgid "Mining structures"
-msgstr "Миньорски структури"
+msgstr "Rudarske strukture"
 
 #: ui/help_gameplay.rml:76
 msgid ""
@@ -304,18 +303,17 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
-"Точките за изграждане се придобиват чрез две минни структури: човешката "
-"[drill] сонда и извънземната [пиявица] пиявица. Тези сгради трябва да бъдат "
-"разпределени за по-голяма ефективност."
+"Bodovi za izgradnju se dobijaju putem dvije rudarske strukture: ljudske "
+"[bušilice] bušilice i vanzemaljske [pijavice] pijavice. Ove zgrade moraju "
+"biti raštrkane radi efikasnosti."
 
 #: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
-"Не изграждайте минни структури твърде близо една до друга, защото в противен "
-"случай те ще се конкурират помежду си и в крайна сметка ще струват ресурси "
-"за изграждане!"
+"Nemojte graditi rudarske strukture preblizu jedna drugoj ili će se međusobno "
+"takmičiti i na kraju vas koštati resursa za izgradnju!"
 
 #: ui/help_gameplay.rml:82
 msgid ""
@@ -325,12 +323,11 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
-"Строителите ще видят още една лента над лентата за състоянието на генератора "
-"на ресурси, която представлява неговата ефективност. Прогнозата ще бъде "
-"показана, когато позиционирате строителния обект. Точките за строеж са "
-"налични незабавно, когато минната структура завърши строежа, и ще бъдат "
-"извадени обратно, ако сградата бъде разрушена. Не изграждайте незащитени "
-"сондажи!"
+"Graditelji će vidjeti još jednu traku iznad trake zdravlja generatora "
+"resursa koja predstavlja njegovu efikasnost. Predviđanje će se prikazati "
+"kada pozicionirate objekat za izgradnju. Bodovi za izgradnju su odmah "
+"dostupni kada se završi izgradnja rudarske strukture i bit će oduzeti ako se "
+"zgrada uništi. Nemojte graditi nezaštićene bušilice!"
 
 #: ui/help_gameplay.rml:85
 msgid ""
@@ -339,14 +336,14 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"Когато дадена сграда бъде разрушена, миньорите ще възстановят бавно точките "
-"ѝ за строеж. Скоростта на възстановяване на мините намалява с течение на "
-"времето, така че става все по-трудно да се възстановят разрушените сгради в "
-"продължителен мач. Това замества внезапната смърт."
+"Kada je zgrada uništena, rudari će polako oporavljati njene bodove "
+"izgradnje. Stopa oporavka rudnika se s vremenom smanjuje, tako da je sve "
+"teže obnoviti uništene zgrade u dugotrajnoj utakmici. Ovo zamjenjuje "
+"iznenadnu smrt."
 
 #: ui/help_gameplay.rml:89
 msgid "Stages &amp; Momentum"
-msgstr "Етапи &amp; Инерция"
+msgstr "Faze i zamah"
 
 #: ui/help_gameplay.rml:92
 msgid ""
@@ -354,59 +351,58 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
-"Изграждането и разрушаването на структури, както и убиването на врагове, "
-"носи на екипа ви нов ресурс, наречен инерция. Ако натрупате достатъчно "
-"инерция, ще се отключат нови оръжия, структури или класове."
+"Izgradnja i uništavanje struktura, kao i ubijanje neprijatelja, donosi vašem "
+"timu novi resurs koji se zove momentum. Ako dobijete dovoljno momentuma, "
+"otključat će se nova oružja, strukture ili klase."
 
 #: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"Инерцията намалява експоненциално с времето, така че ако бездействате, "
-"екипът ви ще загуби достъп до нови елементи. Съществуващите подобрения ще "
-"останат функционални."
+"Momentum se eksponencijalno smanjuje tokom vremena, tako da ako mirujete, "
+"vaš tim će izgubiti pristup novim predmetima. Postojeća unapređenja će "
+"ostati funkcionalna."
 
 #: ui/help_gameplay.rml:99
 msgid "Wildfire"
-msgstr "Пожар"
+msgstr "Šumski požar"
 
 #: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
-"Извънземните постройки могат да се запалят, когато бъдат ударени с [flamer] "
-"огнехвъргачката или с огнехвъргачката [firebomb]."
+"Vanzemaljski gradivi objekti mogu se zapaliti kada ih pogodi bacač plamena "
+"[flamer] ili zapaljiva bomba [firebomb]."
 
 #: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
-"Ако постройките са построени твърде близо, огънят може да прескочи към "
-"нещастните съседи."
+"Ako su građevine izgrađene preblizu, vatra se može proširiti na nesretne "
+"susjede."
 
 #: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
-"Малък [fire] пожар има голям шанс да угасне след известно време, но група "
-"горящи постройки ще се запазят достатъчно горещи, за да предизвикат по-голям "
-"хаос."
+"Mali požar ima dobre šanse da se ugasi nakon nekog vremena, ali grupa "
+"zapaljenih struktura će se dovoljno zagrijati za veći haos."
 
 #: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
-"Атаката [advgranger] с плюене на усъвършенствания Грейнджър може да се "
-"използва за гасене на пожари или забавяне на натрапници!"
+"Napad pljuvanjem naprednog grangera [advgranger] može se koristiti za "
+"gašenje požara ili usporavanje uljeza!"
 
 #: ui/help_gameplay.rml:115
 msgid "Under attack"
-msgstr "Под обстрел"
+msgstr "Pod napadom"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -415,18 +411,18 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"Реакторът [reactor] и [overmind] свръхумът ще издават предупреждения на "
-"екипа при 75% здраве, 50% здраве, 25% здраве и при разрушаване.Унищожаването "
-"на други сгради ще задейства предупреждения \"под обстрел\" за екипа, който "
-"ги притежава."
+"Reaktor [reactor] i nadsvjesni [overmind] će izdavati upozorenja timu kada "
+"su na 75% srčane snage, na 50% srčane snage, na 25% srčane snage i kada su "
+"uništeni. Uništavanje drugih zgrada će pokrenuti upozorenja \"pod napadom\" "
+"za tim vlasnika."
 
 #: ui/help_gameplay.rml:122
 msgid "Healing"
-msgstr "Лечение"
+msgstr "Iscjeljenje"
 
 #: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr "Смъртта подхранва врага, може да искате да запазите живота си!"
+msgstr "Umiranje hrani neprijatelja, možda želiš spasiti svoj život!"
 
 #: ui/help_gameplay.rml:129
 msgid ""
@@ -435,10 +431,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
-"Извънземните се лекуват бавно, където и да се намират, но се лекуват по-"
-"бързо в групи и в близост до извънземни сгради. Изграждането на предни "
-"такива може да бъде решаващо! Лекуването по какъвто и да е начин също ще "
-"допринесе за възстановяването на [advdragoon]куршумите на напредналия драгун."
+"Vanzemaljci se sporo liječe gdje god se nalazili, ali brže liječe u grupama "
+"i u blizini vanzemaljskih objekata za izgradnju. Izgradnja onih naprijed "
+"može biti odlučujuća! Liječenje na bilo koji način će također doprinijeti "
+"obnavljanju [advdragoon] naprednih zmajskih projektila."
 
 #: ui/help_gameplay.rml:133
 msgid ""
@@ -446,10 +442,9 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
-"Усилвателят дава бързо изцеление на близките извънземни, постройте го "
-"възможно най-скоро и се опитайте да го отключите възможно най-скоро. "
-"Усилвателят ще ви даде и малко отрова, за да направите атаките си по-"
-"смъртоносни."
+"Pojačivač daje brzo iscjeljenje obližnjim vanzemaljcima, izgradite jednog "
+"što prije možete, pokušajte ga otključati što je prije moguće. Pojačivač će "
+"vam također dati malo otrova kako bi vaši napadi bili smrtonosniji."
 
 #: ui/help_gameplay.rml:136
 msgid ""
@@ -457,9 +452,9 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
-"Ако останете на междинно разстояние от [overmind] свръхразум или [egg] яйца, "
-"също ще получите леко подобрено изцеление, макар и по-ниско от това при "
-"пълзене. Това може да помогне при защитата на бази."
+"Ostanak na srednjoj udaljenosti od [overmind] overmind ili [egg] jaja će vam "
+"dati i nešto poboljšano liječenje, iako slabije nego kod creep-a. Ovo može "
+"pomoći u odbrani baza."
 
 #: ui/help_gameplay.rml:139
 msgid ""
@@ -468,387 +463,384 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Извънземните имат трети лечебен стимул: близост с други извънземни. Ако сте "
-"в близост до приятелски настроени извънземни, ще се излекувате малко по-"
-"бързо, а с двама съотборници ще се излекувате толкова бързо, колкото бихте "
-"се излекували, ако докоснете извънземна сграда. С малко работа в екип това е "
-"чудесен начин да обсадите враговете!"
+"Vanzemaljci imaju i treće pojačanje za iscjeljenje: blizina s drugim "
+"vanzemaljcima. Ako ste u blizini prijateljski nastrojenog vanzemaljca, "
+"zacijelit ćete nešto brže, a s dva člana tima, zacijelit ćete brzo kao da "
+"dodirujete vanzemaljsku građevinu. Uz malo timskog rada, ovo je odličan "
+"način za opsadu neprijatelja!"
 
 #: ui/help_gameplay.rml:143
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
-"Хората носят със себе си аптечка, която могат да използват, за да се "
-"излекуват веднъж, след което трябва да се върнат в медицинския пункт "
-"[medstat], за да се излекуват и да попълнят аптечката си."
+"Ljudi sa sobom nose medicinski komplet koji mogu koristiti za jednokratno "
+"liječenje, nakon čega se moraju vratiti u meditaciju [medstat] da bi se "
+"izliječili i napunili svoj medicinski komplet."
 
 #: ui/help_gameplay.rml:147
 msgid "Wallwalking"
-msgstr "Стеноходене"
+msgstr "Hodanje po zidovima"
 
 #: ui/help_gameplay.rml:150
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
-"Някои извънземни форми като [dretch] Дребосък, [mantis] Богомол и "
-"[advgranger] надграден Грейнджър могат да ходят по стени!"
+"Neki vanzemaljski oblici poput [dretch] dretcha, [mantis] mantisa i "
+"[advgranger] naprednog grangera mogu hodati po zidovima!"
 
 #: ui/help_gameplay.rml:153
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
-"Използвайте го, за да достигнете до специални места или да използвате преки "
-"пътища през вентилационните отвори."
+"Koristite ovo da biste došli do posebnih mjesta ili koristili prečice kroz "
+"ventilacijske otvore."
 
 #: ui/help_gameplay.rml:156
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
-"Защитните структури на извънземните, като трапер и шип, работят по-добре на "
-"стени, а изграждането им на таван ще ги предпази от гранати."
+"Vanzemaljske odbrambene strukture poput trapera i spikera bolje "
+"funkcioniraju na zidovima, a njihova izgradnja na stropu zaštitit će ih od "
+"granata."
 
 #: ui/help_gameplay.rml:159
 msgid "The advanced granger can be unlocked with momentum."
-msgstr "Усъвършенстваният Грейнджър може да бъде отключен с инерция."
+msgstr "Napredni granger se može otključati zamahom."
 
 #: ui/help_gameplay.rml:163
 msgid "Since Tremulous"
-msgstr "След Тремулус"
+msgstr "Od Tremulous-a"
 
 #: ui/help_gameplay.rml:166
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "След появата на Тремулус, издръжливостта е увеличена."
+msgstr "Od Tremulous-a, izdržljivost je povećana."
 
 #: ui/help_gameplay.rml:169
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
-"Всички разходи и печалби от еволюцията на извънземните са удвоени. Новият "
-"максимален брой еволюции, които едно извънземно може да съхранява, е 20 "
-"(преди 9)."
+"Svi troškovi i dobici evolucije vanzemaljaca su udvostručeni. Novi "
+"maksimalni broj evoa koje vanzemaljac može pohraniti je 20 (ranije 9)."
 
 #: ui/help_gameplay.rml:172
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
-"Етапите са заменени с динамика, а точките за изграждане зависят пряко от "
-"броя на тренировките."
+"Faze su zamijenjene momentumom, a bodovi za izgradnju direktno zavise od "
+"broja vježbi."
 
 #: ui/help_gameplay.rml:175
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
-"Хората вече не разполагат със защитната кула на Тесла, нито с компютъра за "
-"защита, но могат да строят ракетни капсули."
+"Ljudi više nemaju Teslin odbrambeni toranj niti odbrambeni računar, ali mogu "
+"graditi raketne kapsule."
 
 #: ui/help_gameplay.rml:178
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Извънземните имат възможност за изграждане на шипове, които могат да наранят "
-"дълбоко непредпазливите хора, но това е много уязвима структура, не я "
-"поставяйте на видно място!"
+"Vanzemaljci su uspjeli sastaviti šiljak koji može duboko povrijediti "
+"nepromišljene ljude, ali to je vrlo ranjiva struktura, nemojte je stavljati "
+"na vidno mjesto!"
 
 #: ui/help_gameplay.rml:181
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
-"Базилискът е заменен от богомолката, която вече не може да хваща, но "
-"захапката ѝ забавя жертвите и може да се хвърля за много бързо приближаване."
+"Baziliska je zamijenila bogomoljka, više ne može hvatati, ali njen ugriz "
+"usporava žrtve i može se vrlo brzo približavati."
 
 #: ui/help_gameplay.rml:184
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
-"Извънземните могат да се развият в близост до свръхразума, а "
-"усъвършенстваната плюнка на Грейнджър може да направи интересни неща, "
-"опитайте я върху огън или хора!"
+"Vanzemaljci se mogu degenerirati blizu nadsvijesti, a napredna Grangerova "
+"pljuvačka može raditi zanimljive stvari, isprobati to na vatri ili ljudima!"
 
 #: ui/hud_basics.rml:196
 msgid "Game"
-msgstr "Игра"
+msgstr "Igra"
 
 #: ui/hud_basics.rml:199
 msgid "Life"
-msgstr "Живот"
+msgstr "Život"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr "кадри/секунда"
+msgstr "broj sličica u sekundi"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr "мс"
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "точки за изграждане"
+msgstr "bodovi za izgradnju"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr "Кредити"
+msgstr "Zasluge"
 
 #: ui/human_buy.rml:209 ui/options_player.rml:77
 msgid "Weapons"
-msgstr "Оръжия"
+msgstr "Oružja"
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr "ТАБ"
+msgstr "TABULAT"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
-msgstr "Обхват:"
+msgstr "Raspon:"
 
 #: ui/human_buy.rml:219
 msgid "Damage:"
-msgstr "Щета:"
+msgstr "Šteta:"
 
 #: ui/human_buy.rml:220
 msgid "Fire Rate:"
-msgstr "Скорост на стреляне:"
+msgstr "Brzina paljbe:"
 
 #: ui/human_buy.rml:225
 msgid "Upgrades"
-msgstr "Ъпгрейди"
+msgstr "Nadogradnje"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr "Изберете стартовата екипировка:"
+msgstr "Odaberite svoju početnu opremu:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:275
 msgid "SMG"
-msgstr "автомат"
+msgstr "Automatski pištolj"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "Комплект за конструиране"
+msgstr "Komplet za gradnju"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
-"Автомата е скорострелно стартово оръжие, а строителният комплект изгражда и "
-"ремонтира човешки структури. Цялото оборудване може да се търгува в "
-"оръжейницата."
+"Automatska puška je brzometno startno oružje, a komplet za konstrukciju "
+"služi za izgradnju i popravku ljudskih struktura. Sva oprema se može "
+"zamijeniti u oružarnici."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr "Маяк"
+msgstr "Svjetionici"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
-msgstr ""
+msgstr "Taktika botova"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr "Зрители"
+msgstr "Gledaoci"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr "Карта:"
+msgstr "Mapa:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr "Заглавие:"
+msgstr "Vrijeme:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr "Автоматичен избор на отбор"
+msgstr "Automatski odabir tima"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
-"Извънземните са много мобилни и притежават голямо разнообразие от атаки, "
-"базирани на движението. Те са издръжливи, но трябва да разчитат на "
-"прикриване и избягване."
+"Vanzemaljci su vrlo pokretni i posjeduju širok spektar napada zasnovanih na "
+"kretanju. Čvrsti su, ali se moraju oslanjati na prikrivenost i izbjegavanje."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
-"Хората могат да се оборудват с разнообразни оръжия и екипировка. Те са "
-"гъвкави и смъртоносни на разстояние, но крехки."
+"Ljudi se mogu opremiti raznim oružjem i opremom. Fleksibilni su i smrtonosni "
+"na daljinu, ali krhki."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
-msgstr "Присъедини се към Извънземни"
+msgstr "Pridružite se vanzemaljcima"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
-msgstr "Присъедини се към Хора"
+msgstr "Pridružite se ljudima"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr "Освен това можете да гледате играта, без да играете."
+msgstr "Alternativno, možete gledati utakmicu bez igranja."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
-msgstr "Наблюдаване"
+msgstr "Gledajte"
 
 #: ui/ingame_vsaymenu.rml:78
 msgid "Vsay"
-msgstr ""
+msgstr "V-govor"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"Това е бета версия на Unvanquished. Моля, съобщавайте за всички открити "
-"проблеми на адрес <web dest=\"bugs\" />"
+"Ovo je beta verzija igre Unvanquished. Molimo vas da prijavite bilo koji "
+"problem koji pronađete na<web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr "Мач"
+msgstr "Podudaranje"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
-msgstr "Напусни мача"
+msgstr "Napusti utakmicu"
 
 #: ui/menu_ingame.rml:26
 msgid "Resume action"
-msgstr "Възобновяване на действието"
+msgstr "Nastavi radnju"
 
 #: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
-msgstr "Демокрация"
+msgstr "Demokratija"
 
 #: ui/menu_ingame.rml:38
 msgid "Host menu"
-msgstr "Меню на домакина"
+msgstr "Meni domaćina"
 
 #: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr "Настройка на сървър"
+msgstr "Podešavanje servera"
 
 #: ui/menu_ingame.rml:42
 msgid "Stop server"
-msgstr "Спиране сървър"
+msgstr "Zaustavi server"
 
 #: ui/menu_ingame.rml:44
 msgid "Pause server"
-msgstr "Пауза сървър"
+msgstr "Pauziraj server"
 
 #: ui/menu_ingame.rml:46 ui/options_bots.rml:8
 msgid "Bots"
-msgstr "Ботове"
+msgstr "Botovi"
 
 #: ui/menu_ingame.rml:50 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr "Главно меню"
+msgstr "Glavni meni"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr "Списъци със сървъри"
+msgstr "Popisi servera"
 
 #: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr "Начало на локална/LAN игра"
+msgstr "Pokreni lokalnu/LAN igru"
 
 #: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
-msgstr "Опции"
+msgstr "Opcije"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
-msgstr "Ръководство за игра"
+msgstr "Vodič za igranje"
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
-msgstr "Изход игра"
+msgstr "Napusti igru"
 
 #: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
-msgstr "Бета"
+msgstr "Beta verzija"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr "Поле на видимост"
+msgstr "Vidna polja"
 
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
-msgstr "Добави извънземен бот"
+msgstr "Dodajte vanzemaljskog bota"
 
 #: ui/options_bots.rml:12
 msgid "Add a human bot"
-msgstr "Добави човешки бот"
+msgstr "Dodajte ljudskog bota"
 
 #: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:337
 msgid "Remove all bots"
-msgstr "Премахване на всички ботове"
+msgstr "Ukloni sve botove"
 
 #: ui/options_democracy.rml:13
 msgid "Global vote:"
-msgstr "Глобален вот:"
+msgstr "Globalno glasanje:"
 
 #: ui/options_democracy.rml:15 ui/options_democracy.rml:24
 msgid "yes"
-msgstr "да"
+msgstr "da"
 
 #: ui/options_democracy.rml:16 ui/options_democracy.rml:25
 msgid "or"
-msgstr "или"
+msgstr "ili"
 
 #: ui/options_democracy.rml:18 ui/options_democracy.rml:27
 msgid "no"
-msgstr "не"
+msgstr "ne"
 
 #: ui/options_democracy.rml:22
 msgid "Team vote:"
-msgstr "Гласуване за отбора:"
+msgstr "Glasanje tima:"
 
 #: ui/options_democracy.rml:30
 msgid "Kick bots"
-msgstr "Изритай ботове"
+msgstr "Kick botovi"
 
 #: ui/options_democracy.rml:33
 msgid "Extend timelimit"
-msgstr "Продължение на времевия лимит"
+msgstr "Produžite vremenski rok"
 
 #: ui/options_democracy.rml:34
 msgid "Call a draw"
-msgstr "Заявка за равенство"
+msgstr "Proglasite neriješeno"
 
 #: ui/options_democracy.rml:35
 msgid "Admit defeat"
-msgstr "Приеми загуба"
+msgstr "Priznaj poraz"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr "Ъгъл на видимост"
+msgstr "Uglovi gledanja"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
-"Поле на видимост = широчината на зрението на играча, измерена в градуси."
+msgstr "FOV = širina igračevog vidnog polja, mjerena u stepenima."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
-"Много играчи могат да изпитат морска болест от играене на шутъри от първо "
-"лице. По-висок ъгъл на видимост може да пребори това."
+"Mnogi igrači pate od blage mučnine kretanja od igranja pucačina iz prvog "
+"lica. Veće vidno polje (FOV) može pomoći u borbi protiv ovoga."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr "градуса"
+msgstr "stepeni"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -857,152 +849,154 @@ msgstr "градуса"
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
 msgid "reset"
-msgstr "рестарт"
+msgstr "resetiraj"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr "Богомолка"
+msgstr "Bogomoljka"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr "Марудер"
+msgstr "Pljačkaš"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
-msgstr "Драгуун"
+msgstr "Dragun"
 
 #: ui/options_fov.rml:64 ui/server_setup.rml:376
 msgid "Tyrant"
-msgstr "Тиранин"
+msgstr "Tiranin"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr "Подскачащ изглед"
+msgstr "Pogled se njiše"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr "Накланяне на камерата"
+msgstr "Namještanje kamere"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr "Забранен"
+msgstr "Onemogućeno"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr "Меко"
+msgstr "Blago"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "Default"
-msgstr "Подразбиране"
+msgstr "Zadano"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr "Силно"
+msgstr "Jak"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr "Движение нагоре и надолу"
+msgstr "Kretanje gore i dolje"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr "Превъртане на камерата"
+msgstr "Kamera snima"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr "Усукващо движение"
+msgstr "Uvijanje"
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
 msgid "Graphics"
-msgstr "Графика"
+msgstr "Grafika"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
-msgstr "Предефинирани настройки"
+msgstr "Unaprijed postavljene postavke"
 
 #: ui/options_graphics.rml:27
 msgid "Ultra"
-msgstr "Ултра"
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Sve omogućeno."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:269
 #: ui/options_graphics.rml:386 ui/options_graphics.rml:394
 msgid "High"
-msgstr "Висока"
+msgstr "Visoko"
 
 #: ui/options_graphics.rml:32
 msgid "Dynamic lights, special effects, large textures…"
-msgstr ""
+msgstr "Dinamična svjetla, specijalni efekti, velike teksture…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
-msgstr "Средно"
+msgstr "Srednje"
 
 #: ui/options_graphics.rml:36
 msgid "Surface details, good textures…"
-msgstr ""
+msgstr "Detalji površine, dobre teksture…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:387 ui/options_graphics.rml:396
 msgid "Low"
-msgstr "Ниско"
+msgstr "Nisko"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "Najbrži preset koji ne čini da igra izgleda ružno."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"Kada tražite optimizacije, prvo isprobajte nižu postavku. Kada niža postavka "
+"ispravno radi, najniža postavka nije brža."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
-msgstr "Най-ниско"
+msgstr "Najniža"
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
-msgstr ""
+msgstr "Ružne teksture i geometrija, nema neba, nema odbijanja čestica…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Namijenjeno samo za vrlo spore uređaje, kao krajnje sredstvo."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
-msgstr "Видео"
+msgstr "Video"
 
 #: ui/options_graphics.rml:56
 msgid "Screen Resolution"
-msgstr "Екранна Резолюция"
+msgstr "Rezolucija ekrana"
 
 #: ui/options_graphics.rml:60
 msgid "Borderless window"
-msgstr "Безрамков прозорец"
+msgstr "Prozor bez rubova"
 
 #: ui/options_graphics.rml:64
 msgid "Fullscreen"
-msgstr "Цял екран"
+msgstr "Cijeli Ekran"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:397
 msgid "Off"
-msgstr "Изключен"
+msgstr "Ugašeno"
 
 #: ui/options_graphics.rml:70
 msgid "Flexible Vsync"
-msgstr "Гъвкав Vsync"
+msgstr "Fleksibilna Vsync"
 
 #: ui/options_graphics.rml:71
 msgid "Full Vsync"
-msgstr "Пълен Vsync"
+msgstr "Potpuna Vsinhronizacija"
 
 #: ui/options_graphics.rml:73
 msgid "Vsync"
-msgstr "Vsync"
+msgstr "Vsinhronizacija"
 
 #: ui/options_graphics.rml:74
 msgid ""
@@ -1010,888 +1004,917 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"Vsync sprječava vizualno kidanje, ali povećava latenciju ulaza. Fleksibilni "
+"Vsync se aktivira samo kada je broj sličica u sekundi iznad brzine "
+"osvježavanja monitora, izbjegavajući trzanje kada FPS padne."
 
 #: ui/options_graphics.rml:79
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "Brzo približno anti-aliasing (FXAA)"
 
 #: ui/options_graphics.rml:83 ui/options_graphics.rml:149
 #: ui/options_graphics.rml:213 ui/options_graphics.rml:252
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:333
 #: ui/options_graphics.rml:361
 msgid "Apply now"
-msgstr ""
+msgstr "Prijavi se odmah"
 
 #: ui/options_graphics.rml:87
 msgid "Brightness"
-msgstr "Яркост"
+msgstr "Svjetlina"
 
 #: ui/options_graphics.rml:90
 msgid "Gamma"
-msgstr ""
+msgstr "Gama"
 
 #: ui/options_graphics.rml:91
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
+"Ružna metoda za povećanje svjetline. (Razmislite o resetiranju i korištenju "
+"mapiranja tonova umjesto toga.)"
 
 #: ui/options_graphics.rml:94
 msgid "Gamma:"
-msgstr "Гама:"
+msgstr "Gama:"
 
 #: ui/options_graphics.rml:98
 msgid "Tone mapping"
-msgstr ""
+msgstr "Mapiranje tonova"
 
 #: ui/options_graphics.rml:99
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
+"Upravljajte dinamičkim rasponom kako biste ublažili isprana ili previše "
+"tamna područja."
 
 #: ui/options_graphics.rml:102
 msgid "Enable tone mapping"
-msgstr ""
+msgstr "Omogući mapiranje tonova"
 
 #: ui/options_graphics.rml:105
 msgid "Exposure"
-msgstr ""
+msgstr "Izloženost"
 
 #: ui/options_graphics.rml:107
 msgid "Tone mapping brightness level"
-msgstr ""
+msgstr "Nivo svjetline mapiranja tonova"
 
 #: ui/options_graphics.rml:111
 msgid "Lighting"
-msgstr ""
+msgstr "Rasvjeta"
 
 #: ui/options_graphics.rml:113
 msgid "Lights"
-msgstr ""
+msgstr "Svjetla"
 
 #: ui/options_graphics.rml:116
 msgid "Light mapping"
-msgstr ""
+msgstr "Mapiranje svjetla"
 
 #: ui/options_graphics.rml:116
 msgid "normal"
-msgstr ""
+msgstr "normalno"
 
 #: ui/options_graphics.rml:117
 msgid "Vertex lighting"
-msgstr ""
+msgstr "Vertex rasvjeta"
 
 #: ui/options_graphics.rml:117
 msgid "low, ugly"
-msgstr ""
+msgstr "nisko, ružno"
 
 #: ui/options_graphics.rml:119
 msgid "Lighting system"
-msgstr ""
+msgstr "Sistem rasvjete"
 
 #: ui/options_graphics.rml:122
 msgid "Light styles"
-msgstr ""
+msgstr "Svjetli stilovi"
 
 #: ui/options_graphics.rml:124
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
+"Unaprijed izračunata dinamička svjetla koja emituju statički objekti mape."
 
 #: ui/options_graphics.rml:127
 msgid "Dynamic lights"
-msgstr ""
+msgstr "Dinamična svjetla"
 
 #: ui/options_graphics.rml:129
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
+"Dinamična svjetla u realnom vremenu koja emituju pokretni objekti poput "
+"oružja i zgrada."
 
 #: ui/options_graphics.rml:132
 msgid "Rim lighting"
-msgstr ""
+msgstr "Rasvjeta ruba"
 
 #: ui/options_graphics.rml:134
 msgid "Light the edges of models from behind."
-msgstr ""
+msgstr "Osvjetlite rubove modela odostraga."
 
 #: ui/options_graphics.rml:137
 msgid "Half Lambert lighting"
-msgstr ""
+msgstr "Half Lambert rasvjeta"
 
 #: ui/options_graphics.rml:139
 msgid "Non-physical lighting technique to make models less dark."
-msgstr ""
+msgstr "Tehnika nefizičkog osvjetljenja koja modele čini manje tamnim."
 
 #: ui/options_graphics.rml:143
 msgid "Blobs"
-msgstr ""
+msgstr "Mrlje"
 
 #: ui/options_graphics.rml:143
 msgid "low"
-msgstr ""
+msgstr "nisko"
 
 #: ui/options_graphics.rml:144 ui/options_graphics.rml:370
 #: ui/options_ui.rml:187
 msgid "None"
-msgstr ""
+msgstr "Nema"
 
 #: ui/options_graphics.rml:146
 msgid "Shadows"
-msgstr ""
+msgstr "Sjene"
 
 #: ui/options_graphics.rml:153
 msgid "Textures"
-msgstr ""
+msgstr "Teksture"
 
 #: ui/options_graphics.rml:155 ui/options_graphics.rml:339
 #: ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "Općenito"
 
 #: ui/options_graphics.rml:158 ui/options_graphics.rml:171
 msgid "No limit"
-msgstr ""
+msgstr "Bez ograničenja"
 
 #: ui/options_graphics.rml:159
 msgid "(ultra)"
-msgstr ""
+msgstr "(ultra)"
 
 #: ui/options_graphics.rml:160
 msgid "(high)"
-msgstr ""
+msgstr "(visoko)"
 
 #: ui/options_graphics.rml:161
 msgid "(medium)"
-msgstr ""
+msgstr "(srednje)"
 
 #: ui/options_graphics.rml:162
 msgid "(low)"
-msgstr ""
+msgstr "(nisko)"
 
 #: ui/options_graphics.rml:163
 msgid "(lowest)"
-msgstr ""
+msgstr "(najniža)"
 
 #: ui/options_graphics.rml:165
 msgid "Image size limit"
-msgstr ""
+msgstr "Ograničenje veličine slike"
 
 #: ui/options_graphics.rml:166
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Ograničite veličinu slike radi uštede memorije."
 
 #: ui/options_graphics.rml:172
 msgid "No smaller than screen"
-msgstr ""
+msgstr "Nije manji od ekrana"
 
 #: ui/options_graphics.rml:173
 msgid "No larger than screen"
-msgstr ""
+msgstr "Nije veće od ekrana"
 
 #: ui/options_graphics.rml:175
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Ograničenje veličine slike menija"
 
 #: ui/options_graphics.rml:176
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Ograničite veličinu slike menija radi uštede memorije."
 
 #: ui/options_graphics.rml:181
 msgid "High-precision rendering"
-msgstr ""
+msgstr "Visokoprecizno renderiranje"
 
 #: ui/options_graphics.rml:182
 msgid "Use high-precision pixel buffers, which reduce color banding."
-msgstr ""
+msgstr "Koristite visokoprecizne piksel bafere koji smanjuju banding boja."
 
 #: ui/options_graphics.rml:186
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "Koristite teksture bez vezivanja ako je moguće"
 
 #: ui/options_graphics.rml:188
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"Koristite teksture bez vezanja ako ih podržava hardver/drajver. Ovo bi moglo "
+"poboljšati performanse."
 
 #: ui/options_graphics.rml:188 ui/options_graphics.rml:238
 #: ui/options_graphics.rml:262 ui/options_graphics.rml:348
 #: ui/options_graphics.rml:353 ui/options_graphics.rml:358
 msgid "Experimental."
-msgstr ""
+msgstr "Eksperimentalno."
 
 #: ui/options_graphics.rml:191
 msgid "Mip-mapping"
-msgstr ""
+msgstr "MIP-mapiranje"
 
 #: ui/options_graphics.rml:192
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
+"Mip-mapiranje poboljšava izgled udaljenih površina korištenjem tekstura niže "
+"rezolucije na njima. Ovo uglavnom ne utiče na performanse."
 
 #: ui/options_graphics.rml:199 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: ui/options_graphics.rml:201
 msgid "Anisotropic mip-mapping"
-msgstr ""
+msgstr "Anizotropno mip-mapiranje"
 
 #: ui/options_graphics.rml:202
 msgid "Better interpretation of mip-maps on angled surfaces."
-msgstr ""
+msgstr "Bolja interpretacija mip-mapa na kosim površinama."
 
 #: ui/options_graphics.rml:206
 msgid "Trilinear"
-msgstr ""
+msgstr "Trilinearno"
 
 #: ui/options_graphics.rml:206
 msgid "better"
-msgstr ""
+msgstr "bolje"
 
 #: ui/options_graphics.rml:207
 msgid "Bilinear"
-msgstr ""
+msgstr "Bilinearno"
 
 #: ui/options_graphics.rml:209
 msgid "Texture scaling filter"
-msgstr ""
+msgstr "Filter za skaliranje teksture"
 
 #: ui/options_graphics.rml:217 ui/options_graphics.rml:219
 msgid "Materials"
-msgstr ""
+msgstr "Materijali"
 
 #: ui/options_graphics.rml:221
 msgid "Sky"
-msgstr ""
+msgstr "Nebo"
 
 #: ui/options_graphics.rml:223
 msgid "Draw the sky."
-msgstr ""
+msgstr "Nacrtajte nebo."
 
 #: ui/options_graphics.rml:226
 msgid "Normal mapping"
-msgstr ""
+msgstr "Normalno mapiranje"
 
 #: ui/options_graphics.rml:228
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr ""
+msgstr "Simulira dodatne detalje osvjetljenja na ravnim površinama."
 
 #: ui/options_graphics.rml:231
 msgid "Deluxe mapping"
-msgstr ""
+msgstr "Deluxe mapiranje"
 
 #: ui/options_graphics.rml:233
 msgid "Light direction based on baked textures."
-msgstr ""
+msgstr "Smjer svjetlosti zasnovan na pečenim teksturama."
 
 #: ui/options_graphics.rml:236
 msgid "Relief mapping"
-msgstr ""
+msgstr "Mapiranje reljefa"
 
 #: ui/options_graphics.rml:238
 msgid "Adds bumps on supported surfaces."
-msgstr ""
+msgstr "Dodaje neravnine na podržane površine."
 
 #: ui/options_graphics.rml:241
 msgid "Specular mapping"
-msgstr ""
+msgstr "Spekularno mapiranje"
 
 #: ui/options_graphics.rml:243
 msgid "Simulate light specularity."
-msgstr ""
+msgstr "Simulirajte svjetlosnu spekularnost."
 
 #: ui/options_graphics.rml:246
 msgid "Physical mapping"
-msgstr ""
+msgstr "Fizičko mapiranje"
 
 #: ui/options_graphics.rml:248
 msgid "Material appearance based on physical approximations."
-msgstr ""
+msgstr "Izgled materijala zasnovan na fizičkim aproksimacijama."
 
 #: ui/options_graphics.rml:256 ui/options_graphics.rml:258
 msgid "Reflections"
-msgstr ""
+msgstr "Razmišljanja"
 
 #: ui/options_graphics.rml:260
 msgid "Static reflections"
-msgstr ""
+msgstr "Statičke refleksije"
 
 #: ui/options_graphics.rml:262
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
+"Dodaje statičke refleksije cubemapa na podržane površine. Zahtijeva "
+"normalno, spekularno i deluxe mapiranje. Trenutno nije podržano s fizičkim "
+"mapiranjem."
 
 #: ui/options_graphics.rml:266
 msgid "Very low"
-msgstr ""
+msgstr "Vrlo nisko"
 
 #: ui/options_graphics.rml:268 ui/options_graphics.rml:395
 msgid "Moderate"
-msgstr ""
+msgstr "Umjereno"
 
 #: ui/options_graphics.rml:270
 msgid "Very high"
-msgstr ""
+msgstr "Vrlo visoko"
 
 #: ui/options_graphics.rml:272 ui/options_graphics.rml:389
 msgid "Quality"
-msgstr ""
+msgstr "Kvalitet"
 
 #: ui/options_graphics.rml:273
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr ""
+"Kvalitet statičkih refleksijskih kockastih mapa. Viši kvaliteti mogu "
+"potrošiti puno prostora na disku."
 
 #: ui/options_graphics.rml:276
 msgid "Cubemap grid spacing"
-msgstr ""
+msgstr "Razmak mreže Cubemap"
 
 #: ui/options_graphics.rml:280 ui/options_graphics.rml:407
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "Trenutno:"
 
 #: ui/options_graphics.rml:286 ui/options_ui.rml:139
 msgid "Never"
-msgstr ""
+msgstr "Nikad"
 
 #: ui/options_graphics.rml:287
 msgid "Cache on disk"
-msgstr ""
+msgstr "Keš memorija na disku"
 
 #: ui/options_graphics.rml:288
 msgid "Always rebuild"
-msgstr ""
+msgstr "Uvijek ponovo izgradi"
 
 #: ui/options_graphics.rml:290
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Automatska izrada kockastih mapa statičke refleksije"
 
 #: ui/options_graphics.rml:291
 msgid "Automatically build/load/save reflection cubemaps."
-msgstr ""
+msgstr "Automatski izgradi/učitaj/spremi refleksijske kockaste mape."
 
 #: ui/options_graphics.rml:299 ui/options_graphics.rml:301
 #: ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "Efekti"
 
 #: ui/options_graphics.rml:303
 msgid "Bloom"
-msgstr ""
+msgstr "Cvjetanje"
 
 #: ui/options_graphics.rml:305
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "Čini da svijetla područja na vašem ekranu sjaje."
 
 #: ui/options_graphics.rml:308
 msgid "Color grading"
-msgstr ""
+msgstr "Gradacija boja"
 
 #: ui/options_graphics.rml:310
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Promijenite boje kako biste stvorili specifične ambijente."
 
 #: ui/options_graphics.rml:313
 msgid "Heat-haze"
-msgstr ""
+msgstr "Toplotna izmaglica"
 
 #: ui/options_graphics.rml:315
 msgid "Simulate air refraction in severe heat."
-msgstr ""
+msgstr "Simulirajte prelamanje zraka pri jakoj vrućini."
 
 #: ui/options_graphics.rml:318
 msgid "Screen space ambient occlusion (SSAO)"
-msgstr ""
+msgstr "Ambijentalna okluzija prostora ekrana (SSAO)"
 
 #: ui/options_graphics.rml:320
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "Simulirajte tamne uglove."
 
 #: ui/options_graphics.rml:323
 msgid "Marks"
-msgstr ""
+msgstr "Oznake"
 
 #: ui/options_graphics.rml:325
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
-msgstr ""
+msgstr "Crtanje tragova (kao što su rupe od metaka ili puzanje) na površinama"
 
 #: ui/options_graphics.rml:328
 msgid "Particle physics"
-msgstr ""
+msgstr "Fizika čestica"
 
 #: ui/options_graphics.rml:330
 msgid "Allow particles to bounce off surfaces."
-msgstr ""
+msgstr "Dozvolite česticama da se odbijaju od površina."
 
 #: ui/options_graphics.rml:337
 msgid "Renderer"
-msgstr ""
+msgstr "Renderer"
 
 #: ui/options_graphics.rml:342
 msgid "Read-only depth buffer"
-msgstr ""
+msgstr "Dubinski bafer samo za čitanje"
 
 #: ui/options_graphics.rml:344 ui/options_graphics.rml:346
 msgid "Material system"
-msgstr ""
+msgstr "Materijalni sistem"
 
 #: ui/options_graphics.rml:348
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
+"Koristite novi sistem koji značajno poboljšava performanse. Neki drajveri "
+"mogu propasti kada je ovo uključeno (npr. Mesa i AMD vlasnički drajveri)."
 
 #: ui/options_graphics.rml:351
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "Uklanjanje skraćenog dijela GPU-a"
 
 #: ui/options_graphics.rml:353
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "Uklonite površine koje nisu vidljive."
 
 #: ui/options_graphics.rml:356
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "Odvajanje zbog okluzije GPU-a"
 
 #: ui/options_graphics.rml:358
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "Uklonite skrivene površine."
 
 #: ui/options_graphics.rml:365
 msgid "Gameplay"
-msgstr ""
+msgstr "Igranje"
 
 #: ui/options_graphics.rml:367
 msgid "Building markers"
-msgstr ""
+msgstr "Građevinski markeri"
 
 #: ui/options_graphics.rml:370
 msgid "disabled"
-msgstr ""
+msgstr "onemogućeno"
 
 #: ui/options_graphics.rml:371
 msgid "All structures"
-msgstr ""
+msgstr "Sve strukture"
 
 #: ui/options_graphics.rml:372
 msgid "Support structures"
-msgstr ""
+msgstr "Potporne strukture"
 
 #: ui/options_graphics.rml:373
 msgid "Offensive structures"
-msgstr ""
+msgstr "Ofanzivne strukture"
 
 #: ui/options_graphics.rml:374
 msgid "Alien structures"
-msgstr ""
+msgstr "Vanzemaljske strukture"
 
 #: ui/options_graphics.rml:375
 msgid "Human structures"
-msgstr ""
+msgstr "Ljudske strukture"
 
 #: ui/options_graphics.rml:376
 msgid "Alien support structures"
-msgstr ""
+msgstr "Vanzemaljske potporne strukture"
 
 #: ui/options_graphics.rml:377
 msgid "Human support structures"
-msgstr ""
+msgstr "Ljudske potporne strukture"
 
 #: ui/options_graphics.rml:378
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "Ofanzivne vanzemaljske strukture"
 
 #: ui/options_graphics.rml:379
 msgid "Offensive human structures"
-msgstr ""
+msgstr "Uvredljive ljudske strukture"
 
 #: ui/options_graphics.rml:381
 msgid "Building ranges"
-msgstr ""
+msgstr "Građevinski rasponi"
 
 #: ui/options_graphics.rml:383
 msgid "Models"
-msgstr ""
+msgstr "Modeli"
 
 #: ui/options_graphics.rml:391
 msgid "Motion blur"
-msgstr ""
+msgstr "Zamućenje pokreta"
 
 #: ui/options_graphics.rml:399
 msgid "Intensity"
-msgstr ""
+msgstr "Intenzitet"
 
 #: ui/options_graphics.rml:400
 msgid "Level of motion-blur."
-msgstr ""
+msgstr "Nivo zamućenja pokreta."
 
 #: ui/options_graphics.rml:403
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
+msgstr "Minimalna brzina kretanja za aktiviranje zamućenja pokreta"
 
 #: ui/options_keys.rml:7 ui/options.rml:17
 msgid "Key bindings"
-msgstr ""
+msgstr "Veze tipki"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "Pritisnite Escape da biste otkazali promjenu kombinacije tipki."
 
 #: ui/options_keys.rml:16
 msgid ""
 "Classic First Person Shooter binds,<br />keys will be adjusted to your "
 "layout."
 msgstr ""
+"Klasična pucačina iz prvog lica se veže,<br /> Tasteri će biti prilagođeni "
+"vašem rasporedu."
 
 #: ui/options_keys.rml:20
 msgid ""
 "One column shifted to the right,<br />keys will be adjusted to your layout."
 msgstr ""
+"Jedna kolona pomjerena udesno,<br /> Tasteri će biti prilagođeni vašem "
+"rasporedu."
 
 #: ui/options_keys.rml:24
 msgid "Special binds for left-handed,<br />touchpad users."
-msgstr ""
+msgstr "Specijalni vezovi za ljevake,<br /> korisnici touchpad-a."
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
-msgstr ""
+msgstr "Džojstik"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
-msgstr ""
+msgstr "Još ne radi u menijima,<br /> Eksperimentalno."
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr ""
+msgstr "Pomići se"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr ""
+msgstr "Trčanje / Hodanje:"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "Sprint:"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "Naprijed:"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr ""
+msgstr "Povlačenje pedale unazad:"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "Pomakni lijevo:"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "Pomakni se desno:"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr ""
+msgstr "Skok:"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr ""
+msgstr "Čučni:"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr ""
+msgstr "Šetnja po zidu:"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "Sposobnosti"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "Primarni napad:"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "Sekundarni napad:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
-msgstr ""
+msgstr "Ustrijelite bodlju:"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr ""
+msgstr "Baci granatu:"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr ""
+msgstr "Ponovo učitavanje:"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "Koristite prvu pomoć:"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "Koristite strukturu:"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "Razviti se:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "Ćaskanje/Glasanje"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr ""
+msgstr "Gesta:"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr ""
+msgstr "Globalni chat:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr ""
+msgstr "Timski razgovor:"
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr ""
+msgstr "Administratorski chat:"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "Glasajte Za:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "Broj glasa:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr ""
+msgstr "Timski glas Da:"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr ""
+msgstr "Ne glasa tima:"
 
 #: ui/options_keys.rml:142 ui/server_setup.rml:322
 msgid "Misc"
-msgstr ""
+msgstr "Razno"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr ""
+msgstr "Prikaži rezultate:"
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
-msgstr ""
+msgstr "Označi strukturu za zamjenu:"
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
-msgstr ""
+msgstr "Držite ključ za dekonstrukciju strukture."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr ""
+msgstr "Meni svjetionika:"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr ""
+msgstr "Vsays meni:"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
-msgstr ""
+msgstr "Meni taktike bota:"
 
 #: ui/options_keys.rml:167
 msgid "Toggle console:"
-msgstr ""
+msgstr "Uključi/isključi konzolu:"
 
 #: ui/options_keys.rml:171
 msgid "Screenshot:"
-msgstr ""
+msgstr "Snimak ekrana:"
 
 #: ui/options_keys.rml:173
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
 msgstr ""
+"Držite pritisnut taster SHIFT prilikom pravljenja snimka ekrana da biste "
+"snimili PNG datoteku, u suprotnom će snimci biti snimljeni u JPEG formatu."
 
 #: ui/options_keys.rml:175
 msgid "Quake-look"
-msgstr ""
+msgstr "Izgled potresa"
 
 #: ui/options_keys.rml:179
 msgid "Look up:"
-msgstr ""
+msgstr "Poggledajte gore:"
 
 #: ui/options_keys.rml:183
 msgid "Look down:"
-msgstr ""
+msgstr "Pogledajte dolje:"
 
 #: ui/options_keys.rml:187
 msgid "Turn left:"
-msgstr ""
+msgstr "Skrenite lijevo:"
 
 #: ui/options_keys.rml:191
 msgid "Turn right:"
-msgstr ""
+msgstr "Skrenite desno:"
 
 #: ui/options_keys.rml:195
 msgid "Mouse look:"
-msgstr ""
+msgstr "Izgled miša:"
 
 #: ui/options_keys.rml:199
 msgid "Centerview:"
-msgstr ""
+msgstr "Središnji pogled:"
 
 #: ui/options_mouse.rml:7 ui/options.rml:19
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Miš i ciljanje"
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "Y osa"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr ""
+msgstr "Normalno"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "Obrnuto"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
-msgstr ""
+msgstr "Ponašanje vertikalnog kretanja miša."
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Osjetljivost miša"
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
-msgstr ""
+msgstr "Filter za miša"
 
 #: ui/options_mouse.rml:27
 msgid "Smooth out sudden mouse movements."
-msgstr ""
+msgstr "Ublažite nagle pokrete miša."
 
 #: ui/options_mouse.rml:30
 msgid "Free look"
-msgstr ""
+msgstr "Besplatan izgled"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr ""
+msgstr "Isključite samo ako ste ovisnik o Quakeu."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Snimanje mišem u kružnom meniju"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
-msgstr ""
+msgstr "Kružni meniji (osim menija Oružarnica) primaju unose mišem"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr ""
+msgstr "Pokret i kozmetika"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
-msgstr ""
+msgstr "Pokret"
 
 #: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
-msgstr ""
+msgstr "Automatsko bacanje lopte uz zid"
 
 #: ui/options_movements_cosmetic.rml:12
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
 msgstr ""
+"Uvijek okrećite i rotirajte pogled kada hodate po zidu s jedne površine na "
+"drugu."
 
 #: ui/options_movements_cosmetic.rml:21
 msgid "Wall-walking pitch-speed"
-msgstr ""
+msgstr "Brzina pitchinga hodanja po zidu"
 
 #: ui/options_movements_cosmetic.rml:22
 msgid "How fast your view rotates and twists as you wall-walk."
-msgstr ""
+msgstr "Koliko brzo se vaš pogled okreće i uvija dok hodate po zidu."
 
 #: ui/options_movements_cosmetic.rml:25
 msgid "Wall-walking toggles"
-msgstr ""
+msgstr "Prekidači za hodanje po zidu"
 
 #: ui/options_movements_cosmetic.rml:27 ui/options_movements_cosmetic.rml:32
 msgid "Tap key instead of hold key to activate."
-msgstr ""
+msgstr "Dodirnite tipku umjesto da držite tipku za aktiviranje."
 
 #: ui/options_movements_cosmetic.rml:30
 msgid "Sprint toggles"
-msgstr ""
+msgstr "Prekidači za sprint"
 
 #: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
-msgstr ""
+msgstr "Kozmetički"
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "Onemogući"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
-msgstr ""
+msgstr "Samo za ljude"
 
 #: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
-msgstr ""
+msgstr "Ljudi i vanzemaljci"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "Ljudi (prozirni)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "Ljudi i vanzemaljci (prozirni)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
-msgstr ""
+msgstr "Oružja iz prvog lica"
 
 #: ui/options_movements_cosmetic.rml:45
 msgid "Show gun, pincer, hand and mandible models in first-person."
-msgstr ""
+msgstr "Prikažite modele pištolja, kliješta, šake i donje vilice u prvom licu."
 
 #: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Način rada za ljevake"
 
 #: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
-msgstr ""
+msgstr "Modeli oružja iz ogledala iz prvog lica."
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "Podešavanje plejera"
 
 #: ui/options_player.rml:20
 msgid "Personal"
-msgstr ""
+msgstr "Lično"
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "Nadimak"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr ""
+msgstr "Vaše ime vidljivo drugima."
 
 #: ui/options_player.rml:26
 msgid "Colour codes and symbols"
-msgstr ""
+msgstr "Kodovi boja i simboli"
 
 #: ui/options_player.rml:29
 msgid ""
@@ -1899,1946 +1922,1999 @@ msgid ""
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
+"Boje se koriste upisivanjem njihovog escape koda koji počinje simbolom karet "
+"(^). Boja se može vratiti na normalnu vrijednost pomoću ^* ili se stvarni "
+"karet može upisati pomoću ^^."
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr ""
+msgstr "Emotikoni"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr ""
+msgstr "Također možete staviti emotikone u svoj nadimak."
 
 #: ui/options_player.rml:70
 msgid ""
 "Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
 msgstr ""
+"Primjer: ^7^^3Fred^^1Baggins[^7grenade]^* postaje ^3Fred^1Baggins[grenade]"
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr ""
+msgstr "Evo liste dostupnih emotikona:"
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
-msgstr ""
+msgstr "Ljudski gradivi predmeti"
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
-msgstr ""
+msgstr "Vanzemaljski gradivi predmeti"
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "Drugi"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
-msgstr ""
+msgstr "Način rada tutorijala"
 
 #: ui/options_player.rml:216
 msgid "Display hints for key bindings on-screen."
-msgstr ""
+msgstr "Prikaži savjete za kombinacije tipki na ekranu."
 
 #: ui/options_player.rml:220
 msgid "Show only team chat"
-msgstr ""
+msgstr "Prikaži samo timski chat"
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr ""
+msgstr "Prikaži osmrtnice"
 
 #: ui/options.rml:11
 msgid "Player"
-msgstr ""
+msgstr "Igrač"
 
 #: ui/options.rml:21 ui/options_sound.rml:7
 msgid "Sound"
-msgstr ""
+msgstr "Zvuk"
 
 #: ui/options.rml:23
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Korisnički interfejs i HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr ""
+msgstr "Globalni obim"
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Muzika"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
-msgstr ""
+msgstr "Intenzitet reverba"
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr ""
+msgstr "Efekat odjeka"
 
 #: ui/options_sound.rml:26
 msgid "Doppler intensity"
-msgstr ""
+msgstr "Dopplerov intenzitet"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr ""
+msgstr "Efekat promjene visine tona pri kretanju od ili prema zvuku."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr ""
+msgstr "OpenAL uređaj"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "Izlazni audio uređaj/kartica"
 
 #: ui/options_ui.rml:18
 msgid "User interface"
-msgstr ""
+msgstr "Korisnički interfejs"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Glavna"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "Jezik"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr ""
+msgstr "Neki jezici nisu u potpunosti prevedeni."
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "Promijeni jezik"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
-msgstr ""
+msgstr "Sat realnog vremena"
 
 #: ui/options_ui.rml:48
 msgid "12 Hour"
-msgstr ""
+msgstr "12 sati"
 
 #: ui/options_ui.rml:49
 msgid "24 Hour"
-msgstr ""
+msgstr "24 sata"
 
 #: ui/options_ui.rml:51
 msgid "Show the time in real-life."
-msgstr ""
+msgstr "Prikažite vrijeme u stvarnom životu."
 
 #: ui/options_ui.rml:54
 msgid "Game-time clock"
-msgstr ""
+msgstr "Sat za vrijeme igre"
 
 #: ui/options_ui.rml:56
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "Prikažite koliko dugo je trajala utakmica."
 
 #: ui/options_ui.rml:59
 msgid "Console input persistence on map change"
-msgstr ""
+msgstr "Perzistencija ulaza konzole pri promjeni mape"
 
 #: ui/options_ui.rml:61
 msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
 msgstr ""
+"Trenutni unos u konzolu bit će vraćen prvi put kada se konzola otvori nakon "
+"učitavanja nove mape."
 
 #: ui/options_ui.rml:64
 msgid "Chat field auto-clear"
-msgstr ""
+msgstr "Automatsko brisanje polja za chat"
 
 #: ui/options_ui.rml:66
 msgid "Clear chat field when closed."
-msgstr ""
+msgstr "Obriši polje za chat kada se zatvori."
 
 #: ui/options_ui.rml:70
 msgid "Show ping"
-msgstr ""
+msgstr "Prikaži ping"
 
 #: ui/options_ui.rml:72
 msgid "Time that information takes to get to the server and back."
-msgstr ""
+msgstr "Vrijeme koje je potrebno da informacija stigne do servera i nazad."
 
 #: ui/options_ui.rml:75
 msgid "Show movement speed"
-msgstr ""
+msgstr "Prikaži brzinu kretanja"
 
 #: ui/options_ui.rml:77
 msgid "Current, maximum and graph of movement-speed."
-msgstr ""
+msgstr "Struja, maksimum i grafikon brzine kretanja."
 
 #: ui/options_ui.rml:80
 msgid "Show FPS"
-msgstr ""
+msgstr "Prikaži FPS"
 
 #: ui/options_ui.rml:82
 msgid "Frames per second."
-msgstr ""
+msgstr "Broj sličica u sekundi."
 
 #: ui/options_ui.rml:85
 msgid "Console colors"
-msgstr ""
+msgstr "Boje konzole"
 
 #: ui/options_ui.rml:89 ui/options_ui.rml:168 ui/options_ui.rml:212
 msgid "Red:"
-msgstr ""
+msgstr "Crvena:"
 
 #: ui/options_ui.rml:93 ui/options_ui.rml:172 ui/options_ui.rml:216
 msgid "Green:"
-msgstr ""
+msgstr "Zelena:"
 
 #: ui/options_ui.rml:97 ui/options_ui.rml:176 ui/options_ui.rml:220
 msgid "Blue:"
-msgstr ""
+msgstr "Plava:"
 
 #: ui/options_ui.rml:101 ui/options_ui.rml:180 ui/options_ui.rml:224
 msgid "Alpha:"
-msgstr ""
+msgstr "Alfa:"
 
 #: ui/options_ui.rml:106
 msgid "Crosshair"
-msgstr ""
+msgstr "Križić"
 
 #: ui/options_ui.rml:110
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "UPOZORENJE: Pregled radi samo u igri."
 
 #: ui/options_ui.rml:114
 msgid "Weapon"
-msgstr ""
+msgstr "Oružje"
 
 #: ui/options_ui.rml:117
 msgid "Blaster"
-msgstr ""
+msgstr "Ispaljujuće oružje"
 
 #: ui/options_ui.rml:118
 msgid "Rifle"
-msgstr ""
+msgstr "Puška"
 
 #: ui/options_ui.rml:119
 msgid "Pain Saw"
-msgstr ""
+msgstr "Pila za bol"
 
 #: ui/options_ui.rml:120 ui/server_setup.rml:283
 msgid "Shotgun"
-msgstr ""
+msgstr "Sačmarica"
 
 #: ui/options_ui.rml:121 ui/server_setup.rml:287
 msgid "Lasgun"
-msgstr ""
+msgstr "Laserski pištolj"
 
 #: ui/options_ui.rml:122 ui/server_setup.rml:291
 msgid "Mass Driver"
-msgstr ""
+msgstr "Masovni vozač"
 
 #: ui/options_ui.rml:123 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr ""
+msgstr "Čahura"
 
 #: ui/options_ui.rml:124
 msgid "Flamer"
-msgstr ""
+msgstr "Plamenik"
 
 #: ui/options_ui.rml:125 ui/server_setup.rml:303
 msgid "Pulse Rifle"
-msgstr ""
+msgstr "Pulsna puška"
 
 #: ui/options_ui.rml:126 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
-msgstr ""
+msgstr "Luciferov top"
 
 #: ui/options_ui.rml:137
 msgid "Crosshair visiblity"
-msgstr ""
+msgstr "Vidljivost nišana"
 
 #: ui/options_ui.rml:140
 msgid "Ranged weapons only"
-msgstr ""
+msgstr "Samo oružje za daljinsku borbu"
 
 #: ui/options_ui.rml:141
 msgid "Always"
-msgstr ""
+msgstr "Uvijek"
 
 #: ui/options_ui.rml:146
 msgid "Crosshair size"
-msgstr ""
+msgstr "Veličina križića"
 
 #: ui/options_ui.rml:148
 msgid "Tiny"
-msgstr ""
+msgstr "Maleno"
 
 #: ui/options_ui.rml:149
 msgid "Small"
-msgstr ""
+msgstr "Malo"
 
 #: ui/options_ui.rml:150
 msgid "Regular"
-msgstr ""
+msgstr "Regularno"
 
 #: ui/options_ui.rml:151
 msgid "Huge"
-msgstr ""
+msgstr "Ogromno"
 
 #: ui/options_ui.rml:156
 msgid "Crosshair colour"
-msgstr ""
+msgstr "Boja križića"
 
 #: ui/options_ui.rml:158
 msgid "Image colour"
-msgstr ""
+msgstr "Boja slike"
 
 #: ui/options_ui.rml:159 ui/options_ui.rml:189
 msgid "Custom colour"
-msgstr ""
+msgstr "Prilagođena boja"
 
 #: ui/options_ui.rml:164
 msgid "Crosshair colours"
-msgstr ""
+msgstr "Boje križića"
 
 #: ui/options_ui.rml:185
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "Boja obrisa križića"
 
 #: ui/options_ui.rml:188
 msgid "Auto colour"
-msgstr ""
+msgstr "Automatska boja"
 
 #: ui/options_ui.rml:194
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "Skala obrisa križića"
 
 #: ui/options_ui.rml:196
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
+"Negativne vrijednosti će promijeniti obris tako da bude unutar križića."
 
 #: ui/options_ui.rml:199
 msgid "Scale:"
-msgstr ""
+msgstr "Razmjera:"
 
 #: ui/options_ui.rml:203
 msgid "Offset:"
-msgstr ""
+msgstr "Pomak:"
 
 #: ui/options_ui.rml:208
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "Boje kontura križića"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "Zdravo!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "Kako da te zovemo?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "Mogu se koristiti boje i simboli."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "Ovo možete promijeniti u bilo kojem trenutku u opcijama."
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "Koji jezik želite koristiti?"
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
-msgstr ""
+msgstr "Odaberite bojno polje"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Popisi servera"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
-msgstr ""
+msgstr "Internet"
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr ""
+msgstr "Ime:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Igrači (Botovi)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr ""
+msgstr "Spoji se"
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
-msgstr ""
+msgstr "Osvježi"
 
 #: ui/server_browser.rml:55
 msgid "LAN"
-msgstr ""
+msgstr "Lokalna mreža (LAN)"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr ""
+msgstr "Naziv osnivača"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Lozinka"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "Režim za razvojne programere (omogući varalice)"
 
 #: ui/server_create.rml:54
 msgid "Building layout to use"
-msgstr ""
+msgstr "Raspored zgrade koji će se koristiti"
 
 #: ui/server_create.rml:62
 msgid "Start"
-msgstr ""
+msgstr "Započni"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
-msgstr ""
+msgstr "Učestalost slobodnih sredstava"
 
 #: ui/server_setup.rml:17
 msgid "Every X seconds the player is alive, they will receive free funds."
-msgstr ""
+msgstr "Svakih X sekundi koliko je igrač živ, dobit će besplatna sredstva."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "sekunde"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
-msgstr ""
+msgstr "Množitelji štete od prijateljske vatre"
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
-msgstr ""
+msgstr "Množitelj štete za štetu tima (ne uključuje zgrade ili sebe)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr ""
+msgstr "Vanzemaljac:"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr ""
+msgstr "Čovjek:"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
-msgstr ""
+msgstr "Prijateljska vatra za sastavljanje"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "Dozvoli glasanje"
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
-msgstr ""
+msgstr "Zagrijavanje"
 
 #: ui/server_setup.rml:48
 msgid "Do warmups at every game start"
-msgstr ""
+msgstr "Radite zagrijavanje na svakom početku utakmice"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
-msgstr ""
+msgstr "Daje igračima na sporijim računarima vremena da se pridruže."
 
 #: ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Timovi"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
-msgstr ""
+msgstr "Dozvoli gradnju vanzemaljcima"
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr ""
+msgstr "Dozvoliti ljudsku gradnju"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "Fizika"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitacija"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr ""
+msgstr "Drač punt"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr ""
+msgstr "Dretče se mogu potisnuti s puta napadom na njih."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
-msgstr ""
+msgstr "Blokada protiv pojave igrača"
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
-msgstr ""
+msgstr "Odgurnite spore ljude dalje od mjesta mrijesta."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Zamah"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
-msgstr ""
+msgstr "Vrijeme poluživota"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
 msgstr ""
+"Vrijeme potrebno za smanjenje momenta za 50%. 0 onemogućava ovo ponašanje."
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "minute"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
-msgstr ""
+msgstr "Dvostruko odlaganje nagrade"
 
 #: ui/server_setup.rml:105
 msgid "Time after which some momentum rewards double"
-msgstr ""
+msgstr "Vrijeme nakon kojeg se neke nagrade za momentum udvostručuju"
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
-msgstr ""
+msgstr "Osnovni množitelj"
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr ""
+msgstr "Generički multiplikator nagrade za momentum"
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
-msgstr ""
+msgstr "Množitelj nagrade za ubojstva"
 
 #: ui/server_setup.rml:121
 msgid "Momentum reward multiplier for kills"
-msgstr ""
+msgstr "Množitelj nagrade za momentum za ubistva"
 
 #: ui/server_setup.rml:128
 msgid "Building reward multiplier"
-msgstr ""
+msgstr "Izgradnja multiplikatora nagrade"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr ""
+msgstr "Multiplikator nagrade za momentum za konstrukciju"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
-msgstr ""
+msgstr "Multiplikator kazne za dekonstrukciju"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr ""
+msgstr "Multiplikator kazne za momentum za dekonstrukciju"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
-msgstr ""
+msgstr "Množitelj nagrade za ubijanje u zgradi"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr ""
+msgstr "Množitelj nagrade za zamah za uništavanje građevinskih predmeta"
 
 #: ui/server_setup.rml:153
 msgid "Build system"
-msgstr ""
+msgstr "Sistem izgradnje"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr ""
+msgstr "Početna vrijednost"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr ""
+msgstr "Početni broj bodova za izgradnju"
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
-msgstr ""
+msgstr "Bonus za rudara"
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
-msgstr ""
+msgstr "Budžet za bodove izgradnje po rudaru"
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr ""
+msgstr "Početna brzina regeneracije"
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr ""
+"Početna brzina kojom će se krvni pritisak oporaviti (u krvnim pritiskom u "
+"minuti)"
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
-msgstr ""
+msgstr "Polovično vrijeme regeneracije"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
+"Period čekanja prije oporavka krvnog pritiska postaje dvostruko sporiji"
 
 #: ui/server_setup.rml:189
 msgid "Bots: General"
-msgstr ""
+msgstr "Botovi: Općenito"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr ""
+msgstr "Minimalan broj botova po timu"
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "Popunjavajte timove dok ne budu imali dovoljno igrača"
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "botovi"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr ""
+msgstr "Zadani nivo vještine"
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Radi samo za nove botove."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Čovječanstvo"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
-msgstr ""
+msgstr "Vidno polje"
 
 #: ui/server_setup.rml:217
 msgid "Reaction time"
-msgstr ""
+msgstr "Vrijeme reakcije"
 
 #: ui/server_setup.rml:224
 msgid "Behaviour"
-msgstr ""
+msgstr "Ponašanje"
 
 #: ui/server_setup.rml:227
 msgid "Attack structures"
-msgstr ""
+msgstr "Strukture napada"
 
 #: ui/server_setup.rml:229
 msgid "Cheating"
-msgstr ""
+msgstr "Varanje"
 
 #: ui/server_setup.rml:232
 msgid "Infinite funds"
-msgstr ""
+msgstr "Beskonačni fondovi"
 
 #: ui/server_setup.rml:236
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Zanemarite zamah"
 
 #: ui/server_setup.rml:238
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Generiranje Navmesha"
 
 #: ui/server_setup.rml:241
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Generiraj navigacijske mreže prilikom učitavanja"
 
 #: ui/server_setup.rml:245
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Broj radnih niti"
 
 #: ui/server_setup.rml:253
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Botovi: Ljudi"
 
 #: ui/server_setup.rml:254 ui/server_setup.rml:339
 msgid "Overall"
-msgstr ""
+msgstr "Ukupno"
 
 #: ui/server_setup.rml:257
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Ljudski botovi kupuju opremu"
 
 #: ui/server_setup.rml:261 ui/server_setup.rml:346
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Modifikator brzine ciljanja (veće je sporije)"
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Pojedinačno"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Primarno oružje"
 
 #: ui/server_setup.rml:271
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Komplet za popravke"
 
 #: ui/server_setup.rml:279
 msgid "Painsaw"
-msgstr ""
+msgstr "Bolesna pila"
 
 #: ui/server_setup.rml:299
 msgid "Flamethrower"
-msgstr ""
+msgstr "Bacač plamena"
 
 #: ui/server_setup.rml:309
 msgid "Armors"
-msgstr ""
+msgstr "Oklopi"
 
 #: ui/server_setup.rml:312
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "da li botovi kupuju laki oklop"
 
 #: ui/server_setup.rml:316
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "da li botovi kupuju srednji oklop"
 
 #: ui/server_setup.rml:320
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "da li botovi kupuju borbeno odijelo"
 
 #: ui/server_setup.rml:325
 msgid "Firebomb"
-msgstr ""
+msgstr "Zapaljiva bomba"
 
 #: ui/server_setup.rml:329
 msgid "Grenade"
-msgstr ""
+msgstr "Granata"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Radar"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Vanzemaljski botovi se transformišu"
 
 #: ui/server_setup.rml:364
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Napredni pljačkaš"
 
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Napredni zmajski vojnik"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
-msgstr ""
+msgstr "Odspojite se"
 
 #: ui/transition_downloading.rml:58
 msgid "Additional files are required. Please be patient while they download."
 msgstr ""
+"Potrebne su dodatne datoteke. Molimo vas za strpljenje dok se preuzimaju."
 
 #: ui/transition_downloading.rml:59
 msgid "Time left:"
-msgstr ""
+msgstr "Preostalo vrijeme:"
 
 #: ui/transition_downloading.rml:60
 msgid "Download rate:"
-msgstr ""
+msgstr "Brzina preuzimanja:"
 
 #: ui/transition_downloading.rml:61
 msgid "Size:"
-msgstr ""
+msgstr "Veličina:"
 
 #: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Dobrodošli u Nepobjedivi"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"Zatvorite ovaj meni i kliknite bilo gdje da biste se pridružili timu i "
+"počeli igrati!"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s% ^*je pao u smrt"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s% ^*je pala u smrt"
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s% ^*su pali u smrt"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*je smrvljen"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*je smrvljena"
 
 #: src/cgame/cg_event.cpp:286
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*su smrvljeni"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s% ^*se utopio"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s% ^*se utopila"
 
 #: src/cgame/cg_event.cpp:290
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s% ^*su se utopili"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "male"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*se otopi"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "female"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*se otopila"
 
 #: src/cgame/cg_event.cpp:294
 msgctxt "neuter"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*su se otopili"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*se okupao u lavi"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*se okupala u lavi"
 
 #: src/cgame/cg_event.cpp:298
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*su se okupali u lavi"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*je bio na pogrešnom mjestu"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*je bila na pogrešnom mjestu"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*su bili na pogrešnom mjestu"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*je bio uhvaćen u eksploziji"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*je bila uhvaćena u eksploziji"
 
 #: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*su bili uhvaćeni u eksploziji"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*je bio uhvaćen u kiselini"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*je bila uhvaćena u kiselini"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*su bili uhvaćeni u kiselini"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*je oborila topovska kupola"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*je oborila topovska kupola"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*je oborila topovska kupola"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je oborila topovska kupola; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je oborila topovska kupola; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:319
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je oborila topovska kupola; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s% ^*je uhvatio raketu"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s% ^*je uhvatila raketu"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s% ^*su uhvatili raketu"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je uhvatio raketu; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je uhvatila raketu; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su uhvatili raketu; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*je rastopljen od kisele cijevi"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*je rastopljena od kisele cijevi"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*su rastopljeni od kisele cijevi"
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je rastopljen pomoću kisele cijevi; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je rastopljena pomoću kisele cijevi; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:329
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su rastopljeni pomoću kisele cijevi; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*je bio pogođen smečem"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*je bila pogođena smečem"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*su bili pogođeni smečem"
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bio udaren smečerom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bila udarena smečerom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:334
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su bili udareni smečerom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*je bičevan od strane nadrazuma"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*je bičevana od strane nadrazuma"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*su bičevani od strane nadrazuma"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bičevan od strane nadrazuma; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bičevana od strane nadrazuma; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su bičevani od strane nadrazuma; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*je spržio reaktor"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*je spržio reaktor"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*je spržio reaktor"
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je spržen u reaktoru; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je spržena u reaktoru; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:344
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su sprženi u reaktoru; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*nije mogao izbjeći grangera"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*nije mogla izbjeći grangera"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*nisu mogli izbjeći grangera"
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*nije mogao izbjeći grangera; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*nije mogla izbjeći grangera; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:349
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*nisu mogli izbjeći grangera; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "Roj je konzumirao %s% ^*"
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "Roj je konzumirao %s% ^*"
 
 #: src/cgame/cg_event.cpp:353
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "Roj je konzumirao %s% ^*"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s% ^*je ugledao svjetlo"
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s% ^*je ugledala svjetlo"
 
 #: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s% ^*su ugledali svjetlo"
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je ugledao svjetlo; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je ugledala svjetlo; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:361
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su ugledali svjetlo; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je opiljen od %s%s%s"
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je opiljena od %s%s%s"
 
 #: src/cgame/cg_event.cpp:390
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su opiljeni od %s%s%s"
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je opiljen od %s%s%s; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je opiljena od %s%s%s; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:391
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su opiljeni od %s%s%s; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je napadnut od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je napadnuta od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su napadnuti od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je napadnut od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je napadnuta od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:396
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su napadnuti od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je bio pogođen mitraljezom od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je bila pogođena mitraljezom od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su bili pogođeni mitraljezom od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bio pogođen mitraljezom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bila pogođena mitraljezom od strane %s%s%s^*; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:401
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su bili pogođeni mitraljezom od strane %s%s%s^*; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je pokošen od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je pokošena od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su pokošeni od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je pokošen od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je pokošena od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:406
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su pokošeni od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je upucan od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je upucana od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su upucani od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je upucan od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je upucana od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:411
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su upucani od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*je bio spaljen pulsirajućim udarom %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*je bila spaljena pulsirajućim udarom %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*su bili spaljeni pulsirajućim udarom %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bio spaljen pulsirajućim udarom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bila spaljena pulsirajućim udarom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:416
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su bili spaljeni pulsirajućim udarom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je bio pogođen snajperom od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je bila pogođena snajperom od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:420
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su bili pogođeni snajperom od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bio pogođen snajperom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bila pogođena snajperom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:421
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su bili pogođeni snajperom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je laserski spržen od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je laserski spržena od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su laserski sprženi od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je laserski spržen od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je laserski spržena od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su laserski sprženi od strane %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*je bio ispečen od strane %s%s%s^*-ovog plamena"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*je bila ispečena od strane %s%s%s^*-ovog plamena"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*su bili ispečeni od strane %s%s%s^*-ovog plamena"
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bio ispečen od strane %s%s%s^*-ovog plamena; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bila ispečena od strane %s%s%s^*-ovog plamena; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:432
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su bili ispečeni od strane %s%s%s^*-ovog plamena; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*je bio hrskavo ugljenisan"
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*je bila hrskavo ugljenisana"
 
 #: src/cgame/cg_event.cpp:433
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*su bili hrskavo ugljenisani"
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr ""
+msgstr "%s%s ^*je spaljen od %s%s%s^*-ovine vatre"
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr ""
+msgstr "%s%s ^*je spaljena od %s%s%s^*-ovine vatre"
 
 #: src/cgame/cg_event.cpp:437
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
-msgstr ""
+msgstr "%s%s ^*su spaljeni od %s%s%s^*-ovine vatre"
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je opečen od %s%s%s^*-ovine vatre; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je opečena od %s%s%s^*-ovine vatre; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su opečeni od %s%s%s^*-ovine vatre; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
-msgstr ""
+msgstr "%s%s ^*je izgorjeo do smrti"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
-msgstr ""
+msgstr "%s%s ^*je izgorjela do smrti"
 
 #: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
-msgstr ""
+msgstr "%s%s ^*su izgorjeli do smrti"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*je uništen plazmatskom eksplozijom od %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*je uništena plazmatskom eksplozijom od %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*su uništeni plazmatskom eksplozijom od %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je uništen plazmatskom eksplozijom od %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je uništena plazmatskom eksplozijom od %s%s%s^*; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:444
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su uništeni plazmatskom eksplozijom od %s%s%s^*; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*je ozračen plazmatskom eksplozijom %s%s%s^"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*je ozračena plazmatskom eksplozijom %s%s%s^"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr ""
+msgstr "%s%s ^*su ozračeni plazmatskom eksplozijom %s%s%s^"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je ozračen plazmatskom eksplozijom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je ozračena plazmatskom eksplozijom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su ozračeni plazmatskom eksplozijom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "male"
 msgid "%s%s ^*was irradiated"
-msgstr ""
+msgstr "%s%s ^*je ozračeno"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "female"
 msgid "%s%s ^*was irradiated"
-msgstr ""
+msgstr "%s%s ^*je ozračena"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated"
-msgstr ""
+msgstr "%s%s ^*su ozračeni"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*je dignut u zrak granatom koju je napravio %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*je dignuta u zrak granatom koju je napravio %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*su dignuti u zrak granatom koju je napravio %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je dignut u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je dignuta u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:455
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su dignuti u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "male"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*je eksplodirao"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "female"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*je eksplodirala"
 
 #: src/cgame/cg_event.cpp:456
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*su eksplodirali"
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr ""
+msgstr "%s%s ^*je spaljen zapaljivom bombom koju su bacili %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr ""
+msgstr "%s%s ^*je spaljena zapaljivom bombom koju su bacili %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr ""
+msgstr "%s%s ^*su spaljeni zapaljivom bombom koju su bacili %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je spaljen zapaljivom bombom %s%s%s^*; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je spaljena zapaljivom bombom %s%s%s^*; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su spaljeni zapaljivom bombom %s%s%s^*; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "male"
 msgid "%s%s ^*was incinerated"
-msgstr ""
+msgstr "%s%s ^*je spaljen"
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "female"
 msgid "%s%s ^*was incinerated"
-msgstr ""
+msgstr "%s%s ^*je spaljena"
 
 #: src/cgame/cg_event.cpp:462
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated"
-msgstr ""
+msgstr "%s%s ^*su spaljeni"
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr ""
+msgstr "%s%s ^*je nježno grickao %s%s%s^*-ov granger"
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr ""
+msgstr "%s%s ^*je nježno grickala %s%s%s^*-ova grangerka"
 
 #: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr ""
+msgstr "%s%s ^*su nježno grickali %s%s%s^*-ovi grangeri"
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je nježno grickao %s%s%s^*-ov granger; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je nježno grickala %s%s%s^*-ova grangerka; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:467
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su nježno grickali %s%s%s^*-ovi grangeri; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je ugrizen od %s%s%s"
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je ugrizena od %s%s%s"
 
 #: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su ugrizeni od %s%s%s"
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je ugrizen od %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je ugrizena od %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:472
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su ugrizeni od %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-a"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-e"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-i"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-a; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-e; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-i; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*je udaren strujom %s%s%s^*-ovog pljačkaša"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*je udarena strujom %s%s%s^*-ovog pljačkaša"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*su udareni strujom %s%s%s^*-ovog pljačkaša"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je udaren strujom %s%s%s^*-ovog pljačkaša; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je udarena strujom %s%s%s^*-ovog pljačkaša; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su udareni strujom %s%s%s^*-ovog pljačkaša; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*je bio raskomadao %s%s%s^*ov zmaj"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*je bila raskomadala %s%s%s^*ov zmaj"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*su bili raskomadali %s%s%s^*ov zmaj"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bio raskomadao %s%s%s^*-ov zmaj; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bila raskomadala %s%s%s^*-ov zmaj; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:492
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su bili raskomadali %s%s%s^*-ov zmaj; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "Na %s%s ^*je skočio %s%s%s^*ov zmaj"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "Na %s%s ^*je skočio %s%s%s^*ov zmaj"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "Na %s%s ^*je skočio %s%s%s^*ov zmaj"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je napadnut od strane %s%s%s^*-ovog draguna; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je napadnuta od strane %s%s%s^*-ovog draguna; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:497
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su napadnuti od strane %s%s%s^*-ovog draguna; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*je bio bodljikav od strane %s%s%s^*-ovog zmaja"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*je bia bodljikava od strane %s%s%s^*-ovog zmaja"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*su bili bodljikavi od strane %s%s%s^*-ovog zmaja"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bio napadnut od strane %s%s%s^*-ovog zmaja; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bila napadnuta od strane %s%s%s^*-ovog zmaja; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su bili napadnuti od strane %s%s%s^*-ovog zmaja; %s%s%s^* su "
+"asistirali"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "male"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*je bio bodljikav"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "female"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*je bila bodljikava"
 
 #: src/cgame/cg_event.cpp:503
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*su bili bodljikavi"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*je bio napadnut od strane %s%s%s^*-ovog tiranina"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*je bila napadnuta od strane %s%s%s^*-ovog tiranina"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*su bili napadnuti od strane %s%s%s^*-ovog tiranina"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bio napadnut od strane %s%s%s^*-ovog tiranina; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je bila napadnuta od strane %s%s%s^*-ovog tiranina; %s%s%s^* su "
+"pomagali"
 
 #: src/cgame/cg_event.cpp:508
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su bili napadnuti od strane %s%s%s^*-ovog tiranina; %s%s%s^* su "
+"pomagali"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*se trebao maknuti s puta %s%s%s^*-ovog tiranina"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*se trebala maknuti s puta %s%s%s^*-ovog tiranina"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*su se trebali maknuti s puta %s%s%s^*-ovog tiranina"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "male"
@@ -3846,6 +3922,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*se trebao maknuti s puta %s%s%s^*-ovog tiranina; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "female"
@@ -3853,6 +3930,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*se trebala maknuti s puta %s%s%s^*-ovog tiranina; %s%s%s^* su pomagali"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "neuter"
@@ -3860,1627 +3938,1658 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
+"%s%s ^*su se trebali maknuti s puta %s%s%s^*-ovog tiranina; %s%s%s^* su "
+"pomagali"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^*je bio zgnječen pod težinom %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^*je bila zgnječena pod težinom %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^*su bili zgnječeni pod težinom %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bio zgnječen pod težinom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je bila zgnječena pod težinom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su bili zgnječeni pod težinom %s%s%s^*; %s%s%s^* su asistirali"
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr ""
+msgstr "%s%s ^*je trebao koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova"
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr ""
+msgstr "%s%s ^*je trebala koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova"
 
 #: src/cgame/cg_event.cpp:523
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr ""
+msgstr "%s%s ^*su trebali koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je trebao koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
+"%s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*je trebala koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
+"%s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:524
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*su trebali koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
+"%s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr ""
+msgstr "%s%s ^*je pokušao da naruši lični prostor korisnika %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr ""
+msgstr "%s%s ^*je pokušala da naruši lični prostor korisnika %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:528
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
-msgstr ""
+msgstr "%s%s ^*su pokušali da naruše lični prostor korisnika %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
-msgstr ""
+msgstr "%s%s ^*je završio u praznini"
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
-msgstr ""
+msgstr "%s%s ^*je završila u praznini"
 
 #: src/cgame/cg_event.cpp:529
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
-msgstr ""
+msgstr "%s%s ^*su završili u praznini"
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*je osjetio %s%s%s^*ovin autoritet"
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*je osjetila %s%s%s^*ovin autoritet"
 
 #: src/cgame/cg_event.cpp:533
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*su osjetili %s%s%s^*ovin autoritet"
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je osjetio %s%s%s^*-inov autoritet; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*je osjetila %s%s%s^*-inov autoritet; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:534
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*su osjetili %s%s%s^*-inov autoritet; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je ubijen od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je ubijena od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:538
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su ubijeni od strane %s%s%s"
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je ubijen od strane %s%s%s^* i %s%s%s"
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*je ubijena od strane %s%s%s^* i %s%s%s"
 
 #: src/cgame/cg_event.cpp:539
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*su ubijeni od strane %s%s%s^* i %s%s%s"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s% ^*je izvršio samoubistvo"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s% ^*je izvršila samoubistvo"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s% ^*su izvršili samoubistvo"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "male"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* je umro"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "female"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* je umrla"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "neuter"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* su umrli"
 
 #: src/cgame/cg_consolecmds.cpp:128
 #, c-format
 msgid "Listed %2d clients"
-msgstr ""
+msgstr "Navedeno %2d klijenata"
 
 #: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
-msgstr ""
+msgstr "Ubio si ^1SAIGRAČA^* %s"
 
 #: src/cgame/cg_event.cpp:1218
 msgid "The Overmind is under attack!"
-msgstr ""
+msgstr "Nadsveštenje je napadnuto!"
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
-msgstr ""
+msgstr "Reaktor je napadnut!"
 
 #: src/cgame/cg_event.cpp:1240
 msgid "The Overmind is dying!"
-msgstr ""
+msgstr "Nadsveštenstvo umire!"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is going down!"
-msgstr ""
+msgstr "Reaktor se gasi!"
 
 #: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
 msgid "Our base is under attack!"
-msgstr ""
+msgstr "Naša baza je napadnuta!"
 
 #: src/cgame/cg_event.cpp:1269
 #, c-format
 msgid "%s under attack – %s"
-msgstr ""
+msgstr "%s pod napadom – %s"
 
 #: src/cgame/cg_event.cpp:1273
 #, c-format
 msgid "%s under attack"
-msgstr ""
+msgstr "%s pod napadom"
 
 #: src/cgame/cg_main.cpp:471
 msgid "Calling home…"
-msgstr ""
+msgstr "Poziv kući…"
 
 #: src/cgame/cg_main.cpp:471
 msgid "Sending to the front…"
-msgstr ""
+msgstr "Slanje na front…"
 
 #: src/cgame/cg_main.cpp:476
 msgid "Tracking your movements…"
-msgstr ""
+msgstr "Praćenje vaših kretanja…"
 
 #: src/cgame/cg_main.cpp:476
 msgid "Letting out the magic smoke…"
-msgstr ""
+msgstr "Ispuštanje magičnog dima…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Collecting bees for the hives…"
-msgstr ""
+msgstr "Sakupljanje pčela za košnice…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Initialising fireworks…"
-msgstr ""
+msgstr "Inicijalizacija vatrometa…"
 
 #: src/cgame/cg_main.cpp:480
 msgid "Causing electrical faults…"
-msgstr ""
+msgstr "Uzrokuje električne kvarove…"
 
 #: src/cgame/cg_main.cpp:484
 msgid "Reading the manual…"
-msgstr ""
+msgstr "Čitanje priručnika…"
 
 #: src/cgame/cg_main.cpp:484
 msgid "Looking at blueprints…"
-msgstr ""
+msgstr "Gledanje nacrta…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Generating annoying noises…"
-msgstr ""
+msgstr "Generisanje iritantnih zvukova…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Recording granger purring…"
-msgstr ""
+msgstr "Snimanje predenja grangerice…"
 
 #: src/cgame/cg_main.cpp:492
 msgid "Hello World!"
-msgstr ""
+msgstr "Zdravo svijete!"
 
 #: src/cgame/cg_main.cpp:492
 msgid "Making a scene…"
-msgstr ""
+msgstr "Pravljenje scene…"
 
 #: src/cgame/cg_main.cpp:496
 msgid "Taking pictures of the world…"
-msgstr ""
+msgstr "Fotografisanje svijeta…"
 
 #: src/cgame/cg_main.cpp:496
 msgid "Drawing smiley faces…"
-msgstr ""
+msgstr "Crtanje smajlića…"
 
 #: src/cgame/cg_main.cpp:500
 msgid "Sharpening the aliens' claws…"
-msgstr ""
+msgstr "Oštrenje kandži vanzemaljaca…"
 
 #: src/cgame/cg_main.cpp:500
 msgid "Overloading lucifer cannons…"
-msgstr ""
+msgstr "Prepunjavanje Luciferovih topova…"
 
 #: src/cgame/cg_main.cpp:504
 msgid "Unwrapping jetpacks…"
-msgstr ""
+msgstr "Raspakivanje mlaznih rančeva…"
 
 #: src/cgame/cg_main.cpp:504
 msgid "Spinning silk for reticles…"
-msgstr ""
+msgstr "Predenje svile za končanice…"
 
 #: src/cgame/cg_main.cpp:508
 msgid "Adding turret spam…"
-msgstr ""
+msgstr "Dodavanje spama u kupolu…"
 
 #: src/cgame/cg_main.cpp:508
 msgid "Awakening the overmind…"
-msgstr ""
+msgstr "Buđenje nadsveštenosti…"
 
 #: src/cgame/cg_main.cpp:512
 msgid "Teleporting soldiers…"
-msgstr ""
+msgstr "Teleportiranje vojnika…"
 
 #: src/cgame/cg_main.cpp:512
 msgid "Replicating alien DNA…"
-msgstr ""
+msgstr "Repliciranje vanzemaljske DNK…"
 
 #: src/cgame/cg_main.cpp:516
 msgid "Customizing helmets…"
-msgstr ""
+msgstr "Prilagođavanje kaciga…"
 
 #: src/cgame/cg_main.cpp:520
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr ""
+msgstr "Kompajliranje GLSL shadera (molimo vas za strpljenje)…"
 
 #: src/cgame/cg_main.cpp:524
 msgid "Surveying the map…"
-msgstr ""
+msgstr "Pregledavanje karte…"
 
 #: src/cgame/cg_main.cpp:528
 msgid "Done!"
-msgstr ""
+msgstr "Gotovo!"
 
 #: src/cgame/cg_main.cpp:1153
 msgid "Generating bot navigation meshes"
-msgstr ""
+msgstr "Generiranje mreža za navigaciju botova"
 
 #: src/cgame/cg_main.cpp:1197
 #, c-format
 msgid "by %s"
-msgstr ""
+msgstr "od %s"
 
 #: src/cgame/cg_players.cpp:1431
 #, c-format
 msgid "%s^* renamed to %s"
-msgstr ""
+msgstr "%s^* su preimenovani u %s"
 
 #: src/cgame/cg_players.cpp:1438
 #, c-format
 msgid "%s^* left the %s"
-msgstr ""
+msgstr "%s^* su napustili %s"
 
 #: src/cgame/cg_players.cpp:1443
 #, c-format
 msgid "%s^* joined the %s"
-msgstr ""
+msgstr "%s^* su se pridružili %s"
 
 #: src/cgame/cg_players.cpp:1448
 #, c-format
 msgid "%s^* left the %s and joined the %s"
-msgstr ""
+msgstr "%s^* su napustili %s i pridružili se sa %s"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:77
 #, c-format
 msgid "Custom: %dx%d"
-msgstr ""
+msgstr "Prilagođeno: %dx%d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 #, c-format
 msgid "Same as screen (%dx%d)"
-msgstr ""
+msgstr "Isto kao i ekran (%dx%d)"
 
 #: src/cgame/cg_rocket_datasource.cpp:1474
 msgid "The default behavior. This is what bots do when the game starts."
-msgstr ""
+msgstr "Zadano ponašanje. Ovo je ono što botovi rade kada igra počne."
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend"
-msgstr ""
+msgstr "Braniti"
 
 #: src/cgame/cg_rocket_datasource.cpp:1475
 msgid "The bots stay in the base."
-msgstr ""
+msgstr "Botovi ostaju u bazi."
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack"
-msgstr ""
+msgstr "Napad"
 
 #: src/cgame/cg_rocket_datasource.cpp:1476
 msgid "The bots attack the enemy base."
-msgstr ""
+msgstr "Botovi napadaju neprijateljsku bazu."
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "Stay Here"
-msgstr ""
+msgstr "Ostani ovdje"
 
 #: src/cgame/cg_rocket_datasource.cpp:1477
 msgid "The bots stay where you are currently."
-msgstr ""
+msgstr "Botovi ostaju tamo gdje se trenutno nalazite."
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow"
-msgstr ""
+msgstr "Prati"
 
 #: src/cgame/cg_rocket_datasource.cpp:1478
 msgid "The bots follow you wherever you go."
-msgstr ""
+msgstr "Botovi vas prate gdje god da idete."
 
 #: src/cgame/cg_rocket_datasource.cpp:1508
 msgid "Defend our base!!"
-msgstr ""
+msgstr "Branimo našu bazu!!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1509
 msgid "Attack!"
-msgstr ""
+msgstr "Napad!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1510
 msgid "Follow me!"
-msgstr ""
+msgstr "Prati me!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No."
-msgstr ""
+msgstr "Br."
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes"
-msgstr ""
+msgstr "Da"
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "Yes."
-msgstr ""
+msgstr "Da."
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "Flank"
-msgstr ""
+msgstr "Bok"
 
 #: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "Flank, behind you!"
-msgstr ""
+msgstr "Bok, iza tebe!"
 
 #: src/cgame/cg_rocket_draw.cpp:2644
 msgid "You are at the front of the spawn queue"
-msgstr ""
+msgstr "Nalazite se na početku reda za pojavljivanje"
 
 #: src/cgame/cg_rocket_draw.cpp:2648
 #, c-format
 msgid "You are at position %d in the spawn queue"
-msgstr ""
+msgstr "Nalazite se na poziciji %d u redu čekanja za pojavljivanje"
 
 #: src/cgame/cg_rocket_draw.cpp:2688
 msgid "There are no spawns remaining"
-msgstr ""
+msgstr "Nema preostalih mrijestilišta"
 
 #: src/cgame/cg_rocket_draw.cpp:2692
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Preostalo je %d mjesto mrijesta"
+msgstr[1] "Preostala su %d mjesta mrijesta"
+msgstr[2] "Preostalo je %d mjesta mrijesta"
 
 #: src/cgame/cg_rocket_draw.cpp:3241
 #, c-format
 msgid "Awaiting connection…%i"
-msgstr ""
+msgstr "Čekanje veze…%i"
 
 #: src/cgame/cg_rocket_draw.cpp:3245
 #, c-format
 msgid "Awaiting challenge…%i"
-msgstr ""
+msgstr "Čeka se izazov…%i"
 
 #: src/cgame/cg_rocket_draw.cpp:3249
 msgid "Awaiting gamestate…"
-msgstr ""
+msgstr "Čekanje stanja igre…"
 
 #: src/cgame/cg_rocket_draw.cpp:3331
 msgid "Say:"
-msgstr ""
+msgstr "Reci:"
 
 #: src/cgame/cg_rocket_draw.cpp:3332
 msgid "Team Say:"
-msgstr ""
+msgstr "Tim kaže:"
 
 #: src/cgame/cg_rocket_draw.cpp:3333
 msgid "Admin Say:"
-msgstr ""
+msgstr "Administrator kaže:"
 
 #: src/cgame/cg_rocket_draw.cpp:3334
 msgid "Command:"
-msgstr ""
+msgstr "Naredba:"
 
 #: src/cgame/cg_rocket_draw.cpp:3684
 msgid "FIGHT!"
-msgstr ""
+msgstr "BORBA!"
 
 #: src/cgame/cg_rocket_draw.cpp:3778
 msgid "estimating"
-msgstr ""
+msgstr "procjena"
 
 #: src/cgame/cg_servercmds.cpp:469
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr ""
+"Vanzemaljski tim ima previše igrača. Molimo pričekajte dok se ne oslobode "
+"mjesta ili se pridružite ljudskom timu."
 
 #: src/cgame/cg_servercmds.cpp:471
 msgid "The alien team has too many players"
-msgstr ""
+msgstr "Vanzemaljski tim ima previše igrača"
 
 #: src/cgame/cg_servercmds.cpp:475
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr ""
+"Ljudski tim ima previše igrača. Molimo pričekajte dok se ne oslobode mjesta "
+"ili se pridružite vanzemaljskom timu."
 
 #: src/cgame/cg_servercmds.cpp:477
 msgid "The human team has too many players"
-msgstr ""
+msgstr "Ljudski tim ima previše igrača"
 
 #: src/cgame/cg_servercmds.cpp:481
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
+"Tim vanzemaljaca je zaključan. Trenutno se ne možete pridružiti "
+"vanzemaljcima."
 
 #: src/cgame/cg_servercmds.cpp:483
 msgid "The alien team is locked"
-msgstr ""
+msgstr "Vanzemaljski tim je zaključan"
 
 #: src/cgame/cg_servercmds.cpp:487
 msgid "The human team is locked. You cannot join the humans at this time."
-msgstr ""
+msgstr "Ljudski tim je zaključan. Trenutno se ne možete pridružiti ljudima."
 
 #: src/cgame/cg_servercmds.cpp:489
 msgid "The human team is locked"
-msgstr ""
+msgstr "Ljudski tim je zaključan"
 
 #: src/cgame/cg_servercmds.cpp:493
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
+"Dostignut je maksimalan broj klijenata za igranje. Molimo pričekajte dok "
+"slotovi ne postanu dostupni."
 
 #: src/cgame/cg_servercmds.cpp:495
 msgid "No free player slots"
-msgstr ""
+msgstr "Nema besplatnih slotova za igrače"
 
 #: src/cgame/cg_servercmds.cpp:499
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
+"Morate sačekati da se završi vrijeme zagrijavanja prije nego što se "
+"pridružite timu."
 
 #: src/cgame/cg_servercmds.cpp:501
 msgid "You cannot join a team during warmup."
-msgstr ""
+msgstr "Ne možete se pridružiti timu tokom zagrijavanja."
 
 #: src/cgame/cg_servercmds.cpp:509
 msgid "Cheats are not enabled on this server"
-msgstr ""
+msgstr "Čitovi nisu omogućeni na ovom serveru"
 
 #: src/cgame/cg_servercmds.cpp:513
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
 msgstr ""
+"Varalice nisu omogućene na ovom serveru, tako da ne možete koristiti ovu "
+"komandu dok ste u timu"
 
 #: src/cgame/cg_servercmds.cpp:520
 msgid "Join a team first"
-msgstr ""
+msgstr "Prvo se pridružite timu"
 
 #: src/cgame/cg_servercmds.cpp:526
 msgid "You can only use this command when spectating"
-msgstr ""
+msgstr "Ovu komandu možete koristiti samo prilikom posmatranja"
 
 #: src/cgame/cg_servercmds.cpp:531
 msgid "Must be alien to use this command"
-msgstr ""
+msgstr "Mora biti stranac da bi se koristila ova komanda"
 
 #: src/cgame/cg_servercmds.cpp:536
 msgid "Must be human to use this command"
-msgstr ""
+msgstr "Mora biti čovjek da bi se koristila ova komanda"
 
 #: src/cgame/cg_servercmds.cpp:541
 msgid "Must be alive to use this command"
-msgstr ""
+msgstr "Morate biti živi da biste koristili ovu komandu"
 
 #: src/cgame/cg_servercmds.cpp:547
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
 msgstr ""
+"Ovdje nema mjesta za gradnju. Krećite se dok struktura ne postane prozirno "
+"zelena, što ukazuje na valjanu lokaciju za gradnju."
 
 #: src/cgame/cg_servercmds.cpp:549
 msgid "There is no room to build here"
-msgstr ""
+msgstr "Ovdje nema mjesta za gradnju"
 
 #: src/cgame/cg_servercmds.cpp:553
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
 msgstr ""
+"Ne može se graditi na ovoj površini. Površina je previše strma ili nepogodna "
+"za gradnju. Molimo odaberite drugu lokaciju za ovu strukturu."
 
 #: src/cgame/cg_servercmds.cpp:556
 msgid "Cannot build on this surface"
-msgstr ""
+msgstr "Ne može se graditi na ovoj površini"
 
 #: src/cgame/cg_servercmds.cpp:561
 msgid "You cannot build that structure"
-msgstr ""
+msgstr "Ne možeš izgraditi tu strukturu"
 
 #: src/cgame/cg_servercmds.cpp:565
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
 msgstr ""
+"Ova akcija bi uklonila posljednju tačku pojavljivanja vašeg tima, što često "
+"brzo rezultira gubitkom. Pokušajte izgraditi više tačaka pojavljivanja."
 
 #: src/cgame/cg_servercmds.cpp:568
 msgid "You may not deconstruct the last spawn"
-msgstr ""
+msgstr "Ne smiješ dekonstruirati posljednji spawn"
 
 #: src/cgame/cg_servercmds.cpp:572
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
 msgstr ""
+"Glavna struktura je zaštićena od trenutnog uklanjanja. Kada je označena, "
+"možete je premjestiti na drugo mjesto tako što ćete je tamo izgraditi."
 
 #: src/cgame/cg_servercmds.cpp:575
 msgid "You may not deconstruct this structure"
-msgstr ""
+msgstr "Ne smijete dekonstruirati ovu strukturu"
 
 #: src/cgame/cg_servercmds.cpp:579
 msgid "Building has been disabled on the server for your team."
-msgstr ""
+msgstr "Izgradnja je onemogućena na serveru za vaš tim."
 
 #: src/cgame/cg_servercmds.cpp:580
 msgid "Building has been disabled for your team"
-msgstr ""
+msgstr "Izgradnja je onemogućena za vaš tim"
 
 #: src/cgame/cg_servercmds.cpp:584
 msgid "You are no longer permitted to build."
-msgstr ""
+msgstr "Više vam nije dozvoljeno da gradite."
 
 #: src/cgame/cg_servercmds.cpp:585
 msgid "You are no longer permitted to build"
-msgstr ""
+msgstr "Više vam nije dozvoljeno da gradite"
 
 #: src/cgame/cg_servercmds.cpp:589
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
+"Vaš tim je odlučio priznati poraz i predati utakmicu: Nema smisla više "
+"graditi bilo šta."
 
 #: src/cgame/cg_servercmds.cpp:591
 msgid "Cannot build after admitting defeat"
-msgstr ""
+msgstr "Ne može se graditi nakon priznanja poraza"
 
 #: src/cgame/cg_servercmds.cpp:595
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
 msgstr ""
+"Nema preostalih resursa. Oslobodite resurse označavanjem postojećih objekata "
+"za izgradnju za demontažu."
 
 #: src/cgame/cg_servercmds.cpp:597
 msgid "There are no resources remaining"
-msgstr ""
+msgstr "Nema preostalih resursa"
 
 #: src/cgame/cg_servercmds.cpp:601
 msgid "This buildable is not powered."
-msgstr ""
+msgstr "Ova konstrukcija nije napajana."
 
 #: src/cgame/cg_servercmds.cpp:602
 msgid "This buildable is not powered"
-msgstr ""
+msgstr "Ova konstrukcija nije napajana"
 
 #: src/cgame/cg_servercmds.cpp:606
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
 msgstr ""
+"Nema reaktora. Reaktor mora biti izgrađen prije nego što se može postaviti "
+"bilo koja druga struktura."
 
 #: src/cgame/cg_servercmds.cpp:608
 msgid "There is no reactor"
-msgstr ""
+msgstr "Nema reaktora"
 
 #: src/cgame/cg_servercmds.cpp:612
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
+"Može postojati samo jedan Reaktor. Označite postojeći ako ga želite "
+"premjestiti."
 
 #: src/cgame/cg_servercmds.cpp:614
 msgid "There can only be one Reactor"
-msgstr ""
+msgstr "Može postojati samo jedan reaktor"
 
 #: src/cgame/cg_servercmds.cpp:619
 msgid "Your team cannot have any more drills"
-msgstr ""
+msgstr "Vaš tim ne može imati više vježbi"
 
 #: src/cgame/cg_servercmds.cpp:623
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
 msgstr ""
+"Nemate mjesta da ovo nosite. Molimo vas da prodate sve konfliktne "
+"nadogradnje prije kupovine ovog predmeta."
 
 #: src/cgame/cg_servercmds.cpp:625
 msgid "You have no room to carry this"
-msgstr ""
+msgstr "Nemaš mjesta da ovo nosiš"
 
 #: src/cgame/cg_servercmds.cpp:629
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
-msgstr ""
+msgstr "Nedovoljno sredstava. Nemate dovoljno kredita za izvršenje ove radnje."
 
 #: src/cgame/cg_servercmds.cpp:631
 msgid "Insufficient funds"
-msgstr ""
+msgstr "Nedovoljno sredstava"
 
 #: src/cgame/cg_servercmds.cpp:635
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr ""
+"Već posjedujete ovaj predmet. Nije moguće nositi više predmeta iste vrste."
 
 #: src/cgame/cg_servercmds.cpp:637
 msgid "You already hold this item"
-msgstr ""
+msgstr "Već posjedujete ovu stavku"
 
 #: src/cgame/cg_servercmds.cpp:641
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
 msgstr ""
+"Morate biti u blizini oružarnice s napajanjem kako biste kupili oružje, "
+"nadogradnje ili municiju."
 
 #: src/cgame/cg_servercmds.cpp:643
 msgid "You must be near a powered Armoury"
-msgstr ""
+msgstr "Moraš biti blizu oružarnice s električnim pogonom"
 
 #: src/cgame/cg_servercmds.cpp:647
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
 msgstr ""
+"Morate biti u blizini reaktora, bušilice ili oružarnice s pogonom da biste "
+"kupili energetsku municiju."
 
 #: src/cgame/cg_servercmds.cpp:649
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
-msgstr ""
+msgstr "Morate biti blizu reaktora, bušilice ili oružarnice s pogonom"
 
 #: src/cgame/cg_servercmds.cpp:653
 msgid "There is not enough room here to change armour."
-msgstr ""
+msgstr "Ovdje nema dovoljno mjesta za promjenu oklopa."
 
 #: src/cgame/cg_servercmds.cpp:654
 msgid "Not enough room here to change armour."
-msgstr ""
+msgstr "Nema dovoljno mjesta ovdje za promjenu oklopa."
 
 #: src/cgame/cg_servercmds.cpp:658
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
+"Nije vam dozvoljeno kupovati ili prodavati oružje dok vam ne istekne vrijeme "
+"za izgradnju."
 
 #: src/cgame/cg_servercmds.cpp:660
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
+"Ne možete kupovati ili prodavati oružje dok ne istekne vrijeme potrebno za "
+"izgradnju"
 
 #: src/cgame/cg_servercmds.cpp:665
 msgid "You must be dead to use the class command"
-msgstr ""
+msgstr "Morate biti mrtvi da bi ste koristili komandu klase"
 
 #: src/cgame/cg_servercmds.cpp:669
 msgid "Unknown starting item"
-msgstr ""
+msgstr "Nepoznata početna stavka"
 
 #: src/cgame/cg_servercmds.cpp:673
 msgid "Starting item not allowed"
-msgstr ""
+msgstr "Početna stavka nije dozvoljena"
 
 #: src/cgame/cg_servercmds.cpp:679
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr ""
+"Ne postoji Nadsvijest. Nadsvijest mora biti izgrađena prije nego što se može "
+"postaviti bilo koja druga struktura."
 
 #: src/cgame/cg_servercmds.cpp:681 src/cgame/cg_servercmds.cpp:721
 msgid "There is no Overmind"
-msgstr ""
+msgstr "Ne postoji Nadsvestan um"
 
 #: src/cgame/cg_servercmds.cpp:685
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
+"Može postojati samo jedan Nadsvestan. Dekonstruišite postojeći ako ga želite "
+"premjestiti."
 
 #: src/cgame/cg_servercmds.cpp:687
 msgid "There can only be one Overmind"
-msgstr ""
+msgstr "Može postojati samo jedan Nadsvest"
 
 #: src/cgame/cg_servercmds.cpp:692
 msgid "Your team cannot have any more leeches"
-msgstr ""
+msgstr "Vaš tim ne može imati više pijavica"
 
 #: src/cgame/cg_servercmds.cpp:696
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
+"Nadsvijest ne može kontrolirati više struktura. Dekonstruirajte postojeće "
+"strukture kako biste izgradili nove."
 
 #: src/cgame/cg_servercmds.cpp:698
 msgid "The Overmind cannot control any more structures"
-msgstr ""
+msgstr "Nadmoć ne može kontrolirati više nijednu strukturu"
 
 #: src/cgame/cg_servercmds.cpp:702
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
+"Ovdje nema mjesta za evoluciju. Odmaknite se od zidova ili drugih obližnjih "
+"objekata i pokušajte ponovo."
 
 #: src/cgame/cg_servercmds.cpp:704
 msgid "There is no room to evolve here"
-msgstr ""
+msgstr "Ovdje nema prostora za evoluciju"
 
 #: src/cgame/cg_servercmds.cpp:708
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr ""
+"Ova lokacija je preblizu neprijatelju da bi se razvijala. Udaljite se od "
+"neprijateljskog prisustva i pokušajte ponovo."
 
 #: src/cgame/cg_servercmds.cpp:710
 msgid "This location is too close to the enemy to evolve"
-msgstr ""
+msgstr "Ova lokacija je preblizu neprijatelju da bi se razvijala"
 
 #: src/cgame/cg_servercmds.cpp:714 src/cgame/cg_servercmds.cpp:715
 msgid "The Overmind is too far away to devolve."
-msgstr ""
+msgstr "Nadsveštenstvo je previše daleko da bi se devoluiralo."
 
 #: src/cgame/cg_servercmds.cpp:719
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
+"Ne postoji Nadsvestan (Overmind). Nadsvestan (Overmind) mora biti izgrađen "
+"da bi vam se omogućila nadogradnja."
 
 #: src/cgame/cg_servercmds.cpp:725
 msgid "You cannot evolve until your build timer has expired."
-msgstr ""
+msgstr "Ne možete evoluirati dok vam ne istekne tajmer za izgradnju."
 
 #: src/cgame/cg_servercmds.cpp:726
 msgid "You cannot evolve until your build timer expires"
-msgstr ""
+msgstr "Ne možete evoluirati dok vam ne istekne tajmer za izgradnju"
 
 #: src/cgame/cg_servercmds.cpp:730
 msgid "Wait a second after attacking or evolving"
-msgstr ""
+msgstr "Sačekajte sekundu nakon napada ili evolucije"
 
 #: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "You cannot evolve into a %s"
-msgstr ""
+msgstr "Ne možeš se razviti u %s"
 
 #: src/cgame/cg_servercmds.cpp:743
 msgid "You cannot evolve while wallwalking"
-msgstr ""
+msgstr "Ne možeš evoluirati dok hodaš po zidovima"
 
 #: src/cgame/cg_servercmds.cpp:747
 msgid "Unknown class"
-msgstr ""
+msgstr "Nepoznata klasa"
 
 #: src/cgame/cg_servercmds.cpp:751
 #, c-format
 msgid "You cannot spawn as a %s"
-msgstr ""
+msgstr "Ne možete se pojaviti kao %s"
 
 #: src/cgame/cg_servercmds.cpp:756
 #, c-format
 msgid "The %s is not allowed"
-msgstr ""
+msgstr "%s nije dozvoljeno"
 
 #: src/cgame/cg_servercmds.cpp:761
 #, c-format
 msgid "The %s has not been unlocked yet"
-msgstr ""
+msgstr "%s još nije otključano"
 
 #: src/cgame/cg_servercmds.cpp:766
 #, c-format
 msgid "cgame: debug: no such menu %d"
-msgstr ""
+msgstr "cgame: debug: nema takvog menija %d"
 
 #: src/cgame/cg_servercmds.cpp:869
 msgid "^1*DEAD*^*"
-msgstr ""
+msgstr "^1*MRTAV*^*"
 
 #: src/cgame/cg_servercmds.cpp:930
 #, c-format
 msgid "%sPrivate message from: ^7%s"
-msgstr ""
+msgstr "%sPrivatna poruka od: ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:938
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
+">> da biste odgovorili, recite: '/m %d [vaša poruka]' ili '/r [vaša poruka]' "
+"<<"
 
 #: src/cgame/cg_servercmds.cpp:1428
 #, c-format
 msgid "Unknown client game command: %s"
-msgstr ""
+msgstr "Nepoznata naredba klijentske igre: %s"
 
 #: src/cgame/cg_tutorial.cpp:45
 msgid "Sprint"
-msgstr ""
+msgstr "Sprint"
 
 #: src/cgame/cg_tutorial.cpp:46
 msgid "Jump"
-msgstr ""
+msgstr "Skoči"
 
 #: src/cgame/cg_tutorial.cpp:47
 msgid "Crouch"
-msgstr ""
+msgstr "Čučni"
 
 #: src/cgame/cg_tutorial.cpp:48
 msgid "Primary Attack"
-msgstr ""
+msgstr "Primarni napad"
 
 #: src/cgame/cg_tutorial.cpp:49
 msgid "Secondary Attack"
-msgstr ""
+msgstr "Sekundarni napad"
 
 #: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
-msgstr ""
+msgstr "Tercijarni napad"
 
 #: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
-msgstr ""
+msgstr "Ponovo punjenje oružja"
 
 #: src/cgame/cg_tutorial.cpp:52
 msgid "Use Medkit"
-msgstr ""
+msgstr "Koristite komplet prve pomoći (Acknowledge Kit)"
 
 #: src/cgame/cg_tutorial.cpp:53
 msgid "Use Structure/Evolve"
-msgstr ""
+msgstr "Koristite strukturu/razvoj"
 
 #: src/cgame/cg_tutorial.cpp:54
 msgid "Deconstruct Structure"
-msgstr ""
+msgstr "Dekonstruirati strukturu"
 
 #: src/cgame/cg_tutorial.cpp:55
 msgid "Next Weapon"
-msgstr ""
+msgstr "Sljedeće oružje"
 
 #: src/cgame/cg_tutorial.cpp:56
 msgid "Global chat"
-msgstr ""
+msgstr "Globalni chat"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Team chat"
-msgstr ""
+msgstr "Timski razgovor"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Bot tactic menu"
-msgstr ""
+msgstr "Meni taktike bota"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
-msgstr ""
+msgstr "Uključi/isključi konzolu"
 
 #: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
-msgstr ""
+msgstr "Uključi/isključi meni"
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
-msgstr ""
+msgstr "Baci granatu"
 
 #: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
-msgstr ""
+msgstr "SHIFT-ESCAPE"
 
 #: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
-msgstr ""
+msgstr "BIJEG"
 
 #: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
 msgid "%s or %s"
-msgstr ""
+msgstr "%s ili %s"
 
 #: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
-msgstr ""
+msgstr "\"%s\" (bez ograničenja)"
 
 #: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
-msgstr ""
+msgstr "Pritisnite %s da postavite %s."
 
 #: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
-msgstr ""
+msgstr "Pritisnite %s da biste otkazali postavljanje %s."
 
 #: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
-msgstr ""
+msgstr "Pritisnite %s da biste izgradili strukturu."
 
 #: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
-msgstr ""
+msgstr "Pritisnite %s da biste uklonili oznaku sa ove strukture za zamjenu."
 
 #: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
-msgstr ""
+msgstr "Pritisnite %s da označite ovu strukturu za zamjenu."
 
 #: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
-msgstr ""
+msgstr "Držite %s da biste dekonstruirali ovu strukturu."
 
 #: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
 #: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
-msgstr ""
+msgstr "Pritisnite %s za prevlačenje prstom."
 
 #: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
+"Pritisnite %s da biste pljunuli. Pljuvanje može usporiti ljude i ukloniti "
+"vatru."
 
 #: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
 #: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
-msgstr ""
+msgstr "Pritisnite %s da biste hodali po zidovima."
 
 #: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
-msgstr ""
+msgstr "Dodirni ljude da ih oštetiš."
 
 #: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
-msgstr ""
+msgstr "Ciljajte im u glave kako biste nanijeli više štete."
 
 #: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
-msgstr ""
+msgstr "Pritisnite %s za iskorak."
 
 #: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
-msgstr ""
+msgstr "Pritisnite %s da zagrizete."
 
 #: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
-msgstr ""
+msgstr "Pritisnite %s da biste izazvali električni napad."
 
 #: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr ""
+msgstr "Držite pritisnut %s, a zatim dodirnite skok sa zida na zid."
 
 #: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr ""
+msgstr "Pritisnite %s da biste pokrenuli barbar."
 
 #: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
-msgstr ""
+msgstr "Držite pritisnuto i otpustite %s za skok."
 
 #: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
-msgstr ""
+msgstr "Držite pritisnuto %s dok se krećete naprijed da biste gazili."
 
 #: src/cgame/cg_tutorial.cpp:344 src/cgame/cg_tutorial.cpp:597
 #, c-format
 msgid "Press %s to show the bot tactic menu."
-msgstr ""
+msgstr "Pritisnite %s za prikaz menija taktike bota."
 
 #: src/cgame/cg_tutorial.cpp:352
 msgid "Find an Armoury, Drill or Reactor for more ammo."
-msgstr ""
+msgstr "Pronađite oružarnicu, vježbu ili reaktor za više municije."
 
 #: src/cgame/cg_tutorial.cpp:357
 msgid "Find an Armoury for more ammo."
-msgstr ""
+msgstr "Pronađite oružarnicu za još municije."
 
 #: src/cgame/cg_tutorial.cpp:372 src/cgame/cg_tutorial.cpp:377
 #: src/cgame/cg_tutorial.cpp:393
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr ""
+msgstr "Pritisnite %s da biste aktivirali %s."
 
 #: src/cgame/cg_tutorial.cpp:380
 #, c-format
 msgid "Hold %s to zoom."
-msgstr ""
+msgstr "Držite %s za zumiranje."
 
 #: src/cgame/cg_tutorial.cpp:385
 #, c-format
 msgid "Hold %s to activate the %s."
-msgstr ""
+msgstr "Držite pritisnuto dugme %s da biste aktivirali %s."
 
 #: src/cgame/cg_tutorial.cpp:390
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
-msgstr ""
+msgstr "Držite i otpustite %s da biste ispalili nabijeni hitac."
 
 #: src/cgame/cg_tutorial.cpp:417
 #, c-format
 msgid "Press %s to throw the %s."
-msgstr ""
+msgstr "Pritisnite %s da biste bacili %s."
 
 #: src/cgame/cg_tutorial.cpp:426 src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to use the %s."
-msgstr ""
+msgstr "Pritisnite %s da biste koristili %s."
 
 #: src/cgame/cg_tutorial.cpp:432
 #, c-format
 msgid "Hold %s to use the Jetpack."
-msgstr ""
+msgstr "Držite %s da biste koristili Jetpack."
 
 #: src/cgame/cg_tutorial.cpp:440
 #, c-format
 msgid "Press %s to use your Medkit."
-msgstr ""
+msgstr "Pritisnite %s da biste koristili svoju prvu pomoć."
 
 #: src/cgame/cg_tutorial.cpp:447
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
-msgstr ""
+msgstr "Pritisnite %s da biste kupili nadogradnje opreme u Oružarnici."
 
 #: src/cgame/cg_tutorial.cpp:460
 #, c-format
 msgid "Press %s and any direction to sprint."
-msgstr ""
+msgstr "Pritisnite %s i bilo koji smjer za sprint."
 
 #: src/cgame/cg_tutorial.cpp:463
 #, c-format
 msgid "Press %s to crouch."
-msgstr ""
+msgstr "Pritisnite %s da biste čučnuli."
 
 #: src/cgame/cg_tutorial.cpp:478
 #, c-format
 msgid "Press %s to leave spawn queue."
-msgstr ""
+msgstr "Pritisnite %s da napustite red čekanja za pokretanje."
 
 #: src/cgame/cg_tutorial.cpp:483
 #, c-format
 msgid "Press %s to spawn."
-msgstr ""
+msgstr "Pritisnite %s za pokretanje."
 
 #: src/cgame/cg_tutorial.cpp:489
 #, c-format
 msgid "Press %s to join a team."
-msgstr ""
+msgstr "Pritisnite %s da biste se pridružili timu."
 
 #: src/cgame/cg_tutorial.cpp:495
 #, c-format
 msgid "Press %s to stop following."
-msgstr ""
+msgstr "Pritisnite %s da prestanete pratiti."
 
 #: src/cgame/cg_tutorial.cpp:500
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
-msgstr ""
+msgstr "Pritisnite %s da biste prešli na način rada kamere za praćenje."
 
 #: src/cgame/cg_tutorial.cpp:505
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
-msgstr ""
+msgstr "Pritisnite %s za povratak u način gledanja iz prvog lica."
 
 #: src/cgame/cg_tutorial.cpp:509
 #, c-format
 msgid "Press %s to follow the next player."
-msgstr ""
+msgstr "Pritisnite %s da biste pratili sljedećeg igrača."
 
 #: src/cgame/cg_tutorial.cpp:514
 #, c-format
 msgid "Press %s to follow a player."
-msgstr ""
+msgstr "Pritisnite %s da biste pratili igrača."
 
 #: src/cgame/cg_tutorial.cpp:595
 #, c-format
 msgid "Press %s to evolve."
-msgstr ""
+msgstr "Pritisnite %s za evoluciju."
 
 #: src/cgame/cg_tutorial.cpp:606
 #, c-format
 msgid "Press %s when ready to continue."
-msgstr ""
+msgstr "Pritisnite %s kada budete spremni da nastavite."
 
 #: src/cgame/cg_tutorial.cpp:610
 msgid "Waiting for other players to be ready."
-msgstr ""
+msgstr "Čekamo da ostali igrači budu spremni."
 
 #: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr ""
+msgstr "Pritisnite %s za razgovor sa svim igračima."
 
 #: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr ""
+msgstr "Pritisnite %s za razgovor sa svojim timom."
 
 #: src/cgame/cg_tutorial.cpp:622
 #, c-format
 msgid "Press %s to open the console."
-msgstr ""
+msgstr "Pritisnite %s da biste otvorili konzolu."
 
 #: src/cgame/cg_tutorial.cpp:624
 #, c-format
 msgid "Press %s for the menu."
-msgstr ""
+msgstr "Pritisnite %s za meni."
 
 #: src/cgame/rocket/rocket_keys.cpp:364
 msgid "Unbound"
-msgstr ""
+msgstr "Nevezan"
 
 #: src/sgame/sg_active.cpp:730
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
-msgstr ""
+msgstr "$1$^* prebačen sa $2$ na gledaoce zbog neaktivnosti"
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity spectate!"
-msgstr ""
+msgstr "Deset sekundi do neaktivnosti, gledajte!"
 
 #: src/sgame/sg_active.cpp:748
 msgid "Ten seconds until inactivity drop!"
-msgstr ""
+msgstr "Deset sekundi do pada neaktivnosti!"
 
 #: src/sgame/sg_bot.cpp:76
 msgid "^3Alien bot names:"
-msgstr ""
+msgstr "^3Imena vanzemaljskih botova:"
 
 #: src/sgame/sg_bot.cpp:77
 msgid "^3Human bot names:"
-msgstr ""
+msgstr "^3Imena ljudskih botova:"
 
 #: src/sgame/sg_bot.cpp:343
 msgid "$1$^* disconnected"
-msgstr ""
+msgstr "$1$^* isključeno"
 
 #: src/sgame/sg_bot_nav.cpp:160
 msgid "^1Bot navmesh generation failed!"
-msgstr ""
+msgstr "^1Generisanje navigacijske mreže bota nije uspjelo!"
 
 #: src/sgame/sg_bot_nav.cpp:173
 msgid "Server: generating bot navigation meshes... $1$%"
-msgstr ""
+msgstr "Server: generiranje mreža za navigaciju botova... $1$%"
 
 #: src/sgame/sg_buildable.cpp:1697
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
-msgstr ""
+msgstr "$1$ ^2izgrađeno^* od strane $2$^*, ^3zamjenjuje^* $3$"
 
 #: src/sgame/sg_buildable.cpp:1698
 msgid "$1$ ^2built^* by $2$$3$"
-msgstr ""
+msgstr "$1$ ^2izgrađeno^* od strane $2$$3$"
 
 #: src/sgame/sg_client.cpp:846
 msgid "Name change spam protection ($1$ = $2$)"
-msgstr ""
+msgstr "Zaštita od neželjene pošte prilikom promjene imena (1$ = 2$)"
 
 #: src/sgame/sg_client.cpp:855
 msgid "Maximum name changes reached ($1$ = $2$)"
-msgstr ""
+msgstr "Dostignut je maksimalan broj promjena imena ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:863
 msgid "You cannot change your name while you are muted"
-msgstr ""
+msgstr "Ne možete promijeniti ime dok ste utišani"
 
 #: src/sgame/sg_client.cpp:875
 msgid "Name is too long! Must be less than $1$ characters or color codes."
-msgstr ""
+msgstr "Naziv je predugačak! Mora imati manje od $1$ znakova ili kodova boja."
 
 #: src/sgame/sg_client.cpp:1156
 msgid "Your GUID is not secure"
-msgstr ""
+msgstr "Vaš GUID nije siguran"
 
 #: src/sgame/sg_client.cpp:1197
 msgid "$1$^* connected"
-msgstr ""
+msgstr "Povezano $1$^*"
 
 #: src/sgame/sg_client.cpp:1266
 msgid "$1$^* is connecting…"
-msgstr ""
+msgstr "$1$^* se povezuje…"
 
 #: src/sgame/sg_client.cpp:1333
 msgid "$1$^* entered the game"
-msgstr ""
+msgstr "$1$^* je ušao u igru"
 
 #: src/sgame/sg_combat.cpp:629
 msgid "Your killer, $1$^*, had $2$ HP."
-msgstr ""
+msgstr "Tvoj ubica, $1$^*, je imao $2$ HP-a."
 
 #: src/sgame/sg_combat.cpp:1213
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
-msgstr ""
+msgstr "$1$ ^3DEKONSTRUISANO^* od strane $2$"
 
 #: src/sgame/sg_combat.cpp:1214
 msgid "$1$ ^3DESTROYED^* by $2$"
-msgstr ""
+msgstr "$1$ ^3UNISTIO^* od strane $2$"
 
 #: src/sgame/sg_main.cpp:1997
 msgid "Timelimit hit"
-msgstr ""
+msgstr "Vremenski limit dostignut"
 
 #: src/sgame/sg_main.cpp:2008
 msgid "$1$ minutes remaining!"
-msgstr ""
+msgstr "Preostalo je još 1$ minuta!"
 
 #: src/sgame/sg_main.cpp:2016
 msgid "1 minute remaining!"
-msgstr ""
+msgstr "Preostala je 1 minuta!"
 
 #: src/sgame/sg_main.cpp:2029
 msgid "Humans win"
-msgstr ""
+msgstr "Ljudi pobjeđuju"
 
 #: src/sgame/sg_main.cpp:2043
 msgid "Aliens win"
-msgstr ""
+msgstr "Vanzemaljci pobjeđuju"
 
 #: src/sgame/sg_main.cpp:2057
 msgid "Empty teams skip map time exceeded."
-msgstr ""
+msgstr "Prazni timovi preskaču vrijeme mape."
 
 #: src/sgame/sg_main.cpp:2223
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "Igra je pauzirana. Molimo pričekajte."
 
 #: src/sgame/sg_main.cpp:2227
 msgid "Server: Game will auto-unpause in $1$ seconds"
-msgstr ""
+msgstr "Server: Igra će se automatski prekinuti za $1$ sekundi"
 
 #: src/sgame/sg_main.cpp:2246
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
-msgstr ""
+msgstr "Server: Igra je automatski prekinuta (maksimalno 1$ minuta)"
 
 #: src/sgame/sg_main.cpp:2249
 msgid "The game has been unpaused!"
-msgstr ""
+msgstr "Igra je ponovo pokrenuta!"
 
 #: src/sgame/sg_spawn_mover.cpp:1076
 msgid "^1This door is locked!"
-msgstr ""
+msgstr "^1 Ova vrata su zaključana!"
 
 #: src/sgame/sg_svcmds.cpp:539
 msgid "Alien team has admitted defeat"
-msgstr ""
+msgstr "Tim vanzemaljaca priznao je poraz"
 
 #: src/sgame/sg_svcmds.cpp:543
 msgid "Human team has admitted defeat"
-msgstr ""
+msgstr "Ljudski tim je priznao poraz"
 
 #: src/sgame/sg_svcmds.cpp:575
 msgid "Evacuation ordered"
-msgstr ""
+msgstr "Naređena evakuacija"
 
 #: src/sgame/sg_team.cpp:608
 msgid "Teams are imbalanced. Humans have more players."
-msgstr ""
+msgstr "Timovi su neuravnoteženi. Ljudi imaju više igrača."
 
 #: src/sgame/sg_team.cpp:615
 msgid "Teams are imbalanced. Aliens have more players."
-msgstr ""
+msgstr "Timovi su neuravnoteženi. Vanzemaljci imaju više igrača."
 
 #: src/sgame/sg_votes.cpp:59
 #, c-format
 msgid "Kick player '%s'"
-msgstr ""
+msgstr "Izbacivanje igrača '%s'"
 
 #: src/sgame/sg_votes.cpp:71
 #, c-format
 msgid "Move player '%s' to spectators"
-msgstr ""
+msgstr "Premjesti igrača '%s' u gledaoce"
 
 #: src/sgame/sg_votes.cpp:82
 msgid "$1$: player is already muted"
-msgstr ""
+msgstr "$1$: igrač je već utišan"
 
 #: src/sgame/sg_votes.cpp:89
 #, c-format
 msgid "Mute player '%s'"
-msgstr ""
+msgstr "Isključi zvuk igrača '%s'"
 
 #: src/sgame/sg_votes.cpp:101
 msgid "$1$: player is not currently muted"
-msgstr ""
+msgstr "$1$: igrač trenutno nije utišan"
 
 #: src/sgame/sg_votes.cpp:108
 #, c-format
 msgid "Unmute player '%s'"
-msgstr ""
+msgstr "Uključi zvuk igrača '%s'"
 
 #: src/sgame/sg_votes.cpp:120
 msgid "$1$: player already lost building rights"
-msgstr ""
+msgstr "1$: igrač je već izgubio prava na gradnju"
 
 #: src/sgame/sg_votes.cpp:138
 msgid "$1$: player already has building rights"
-msgstr ""
+msgstr "1$: igrač već ima prava na gradnju"
 
 #: src/sgame/sg_votes.cpp:197 src/sgame/sg_votes.cpp:263
 msgid "$1$: map name not specified"
-msgstr ""
+msgstr "$1$: naziv mape nije naveden"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: map '$2$' could not be found on the server"
-msgstr ""
+msgstr "$1$: mapa '$2$' nije pronađena na serveru"
 
 #: src/sgame/sg_votes.cpp:242
 msgid "callvote: layout '$1$' could not be found on the server"
-msgstr ""
+msgstr "callvote: izgled '$1$' nije pronađen na serveru"
 
 #: src/sgame/sg_votes.cpp:271
 msgid "$1$: the next map is already set to '$2$'"
-msgstr ""
+msgstr "$1$: sljedeća mapa je već postavljena na '$2$'"
 
 #: src/sgame/sg_votes.cpp:330
 msgid "$1$: there are no active bots"
-msgstr ""
+msgstr "$1$: nema aktivnih botova"
 
 #: src/sgame/sg_votes.cpp:349 src/sgame/sg_votes.cpp:371
 #: src/sgame/sg_votes.cpp:393
 msgid "$1$: number must be non-negative and smaller than $2$"
-msgstr ""
+msgstr "$1$: broj mora biti nenegativan i manji od $2$"
 
 #: src/sgame/sg_votes.cpp:358
 #, c-format
 msgid "Fill each team with bots to %d"
-msgstr ""
+msgstr "Popunite svaki tim botovima do %d"
 
 #: src/sgame/sg_votes.cpp:380
 #, c-format
 msgid "Fill the human team with bots to %d"
-msgstr ""
+msgstr "Popunite ljudski tim botovima do %d"
 
 #: src/sgame/sg_votes.cpp:402
 #, c-format
 msgid "Fill the alien team with bots to %d"
-msgstr ""
+msgstr "Napunite vanzemaljski tim botovima do %d"
 
 #: src/sgame/sg_votes.cpp:477
 msgid "$1$: voting not allowed here"
-msgstr ""
+msgstr "1$: glasanje ovdje nije dozvoljeno"
 
 #: src/sgame/sg_votes.cpp:486
 msgid "$1$: you are not permitted to call $2$ votes"
-msgstr ""
+msgstr "$1$: nije vam dozvoljeno da pozivate $2$ glasova"
 
 #: src/sgame/sg_votes.cpp:495
 msgid "$1$: a vote is already in progress"
-msgstr ""
+msgstr "$1$: glasanje je već u toku"
 
 #: src/sgame/sg_votes.cpp:516
 msgid "Invalid vote string"
-msgstr ""
+msgstr "Nevažeći niz glasova"
 
 #: src/sgame/sg_votes.cpp:519
 msgid "Valid vote commands are: "
-msgstr ""
+msgstr "Važeće komande za glasanje su: "
 
 #: src/sgame/sg_votes.cpp:520
 msgid "Valid team-vote commands are: "
-msgstr ""
+msgstr "Važeće komande za timsko glasanje su: "
 
 #: src/sgame/sg_votes.cpp:551
 msgid "$1$: you have already called the maximum number of votes ($2$)"
-msgstr ""
+msgstr "$1$: već ste dali maksimalan broj glasova ($2$)"
 
 #: src/sgame/sg_votes.cpp:561
 msgid "'$1$' votes have been disabled"
-msgstr ""
+msgstr "Glasovi '$1$' su onemogućeni"
 
 #: src/sgame/sg_votes.cpp:582
 msgid "'$1$' votes are not allowed once $2$ minutes have passed"
-msgstr ""
+msgstr "Glasovi od '$1$' nisu dozvoljeni nakon što prođe $2$ minuta"
 
 #: src/sgame/sg_votes.cpp:596
 msgid "'$1$' votes are not allowed until $2$ minutes have passed"
-msgstr ""
+msgstr "Glasovi od '$1$' nisu dozvoljeni dok ne prođe $2$ minuta"
 
 #: src/sgame/sg_votes.cpp:611
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining"
 msgstr ""
+"Glasovi od '$1$' su dozvoljeni samo ako je preostalo manje od $2$ minuta"
 
 #: src/sgame/sg_votes.cpp:655
 msgid "$1$: no target"
-msgstr ""
+msgstr "1$: nema cilja"
 
 #: src/sgame/sg_votes.cpp:672
 msgid "$1$: player is a bot"
-msgstr ""
+msgstr "$1$: igrač je bot"
 
 #: src/sgame/sg_votes.cpp:684 src/sgame/sg_votes.cpp:698
 msgid "$1$: admin is immune"
-msgstr ""
+msgstr "$1$: administrator je imun"
 
 #: src/sgame/sg_votes.cpp:705
 msgid "$1$: player is not on your team"
-msgstr ""
+msgstr "$1$: igrač nije u vašem timu"
 
 #: src/sgame/sg_votes.cpp:717
 msgid "$1$: You must provide a reason"
-msgstr ""
+msgstr "1$: Morate navesti razlog"
 
 #: src/sgame/sg_votes.cpp:739
 msgid "$1$^* called a vote: $2$"
-msgstr ""
+msgstr "$1$^* je proglašeno glasanjem: $2$"
 
 #: src/sgame/sg_votes.cpp:743
 msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
+"$1$^7 je pozvao na glasanje:\n"
+"^7$2$"
 
 #: src/sgame/sg_votes.cpp:760
 msgid "$1$^* called a team vote: $2t$"
-msgstr ""
+msgstr "$1$^* je proglašeno timsko glasanje: $2t$"
 
 #: src/sgame/sg_votes.cpp:765
 msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$1$^7 je proglasio timsko glasanje:\n"
+"^7$2t$"
 
 #: src/sgame/sg_votes.cpp:878
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "Glasanje nije uspjelo ($1$ od $2$; kvorum nije dostignut)"
 
 #: src/sgame/sg_votes.cpp:879
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "Glasanje tima nije uspjelo ($1$ od $2$; kvorum nije dostignut)"
 
 #: src/sgame/sg_votes.cpp:885
 msgid "Vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "Glasanje je prošlo ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:886
 msgid "Team vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "Glasanje tima je prošlo ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:892
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "Glasanje nije uspjelo ($1$ — $2$; potrebno $3$% n)"
 
 #: src/sgame/sg_votes.cpp:893
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "Glasanje tima nije uspjelo ($1$ — $2$; potrebno $3$% n)"
 
 #: src/shared/bg_misc.cpp:2487
 msgid "spectator"
-msgstr ""
+msgstr "gledalac"
 
 #: src/shared/bg_misc.cpp:2492
 msgid "alien"
-msgstr ""
+msgstr "vanzemaljac"
 
 #: src/shared/bg_misc.cpp:2497
 msgid "human"
-msgstr ""
+msgstr "čovjek"
 
 #: src/shared/bg_misc.cpp:2507
 msgid "spectators"
-msgstr ""
+msgstr "gledaoci"
 
 #: src/shared/bg_misc.cpp:2512
 msgid "aliens"
-msgstr ""
+msgstr "vanzemaljci"
 
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
-msgstr ""
-
-#~ msgid ""
-#~ "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
-#~ "textures…"
-#~ msgstr ""
-#~ "Малък брой подразделения, без небе, без сянка, без скачащи частици, 16-"
-#~ "пикселови текстури…"
-
-#~ msgid ""
-#~ "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
-#~ "pixel textures…"
-#~ msgstr ""
-#~ "Мултисемплинг, анизотропно мип-мапинг, сенки, скачащи частици, 256-"
-#~ "пикселови текстури…"
-
-#~ msgid ""
-#~ "Normal, specular and physical mapping, bloom, trilinear filtering, 512-"
-#~ "pixel textures…"
-#~ msgstr ""
-#~ "Нормално, огледално и физическо картографиране, разцвет, трилинейно "
-#~ "филтриране, 512-пикселови текстури…"
-
-#~ msgid ""
-#~ "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
-#~ "pixel textures…"
-#~ msgstr ""
-#~ "Динамични светлини, топлинна мъгла, замъгляване при движение, по-добро "
-#~ "мултисемплиране, текстури с до 2048 пиксела…"
-
-#~ msgid ""
-#~ "Relief mapping and other features and effects enabled, up to 4096-pixel "
-#~ "textures…"
-#~ msgstr ""
-#~ "Възможност за картографиране на релефа и други функции и ефекти, текстури "
-#~ "до 4096 пиксела…"
-
-#~ msgid "Dying feeds the ennemy, you may want to save your life!"
-#~ msgstr "Умирането подхранва врага, може да искате да запазите живота си!"
+msgstr "ljudi"
