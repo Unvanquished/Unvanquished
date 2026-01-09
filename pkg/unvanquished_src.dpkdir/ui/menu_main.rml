@@ -37,9 +37,9 @@
 						<button-menu style="width:87%" onclick='Cmd.exec("quit")'><translate>Quit game</translate></button-menu>
 					</indent>
 
-					<blocklink class="leftalign fake" style="color: #ffffff;">
-					<translate>Beta</translate>&nbsp;<version/>
-					</blocklink>
+					<div class="versionlabel" style="padding-top: 0.5em;">
+						<translate>Beta</translate>&nbsp;<version/>
+					</div>
 				</sidesection>
 			</window>
 		</sidebar>

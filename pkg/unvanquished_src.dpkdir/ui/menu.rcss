@@ -8,34 +8,10 @@ body.ingame {
 	background-color: rgba(0%, 0%, 0%, 0%);
 }
 
-/* Block-style links */
-blocklink {
+.versionlabel {
 	display: block;
-	color: #999999;
-	tab-index: auto;
-}
-blocklink:hover {
-	color: white;
-}
-blocklink.fake:hover {
-	color: #999999;
-}
-/* Ugly table-like hacks to have two options side-by-side */
-blocklink.rightfloat {
-	width: 10em;
-	text-align: right;
-	margin-top: 0.5em;
-	float: right;
-}
-
-blocklink.leftalign {
-	margin-top: 0.5em;
-	margin-left: 0em;
-}
-
-blocklink.leftversion {
-	margin-top: 0.5em;
-	margin-left: 0em;
+	color: #ffffff;
+	margin-bottom: -1em;
 }
 
 /* innersidebar is grey box, sidebar holds this for scrolling */
@@ -55,15 +31,6 @@ sidebar {
 	overflow: auto;
 }
 
-centerbar {
-	text-align: center;
-	position: absolute;
-	width: 20%;
-	height: 24.7em;
-	top: 19.5em;
-	left: 40em;
-}
-
 /* Section under a H1 heading */
 sidesection {
 	display: block;
@@ -74,11 +41,6 @@ sidesection {
 img.logo {
 	width: 20em;
 	margin-top: 2em;
-}
-
-hackyspacer {
-	display: block;
-	height: 12em;
 }
 
 .gradient,
