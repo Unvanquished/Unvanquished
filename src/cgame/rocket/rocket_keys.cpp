@@ -284,21 +284,23 @@ bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 		return false;
 	}
 
-	if ( ProcessNormalInput( key, down ) )
-	{
-		return true;
-	}
+	bool consumed = false;
 
-	// Send bindable keys after the rocket key event so that if Escape is pressed,
-	// it will cancel the binding and not bind Escape.
-	if ( down )
+	if ( rocketInfo.keyBindingTime == rocketInfo.realtime )
 	{
-		Rml::Element* focus = menuContext->GetFocusElement();
-		if ( focus != nullptr ) {
-			Rml::Dictionary dict;
-			dict[ BINDABLE_KEY_KEY ] = key.PackIntoInt();
-			focus->DispatchEvent( BINDABLE_KEY_EVENT, dict );
+		if ( down )
+		{
+			Rml::Element* focus = menuContext->GetFocusElement();
+			if ( focus != nullptr ) {
+				Rml::Dictionary dict;
+				dict[ BINDABLE_KEY_KEY ] = key.PackIntoInt();
+				consumed = focus->DispatchEvent( BINDABLE_KEY_EVENT, dict );
+			}
 		}
+	}
+	else
+	{
+		consumed = ProcessNormalInput( key, down );
 	}
 
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE )
@@ -308,13 +310,11 @@ bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 		// passthrough menu. Not sure about MOUSE2
 		if ( key == Keyboard::Key(K_MOUSE1) || key == Keyboard::Key(K_MOUSE2) )
 		{
-			return true;
+			consumed = true;
 		}
 	}
 
-	// This does not consider whether a bindable key was consumed, but the bind
-	// menu should have KEYCATCH_UI_KEY on so it doesn't matter.
-	return false;
+	return consumed;
 }
 
 
