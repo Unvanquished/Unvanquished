@@ -26,6 +26,9 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 
 See below for [build](#building-the-game-binaries) and [launch](#running-the-game) instructions.
 
+If you are interested in creating or using Unvanquished packages for package managers, see
+[wiki:Linux packages](https://wiki.unvanquished.net/wiki/Linux_packages).
+
 ## Translating the game
 
 [![Weblate](https://hosted.weblate.org/widgets/unvanquished/-/multi-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
@@ -54,13 +57,11 @@ Required:
 `libgmp`,
 `libnettle`,
 `libcurl`,
-`SDL2`,
+`SDL3`,
 `GLEW`,
 `libpng`,
 `libjpeg` ≥ 8,
 `libwebp` ≥ 0.2.0,
-`Freetype`,
-`Lua`,
 `OpenAL`,
 `libogg`,
 `libvorbis`,
@@ -68,6 +69,8 @@ Required:
 `libopusfile`.
 
 Optional:
+`Freetype` (submodule will be used if not available),
+`Lua` (submodule will be used if not available),
 `ncurses`.
 
 ### MSYS2
