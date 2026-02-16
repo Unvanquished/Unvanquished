@@ -2609,15 +2609,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		return false;
 	}
 
-	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB &&
-	     cg_playerShadows.Get() ) {
-		// add inverse shadow map
-		{
-		  CG_StartShadowCaster( cent->lerpOrigin, mins, maxs );
-		}
-	}
-
-	if ( cg_shadows != shadowingMode_t::SHADOWING_BLOB) // no mark for stencil or projection shadows
+	if ( cg_shadows != shadowingMode_t::SHADOWING_BLOB)
 	{
 		return true;
 	}
@@ -2632,19 +2624,6 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		false, 24.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
 
 	return true;
-}
-
-static void CG_PlayerShadowEnd()
-{
-	if ( cg_shadows == shadowingMode_t::SHADOWING_NONE)
-	{
-		return;
-	}
-
-	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB &&
-	     cg_playerShadows.Get() ) {
-		CG_EndShadowCaster( );
-	}
 }
 
 /*
@@ -3126,7 +3105,6 @@ void CG_Player( centity_t *cent )
 	// if the model failed, allow the default nullmodel to be displayed
 	if ( !legs.hModel )
 	{
-		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3148,7 +3126,6 @@ void CG_Player( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
-			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3169,7 +3146,6 @@ void CG_Player( centity_t *cent )
 
 		if ( !head.hModel )
 		{
-			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3221,7 +3197,6 @@ finish_up:
 	}
 
 	VectorCopy( surfNormal, cent->pe.lastNormal );
-	CG_PlayerShadowEnd( );
 }
 
 /*
@@ -3372,7 +3347,6 @@ void CG_Corpse( centity_t *cent )
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
 	if ( !legs.hModel || ci->skeletal )
 	{
-		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3385,7 +3359,6 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
-			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3407,7 +3380,6 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !head.hModel )
 		{
-			CG_PlayerShadowEnd( );
 			return;
 		}
 
