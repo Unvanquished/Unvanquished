@@ -1973,8 +1973,6 @@ void     CG_DrawActiveFrame( int serverTime, bool demoPlayback );
 void     CG_OffsetFirstPersonView();
 void     CG_OffsetThirdPersonView();
 void     CG_OffsetShoulderView();
-void     CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs );
-void     CG_EndShadowCaster();
 
 //
 // cg_drawtools.c

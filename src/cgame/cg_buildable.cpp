@@ -2115,12 +2115,6 @@ void CG_Buildable( centity_t *cent )
 		ent.nonNormalizedAxes = false;
 	}
 
-	// add inverse shadow map
-	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB && cg_buildableShadows.Get() )
-	{
-		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
-	}
-
 	if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 	{
 		ent.customShader = cgs.media.redBuildShader;
@@ -2413,11 +2407,6 @@ void CG_Buildable( centity_t *cent )
 
 			CG_DrawBuildableRangeMarker( ba->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
 		}
-	}
-
-	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB && cg_buildableShadows.Get() )
-	{
-		CG_EndShadowCaster( );
 	}
 }
 
