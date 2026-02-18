@@ -1171,7 +1171,6 @@ void CG_GhostBuildable( int buildableInfo )
 	//offset on the Z axis if required
 	VectorMA( ent.origin, bmc->zOffset, tr.plane.normal, ent.origin );
 
-	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
 
 	ent.hModel = cg_buildables[ buildable ].models[ 0 ];
@@ -2067,7 +2066,6 @@ void CG_Buildable( centity_t *cent )
 	VectorMA( ent.origin, bmc->zOffset, surfNormal, ent.origin );
 
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
-	VectorCopy( ent.origin, ent.lightingOrigin );
 
 	ent.hModel = cg_buildables[ es->modelindex ].models[ 0 ];
 	ent.shaderTime = float(double(cent->currentState.time) * 0.001);

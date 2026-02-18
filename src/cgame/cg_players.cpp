@@ -2373,7 +2373,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
 		refEntity_t jetpack{};
-		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
 		jetpack.renderfx = torso->renderfx;
 
 		jetpack.hModel = cgs.media.jetpackModel;
@@ -2470,7 +2469,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	if ( held & ( 1 << UP_RADAR ) )
 	{
 		refEntity_t radar{};
-		VectorCopy( torso->lightingOrigin, radar.lightingOrigin );
 		radar.renderfx = torso->renderfx;
 
 		radar.hModel = cgs.media.radarModel;
@@ -2841,8 +2839,6 @@ void CG_Player( centity_t *cent )
 		// add a water splash if partially in and out of water
 		CG_PlayerSplash( cent, class_ );
 
-		renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
-
 		// add the body
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
@@ -2894,7 +2890,6 @@ void CG_Player( centity_t *cent )
 				VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, legs.origin );
 			}
 
-			VectorCopy( legs.origin, legs.lightingOrigin );
 			VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 		}
 		else
@@ -2921,7 +2916,6 @@ void CG_Player( centity_t *cent )
 			VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
 		}
 
-		VectorCopy( legs.origin, legs.lightingOrigin );
 		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
 		if ( ci->gender != GENDER_NEUTER )
@@ -3027,8 +3021,6 @@ void CG_Player( centity_t *cent )
 	// add a water splash if partially in and out of water
 	CG_PlayerSplash( cent, class_ );
 
-	renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
-
 	//
 	// add the legs
 	//
@@ -3045,7 +3037,6 @@ void CG_Player( centity_t *cent )
 
 	VectorCopy( cent->lerpOrigin, legs.origin );
 
-	VectorCopy( cent->lerpOrigin, legs.lightingOrigin );
 	legs.renderfx = renderfx;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3077,7 +3068,6 @@ void CG_Player( centity_t *cent )
 			VectorMA( legs.origin, tr.fraction * -TRACE_DEPTH, surfNormal, legs.origin );
 		}
 
-		VectorCopy( legs.origin, legs.lightingOrigin );
 		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 	}
 
@@ -3096,7 +3086,6 @@ void CG_Player( centity_t *cent )
 
 	//offset on the Z axis if required
 	VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
-	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
 	legs.altShaderIndex = altShaderIndex;
@@ -3129,8 +3118,6 @@ void CG_Player( centity_t *cent )
 			return;
 		}
 
-		VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
-
 		CG_PositionRotatedEntityOnTag( &torso, &legs, "tag_torso" );
 
 		torso.renderfx = renderfx;
@@ -3148,8 +3135,6 @@ void CG_Player( centity_t *cent )
 		{
 			return;
 		}
-
-		VectorCopy( cent->lerpOrigin, head.lightingOrigin );
 
 		CG_PositionRotatedEntityOnTag( &head, &torso, "tag_head" );
 
@@ -3208,7 +3193,6 @@ void CG_Corpse( centity_t *cent )
 {
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
-	int           renderfx;
 	vec3_t        origin, liveZ, deadZ, deadMax;
 	const classModelConfig_t *cmc = BG_ClassModelConfig( es->clientNum );
 
@@ -3295,7 +3279,6 @@ void CG_Corpse( centity_t *cent )
 	CG_PlayerShadow( cent, (class_t) es->clientNum );
 
 	// get the player model information
-	renderfx = RF_LIGHTING_ORIGIN; // use the same origin for all
 
 	//
 	// add the legs
@@ -3320,8 +3303,6 @@ void CG_Corpse( centity_t *cent )
 
 	VectorCopy( origin, legs.origin );
 
-	VectorCopy( origin, legs.lightingOrigin );
-	legs.renderfx = renderfx;
 	legs.origin[ 2 ] += BG_ClassModelConfig( es->clientNum )->zOffset;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3364,11 +3345,7 @@ void CG_Corpse( centity_t *cent )
 
 		torso.customSkin = ci->torsoSkin;
 
-		VectorCopy( origin, torso.lightingOrigin );
-
 		CG_PositionRotatedEntityOnTag( &torso, &legs, "tag_torso" );
-
-		torso.renderfx = renderfx;
 
 		torso.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &torso );
@@ -3385,11 +3362,7 @@ void CG_Corpse( centity_t *cent )
 
 		head.customSkin = ci->headSkin;
 
-		VectorCopy( origin, head.lightingOrigin );
-
 		CG_PositionRotatedEntityOnTag( &head, &torso, "tag_head" );
-
-		head.renderfx = renderfx;
 
 		head.altShaderIndex = CG_ALTSHADER_DEAD;
 		trap_R_AddRefEntityToScene( &head );

@@ -1352,7 +1352,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	// add the weapon
 	refEntity_t gun{}, barrel{}, flash{};
 
-	VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
 	gun.renderfx = parent->renderfx;
 
 	if ( ps )
@@ -1486,7 +1485,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		// add the spinning barrel
 		if ( barrel.hModel )
 		{
-			VectorCopy( parent->lightingOrigin, barrel.lightingOrigin );
 			barrel.renderfx = parent->renderfx;
 
 			angles[ YAW ] = 0;
@@ -1532,7 +1530,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 	}
 
-	VectorCopy( parent->lightingOrigin, flash.lightingOrigin );
 	flash.renderfx = parent->renderfx;
 
 	if ( !ps )
