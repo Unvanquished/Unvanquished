@@ -1779,7 +1779,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	hand.backlerp = cent->pe.torso.backlerp;
 
 	hand.hModel = wi->handsModel;
-	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
+	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON;
 	if( cg_mirrorgun.Get() )
 		hand.renderfx |= RF_SWAPCULL;
 
