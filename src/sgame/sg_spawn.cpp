@@ -38,6 +38,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "lua/Interpreter.h"
 
 bool G_SpawnString( const char *key, const char *defaultString, char **out )
 {
@@ -1118,7 +1119,7 @@ static void SP_worldspawn()
 		float reverbIntensity;
 		G_SpawnFloat( "reverbIntensity", "1", &reverbIntensity );
 		reverbIntensity = Math::Clamp( reverbIntensity, 0.0f, 2.0f );
-		
+
 		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, reverbIntensity ) );
 	}
 
@@ -1134,6 +1135,16 @@ static void SP_worldspawn()
 	G_SpawnStringIntoCVar( "BPInitialBudgetAliens", g_BPInitialBudgetAliens );
 	G_SpawnStringIntoCVar( "BPBudgetPerMiner", g_buildPointBudgetPerMiner );
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
+
+	G_SpawnString( "luaScript", "", &s );
+	if ( s && *s )
+	{
+		if ( !Lua::ExecScript( s ) )
+		{
+			Log::Warn("error loading Lua spawnString: luaScript: '%s'", s);
+		}
+	}
+
 
 	InitDisabledItemCvars();
 	InitTacticBehaviorsCvar();
