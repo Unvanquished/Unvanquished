@@ -57,7 +57,8 @@ enum AIEntity_t
 	E_DAMAGEDBUILDING,
 	E_FRIENDLYBUILDING, // closest alive friendly building
 	E_ENEMYBUILDING,    // closest alive enemy building
-	E_SELF
+	E_SELF,
+	E_USERPOS,  // User specified position
 };
 
 // all behavior tree nodes must return one of
@@ -234,7 +235,7 @@ const char *AIUnBoxString( AIValue_t v );
 
 void AIDestroyValue( AIValue_t v );
 
-botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
+botGoalAndDistance_t AIEntityToGoal( gentity_t *self, AIEntity_t e );
 
 // standard behavior tree control-flow nodes
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
