@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 00:45+0100\n"
+"POT-Creation-Date: 2026-02-22 13:39+0100\n"
 "PO-Revision-Date: 2024-12-19 10:00+0000\n"
 "Last-Translator: Bogdan Mințoi <mintoi.bogdan@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/unvanquished/"
@@ -93,7 +93,7 @@ msgstr "Motiv"
 msgid "Call vote"
 msgstr "Solicită votul"
 
-#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
+#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:36
 msgid "Fill with bots"
 msgstr "Umple cu bot-uri"
 
@@ -123,7 +123,7 @@ msgstr "Echipă"
 msgid "Amount"
 msgstr "Număr"
 
-#: ui/callvote_map.rml:26 ui/options_democracy.rml:32
+#: ui/callvote_map.rml:26 ui/options_democracy.rml:37
 msgid "Change map"
 msgstr "Schimbă harta"
 
@@ -590,11 +590,11 @@ msgid ""
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
 
-#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
+#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
 msgstr "Alătură-te extratereștrilor"
 
-#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
+#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:30
 msgid "Join Humans"
 msgstr "Alătură-te oamenilor"
 
@@ -602,7 +602,7 @@ msgstr "Alătură-te oamenilor"
 msgid "Alternatively you can watch the game without playing."
 msgstr "Alternativ, poți urmări jocul fără să participi."
 
-#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
+#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:32
 msgid "Spectate"
 msgstr "Urmărește ca spectator"
 
@@ -620,63 +620,63 @@ msgstr ""
 msgid "Match"
 msgstr "Partidă"
 
-#: ui/menu_ingame.rml:25
+#: ui/menu_ingame.rml:24
 msgid "Leave match"
 msgstr "Părăsește partida"
 
-#: ui/menu_ingame.rml:26
+#: ui/menu_ingame.rml:25
 msgid "Resume action"
 msgstr ""
 
-#: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
+#: ui/menu_ingame.rml:33 ui/options_democracy.rml:13
 msgid "Democracy"
 msgstr "Democrație"
 
-#: ui/menu_ingame.rml:38
+#: ui/menu_ingame.rml:37
 msgid "Host menu"
 msgstr "Meniu gazdă"
 
-#: ui/menu_ingame.rml:40 ui/server_setup.rml:8
+#: ui/menu_ingame.rml:39 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr "Setare server"
 
-#: ui/menu_ingame.rml:42
+#: ui/menu_ingame.rml:41
 msgid "Stop server"
 msgstr "Oprește serverul"
 
-#: ui/menu_ingame.rml:44
+#: ui/menu_ingame.rml:43
 msgid "Pause server"
 msgstr "Pune serverul pe pauză"
 
-#: ui/menu_ingame.rml:46 ui/options_bots.rml:8
+#: ui/menu_ingame.rml:45 ui/options_bots.rml:8
 msgid "Bots"
 msgstr "Roboți"
 
-#: ui/menu_ingame.rml:50 ui/menu_main.rml:27
+#: ui/menu_ingame.rml:49 ui/menu_main.rml:27
 msgid "Main menu"
 msgstr "Meniu principal"
 
-#: ui/menu_ingame.rml:52 ui/menu_main.rml:28
+#: ui/menu_ingame.rml:51 ui/menu_main.rml:28
 msgid "Server listings"
 msgstr ""
 
-#: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
 msgstr "Pornește o partidă locală/LAN"
 
-#: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
+#: ui/menu_ingame.rml:53 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
 msgstr "Opțiuni"
 
-#: ui/menu_ingame.rml:55 ui/menu_main.rml:35
+#: ui/menu_ingame.rml:54 ui/menu_main.rml:35
 msgid "Gameplay guide"
 msgstr ""
 
-#: ui/menu_ingame.rml:58 ui/menu_main.rml:37
+#: ui/menu_ingame.rml:57 ui/menu_main.rml:37
 msgid "Quit game"
 msgstr "Ieși din joc"
 
-#: ui/menu_ingame.rml:60 ui/menu_main.rml:41
+#: ui/menu_ingame.rml:59 ui/menu_main.rml:41
 msgid "Beta"
 msgstr "Beta"
 
@@ -696,39 +696,39 @@ msgstr "Adaugă un robot uman"
 msgid "Remove all bots"
 msgstr "Elimină toți roboții"
 
-#: ui/options_democracy.rml:13
+#: ui/options_democracy.rml:18
 msgid "Global vote:"
 msgstr "Vot global:"
 
-#: ui/options_democracy.rml:15 ui/options_democracy.rml:24
+#: ui/options_democracy.rml:20 ui/options_democracy.rml:29
 msgid "yes"
 msgstr "da"
 
-#: ui/options_democracy.rml:16 ui/options_democracy.rml:25
+#: ui/options_democracy.rml:21 ui/options_democracy.rml:30
 msgid "or"
 msgstr "sau"
 
-#: ui/options_democracy.rml:18 ui/options_democracy.rml:27
+#: ui/options_democracy.rml:23 ui/options_democracy.rml:32
 msgid "no"
 msgstr "nu"
 
-#: ui/options_democracy.rml:22
+#: ui/options_democracy.rml:27
 msgid "Team vote:"
 msgstr "Vot echipă:"
 
-#: ui/options_democracy.rml:30
+#: ui/options_democracy.rml:35
 msgid "Kick bots"
 msgstr ""
 
-#: ui/options_democracy.rml:33
+#: ui/options_democracy.rml:38
 msgid "Extend timelimit"
 msgstr ""
 
-#: ui/options_democracy.rml:34
+#: ui/options_democracy.rml:39
 msgid "Call a draw"
 msgstr "Solicită remiză"
 
-#: ui/options_democracy.rml:35
+#: ui/options_democracy.rml:40
 msgid "Admit defeat"
 msgstr "Acceptă înfrângerea"
 
@@ -836,7 +836,7 @@ msgid "High"
 msgstr "Înalt"
 
 #: ui/options_graphics.rml:32
-msgid "Dynamic lights, special effects, large textures…"
+msgid "Special effects, large textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:35
@@ -844,7 +844,7 @@ msgid "Medium"
 msgstr "Mediu"
 
 #: ui/options_graphics.rml:36
-msgid "Surface details, good textures…"
+msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
