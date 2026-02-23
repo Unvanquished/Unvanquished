@@ -312,7 +312,7 @@
 				<row>
 					<h3><translate>Screen space ambient occlusion (SSAO)</translate></h3>
 					<input cvar="r_ssao" type="checkbox" />
-					<p><translate>Simulate dark corners.</translate></p>
+					<p><translate>Darken recesses.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Marks</translate></h3>
