@@ -75,8 +75,16 @@
 				</row>
 
 				<row>
-					<input cvar="r_FXAA" type="checkbox" />
-					<h3><translate>Fast approximate anti-aliasing (FXAA)</translate></h3>
+					<select cvar="r_msaa">
+						<option value="0"><translate>Off</translate></option>
+						<option value="4">4x</option>
+						<option value="8">8x</option>
+						<option value="16">16x</option>
+						<option value="32">32x</option>
+						<option value="64">64x</option>
+					</select>
+					<h3><translate>Multisample anti-aliasing (MSAA)</translate></h3>
+					<p><translate>Render at higher precision at the boundaries of surfaces for crisp edges. This is a resource-intensive option.</translate></p>
 				</row>
 
 				<buttonbar>
