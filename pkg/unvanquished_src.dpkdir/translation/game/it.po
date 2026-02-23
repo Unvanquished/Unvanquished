@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-22 13:39+0100\n"
-"PO-Revision-Date: 2025-06-18 10:01+0000\n"
+"PO-Revision-Date: 2026-02-24 10:09+0000\n"
 "Last-Translator: \"V. Elle\" <leonardo.luzzi@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.1\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -943,7 +943,7 @@ msgstr "Medio"
 
 #: ui/options_graphics.rml:36
 msgid "Dynamic lights, surface details, good textures…"
-msgstr ""
+msgstr "Illuminazione dinamica, dettagli sulle superfici e texture di qualità…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:387 ui/options_graphics.rml:396
@@ -952,7 +952,7 @@ msgstr "Basso"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "Il preset più veloce senza rovinare l’aspetto del gioco."
 
 #: ui/options_graphics.rml:43
 msgid ""
