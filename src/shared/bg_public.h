@@ -334,14 +334,13 @@ enum weaponstate_t
 #define PMF_TIME_KNOCKBACK BIT(6) // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP BIT(7) // pm_time is waterjump
 #define PMF_RESPAWNED      BIT(8) // clear after attack and jump buttons come up
-// available               BIT(9)
+#define PMF_SPRINTHELD     BIT(9)
 #define PMF_WEAPON_RELOAD  BIT(10) // force a weapon switch
 #define PMF_FOLLOW         BIT(11) // spectate following another player
 #define PMF_QUEUED         BIT(12) // player is queued
 #define PMF_TIME_WALLJUMP  BIT(13) // for limiting wall jumping
 #define PMF_CHARGE         BIT(14) // keep track of pouncing (and trampling it seems?)
 #define PMF_WEAPON_SWITCH  BIT(15) // force a weapon switch
-#define PMF_SPRINTHELD     BIT(16)
 
 #define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
 

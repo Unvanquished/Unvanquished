@@ -78,7 +78,6 @@ public:
 		if ( child == this )
 		{
 			context = GetContext();
-			context->AddEventListener( "keydown", this, true ); // use capture phase so we can grab it before <body>'s escape handler
 			context->AddEventListener( BINDABLE_KEY_EVENT, this );
 		}
 	}
@@ -88,7 +87,6 @@ public:
 		Element::OnChildRemove( child );
 		if ( child == this )
 		{
-			context->RemoveEventListener( "keydown", this, true );
 			context->RemoveEventListener( BINDABLE_KEY_EVENT, this );
 			context = nullptr;
 		}
@@ -100,6 +98,7 @@ public:
 
 		if ( waitingForKeypress )
 		{
+			rocketInfo.keyBindingTime = rocketInfo.realtime;
 			rocketInfo.cursorFreezeTime = rocketInfo.realtime;
 		}
 		else if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.empty() )
@@ -122,29 +121,26 @@ public:
 			waitingForKeypress = true;
 			SetInnerRML( "Enter desired key..." );
 
+			rocketInfo.keyBindingTime = rocketInfo.realtime;
+
 			// fix mouse position inside the widget
 			rocketInfo.cursorFreezeTime = rocketInfo.realtime;
 			rocketInfo.cursorFreezeX = event.GetParameter<int>( "mouse_x", 0 );
 			rocketInfo.cursorFreezeY = event.GetParameter<int>( "mouse_y", 0 );
 		}
-
-		else if ( waitingForKeypress && event == Rml::EventId::Keydown )
+		else if ( waitingForKeypress && event == BINDABLE_KEY_EVENT )
 		{
-			auto keyIdentifier = ( Rml::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 );
+			event.StopPropagation();
+			auto key = Keyboard::Key::UnpackFromInt( event.GetParameter<int>( BINDABLE_KEY_KEY, 0 ) );
 
-			if ( keyIdentifier == Rml::Input::KeyIdentifier::KI_ESCAPE )
+			if ( key == Keyboard::Key( K_ESCAPE ) )
 			{
 				StopWaitingForKeypress();
 			}
-
-			event.StopPropagation();
-			return;
-		}
-
-		else if ( waitingForKeypress && event == BINDABLE_KEY_EVENT )
-		{
-			auto key = Keyboard::Key::UnpackFromInt( event.GetParameter<int>( BINDABLE_KEY_KEY, 0 ) );
-			BindKey(key);
+			else
+			{
+				BindKey( key );
+			}
 			return;
 		}
 	}
@@ -153,6 +149,7 @@ protected:
 	void StopWaitingForKeypress() {
 		waitingForKeypress = false;
 		nextKeyUpdateTime = rocketInfo.realtime;
+		rocketInfo.keyBindingTime = -1;
 		rocketInfo.cursorFreezeTime = -1;
 	}
 

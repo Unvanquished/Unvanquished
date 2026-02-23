@@ -129,11 +129,6 @@
 					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
 				</row>
 				<row>
-					<h3><translate>Rim lighting</translate></h3>
-					<input cvar="r_rimLighting" type="checkbox" />
-					<p><translate>Light the edges of models from behind.</translate></p>
-				</row>
-				<row>
 					<h3><translate>Half Lambert lighting</translate></h3>
 					<input cvar="r_halfLambertLighting" type="checkbox" />
 					<p><translate>Non-physical lighting technique to make models less dark.</translate></p>

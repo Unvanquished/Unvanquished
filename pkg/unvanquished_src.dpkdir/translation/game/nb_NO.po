@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 00:45+0100\n"
+"POT-Creation-Date: 2026-02-22 13:39+0100\n"
 "PO-Revision-Date: 2025-04-27 08:30+0000\n"
 "Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -94,7 +94,7 @@ msgstr "Grunnlag"
 msgid "Call vote"
 msgstr "Start avstemning"
 
-#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
+#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:36
 msgid "Fill with bots"
 msgstr "Fyll med maskinspillere"
 
@@ -124,7 +124,7 @@ msgstr "Lag"
 msgid "Amount"
 msgstr "Mengde"
 
-#: ui/callvote_map.rml:26 ui/options_democracy.rml:32
+#: ui/callvote_map.rml:26 ui/options_democracy.rml:37
 msgid "Change map"
 msgstr "Endre kart"
 
@@ -574,11 +574,11 @@ msgstr ""
 "Mennesker kan utstyre seg med et utvalg av våpen og utstyr. De er fleksible "
 "og dødelige på avstand, men skjøre."
 
-#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
+#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
 msgstr "Bli med utenomjordiske"
 
-#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
+#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:30
 msgid "Join Humans"
 msgstr "Bli med mennesker"
 
@@ -586,7 +586,7 @@ msgstr "Bli med mennesker"
 msgid "Alternatively you can watch the game without playing."
 msgstr "Alternativt kan du se kampen uten å spille."
 
-#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
+#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:32
 msgid "Spectate"
 msgstr "Se på"
 
@@ -606,63 +606,63 @@ msgstr ""
 msgid "Match"
 msgstr "Kamp"
 
-#: ui/menu_ingame.rml:25
+#: ui/menu_ingame.rml:24
 msgid "Leave match"
 msgstr "Forlat kamp"
 
-#: ui/menu_ingame.rml:26
+#: ui/menu_ingame.rml:25
 msgid "Resume action"
 msgstr "Fortsett kampen"
 
-#: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
+#: ui/menu_ingame.rml:33 ui/options_democracy.rml:13
 msgid "Democracy"
 msgstr "Demokrati"
 
-#: ui/menu_ingame.rml:38
+#: ui/menu_ingame.rml:37
 msgid "Host menu"
 msgstr "Vertsmeny"
 
-#: ui/menu_ingame.rml:40 ui/server_setup.rml:8
+#: ui/menu_ingame.rml:39 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr "Serveroppsett"
 
-#: ui/menu_ingame.rml:42
+#: ui/menu_ingame.rml:41
 msgid "Stop server"
 msgstr "Stans server"
 
-#: ui/menu_ingame.rml:44
+#: ui/menu_ingame.rml:43
 msgid "Pause server"
 msgstr "Pause server"
 
-#: ui/menu_ingame.rml:46 ui/options_bots.rml:8
+#: ui/menu_ingame.rml:45 ui/options_bots.rml:8
 msgid "Bots"
 msgstr "Maskinspillere"
 
-#: ui/menu_ingame.rml:50 ui/menu_main.rml:27
+#: ui/menu_ingame.rml:49 ui/menu_main.rml:27
 msgid "Main menu"
 msgstr "Hovedmeny"
 
-#: ui/menu_ingame.rml:52 ui/menu_main.rml:28
+#: ui/menu_ingame.rml:51 ui/menu_main.rml:28
 msgid "Server listings"
 msgstr "Serverliste"
 
-#: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
 msgstr "Start lokalt/LAN spill"
 
-#: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
+#: ui/menu_ingame.rml:53 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
 msgstr "Innstillinger"
 
-#: ui/menu_ingame.rml:55 ui/menu_main.rml:35
+#: ui/menu_ingame.rml:54 ui/menu_main.rml:35
 msgid "Gameplay guide"
 msgstr "Spillveiledning"
 
-#: ui/menu_ingame.rml:58 ui/menu_main.rml:37
+#: ui/menu_ingame.rml:57 ui/menu_main.rml:37
 msgid "Quit game"
 msgstr "Avslutt spill"
 
-#: ui/menu_ingame.rml:60 ui/menu_main.rml:41
+#: ui/menu_ingame.rml:59 ui/menu_main.rml:41
 msgid "Beta"
 msgstr "Beta"
 
@@ -683,39 +683,39 @@ msgstr "Gi maskinspiller til mennesker"
 msgid "Remove all bots"
 msgstr "Fjern alle maskinspillere"
 
-#: ui/options_democracy.rml:13
+#: ui/options_democracy.rml:18
 msgid "Global vote:"
 msgstr "Global avstemning:"
 
-#: ui/options_democracy.rml:15 ui/options_democracy.rml:24
+#: ui/options_democracy.rml:20 ui/options_democracy.rml:29
 msgid "yes"
 msgstr "ja"
 
-#: ui/options_democracy.rml:16 ui/options_democracy.rml:25
+#: ui/options_democracy.rml:21 ui/options_democracy.rml:30
 msgid "or"
 msgstr "eller"
 
-#: ui/options_democracy.rml:18 ui/options_democracy.rml:27
+#: ui/options_democracy.rml:23 ui/options_democracy.rml:32
 msgid "no"
 msgstr "nei"
 
-#: ui/options_democracy.rml:22
+#: ui/options_democracy.rml:27
 msgid "Team vote:"
 msgstr "Lagavstemning:"
 
-#: ui/options_democracy.rml:30
+#: ui/options_democracy.rml:35
 msgid "Kick bots"
 msgstr "Spark maskinspillere"
 
-#: ui/options_democracy.rml:33
+#: ui/options_democracy.rml:38
 msgid "Extend timelimit"
 msgstr "Utvid tidsgrensen"
 
-#: ui/options_democracy.rml:34
+#: ui/options_democracy.rml:39
 msgid "Call a draw"
 msgstr "Be om uavgjort"
 
-#: ui/options_democracy.rml:35
+#: ui/options_democracy.rml:40
 msgid "Admit defeat"
 msgstr "Innrøm tap"
 
@@ -826,7 +826,7 @@ msgid "High"
 msgstr "Høy"
 
 #: ui/options_graphics.rml:32
-msgid "Dynamic lights, special effects, large textures…"
+msgid "Special effects, large textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:35
@@ -834,7 +834,7 @@ msgid "Medium"
 msgstr "Middels"
 
 #: ui/options_graphics.rml:36
-msgid "Surface details, good textures…"
+msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267

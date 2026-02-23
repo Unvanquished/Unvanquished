@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-04 00:45+0100\n"
+"POT-Creation-Date: 2026-02-22 13:39+0100\n"
 "PO-Revision-Date: 2025-04-20 02:10+0000\n"
 "Last-Translator: Robert Wolniak <robert.wolniak@szkod.ovh>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
@@ -92,7 +92,7 @@ msgstr "Powód"
 msgid "Call vote"
 msgstr "Ogłoś głosowanie"
 
-#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
+#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:36
 msgid "Fill with bots"
 msgstr "Zapełnij botami"
 
@@ -122,7 +122,7 @@ msgstr "Drużyna"
 msgid "Amount"
 msgstr "Ilość"
 
-#: ui/callvote_map.rml:26 ui/options_democracy.rml:32
+#: ui/callvote_map.rml:26 ui/options_democracy.rml:37
 msgid "Change map"
 msgstr "Zmień mapę"
 
@@ -678,11 +678,11 @@ msgstr ""
 "Ludzie mogą wyposażyć się w szeroką gamę broni i sprzętu. Są oni elastyczni "
 "i zabójczy na odległość, ale mało żywotni."
 
-#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
+#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
 msgstr "Dołącz do Obcych"
 
-#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
+#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:30
 msgid "Join Humans"
 msgstr "Dołącz do Ludzi"
 
@@ -690,7 +690,7 @@ msgstr "Dołącz do Ludzi"
 msgid "Alternatively you can watch the game without playing."
 msgstr "Jeśli nie chcesz grać, możesz również dołączyć jako zwykły obserwator."
 
-#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
+#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:32
 msgid "Spectate"
 msgstr "Obserwuj"
 
@@ -710,63 +710,63 @@ msgstr ""
 msgid "Match"
 msgstr "Mecz"
 
-#: ui/menu_ingame.rml:25
+#: ui/menu_ingame.rml:24
 msgid "Leave match"
 msgstr "Opuść mecz"
 
-#: ui/menu_ingame.rml:26
+#: ui/menu_ingame.rml:25
 msgid "Resume action"
 msgstr "Kontynuuj akcję"
 
-#: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
+#: ui/menu_ingame.rml:33 ui/options_democracy.rml:13
 msgid "Democracy"
 msgstr "Demokracja"
 
-#: ui/menu_ingame.rml:38
+#: ui/menu_ingame.rml:37
 msgid "Host menu"
 msgstr "Menu gospodarza"
 
-#: ui/menu_ingame.rml:40 ui/server_setup.rml:8
+#: ui/menu_ingame.rml:39 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr "Ustawienia serwera"
 
-#: ui/menu_ingame.rml:42
+#: ui/menu_ingame.rml:41
 msgid "Stop server"
 msgstr "Zatrzymaj serwer"
 
-#: ui/menu_ingame.rml:44
+#: ui/menu_ingame.rml:43
 msgid "Pause server"
 msgstr "Zapauzuj serwer"
 
-#: ui/menu_ingame.rml:46 ui/options_bots.rml:8
+#: ui/menu_ingame.rml:45 ui/options_bots.rml:8
 msgid "Bots"
 msgstr "Boty"
 
-#: ui/menu_ingame.rml:50 ui/menu_main.rml:27
+#: ui/menu_ingame.rml:49 ui/menu_main.rml:27
 msgid "Main menu"
 msgstr "Menu główne"
 
-#: ui/menu_ingame.rml:52 ui/menu_main.rml:28
+#: ui/menu_ingame.rml:51 ui/menu_main.rml:28
 msgid "Server listings"
 msgstr "Lista serwerów"
 
-#: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
 msgstr "Rozpocznij grę lokalną/LAN"
 
-#: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
+#: ui/menu_ingame.rml:53 ui/menu_main.rml:32 ui/options.rml:9
 msgid "Options"
 msgstr "Ustawienia"
 
-#: ui/menu_ingame.rml:55 ui/menu_main.rml:35
+#: ui/menu_ingame.rml:54 ui/menu_main.rml:35
 msgid "Gameplay guide"
 msgstr "Przewodnik po grze"
 
-#: ui/menu_ingame.rml:58 ui/menu_main.rml:37
+#: ui/menu_ingame.rml:57 ui/menu_main.rml:37
 msgid "Quit game"
 msgstr "Wyjdź z gry"
 
-#: ui/menu_ingame.rml:60 ui/menu_main.rml:41
+#: ui/menu_ingame.rml:59 ui/menu_main.rml:41
 msgid "Beta"
 msgstr "Beta"
 
@@ -786,39 +786,39 @@ msgstr "Dodaj bota do ludzi"
 msgid "Remove all bots"
 msgstr "Usuń wszystkie boty"
 
-#: ui/options_democracy.rml:13
+#: ui/options_democracy.rml:18
 msgid "Global vote:"
 msgstr "Globalne głosowanie:"
 
-#: ui/options_democracy.rml:15 ui/options_democracy.rml:24
+#: ui/options_democracy.rml:20 ui/options_democracy.rml:29
 msgid "yes"
 msgstr "tak"
 
-#: ui/options_democracy.rml:16 ui/options_democracy.rml:25
+#: ui/options_democracy.rml:21 ui/options_democracy.rml:30
 msgid "or"
 msgstr "lub"
 
-#: ui/options_democracy.rml:18 ui/options_democracy.rml:27
+#: ui/options_democracy.rml:23 ui/options_democracy.rml:32
 msgid "no"
 msgstr "nie"
 
-#: ui/options_democracy.rml:22
+#: ui/options_democracy.rml:27
 msgid "Team vote:"
 msgstr "Głos zespołu:"
 
-#: ui/options_democracy.rml:30
+#: ui/options_democracy.rml:35
 msgid "Kick bots"
 msgstr "Wyrzuć boty"
 
-#: ui/options_democracy.rml:33
+#: ui/options_democracy.rml:38
 msgid "Extend timelimit"
 msgstr "Wydłuż limit czasowy"
 
-#: ui/options_democracy.rml:34
+#: ui/options_democracy.rml:39
 msgid "Call a draw"
 msgstr "Ogłoś remis"
 
-#: ui/options_democracy.rml:35
+#: ui/options_democracy.rml:40
 msgid "Admit defeat"
 msgstr "Poddaj grę"
 
@@ -930,7 +930,7 @@ msgid "High"
 msgstr "Wysokie"
 
 #: ui/options_graphics.rml:32
-msgid "Dynamic lights, special effects, large textures…"
+msgid "Special effects, large textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:35
@@ -938,7 +938,7 @@ msgid "Medium"
 msgstr "Średnia"
 
 #: ui/options_graphics.rml:36
-msgid "Surface details, good textures…"
+msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
