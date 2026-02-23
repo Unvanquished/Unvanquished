@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-22 13:39+0100\n"
-"PO-Revision-Date: 2025-10-02 15:02+0000\n"
+"PO-Revision-Date: 2026-02-24 10:09+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -922,7 +922,7 @@ msgstr "Korkea"
 
 #: ui/options_graphics.rml:32
 msgid "Special effects, large textures…"
-msgstr ""
+msgstr "Erikoistehosteet, suuret tekstuurit…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -930,7 +930,7 @@ msgstr "Keskiverto"
 
 #: ui/options_graphics.rml:36
 msgid "Dynamic lights, surface details, good textures…"
-msgstr ""
+msgstr "Dynaamiset valot, pintayksityiskohdat, hyvät tekstuurit…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:267
 #: ui/options_graphics.rml:387 ui/options_graphics.rml:396
@@ -1556,7 +1556,7 @@ msgstr "Näppäinasetukset"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr "Paina ESC peruuttaaksesi näppäimen valinnan."
+msgstr "Paina Esc peruuttaaksesi näppäimen valinnan."
 
 #: ui/options_keys.rml:16
 msgid ""
