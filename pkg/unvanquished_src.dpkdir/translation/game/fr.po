@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 12:06+0100\n"
-"PO-Revision-Date: 2026-01-05 01:01+0000\n"
-"Last-Translator: Antoine Fontaine <afontain@posteo.net>\n"
+"PO-Revision-Date: 2026-02-24 11:23+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -942,7 +942,7 @@ msgstr "Haut"
 
 #: ui/options_graphics.rml:32
 msgid "Special effects, large textures…"
-msgstr ""
+msgstr "Effets spéciaux, grandes textures…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -950,7 +950,7 @@ msgstr "Moyen"
 
 #: ui/options_graphics.rml:36
 msgid "Dynamic lights, surface details, good textures…"
-msgstr ""
+msgstr "Lumières dynamiques, détails de surface, bonnes textures…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:270
 #: ui/options_graphics.rml:390 ui/options_graphics.rml:399
