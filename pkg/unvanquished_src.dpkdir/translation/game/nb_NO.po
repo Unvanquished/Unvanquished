@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 12:06+0100\n"
+"POT-Creation-Date: 2026-02-24 14:37+0100\n"
 "PO-Revision-Date: 2025-04-27 08:30+0000\n"
 "Last-Translator: Blood Axe <bloodaxenor@protonmail.com>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/"
@@ -544,8 +544,8 @@ msgstr "Dataspiller-taktikk"
 msgid "Spectators"
 msgstr "Tilskuere"
 
-#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
-#: ui/server_browser.rml:60
+#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:45
+#: ui/server_browser.rml:62
 msgid "Map:"
 msgstr "Kart:"
 
@@ -784,7 +784,7 @@ msgid "Mild"
 msgstr "Mild"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1474
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "Default"
 msgstr "Standard"
 
@@ -1121,7 +1121,7 @@ msgid ""
 msgstr ""
 
 #: ui/options_graphics.rml:202 ui/options_ui.rml:47
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No"
 msgstr ""
 
@@ -2146,27 +2146,31 @@ msgstr "Serverliste"
 msgid "Internet"
 msgstr "Internett"
 
-#: ui/server_browser.rml:43 ui/server_browser.rml:59
+#: ui/server_browser.rml:43 ui/server_browser.rml:60
 msgid "Name:"
 msgstr "Navn:"
 
-#: ui/server_browser.rml:45 ui/server_browser.rml:61
+#: ui/server_browser.rml:44 ui/server_browser.rml:61
+msgid "Version:"
+msgstr ""
+
+#: ui/server_browser.rml:46 ui/server_browser.rml:63
 msgid "Players (Bots)"
 msgstr "Spillere (maskinspillere)"
 
-#: ui/server_browser.rml:46 ui/server_browser.rml:62
+#: ui/server_browser.rml:47 ui/server_browser.rml:64
 msgid "Ping"
 msgstr "Forsinkelse"
 
-#: ui/server_browser.rml:50 ui/server_browser.rml:66
+#: ui/server_browser.rml:51 ui/server_browser.rml:68
 msgid "Connect"
 msgstr "Koble til"
 
-#: ui/server_browser.rml:51 ui/server_browser.rml:67
+#: ui/server_browser.rml:52 ui/server_browser.rml:69
 msgid "Refresh"
 msgstr "Oppfrisk"
 
-#: ui/server_browser.rml:55
+#: ui/server_browser.rml:56
 msgid "LAN"
 msgstr "LAN"
 
@@ -2189,6 +2193,25 @@ msgstr "Bygningsoppsett som skal brukes"
 #: ui/server_create.rml:62
 msgid "Start"
 msgstr "Start"
+
+#: ui/server_mismatch.rml:8
+msgid "Engine version mismatch"
+msgstr ""
+
+#: ui/server_mismatch.rml:9
+msgid ""
+"This server uses a different Daemon engine version, which is not compatible."
+msgstr ""
+
+#: ui/server_mismatch.rml:11
+msgid ""
+"The latest Unvanquished release can be downloaded through the Updater app, "
+"at <web dest=\"download\"/>, or in one of the official package repositories."
+msgstr ""
+
+#: ui/server_mismatch.rml:12
+msgid "Connect anyway"
+msgstr ""
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
@@ -4146,133 +4169,133 @@ msgstr "Tilpasset: %dx%d"
 msgid "Same as screen (%dx%d)"
 msgstr "Samme som skjerm (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1474
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
 "Standardoppførselen. Dette er hva maskinspillere gjør idet spillet starter."
 
-#: src/cgame/cg_rocket_datasource.cpp:1475
-#: src/cgame/cg_rocket_datasource.cpp:1508
+#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend"
 msgstr "Forsvar"
 
-#: src/cgame/cg_rocket_datasource.cpp:1475
+#: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "The bots stay in the base."
 msgstr "Maskinspillere holder seg til basen."
 
-#: src/cgame/cg_rocket_datasource.cpp:1476
-#: src/cgame/cg_rocket_datasource.cpp:1509
+#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack"
 msgstr "Angrip"
 
-#: src/cgame/cg_rocket_datasource.cpp:1476
+#: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "The bots attack the enemy base."
 msgstr "Maskinspillere angriper fiendens base."
 
-#: src/cgame/cg_rocket_datasource.cpp:1477
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "Stay Here"
 msgstr "Bli her"
 
-#: src/cgame/cg_rocket_datasource.cpp:1477
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "The bots stay where you are currently."
 msgstr "Maskinspillere blir værende der du står akkurat nå."
 
-#: src/cgame/cg_rocket_datasource.cpp:1478
-#: src/cgame/cg_rocket_datasource.cpp:1510
+#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1547
 msgid "Follow"
 msgstr "Følg"
 
-#: src/cgame/cg_rocket_datasource.cpp:1478
+#: src/cgame/cg_rocket_datasource.cpp:1515
 msgid "The bots follow you wherever you go."
 msgstr "Maskinspillere følger deg dit du går."
 
-#: src/cgame/cg_rocket_datasource.cpp:1508
+#: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend our base!!"
 msgstr "Forsvar basen vår!!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1509
+#: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack!"
 msgstr "Angrip!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1510
+#: src/cgame/cg_rocket_datasource.cpp:1547
 msgid "Follow me!"
 msgstr "Følg meg!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No."
 msgstr "Nei."
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes"
 msgstr "Ja"
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes."
 msgstr "Ja."
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank"
 msgstr "Flanke"
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank, behind you!"
 msgstr "Flanke, bak deg!"
 
-#: src/cgame/cg_rocket_draw.cpp:2644
+#: src/cgame/cg_rocket_draw.cpp:2645
 msgid "You are at the front of the spawn queue"
 msgstr "Du er fremst i spawn-køen"
 
-#: src/cgame/cg_rocket_draw.cpp:2648
+#: src/cgame/cg_rocket_draw.cpp:2649
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Du er på plass %d i spawn-køen"
 
-#: src/cgame/cg_rocket_draw.cpp:2688
+#: src/cgame/cg_rocket_draw.cpp:2689
 msgid "There are no spawns remaining"
 msgstr "Der er ingen gjenværende spawns"
 
-#: src/cgame/cg_rocket_draw.cpp:2692
+#: src/cgame/cg_rocket_draw.cpp:2693
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Der er %d spawn igjen"
 msgstr[1] "Der er %d spawn igjen"
 
-#: src/cgame/cg_rocket_draw.cpp:3241
+#: src/cgame/cg_rocket_draw.cpp:3242
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Venter på tilkobling…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3245
+#: src/cgame/cg_rocket_draw.cpp:3246
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Venter på utfordring…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3249
+#: src/cgame/cg_rocket_draw.cpp:3250
 msgid "Awaiting gamestate…"
 msgstr "Venter på spilltilstand…"
 
-#: src/cgame/cg_rocket_draw.cpp:3331
+#: src/cgame/cg_rocket_draw.cpp:3351
 msgid "Say:"
 msgstr "Si:"
 
-#: src/cgame/cg_rocket_draw.cpp:3332
+#: src/cgame/cg_rocket_draw.cpp:3352
 msgid "Team Say:"
 msgstr "Si til lag:"
 
-#: src/cgame/cg_rocket_draw.cpp:3333
+#: src/cgame/cg_rocket_draw.cpp:3353
 msgid "Admin Say:"
 msgstr "Si til admin:"
 
-#: src/cgame/cg_rocket_draw.cpp:3334
+#: src/cgame/cg_rocket_draw.cpp:3354
 msgid "Command:"
 msgstr "Kommando:"
 
-#: src/cgame/cg_rocket_draw.cpp:3684
+#: src/cgame/cg_rocket_draw.cpp:3704
 msgid "FIGHT!"
 msgstr "SLOSS!"
 
-#: src/cgame/cg_rocket_draw.cpp:3778
+#: src/cgame/cg_rocket_draw.cpp:3798
 msgid "estimating"
 msgstr "estimerer"
 
@@ -5103,43 +5126,43 @@ msgstr ""
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:1997
+#: src/sgame/sg_main.cpp:1999
 msgid "Timelimit hit"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2008
+#: src/sgame/sg_main.cpp:2010
 msgid "$1$ minutes remaining!"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2016
+#: src/sgame/sg_main.cpp:2018
 msgid "1 minute remaining!"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2029
+#: src/sgame/sg_main.cpp:2031
 msgid "Humans win"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2043
+#: src/sgame/sg_main.cpp:2045
 msgid "Aliens win"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2057
+#: src/sgame/sg_main.cpp:2059
 msgid "Empty teams skip map time exceeded."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2223
+#: src/sgame/sg_main.cpp:2225
 msgid "The game has been paused. Please wait."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2227
+#: src/sgame/sg_main.cpp:2229
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2246
+#: src/sgame/sg_main.cpp:2248
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2249
+#: src/sgame/sg_main.cpp:2251
 msgid "The game has been unpaused!"
 msgstr ""
 

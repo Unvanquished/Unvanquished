@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 12:06+0100\n"
+"POT-Creation-Date: 2026-02-24 14:37+0100\n"
 "PO-Revision-Date: 2025-10-01 14:01+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -639,8 +639,8 @@ msgstr "Bot-Taktik"
 msgid "Spectators"
 msgstr "Zuschauende"
 
-#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
-#: ui/server_browser.rml:60
+#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:45
+#: ui/server_browser.rml:62
 msgid "Map:"
 msgstr "Karte:"
 
@@ -878,7 +878,7 @@ msgid "Mild"
 msgstr "Leicht"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1474
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "Default"
 msgstr "Standard"
 
@@ -1239,7 +1239,7 @@ msgstr ""
 "Regel nicht die Leistung."
 
 #: ui/options_graphics.rml:202 ui/options_ui.rml:47
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No"
 msgstr "Nein"
 
@@ -2291,27 +2291,31 @@ msgstr "Serverlisten"
 msgid "Internet"
 msgstr "Internet"
 
-#: ui/server_browser.rml:43 ui/server_browser.rml:59
+#: ui/server_browser.rml:43 ui/server_browser.rml:60
 msgid "Name:"
 msgstr "Name:"
 
-#: ui/server_browser.rml:45 ui/server_browser.rml:61
+#: ui/server_browser.rml:44 ui/server_browser.rml:61
+msgid "Version:"
+msgstr "Version:"
+
+#: ui/server_browser.rml:46 ui/server_browser.rml:63
 msgid "Players (Bots)"
 msgstr "Spieler (Bots)"
 
-#: ui/server_browser.rml:46 ui/server_browser.rml:62
+#: ui/server_browser.rml:47 ui/server_browser.rml:64
 msgid "Ping"
 msgstr "Ping"
 
-#: ui/server_browser.rml:50 ui/server_browser.rml:66
+#: ui/server_browser.rml:51 ui/server_browser.rml:68
 msgid "Connect"
 msgstr "Verbindung herstellen"
 
-#: ui/server_browser.rml:51 ui/server_browser.rml:67
+#: ui/server_browser.rml:52 ui/server_browser.rml:69
 msgid "Refresh"
 msgstr "Aktualisieren"
 
-#: ui/server_browser.rml:55
+#: ui/server_browser.rml:56
 msgid "LAN"
 msgstr "LAN"
 
@@ -2334,6 +2338,25 @@ msgstr "Zu verwendendes Bauwerklayout"
 #: ui/server_create.rml:62
 msgid "Start"
 msgstr "Start"
+
+#: ui/server_mismatch.rml:8
+msgid "Engine version mismatch"
+msgstr ""
+
+#: ui/server_mismatch.rml:9
+msgid ""
+"This server uses a different Daemon engine version, which is not compatible."
+msgstr ""
+
+#: ui/server_mismatch.rml:11
+msgid ""
+"The latest Unvanquished release can be downloaded through the Updater app, "
+"at <web dest=\"download\"/>, or in one of the official package repositories."
+msgstr ""
+
+#: ui/server_mismatch.rml:12
+msgid "Connect anyway"
+msgstr ""
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
@@ -4345,133 +4368,133 @@ msgstr "Benutzerdefiniert: %dx%d"
 msgid "Same as screen (%dx%d)"
 msgstr "Wie bei Bildschirm (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1474
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
 "Das Standardverhalten. So verhalten sich die Bots, wenn das Spiel beginnt."
 
-#: src/cgame/cg_rocket_datasource.cpp:1475
-#: src/cgame/cg_rocket_datasource.cpp:1508
+#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend"
 msgstr "Verteidigen Sie"
 
-#: src/cgame/cg_rocket_datasource.cpp:1475
+#: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "The bots stay in the base."
 msgstr "Die Bots bleiben in der Basis."
 
-#: src/cgame/cg_rocket_datasource.cpp:1476
-#: src/cgame/cg_rocket_datasource.cpp:1509
+#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack"
 msgstr "Angriff"
 
-#: src/cgame/cg_rocket_datasource.cpp:1476
+#: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "The bots attack the enemy base."
 msgstr "Die Bots greifen die gegnerische Basis an."
 
-#: src/cgame/cg_rocket_datasource.cpp:1477
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "Stay Here"
 msgstr "Bleib hier"
 
-#: src/cgame/cg_rocket_datasource.cpp:1477
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "The bots stay where you are currently."
 msgstr "Die Bots bleiben dort, wo Sie sich gerade befinden."
 
-#: src/cgame/cg_rocket_datasource.cpp:1478
-#: src/cgame/cg_rocket_datasource.cpp:1510
+#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1547
 msgid "Follow"
 msgstr "Folgen"
 
-#: src/cgame/cg_rocket_datasource.cpp:1478
+#: src/cgame/cg_rocket_datasource.cpp:1515
 msgid "The bots follow you wherever you go."
 msgstr "Die Bots folgen Ihnen, wohin Sie auch gehen."
 
-#: src/cgame/cg_rocket_datasource.cpp:1508
+#: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend our base!!"
 msgstr "Verteidigt unsere Basis!!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1509
+#: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack!"
 msgstr "Angriff!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1510
+#: src/cgame/cg_rocket_datasource.cpp:1547
 msgid "Follow me!"
 msgstr "Folge mir!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No."
 msgstr "Nein."
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes"
 msgstr "Ja"
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes."
 msgstr "Ja."
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank"
 msgstr "Flanke"
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank, behind you!"
 msgstr "Flanke, hinter dir!"
 
-#: src/cgame/cg_rocket_draw.cpp:2644
+#: src/cgame/cg_rocket_draw.cpp:2645
 msgid "You are at the front of the spawn queue"
 msgstr "Du bist vorne in der Warteschlange"
 
-#: src/cgame/cg_rocket_draw.cpp:2648
+#: src/cgame/cg_rocket_draw.cpp:2649
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Du bist auf Position %d in der Warteschlange"
 
-#: src/cgame/cg_rocket_draw.cpp:2688
+#: src/cgame/cg_rocket_draw.cpp:2689
 msgid "There are no spawns remaining"
 msgstr "Es gibt keine Startpunkte mehr"
 
-#: src/cgame/cg_rocket_draw.cpp:2692
+#: src/cgame/cg_rocket_draw.cpp:2693
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Es ist noch %d Spawn vorhanden"
 msgstr[1] "Es sind noch %d Spawns übrig"
 
-#: src/cgame/cg_rocket_draw.cpp:3241
+#: src/cgame/cg_rocket_draw.cpp:3242
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Erwarte Verbindungsaufbau ...%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3245
+#: src/cgame/cg_rocket_draw.cpp:3246
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Erwarte Herausforderung ...%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3249
+#: src/cgame/cg_rocket_draw.cpp:3250
 msgid "Awaiting gamestate…"
 msgstr "Erwarte Spielzustand…"
 
-#: src/cgame/cg_rocket_draw.cpp:3331
+#: src/cgame/cg_rocket_draw.cpp:3351
 msgid "Say:"
 msgstr "Sagen:"
 
-#: src/cgame/cg_rocket_draw.cpp:3332
+#: src/cgame/cg_rocket_draw.cpp:3352
 msgid "Team Say:"
 msgstr "Team sagen:"
 
-#: src/cgame/cg_rocket_draw.cpp:3333
+#: src/cgame/cg_rocket_draw.cpp:3353
 msgid "Admin Say:"
 msgstr "Admin sagen:"
 
-#: src/cgame/cg_rocket_draw.cpp:3334
+#: src/cgame/cg_rocket_draw.cpp:3354
 msgid "Command:"
 msgstr "Befehl:"
 
-#: src/cgame/cg_rocket_draw.cpp:3684
+#: src/cgame/cg_rocket_draw.cpp:3704
 msgid "FIGHT!"
 msgstr "LOS!"
 
-#: src/cgame/cg_rocket_draw.cpp:3778
+#: src/cgame/cg_rocket_draw.cpp:3798
 msgid "estimating"
 msgstr "schätze"
 
@@ -5353,43 +5376,43 @@ msgstr "$1$ ^3DEKONSTRUIERT^* von $2$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3ZERSTÖRT^* von $2$"
 
-#: src/sgame/sg_main.cpp:1997
+#: src/sgame/sg_main.cpp:1999
 msgid "Timelimit hit"
 msgstr "Zeitlimit erreicht"
 
-#: src/sgame/sg_main.cpp:2008
+#: src/sgame/sg_main.cpp:2010
 msgid "$1$ minutes remaining!"
 msgstr "$1$ Minuten verbleibend!"
 
-#: src/sgame/sg_main.cpp:2016
+#: src/sgame/sg_main.cpp:2018
 msgid "1 minute remaining!"
 msgstr "1 Minute verbleibend!"
 
-#: src/sgame/sg_main.cpp:2029
+#: src/sgame/sg_main.cpp:2031
 msgid "Humans win"
 msgstr "Menschen gewinnen"
 
-#: src/sgame/sg_main.cpp:2043
+#: src/sgame/sg_main.cpp:2045
 msgid "Aliens win"
 msgstr "Außerirdische gewinnen"
 
-#: src/sgame/sg_main.cpp:2057
+#: src/sgame/sg_main.cpp:2059
 msgid "Empty teams skip map time exceeded."
 msgstr "Leere Teams überspringen die Kartenzeit."
 
-#: src/sgame/sg_main.cpp:2223
+#: src/sgame/sg_main.cpp:2225
 msgid "The game has been paused. Please wait."
 msgstr "Das Spiel wurde pausiert. Bitte warten."
 
-#: src/sgame/sg_main.cpp:2227
+#: src/sgame/sg_main.cpp:2229
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Server: Das Spiel wird automatisch in $1$ Sekunde fortgesetzt"
 
-#: src/sgame/sg_main.cpp:2246
+#: src/sgame/sg_main.cpp:2248
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Server: Das Spiel wurde automatisch fortgesetzt (maximal $1$ Minuten)"
 
-#: src/sgame/sg_main.cpp:2249
+#: src/sgame/sg_main.cpp:2251
 msgid "The game has been unpaused!"
 msgstr "Das Spiel wurde fortgesetzt!"
 
@@ -6181,9 +6204,6 @@ msgstr "Menschen"
 
 #~ msgid "Buildable Friendly Fire:"
 #~ msgstr "Gebäudeeigenbeschuss:"
-
-#~ msgid "Version:"
-#~ msgstr "Version:"
 
 #~ msgid "Main Menu"
 #~ msgstr "Hauptmenü"

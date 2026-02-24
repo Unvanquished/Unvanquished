@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 12:06+0100\n"
+"POT-Creation-Date: 2026-02-24 14:37+0100\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -590,8 +590,8 @@ msgstr ""
 msgid "Spectators"
 msgstr "观察者"
 
-#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
-#: ui/server_browser.rml:60
+#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:45
+#: ui/server_browser.rml:62
 msgid "Map:"
 msgstr "地图:"
 
@@ -825,7 +825,7 @@ msgid "Mild"
 msgstr "较小"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1474
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "Default"
 msgstr "默认"
 
@@ -1166,7 +1166,7 @@ msgstr ""
 "能。"
 
 #: ui/options_graphics.rml:202 ui/options_ui.rml:47
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No"
 msgstr "无"
 
@@ -2196,27 +2196,31 @@ msgstr "服务器列表"
 msgid "Internet"
 msgstr "互联网"
 
-#: ui/server_browser.rml:43 ui/server_browser.rml:59
+#: ui/server_browser.rml:43 ui/server_browser.rml:60
 msgid "Name:"
 msgstr "名称:"
 
-#: ui/server_browser.rml:45 ui/server_browser.rml:61
+#: ui/server_browser.rml:44 ui/server_browser.rml:61
+msgid "Version:"
+msgstr ""
+
+#: ui/server_browser.rml:46 ui/server_browser.rml:63
 msgid "Players (Bots)"
 msgstr "玩家 (人机)"
 
-#: ui/server_browser.rml:46 ui/server_browser.rml:62
+#: ui/server_browser.rml:47 ui/server_browser.rml:64
 msgid "Ping"
 msgstr "延迟"
 
-#: ui/server_browser.rml:50 ui/server_browser.rml:66
+#: ui/server_browser.rml:51 ui/server_browser.rml:68
 msgid "Connect"
 msgstr "连接"
 
-#: ui/server_browser.rml:51 ui/server_browser.rml:67
+#: ui/server_browser.rml:52 ui/server_browser.rml:69
 msgid "Refresh"
 msgstr "刷新"
 
-#: ui/server_browser.rml:55
+#: ui/server_browser.rml:56
 msgid "LAN"
 msgstr "局域网"
 
@@ -2239,6 +2243,25 @@ msgstr "要使用的建筑布局"
 #: ui/server_create.rml:62
 msgid "Start"
 msgstr "开始"
+
+#: ui/server_mismatch.rml:8
+msgid "Engine version mismatch"
+msgstr ""
+
+#: ui/server_mismatch.rml:9
+msgid ""
+"This server uses a different Daemon engine version, which is not compatible."
+msgstr ""
+
+#: ui/server_mismatch.rml:11
+msgid ""
+"The latest Unvanquished release can be downloaded through the Updater app, "
+"at <web dest=\"download\"/>, or in one of the official package repositories."
+msgstr ""
+
+#: ui/server_mismatch.rml:12
+msgid "Connect anyway"
+msgstr ""
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
@@ -4172,131 +4195,131 @@ msgstr "自定义: %dx%d"
 msgid "Same as screen (%dx%d)"
 msgstr "与屏幕相同 (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1474
+#: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1475
-#: src/cgame/cg_rocket_datasource.cpp:1508
+#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1475
+#: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "The bots stay in the base."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1476
-#: src/cgame/cg_rocket_datasource.cpp:1509
+#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1476
+#: src/cgame/cg_rocket_datasource.cpp:1513
 msgid "The bots attack the enemy base."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1477
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "Stay Here"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1477
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "The bots stay where you are currently."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1478
-#: src/cgame/cg_rocket_datasource.cpp:1510
+#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1547
 msgid "Follow"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1478
+#: src/cgame/cg_rocket_datasource.cpp:1515
 msgid "The bots follow you wherever you go."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1508
+#: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend our base!!"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1509
+#: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack!"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1510
+#: src/cgame/cg_rocket_datasource.cpp:1547
 msgid "Follow me!"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank, behind you!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2644
+#: src/cgame/cg_rocket_draw.cpp:2645
 msgid "You are at the front of the spawn queue"
 msgstr "你即将重生"
 
-#: src/cgame/cg_rocket_draw.cpp:2648
+#: src/cgame/cg_rocket_draw.cpp:2649
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "你会在 %d 位玩家之后重生"
 
-#: src/cgame/cg_rocket_draw.cpp:2688
+#: src/cgame/cg_rocket_draw.cpp:2689
 msgid "There are no spawns remaining"
 msgstr "没有剩余的重生点了"
 
-#: src/cgame/cg_rocket_draw.cpp:2692
+#: src/cgame/cg_rocket_draw.cpp:2693
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "还剩 %d 个重生点"
 
-#: src/cgame/cg_rocket_draw.cpp:3241
+#: src/cgame/cg_rocket_draw.cpp:3242
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "等待连接…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3245
+#: src/cgame/cg_rocket_draw.cpp:3246
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "等待验证…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3249
+#: src/cgame/cg_rocket_draw.cpp:3250
 msgid "Awaiting gamestate…"
 msgstr "接收游戏状态…"
 
-#: src/cgame/cg_rocket_draw.cpp:3331
+#: src/cgame/cg_rocket_draw.cpp:3351
 msgid "Say:"
 msgstr "发言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3332
+#: src/cgame/cg_rocket_draw.cpp:3352
 msgid "Team Say:"
 msgstr "阵营发言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3333
+#: src/cgame/cg_rocket_draw.cpp:3353
 msgid "Admin Say:"
 msgstr "管理员发言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3334
+#: src/cgame/cg_rocket_draw.cpp:3354
 msgid "Command:"
 msgstr "指令:"
 
-#: src/cgame/cg_rocket_draw.cpp:3684
+#: src/cgame/cg_rocket_draw.cpp:3704
 msgid "FIGHT!"
 msgstr "开始战斗！"
 
-#: src/cgame/cg_rocket_draw.cpp:3778
+#: src/cgame/cg_rocket_draw.cpp:3798
 msgid "estimating"
 msgstr "大约"
 
@@ -5113,43 +5136,43 @@ msgstr "$2$^3 拆除了^* $1$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$2$^3 摧毁了^* $1$"
 
-#: src/sgame/sg_main.cpp:1997
+#: src/sgame/sg_main.cpp:1999
 msgid "Timelimit hit"
 msgstr "时间到"
 
-#: src/sgame/sg_main.cpp:2008
+#: src/sgame/sg_main.cpp:2010
 msgid "$1$ minutes remaining!"
 msgstr "剩余 $1$ 分钟！"
 
-#: src/sgame/sg_main.cpp:2016
+#: src/sgame/sg_main.cpp:2018
 msgid "1 minute remaining!"
 msgstr "剩余 1 分钟！"
 
-#: src/sgame/sg_main.cpp:2029
+#: src/sgame/sg_main.cpp:2031
 msgid "Humans win"
 msgstr "人类获胜"
 
-#: src/sgame/sg_main.cpp:2043
+#: src/sgame/sg_main.cpp:2045
 msgid "Aliens win"
 msgstr "异形获胜"
 
-#: src/sgame/sg_main.cpp:2057
+#: src/sgame/sg_main.cpp:2059
 msgid "Empty teams skip map time exceeded."
 msgstr "指定时间内无活跃玩家，跳过此地图。"
 
-#: src/sgame/sg_main.cpp:2223
+#: src/sgame/sg_main.cpp:2225
 msgid "The game has been paused. Please wait."
 msgstr "游戏已暂停。请等候。"
 
-#: src/sgame/sg_main.cpp:2227
+#: src/sgame/sg_main.cpp:2229
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "服务器: 游戏将在 $1$ 秒后继续"
 
-#: src/sgame/sg_main.cpp:2246
+#: src/sgame/sg_main.cpp:2248
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "服务器: 游戏继续 (至多暂停 $1$ 分钟)"
 
-#: src/sgame/sg_main.cpp:2249
+#: src/sgame/sg_main.cpp:2251
 msgid "The game has been unpaused!"
 msgstr "游戏继续！"
 
