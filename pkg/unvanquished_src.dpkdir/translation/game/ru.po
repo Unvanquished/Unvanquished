@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 14:37+0100\n"
-"PO-Revision-Date: 2026-02-24 10:09+0000\n"
+"PO-Revision-Date: 2026-02-25 22:09+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -1013,13 +1013,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:86
 msgid "Multisample anti-aliasing (MSAA)"
-msgstr ""
+msgstr "Многократное сглаживание (MSAA)"
 
 #: ui/options_graphics.rml:87
 msgid ""
 "Render at higher precision at the boundaries of surfaces for crisp edges. "
 "This is a resource-intensive option."
 msgstr ""
+"Отрисовка с более высокой точностью на границах поверхностей для получения "
+"чётких краёв. Это ресурсоёмкий параметр."
 
 #: ui/options_graphics.rml:91 ui/options_graphics.rml:152
 #: ui/options_graphics.rml:216 ui/options_graphics.rml:255
@@ -2345,22 +2347,25 @@ msgstr "Начать"
 
 #: ui/server_mismatch.rml:8
 msgid "Engine version mismatch"
-msgstr ""
+msgstr "Несоответствие версии движка"
 
 #: ui/server_mismatch.rml:9
 msgid ""
 "This server uses a different Daemon engine version, which is not compatible."
-msgstr ""
+msgstr "Этот сервер использует несовместимую версию движка Daemon."
 
 #: ui/server_mismatch.rml:11
 msgid ""
 "The latest Unvanquished release can be downloaded through the Updater app, "
 "at <web dest=\"download\"/>, or in one of the official package repositories."
 msgstr ""
+"Последнюю версию Unvanquished можно загрузить через приложение Updater, по "
+"адресу <web dest=\"download\"/> или в одном из официальных репозиториев "
+"пакетов."
 
 #: ui/server_mismatch.rml:12
 msgid "Connect anyway"
-msgstr ""
+msgstr "Всё равно подключиться"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
