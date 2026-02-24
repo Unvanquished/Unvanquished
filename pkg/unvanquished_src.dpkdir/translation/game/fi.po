@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-22 13:39+0100\n"
+"POT-Creation-Date: 2026-02-24 12:06+0100\n"
 "PO-Revision-Date: 2026-02-24 10:09+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -839,10 +839,10 @@ msgstr "astetta"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
-#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
-#: ui/server_setup.rml:73
+#: ui/options_fov.rml:67 ui/options_graphics.rml:103
+#: ui/options_graphics.rml:284 ui/options_graphics.rml:411
+#: ui/options_mouse.rml:21 ui/options_ui.rml:85 ui/options_ui.rml:164
+#: ui/options_ui.rml:194 ui/options_ui.rml:208 ui/server_setup.rml:73
 msgid "reset"
 msgstr "palauta oletusarvo"
 
@@ -915,8 +915,8 @@ msgstr "Ultra"
 msgid "Everything enabled."
 msgstr "Kaikki ominaisuudet käytössä."
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:272
+#: ui/options_graphics.rml:389 ui/options_graphics.rml:397
 msgid "High"
 msgstr "Korkea"
 
@@ -932,8 +932,8 @@ msgstr "Keskiverto"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr "Dynaamiset valot, pintayksityiskohdat, hyvät tekstuurit…"
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:270
+#: ui/options_graphics.rml:390 ui/options_graphics.rml:399
 msgid "Low"
 msgstr "Matala"
 
@@ -978,7 +978,8 @@ msgstr "Reunaton ikkuna"
 msgid "Fullscreen"
 msgstr "Kokonäyttötila"
 
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:79
+#: ui/options_graphics.rml:400
 msgid "Off"
 msgstr "Pois"
 
@@ -1004,26 +1005,32 @@ msgstr ""
 "aktivoituu ainoastaan ruutunopeuden ylittäessä näytön virkistystaajuuden, "
 "välttäen nykimistä FPS:n pudotessa."
 
-#: ui/options_graphics.rml:79
-msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr "Nopea likiarvoinen antialiasointi (FXAA)"
+#: ui/options_graphics.rml:86
+msgid "Multisample anti-aliasing (MSAA)"
+msgstr ""
 
-#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:87
+msgid ""
+"Render at higher precision at the boundaries of surfaces for crisp edges. "
+"This is a resource-intensive option."
+msgstr ""
+
+#: ui/options_graphics.rml:91 ui/options_graphics.rml:152
+#: ui/options_graphics.rml:216 ui/options_graphics.rml:255
+#: ui/options_graphics.rml:298 ui/options_graphics.rml:336
+#: ui/options_graphics.rml:364
 msgid "Apply now"
 msgstr "Käytä heti"
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:95
 msgid "Brightness"
 msgstr "Kirkkaus"
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:98
 msgid "Gamma"
 msgstr "Gamma"
 
-#: ui/options_graphics.rml:91
+#: ui/options_graphics.rml:99
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
@@ -1031,186 +1038,178 @@ msgstr ""
 "Ruma keino kirkkauden lisäämiseen. (Harkitse nollaamista ja sävykartoituksen "
 "käyttöä tämän sijasta.)"
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:102
 msgid "Gamma:"
 msgstr "Gamma:"
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:106
 msgid "Tone mapping"
 msgstr "Sävykartoitus"
 
-#: ui/options_graphics.rml:99
+#: ui/options_graphics.rml:107
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 "Hallitse dynaamista aluetta vaalentuneiden taikka liian hämärien paikkojen "
 "parantamiseksi."
 
-#: ui/options_graphics.rml:102
+#: ui/options_graphics.rml:110
 msgid "Enable tone mapping"
 msgstr "Käytä sävykartoitusta"
 
-#: ui/options_graphics.rml:105
+#: ui/options_graphics.rml:113
 msgid "Exposure"
 msgstr "Valotus"
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:115
 msgid "Tone mapping brightness level"
 msgstr "Sävykartoituksen kirkkaus"
 
-#: ui/options_graphics.rml:111
+#: ui/options_graphics.rml:119
 msgid "Lighting"
 msgstr "Valaisu"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:121
 msgid "Lights"
 msgstr "Valot"
 
-#: ui/options_graphics.rml:116
+#: ui/options_graphics.rml:124
 msgid "Light mapping"
 msgstr "Valokartoitus"
 
-#: ui/options_graphics.rml:116
+#: ui/options_graphics.rml:124
 msgid "normal"
 msgstr "normaali"
 
-#: ui/options_graphics.rml:117
+#: ui/options_graphics.rml:125
 msgid "Vertex lighting"
 msgstr "Verteksivalaisu"
 
-#: ui/options_graphics.rml:117
+#: ui/options_graphics.rml:125
 msgid "low, ugly"
 msgstr "alhainen, ruma"
 
-#: ui/options_graphics.rml:119
+#: ui/options_graphics.rml:127
 msgid "Lighting system"
 msgstr "Valaisujärjestelmä"
 
-#: ui/options_graphics.rml:122
+#: ui/options_graphics.rml:130
 msgid "Light styles"
 msgstr "Valotyylit"
 
-#: ui/options_graphics.rml:124
+#: ui/options_graphics.rml:132
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
 "Liikkumattomien kenttäobjektien erittämät esilaskelmoidut dynaamiset valot."
 
-#: ui/options_graphics.rml:127
+#: ui/options_graphics.rml:135
 msgid "Dynamic lights"
 msgstr "Dynaamiset valot"
 
-#: ui/options_graphics.rml:129
+#: ui/options_graphics.rml:137
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "Liikkuvien objektien, kuten aseiden ja rakennelmien, erittämät "
 "reaaliaikaiset dynaamiset valot."
 
-#: ui/options_graphics.rml:132
-msgid "Rim lighting"
-msgstr "Reunusvalaisu"
-
-#: ui/options_graphics.rml:134
-msgid "Light the edges of models from behind."
-msgstr "Valaise kohteiden reunat takaapäin."
-
-#: ui/options_graphics.rml:137
+#: ui/options_graphics.rml:140
 msgid "Half Lambert lighting"
 msgstr "Half Lambert ‐valaisu"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:142
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 "Ei‐fyysinen valaisutekniikka, jolla tehdään kohteista vähemmän hämäriä."
 
-#: ui/options_graphics.rml:143
+#: ui/options_graphics.rml:146
 msgid "Blobs"
 msgstr "Möykyt"
 
-#: ui/options_graphics.rml:143
+#: ui/options_graphics.rml:146
 msgid "low"
 msgstr "alhainen"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
+#: ui/options_graphics.rml:147 ui/options_graphics.rml:373
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "Ei mikään"
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:149
 msgid "Shadows"
 msgstr "Varjot"
 
-#: ui/options_graphics.rml:153
+#: ui/options_graphics.rml:156
 msgid "Textures"
 msgstr "Tekstuurit"
 
-#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:342
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "Yleinen"
 
-#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
+#: ui/options_graphics.rml:161 ui/options_graphics.rml:174
 msgid "No limit"
 msgstr "Ei rajaa"
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:162
 msgid "(ultra)"
 msgstr "(ultra)"
 
-#: ui/options_graphics.rml:160
+#: ui/options_graphics.rml:163
 msgid "(high)"
 msgstr "(korkea)"
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:164
 msgid "(medium)"
 msgstr "(keskitaso)"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:165
 msgid "(low)"
 msgstr "(matala)"
 
-#: ui/options_graphics.rml:163
+#: ui/options_graphics.rml:166
 msgid "(lowest)"
 msgstr "(matalin)"
 
-#: ui/options_graphics.rml:165
+#: ui/options_graphics.rml:168
 msgid "Image size limit"
 msgstr "Kuvan koon raja"
 
-#: ui/options_graphics.rml:166
+#: ui/options_graphics.rml:169
 msgid "Limit image size to save on memory."
 msgstr "Rajoita kuvan kokoa muistin säästämiseksi."
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:175
 msgid "No smaller than screen"
 msgstr "Ei kuvaruutua pienempi"
 
-#: ui/options_graphics.rml:173
+#: ui/options_graphics.rml:176
 msgid "No larger than screen"
 msgstr "Ei kuvaruutua suurempi"
 
-#: ui/options_graphics.rml:175
+#: ui/options_graphics.rml:178
 msgid "Menu image size limit"
 msgstr "Valikon kuvan koon raja"
 
-#: ui/options_graphics.rml:176
+#: ui/options_graphics.rml:179
 msgid "Limit menu image size to save on memory."
 msgstr "Rajoita valikon kuvan kokoa muistin säästämiseksi."
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:184
 msgid "High-precision rendering"
 msgstr "Korkeatarkkuuksinen renderöinti"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:185
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "Käytä korkeatarkkuuksisia pikselipuskureita, jotka vähentävät värin "
 "raidoittumista."
 
-#: ui/options_graphics.rml:186
+#: ui/options_graphics.rml:189
 msgid "Use bindless textures if possible"
 msgstr "Käytä sitoutumattomia tekstuureja jos mahdollista"
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:191
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1218,17 +1217,17 @@ msgstr ""
 "Käytä sitoutumattomia tekstuureja jos laitteisto/ajuri tukee niitä. Tämä voi "
 "parantaa suorituskykyä."
 
-#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
-#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
+#: ui/options_graphics.rml:191 ui/options_graphics.rml:241
+#: ui/options_graphics.rml:265 ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356 ui/options_graphics.rml:361
 msgid "Experimental."
 msgstr "Kokeellinen."
 
-#: ui/options_graphics.rml:191
+#: ui/options_graphics.rml:194
 msgid "Mip-mapping"
 msgstr "Mip‐kartoitus"
 
-#: ui/options_graphics.rml:192
+#: ui/options_graphics.rml:195
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1237,96 +1236,96 @@ msgstr ""
 "matalempiresoluutioisia tekstuureja niissä. Tämä yleensä ei vaikuta "
 "suorituskykyyn."
 
-#: ui/options_graphics.rml:199 ui/options_ui.rml:47
+#: ui/options_graphics.rml:202 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Ei"
 
-#: ui/options_graphics.rml:201
+#: ui/options_graphics.rml:204
 msgid "Anisotropic mip-mapping"
 msgstr "Anisotrooppinen mip-kartoitus"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:205
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Parempi mip-karttojen tulkinta kaltevilla pinnoilla."
 
-#: ui/options_graphics.rml:206
+#: ui/options_graphics.rml:209
 msgid "Trilinear"
 msgstr "Trilineaarinen"
 
-#: ui/options_graphics.rml:206
+#: ui/options_graphics.rml:209
 msgid "better"
 msgstr "parempi"
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:210
 msgid "Bilinear"
 msgstr "Bilineaarinen"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:212
 msgid "Texture scaling filter"
 msgstr "Tekstuurien skaalaussuodatin"
 
-#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
+#: ui/options_graphics.rml:220 ui/options_graphics.rml:222
 msgid "Materials"
 msgstr "Materiaalit"
 
-#: ui/options_graphics.rml:221
+#: ui/options_graphics.rml:224
 msgid "Sky"
 msgstr "Taivas"
 
-#: ui/options_graphics.rml:223
+#: ui/options_graphics.rml:226
 msgid "Draw the sky."
 msgstr "Näytä taivas."
 
-#: ui/options_graphics.rml:226
+#: ui/options_graphics.rml:229
 msgid "Normal mapping"
 msgstr "Normaalikartoitus"
 
-#: ui/options_graphics.rml:228
+#: ui/options_graphics.rml:231
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simuloi ylimääräistä valaisudetaljia tasaisilla pinnoilla."
 
-#: ui/options_graphics.rml:231
+#: ui/options_graphics.rml:234
 msgid "Deluxe mapping"
 msgstr "Deluxe‐kartoitus"
 
-#: ui/options_graphics.rml:233
+#: ui/options_graphics.rml:236
 msgid "Light direction based on baked textures."
 msgstr "Valon suuntaus perustuen valmisteltuihin tekstuureihin."
 
-#: ui/options_graphics.rml:236
+#: ui/options_graphics.rml:239
 msgid "Relief mapping"
 msgstr "Kohokartoitus"
 
-#: ui/options_graphics.rml:238
+#: ui/options_graphics.rml:241
 msgid "Adds bumps on supported surfaces."
 msgstr "Lisää kohoumia yhteensopiviin pintoihin."
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Specular mapping"
 msgstr "Peilikartoitus"
 
-#: ui/options_graphics.rml:243
+#: ui/options_graphics.rml:246
 msgid "Simulate light specularity."
 msgstr "Simuloi valon heijastumista."
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Physical mapping"
 msgstr "Fyysinen kartoitus"
 
-#: ui/options_graphics.rml:248
+#: ui/options_graphics.rml:251
 msgid "Material appearance based on physical approximations."
 msgstr "Materiaalinen ulkonäkö perustuen fyysisiin arviointeihin."
 
-#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
+#: ui/options_graphics.rml:259 ui/options_graphics.rml:261
 msgid "Reflections"
 msgstr "Heijastukset"
 
-#: ui/options_graphics.rml:260
+#: ui/options_graphics.rml:263
 msgid "Static reflections"
 msgstr "Kiinteät heijastukset"
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:265
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1335,23 +1334,23 @@ msgstr ""
 "normaali-, spekulaari-, ja deluxe-kartoituksen. Tällä hetkellä "
 "epäyhteensopiva fyysisen kartoituksen kanssa."
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:269
 msgid "Very low"
 msgstr "Hyvin alhainen"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
+#: ui/options_graphics.rml:271 ui/options_graphics.rml:398
 msgid "Moderate"
 msgstr "Kohtalainen"
 
-#: ui/options_graphics.rml:270
+#: ui/options_graphics.rml:273
 msgid "Very high"
 msgstr "Hyvin korkea"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:275 ui/options_graphics.rml:392
 msgid "Quality"
 msgstr "Laatu"
 
-#: ui/options_graphics.rml:273
+#: ui/options_graphics.rml:276
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1359,101 +1358,101 @@ msgstr ""
 "Kiinteiden heijastuskuutiokarttojen laatu. Korkeammat laadut voivat käyttää "
 "paljon levytilaa."
 
-#: ui/options_graphics.rml:276
+#: ui/options_graphics.rml:279
 msgid "Cubemap grid spacing"
 msgstr "Kuutiokartan ristikkoväli"
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
+#: ui/options_graphics.rml:283 ui/options_graphics.rml:410
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Nykyinen:"
 
-#: ui/options_graphics.rml:286 ui/options_ui.rml:139
+#: ui/options_graphics.rml:289 ui/options_ui.rml:139
 msgid "Never"
 msgstr "Ei koskaan"
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:290
 msgid "Cache on disk"
 msgstr "Tallenna välimuisti"
 
-#: ui/options_graphics.rml:288
+#: ui/options_graphics.rml:291
 msgid "Always rebuild"
 msgstr "Rakenna aina uudelleen"
 
-#: ui/options_graphics.rml:290
+#: ui/options_graphics.rml:293
 msgid "Static reflection cubemaps autobuild"
 msgstr "Kiinteiden heijastuksien kuutiokarttojen automaattirakennus"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:294
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "Rakenna/lataa/tallenna heijastuksien kuutiokartat automaattisesti."
 
-#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
+#: ui/options_graphics.rml:302 ui/options_graphics.rml:304
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Tehosteet"
 
-#: ui/options_graphics.rml:303
+#: ui/options_graphics.rml:306
 msgid "Bloom"
 msgstr "Hohka"
 
-#: ui/options_graphics.rml:305
+#: ui/options_graphics.rml:308
 msgid "Makes bright areas on your screen glow."
 msgstr "Saa kirkkaat alueet ruudullasi loistamaan."
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:311
 msgid "Color grading"
 msgstr "Värin tasapainotus"
 
-#: ui/options_graphics.rml:310
+#: ui/options_graphics.rml:313
 msgid "Alter colors to create specific ambiences."
 msgstr "Muuta värejä tiettyjen ambienssien luontia varten."
 
-#: ui/options_graphics.rml:313
+#: ui/options_graphics.rml:316
 msgid "Heat-haze"
 msgstr "Kuumuuden väreily"
 
-#: ui/options_graphics.rml:315
+#: ui/options_graphics.rml:318
 msgid "Simulate air refraction in severe heat."
 msgstr "Simuloi ilman laajenemista kuumuuden äärellä."
 
-#: ui/options_graphics.rml:318
+#: ui/options_graphics.rml:321
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Screen space ambient occlusion (SSAO)"
 
-#: ui/options_graphics.rml:320
+#: ui/options_graphics.rml:323
 msgid "Simulate dark corners."
 msgstr "Simuloi pimeitä kulmia."
 
-#: ui/options_graphics.rml:323
+#: ui/options_graphics.rml:326
 msgid "Marks"
 msgstr "Jäljet"
 
-#: ui/options_graphics.rml:325
+#: ui/options_graphics.rml:328
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "Tee jälkiä (kuten luodinreikiä tai rihmastoa) pintoihin"
 
-#: ui/options_graphics.rml:328
+#: ui/options_graphics.rml:331
 msgid "Particle physics"
 msgstr "Partikkelifysiikka"
 
-#: ui/options_graphics.rml:330
+#: ui/options_graphics.rml:333
 msgid "Allow particles to bounce off surfaces."
 msgstr "Anna partikkelien kimmota pinnoista."
 
-#: ui/options_graphics.rml:337
+#: ui/options_graphics.rml:340
 msgid "Renderer"
 msgstr "Renderöijä"
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:345
 msgid "Read-only depth buffer"
 msgstr "Vain luku -syvyyspuskuri"
 
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
+#: ui/options_graphics.rml:347 ui/options_graphics.rml:349
 msgid "Material system"
 msgstr "Materiaalijärjestelmä"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:351
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1462,91 +1461,91 @@ msgstr ""
 "ajurit voivat epäonnistua tätä käyttäessä (esim. Mesa ja AMD:n "
 "proprietaariajurit)."
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:354
 msgid "GPU frustum culling"
 msgstr "Katkaistun kartion mukaan karsinta GPU:lla"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:356
 msgid "Cull surfaces that are out of view."
 msgstr "Karsi pinnat, jotka ovat näkökentän ulkopuolella."
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:359
 msgid "GPU occlusion culling"
 msgstr "Okkluusiokarsinta GPU:lla"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:361
 msgid "Cull hidden surfaces."
 msgstr "Karsi piilotetut pinnat."
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:368
 msgid "Gameplay"
 msgstr "Pelaaminen"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:370
 msgid "Building markers"
 msgstr "Rakennelmien merkinnät"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:373
 msgid "disabled"
 msgstr "pois käytöstä"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:374
 msgid "All structures"
 msgstr "Kaikki rakennelmat"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:375
 msgid "Support structures"
 msgstr "Tukirakennelmat"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:376
 msgid "Offensive structures"
 msgstr "Hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:377
 msgid "Alien structures"
 msgstr "Alienien rakennelmat"
 
-#: ui/options_graphics.rml:375
+#: ui/options_graphics.rml:378
 msgid "Human structures"
 msgstr "Ihmisten rakennelmat"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:379
 msgid "Alien support structures"
 msgstr "Alienien tukirakennelmat"
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:380
 msgid "Human support structures"
 msgstr "Ihmisten tukirakennelmat"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:381
 msgid "Offensive alien structures"
 msgstr "Alienien hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:382
 msgid "Offensive human structures"
 msgstr "Ihmisten hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:381
+#: ui/options_graphics.rml:384
 msgid "Building ranges"
 msgstr "Rakennelmien vaikutusetäisyydet"
 
-#: ui/options_graphics.rml:383
+#: ui/options_graphics.rml:386
 msgid "Models"
 msgstr "Mallit"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:394
 msgid "Motion blur"
 msgstr "Vauhtisokeus"
 
-#: ui/options_graphics.rml:399
+#: ui/options_graphics.rml:402
 msgid "Intensity"
 msgstr "Vahvuus"
 
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:403
 msgid "Level of motion-blur."
 msgstr "Vauhtisokeuden taso."
 
-#: ui/options_graphics.rml:403
+#: ui/options_graphics.rml:406
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Pienin liikkumisnopeus vauhtisokeuden aktivoitumiselle"
 
@@ -4241,11 +4240,11 @@ msgstr "Tähyillään kenttää…"
 msgid "Done!"
 msgstr "Valmis!"
 
-#: src/cgame/cg_main.cpp:1153
+#: src/cgame/cg_main.cpp:1154
 msgid "Generating bot navigation meshes"
 msgstr "Generoidaan bottien navigaatiokaaviot"
 
-#: src/cgame/cg_main.cpp:1197
+#: src/cgame/cg_main.cpp:1198
 #, c-format
 msgid "by %s"
 msgstr "%s:lta / -ltä"
@@ -5550,6 +5549,15 @@ msgstr "alienit"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid "Fast approximate anti-aliasing (FXAA)"
+#~ msgstr "Nopea likiarvoinen antialiasointi (FXAA)"
+
+#~ msgid "Rim lighting"
+#~ msgstr "Reunusvalaisu"
+
+#~ msgid "Light the edges of models from behind."
+#~ msgstr "Valaise kohteiden reunat takaapäin."
 
 #~ msgid "Dynamic lights, special effects, large textures…"
 #~ msgstr "Dynaamiset valot, erikoistehosteet, suuret tekstuurit…"

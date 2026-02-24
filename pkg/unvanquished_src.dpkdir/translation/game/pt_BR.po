@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-22 13:39+0100\n"
+"POT-Creation-Date: 2026-02-24 12:06+0100\n"
 "PO-Revision-Date: 2025-12-08 06:01+0000\n"
 "Last-Translator: slipher <slipher@protonmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -847,10 +847,10 @@ msgstr "graus"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:95 ui/options_graphics.rml:281
-#: ui/options_graphics.rml:408 ui/options_mouse.rml:21 ui/options_ui.rml:85
-#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
-#: ui/server_setup.rml:73
+#: ui/options_fov.rml:67 ui/options_graphics.rml:103
+#: ui/options_graphics.rml:284 ui/options_graphics.rml:411
+#: ui/options_mouse.rml:21 ui/options_ui.rml:85 ui/options_ui.rml:164
+#: ui/options_ui.rml:194 ui/options_ui.rml:208 ui/server_setup.rml:73
 msgid "reset"
 msgstr "redefinir"
 
@@ -923,8 +923,8 @@ msgstr "Ultra"
 msgid "Everything enabled."
 msgstr ""
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:269
-#: ui/options_graphics.rml:386 ui/options_graphics.rml:394
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:272
+#: ui/options_graphics.rml:389 ui/options_graphics.rml:397
 msgid "High"
 msgstr "Alto"
 
@@ -940,8 +940,8 @@ msgstr "Médio"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:267
-#: ui/options_graphics.rml:387 ui/options_graphics.rml:396
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:270
+#: ui/options_graphics.rml:390 ui/options_graphics.rml:399
 msgid "Low"
 msgstr "Baixo"
 
@@ -983,7 +983,8 @@ msgstr "Janela sem bordas"
 msgid "Fullscreen"
 msgstr "Tela cheia"
 
-#: ui/options_graphics.rml:69 ui/options_graphics.rml:397
+#: ui/options_graphics.rml:69 ui/options_graphics.rml:79
+#: ui/options_graphics.rml:400
 msgid "Off"
 msgstr "Desligado"
 
@@ -1009,205 +1010,203 @@ msgstr ""
 "Flexível só ativa quando a taxa de quadros está acima da taxa de atualização "
 "do monitor, evitando gagueira quando os FPS caem."
 
-#: ui/options_graphics.rml:79
-msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr "Anti-aliasing aproximado rápido (FXAA)"
+#: ui/options_graphics.rml:86
+msgid "Multisample anti-aliasing (MSAA)"
+msgstr ""
 
-#: ui/options_graphics.rml:83 ui/options_graphics.rml:149
-#: ui/options_graphics.rml:213 ui/options_graphics.rml:252
-#: ui/options_graphics.rml:295 ui/options_graphics.rml:333
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:87
+msgid ""
+"Render at higher precision at the boundaries of surfaces for crisp edges. "
+"This is a resource-intensive option."
+msgstr ""
+
+#: ui/options_graphics.rml:91 ui/options_graphics.rml:152
+#: ui/options_graphics.rml:216 ui/options_graphics.rml:255
+#: ui/options_graphics.rml:298 ui/options_graphics.rml:336
+#: ui/options_graphics.rml:364
 msgid "Apply now"
 msgstr "Aplicar agora"
 
-#: ui/options_graphics.rml:87
+#: ui/options_graphics.rml:95
 msgid "Brightness"
 msgstr "Brilho"
 
-#: ui/options_graphics.rml:90
+#: ui/options_graphics.rml:98
 msgid "Gamma"
 msgstr ""
 
-#: ui/options_graphics.rml:91
+#: ui/options_graphics.rml:99
 msgid ""
 "Ugly method for increasing brightness. (Consider resetting and using tone "
 "mapping instead.)"
 msgstr ""
 
-#: ui/options_graphics.rml:94
+#: ui/options_graphics.rml:102
 msgid "Gamma:"
 msgstr "Gama:"
 
-#: ui/options_graphics.rml:98
+#: ui/options_graphics.rml:106
 msgid "Tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:99
+#: ui/options_graphics.rml:107
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 
-#: ui/options_graphics.rml:102
+#: ui/options_graphics.rml:110
 msgid "Enable tone mapping"
 msgstr ""
 
-#: ui/options_graphics.rml:105
+#: ui/options_graphics.rml:113
 msgid "Exposure"
 msgstr ""
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:115
 msgid "Tone mapping brightness level"
 msgstr ""
 
-#: ui/options_graphics.rml:111
+#: ui/options_graphics.rml:119
 msgid "Lighting"
 msgstr "Iluminação"
 
-#: ui/options_graphics.rml:113
+#: ui/options_graphics.rml:121
 msgid "Lights"
 msgstr "Luzes"
 
-#: ui/options_graphics.rml:116
+#: ui/options_graphics.rml:124
 msgid "Light mapping"
 msgstr "Mapeamento de luz"
 
-#: ui/options_graphics.rml:116
+#: ui/options_graphics.rml:124
 msgid "normal"
 msgstr "normal"
 
-#: ui/options_graphics.rml:117
+#: ui/options_graphics.rml:125
 msgid "Vertex lighting"
 msgstr "Efeitos de luz a nível de vértice"
 
-#: ui/options_graphics.rml:117
+#: ui/options_graphics.rml:125
 msgid "low, ugly"
 msgstr "baixo, feio"
 
-#: ui/options_graphics.rml:119
+#: ui/options_graphics.rml:127
 msgid "Lighting system"
 msgstr "Sistema de iluminação"
 
-#: ui/options_graphics.rml:122
+#: ui/options_graphics.rml:130
 msgid "Light styles"
 msgstr "Estilos de luz"
 
-#: ui/options_graphics.rml:124
+#: ui/options_graphics.rml:132
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr "Luzes dinâmicas pré-calculadas emitidas por objetos estáticos do mapa."
 
-#: ui/options_graphics.rml:127
+#: ui/options_graphics.rml:135
 msgid "Dynamic lights"
 msgstr "Luzes dinâmicas"
 
-#: ui/options_graphics.rml:129
+#: ui/options_graphics.rml:137
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "Luzes dinâmicas em tempo real emitidas por objetos em movimento como armas e "
 "construções."
 
-#: ui/options_graphics.rml:132
-msgid "Rim lighting"
-msgstr "Iluminação de borda"
-
-#: ui/options_graphics.rml:134
-msgid "Light the edges of models from behind."
-msgstr "Iluminar as bordas dos modelos por trás."
-
-#: ui/options_graphics.rml:137
+#: ui/options_graphics.rml:140
 msgid "Half Lambert lighting"
 msgstr "Iluminação Half Lambert"
 
-#: ui/options_graphics.rml:139
+#: ui/options_graphics.rml:142
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "Técnica de iluminação não física para tornar os modelos menos escuros."
 
-#: ui/options_graphics.rml:143
+#: ui/options_graphics.rml:146
 msgid "Blobs"
 msgstr "Manchas"
 
-#: ui/options_graphics.rml:143
+#: ui/options_graphics.rml:146
 msgid "low"
 msgstr "baixo"
 
-#: ui/options_graphics.rml:144 ui/options_graphics.rml:370
+#: ui/options_graphics.rml:147 ui/options_graphics.rml:373
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "Nenhum"
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:149
 msgid "Shadows"
 msgstr "Sombras"
 
-#: ui/options_graphics.rml:153
+#: ui/options_graphics.rml:156
 msgid "Textures"
 msgstr "Texturas"
 
-#: ui/options_graphics.rml:155 ui/options_graphics.rml:339
+#: ui/options_graphics.rml:158 ui/options_graphics.rml:342
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "Geral"
 
-#: ui/options_graphics.rml:158 ui/options_graphics.rml:171
+#: ui/options_graphics.rml:161 ui/options_graphics.rml:174
 msgid "No limit"
 msgstr "Sem limite"
 
-#: ui/options_graphics.rml:159
+#: ui/options_graphics.rml:162
 msgid "(ultra)"
 msgstr "(extremo)"
 
-#: ui/options_graphics.rml:160
+#: ui/options_graphics.rml:163
 msgid "(high)"
 msgstr "(alto)"
 
-#: ui/options_graphics.rml:161
+#: ui/options_graphics.rml:164
 msgid "(medium)"
 msgstr "(médio)"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:165
 msgid "(low)"
 msgstr "(baixo)"
 
-#: ui/options_graphics.rml:163
+#: ui/options_graphics.rml:166
 msgid "(lowest)"
 msgstr "(mais baixo possível)"
 
-#: ui/options_graphics.rml:165
+#: ui/options_graphics.rml:168
 msgid "Image size limit"
 msgstr "Limite de tamanho de imagem"
 
-#: ui/options_graphics.rml:166
+#: ui/options_graphics.rml:169
 msgid "Limit image size to save on memory."
 msgstr "Limitar tamanho de imagem para economizar memória."
 
-#: ui/options_graphics.rml:172
+#: ui/options_graphics.rml:175
 msgid "No smaller than screen"
 msgstr "Pelo menos do tamanho da tela"
 
-#: ui/options_graphics.rml:173
+#: ui/options_graphics.rml:176
 msgid "No larger than screen"
 msgstr "No máximo do tamanho da tela"
 
-#: ui/options_graphics.rml:175
+#: ui/options_graphics.rml:178
 msgid "Menu image size limit"
 msgstr "Limite do tamanho de imagens do menu"
 
-#: ui/options_graphics.rml:176
+#: ui/options_graphics.rml:179
 msgid "Limit menu image size to save on memory."
 msgstr "Limitar tamanho das imagens de menu para economizar memória."
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:184
 msgid "High-precision rendering"
 msgstr "Renderização de alta precisão"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:185
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr "Usar buffers de pixels de alta precisão, reduzindo bandas de cor."
 
-#: ui/options_graphics.rml:186
+#: ui/options_graphics.rml:189
 msgid "Use bindless textures if possible"
 msgstr "Usar \"bindless textures\" se possível"
 
-#: ui/options_graphics.rml:188
+#: ui/options_graphics.rml:191
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1215,17 +1214,17 @@ msgstr ""
 "Usar \"bindless textures\" se suportado pelo hardware/driver. Isso pode "
 "melhorar a performance."
 
-#: ui/options_graphics.rml:188 ui/options_graphics.rml:238
-#: ui/options_graphics.rml:262 ui/options_graphics.rml:348
-#: ui/options_graphics.rml:353 ui/options_graphics.rml:358
+#: ui/options_graphics.rml:191 ui/options_graphics.rml:241
+#: ui/options_graphics.rml:265 ui/options_graphics.rml:351
+#: ui/options_graphics.rml:356 ui/options_graphics.rml:361
 msgid "Experimental."
 msgstr "Experimental."
 
-#: ui/options_graphics.rml:191
+#: ui/options_graphics.rml:194
 msgid "Mip-mapping"
 msgstr "Mip-mapping"
 
-#: ui/options_graphics.rml:192
+#: ui/options_graphics.rml:195
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1233,96 +1232,96 @@ msgstr ""
 "Mip-mapping faz superfícies distantes parecerem melhores ao usar texturas de "
 "menor resolução nelas. Geralmente não afeta o desempenho."
 
-#: ui/options_graphics.rml:199 ui/options_ui.rml:47
+#: ui/options_graphics.rml:202 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1511
 msgid "No"
 msgstr "Não"
 
-#: ui/options_graphics.rml:201
+#: ui/options_graphics.rml:204
 msgid "Anisotropic mip-mapping"
 msgstr "Mip-mapping anisotrópico"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:205
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Melhor interpretação de mip-maps em superfícies anguladas."
 
-#: ui/options_graphics.rml:206
+#: ui/options_graphics.rml:209
 msgid "Trilinear"
 msgstr "Trilinear"
 
-#: ui/options_graphics.rml:206
+#: ui/options_graphics.rml:209
 msgid "better"
 msgstr "melhor"
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:210
 msgid "Bilinear"
 msgstr "Bilinear"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:212
 msgid "Texture scaling filter"
 msgstr "Filtro de escalonamento de textura"
 
-#: ui/options_graphics.rml:217 ui/options_graphics.rml:219
+#: ui/options_graphics.rml:220 ui/options_graphics.rml:222
 msgid "Materials"
 msgstr "Materiais"
 
-#: ui/options_graphics.rml:221
+#: ui/options_graphics.rml:224
 msgid "Sky"
 msgstr "Céu"
 
-#: ui/options_graphics.rml:223
+#: ui/options_graphics.rml:226
 msgid "Draw the sky."
 msgstr "Desenhar o céu."
 
-#: ui/options_graphics.rml:226
+#: ui/options_graphics.rml:229
 msgid "Normal mapping"
 msgstr "Mapeamento normal"
 
-#: ui/options_graphics.rml:228
+#: ui/options_graphics.rml:231
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simula detalhes de iluminação extras em superfícies planas."
 
-#: ui/options_graphics.rml:231
+#: ui/options_graphics.rml:234
 msgid "Deluxe mapping"
 msgstr "Mapeamento deluxe"
 
-#: ui/options_graphics.rml:233
+#: ui/options_graphics.rml:236
 msgid "Light direction based on baked textures."
 msgstr "Direção de luz baseada em texturas cozidas."
 
-#: ui/options_graphics.rml:236
+#: ui/options_graphics.rml:239
 msgid "Relief mapping"
 msgstr "Mapeamento de relevo"
 
-#: ui/options_graphics.rml:238
+#: ui/options_graphics.rml:241
 msgid "Adds bumps on supported surfaces."
 msgstr "Adiciona saliências em superfícies suportadas."
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Specular mapping"
 msgstr "Mapeamento especular"
 
-#: ui/options_graphics.rml:243
+#: ui/options_graphics.rml:246
 msgid "Simulate light specularity."
 msgstr "Simula a especularidade da luz."
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Physical mapping"
 msgstr "Mapeamento físico"
 
-#: ui/options_graphics.rml:248
+#: ui/options_graphics.rml:251
 msgid "Material appearance based on physical approximations."
 msgstr "Aparência do material baseada em aproximações físicas."
 
-#: ui/options_graphics.rml:256 ui/options_graphics.rml:258
+#: ui/options_graphics.rml:259 ui/options_graphics.rml:261
 msgid "Reflections"
 msgstr "Reflexos"
 
-#: ui/options_graphics.rml:260
+#: ui/options_graphics.rml:263
 msgid "Static reflections"
 msgstr "Reflexos estáticos"
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:265
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1331,23 +1330,23 @@ msgstr ""
 "\"normal mapping\", \"specular mapping\" e \"deluxe mapping\". Atualmente "
 "não é suportado para \"physical mapping\"."
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:269
 msgid "Very low"
 msgstr "Muito baixo"
 
-#: ui/options_graphics.rml:268 ui/options_graphics.rml:395
+#: ui/options_graphics.rml:271 ui/options_graphics.rml:398
 msgid "Moderate"
 msgstr "Moderado"
 
-#: ui/options_graphics.rml:270
+#: ui/options_graphics.rml:273
 msgid "Very high"
 msgstr "Muito alto"
 
-#: ui/options_graphics.rml:272 ui/options_graphics.rml:389
+#: ui/options_graphics.rml:275 ui/options_graphics.rml:392
 msgid "Quality"
 msgstr "Qualidade"
 
-#: ui/options_graphics.rml:273
+#: ui/options_graphics.rml:276
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1355,101 +1354,101 @@ msgstr ""
 "Qualidade dos reflexos estáticos via \"cubemaps\". Qualidades mais altas "
 "podem consumir mais espaço em disco."
 
-#: ui/options_graphics.rml:276
+#: ui/options_graphics.rml:279
 msgid "Cubemap grid spacing"
 msgstr "Espaçamento da malha do \"cubemap\""
 
-#: ui/options_graphics.rml:280 ui/options_graphics.rml:407
+#: ui/options_graphics.rml:283 ui/options_graphics.rml:410
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Atual:"
 
-#: ui/options_graphics.rml:286 ui/options_ui.rml:139
+#: ui/options_graphics.rml:289 ui/options_ui.rml:139
 msgid "Never"
 msgstr "Nunca"
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:290
 msgid "Cache on disk"
 msgstr "Armazenar em cache no disco"
 
-#: ui/options_graphics.rml:288
+#: ui/options_graphics.rml:291
 msgid "Always rebuild"
 msgstr "Sempre reconstruir"
 
-#: ui/options_graphics.rml:290
+#: ui/options_graphics.rml:293
 msgid "Static reflection cubemaps autobuild"
 msgstr "Reconstruir reflexos estáticos de \"cubemap\" automaticamente"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:294
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "Construir/Carregar/Salvar reflexos de \"cubemap\" automaticamente."
 
-#: ui/options_graphics.rml:299 ui/options_graphics.rml:301
+#: ui/options_graphics.rml:302 ui/options_graphics.rml:304
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Efeitos"
 
-#: ui/options_graphics.rml:303
+#: ui/options_graphics.rml:306
 msgid "Bloom"
 msgstr "Bloom"
 
-#: ui/options_graphics.rml:305
+#: ui/options_graphics.rml:308
 msgid "Makes bright areas on your screen glow."
 msgstr "Faz com que áreas brilhantes na sua tela brilhem."
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:311
 msgid "Color grading"
 msgstr "Classificação de cores"
 
-#: ui/options_graphics.rml:310
+#: ui/options_graphics.rml:313
 msgid "Alter colors to create specific ambiences."
 msgstr "Alterar cores para criar ambientes específicos."
 
-#: ui/options_graphics.rml:313
+#: ui/options_graphics.rml:316
 msgid "Heat-haze"
 msgstr "Calor tremulante"
 
-#: ui/options_graphics.rml:315
+#: ui/options_graphics.rml:318
 msgid "Simulate air refraction in severe heat."
 msgstr "Simula a refração do ar em calor severo."
 
-#: ui/options_graphics.rml:318
+#: ui/options_graphics.rml:321
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Oclusão ambiental no espaço da tela (SSAO)"
 
-#: ui/options_graphics.rml:320
+#: ui/options_graphics.rml:323
 msgid "Simulate dark corners."
 msgstr "Simula cantos escuros."
 
-#: ui/options_graphics.rml:323
+#: ui/options_graphics.rml:326
 msgid "Marks"
 msgstr "Marcas"
 
-#: ui/options_graphics.rml:325
+#: ui/options_graphics.rml:328
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "Desenha marcas (como buracos de bala ou rastros) em superfícies"
 
-#: ui/options_graphics.rml:328
+#: ui/options_graphics.rml:331
 msgid "Particle physics"
 msgstr "Física de partículas"
 
-#: ui/options_graphics.rml:330
+#: ui/options_graphics.rml:333
 msgid "Allow particles to bounce off surfaces."
 msgstr "Permite que partículas quiquem em superfícies."
 
-#: ui/options_graphics.rml:337
+#: ui/options_graphics.rml:340
 msgid "Renderer"
 msgstr "Renderizador"
 
-#: ui/options_graphics.rml:342
+#: ui/options_graphics.rml:345
 msgid "Read-only depth buffer"
 msgstr ""
 
-#: ui/options_graphics.rml:344 ui/options_graphics.rml:346
+#: ui/options_graphics.rml:347 ui/options_graphics.rml:349
 msgid "Material system"
 msgstr "Sistema de materiais"
 
-#: ui/options_graphics.rml:348
+#: ui/options_graphics.rml:351
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1458,91 +1457,91 @@ msgstr ""
 "podem ser incompatíveis (e.g. drivers do projeto Mesa e drivers "
 "proprietários da AMD)."
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:354
 msgid "GPU frustum culling"
 msgstr "Eliminação de frustum de GPU"
 
-#: ui/options_graphics.rml:353
+#: ui/options_graphics.rml:356
 msgid "Cull surfaces that are out of view."
 msgstr "Descartar superfícies fora de vista."
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:359
 msgid "GPU occlusion culling"
 msgstr "Eliminação de oclusão de GPU"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:361
 msgid "Cull hidden surfaces."
 msgstr "Elimine superfícies ocultas."
 
-#: ui/options_graphics.rml:365
+#: ui/options_graphics.rml:368
 msgid "Gameplay"
 msgstr "Jogabilidade"
 
-#: ui/options_graphics.rml:367
+#: ui/options_graphics.rml:370
 msgid "Building markers"
 msgstr "Marcadores de construções"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:373
 msgid "disabled"
 msgstr "desativado"
 
-#: ui/options_graphics.rml:371
+#: ui/options_graphics.rml:374
 msgid "All structures"
 msgstr "Todas as estruturas"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:375
 msgid "Support structures"
 msgstr "Estruturas de suporte"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:376
 msgid "Offensive structures"
 msgstr "Estruturas ofensivas"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:377
 msgid "Alien structures"
 msgstr "Estruturas alienígenas"
 
-#: ui/options_graphics.rml:375
+#: ui/options_graphics.rml:378
 msgid "Human structures"
 msgstr "Estruturas humanas"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:379
 msgid "Alien support structures"
 msgstr "Estruturas de suporte alienígenas"
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:380
 msgid "Human support structures"
 msgstr "Estruturas de suporte humanas"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:381
 msgid "Offensive alien structures"
 msgstr "Estruturas alienígenas ofensivas"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:382
 msgid "Offensive human structures"
 msgstr "Estruturas humanas ofensivas"
 
-#: ui/options_graphics.rml:381
+#: ui/options_graphics.rml:384
 msgid "Building ranges"
 msgstr "Alcances das construções"
 
-#: ui/options_graphics.rml:383
+#: ui/options_graphics.rml:386
 msgid "Models"
 msgstr "Modelos"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:394
 msgid "Motion blur"
 msgstr "Desfoque de movimento"
 
-#: ui/options_graphics.rml:399
+#: ui/options_graphics.rml:402
 msgid "Intensity"
 msgstr "Intensidade"
 
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:403
 msgid "Level of motion-blur."
 msgstr "Nível do desfoque de movimento."
 
-#: ui/options_graphics.rml:403
+#: ui/options_graphics.rml:406
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Velocidade mínima de movimento para ativação do desfoque de movimento"
 
@@ -4246,11 +4245,11 @@ msgstr "Fazendo levantamento do mapa…"
 msgid "Done!"
 msgstr "Concluído!"
 
-#: src/cgame/cg_main.cpp:1153
+#: src/cgame/cg_main.cpp:1154
 msgid "Generating bot navigation meshes"
 msgstr "Gerando malhas de navegação para bots"
 
-#: src/cgame/cg_main.cpp:1197
+#: src/cgame/cg_main.cpp:1198
 #, c-format
 msgid "by %s"
 msgstr "por %s"
@@ -5560,6 +5559,15 @@ msgstr "alienígenas"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "humanos"
+
+#~ msgid "Fast approximate anti-aliasing (FXAA)"
+#~ msgstr "Anti-aliasing aproximado rápido (FXAA)"
+
+#~ msgid "Rim lighting"
+#~ msgstr "Iluminação de borda"
+
+#~ msgid "Light the edges of models from behind."
+#~ msgstr "Iluminar as bordas dos modelos por trás."
 
 #~ msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
 #~ msgstr "$1$: 'maps/$2$.bsp' não pôde ser encontrado no servidor"
