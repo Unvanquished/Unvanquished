@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 14:37+0100\n"
-"PO-Revision-Date: 2026-02-24 10:09+0000\n"
+"PO-Revision-Date: 2026-02-25 22:09+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -1007,13 +1007,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:86
 msgid "Multisample anti-aliasing (MSAA)"
-msgstr ""
+msgstr "Moninäytteinen antialiasointi (MSAA)"
 
 #: ui/options_graphics.rml:87
 msgid ""
 "Render at higher precision at the boundaries of surfaces for crisp edges. "
 "This is a resource-intensive option."
 msgstr ""
+"Renderöi pintojen rajat korkeammalla tarkkuudella sileämpiä reunoja varten. "
+"Tämä on resursseja vaativa ominaisuus."
 
 #: ui/options_graphics.rml:91 ui/options_graphics.rml:152
 #: ui/options_graphics.rml:216 ui/options_graphics.rml:255
@@ -2291,7 +2293,7 @@ msgstr "Nimi:"
 
 #: ui/server_browser.rml:44 ui/server_browser.rml:61
 msgid "Version:"
-msgstr ""
+msgstr "Versio:"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:63
 msgid "Players (Bots)"
@@ -2335,22 +2337,26 @@ msgstr "Aloita"
 
 #: ui/server_mismatch.rml:8
 msgid "Engine version mismatch"
-msgstr ""
+msgstr "Pelimoottorin versio ei täsmää"
 
 #: ui/server_mismatch.rml:9
 msgid ""
 "This server uses a different Daemon engine version, which is not compatible."
 msgstr ""
+"Tämä palvelin käyttää eri versiota Daemon-pelimoottorista, joka ei ole "
+"yhteensopiva."
 
 #: ui/server_mismatch.rml:11
 msgid ""
 "The latest Unvanquished release can be downloaded through the Updater app, "
 "at <web dest=\"download\"/>, or in one of the official package repositories."
 msgstr ""
+"Uusimman Unvanquished-julkaisun voi ladata päivityssovelluksella osoitteesta "
+"<web dest=\"download\"/> taikka virallisista pakettivarastoista."
 
 #: ui/server_mismatch.rml:12
 msgid "Connect anyway"
-msgstr ""
+msgstr "Yhdistä kuitenkin"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
