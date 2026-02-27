@@ -103,16 +103,19 @@
 						&nbsp;<ilink onclick='Cmd.exec("reset r_gamma")'>(<translate>reset</translate>)</ilink>
 					</p>
 				</row>
+				<row>
+					<h3><translate>Exposure (world brightness level)</translate></h3>
+					<input type="range" min="0.3" max="2.5" step="0.01" cvar="r_exposure" />
+					<p class="inline">
+						<translate>Current:</translate>&nbsp;<inlinecvar cvar="r_exposure" type="number" format="%.2f" />
+						&nbsp;<ilink onclick='Cmd.exec("reset r_exposure")'>(<translate>reset</translate>)</ilink>
+					</p>
+				</row>
 				<h2><translate>Tone mapping</translate></h2>
 				<p><translate>Manage dynamic range to alleviate washed-out or too-dark areas.</translate></p>
 				<row>
 					<input cvar="r_toneMapping" type="checkbox"/>
 					<h3><translate>Enable tone mapping</translate></h3>
-				</row>
-				<row>
-					<h3><translate>Exposure</translate></h3>
-					<input type="range" min="0.3" max="2.5" step="0.01" cvar="r_toneMappingExposure"/>
-					<p><translate>Tone mapping brightness level</translate></p>
 				</row>
 			</panel>
 
