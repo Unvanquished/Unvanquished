@@ -231,9 +231,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, Str::StringRef behavior )
 		return false;
 	}
 
-	// TODO(0.56): Remove. Use client->pers.isBot instead
-	self->r.svFlags |= SVF_BOT;
-
 	if ( team != TEAM_NONE )
 	{
 		self->client->sess.restartTeam = team;
@@ -261,9 +258,6 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 		return false;
 	}
 	gentity_t *bot = &g_entities[ clientNum ];
-
-	// TODO(0.56): Remove. Use client->pers.isBot instead
-	bot->r.svFlags |= SVF_BOT;
 
 	if ( !Q_stricmp( name, BOT_NAME_FROM_LIST ) )
 	{
