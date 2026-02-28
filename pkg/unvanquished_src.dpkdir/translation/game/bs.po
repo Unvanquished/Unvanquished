@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 14:37+0100\n"
+"POT-Creation-Date: 2026-02-28 17:51+0100\n"
 "PO-Revision-Date: 2025-10-10 13:07+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/unvanquished/"
@@ -845,9 +845,10 @@ msgstr "stepeni"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:103
-#: ui/options_graphics.rml:284 ui/options_graphics.rml:411
-#: ui/options_mouse.rml:21 ui/options_ui.rml:85 ui/options_ui.rml:164
-#: ui/options_ui.rml:194 ui/options_ui.rml:208 ui/server_setup.rml:73
+#: ui/options_graphics.rml:111 ui/options_graphics.rml:287
+#: ui/options_graphics.rml:414 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
+#: ui/server_setup.rml:73
 msgid "reset"
 msgstr "resetiraj"
 
@@ -920,8 +921,8 @@ msgstr "Ultra"
 msgid "Everything enabled."
 msgstr "Sve omogućeno."
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:272
-#: ui/options_graphics.rml:389 ui/options_graphics.rml:397
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:275
+#: ui/options_graphics.rml:392 ui/options_graphics.rml:400
 msgid "High"
 msgstr "Visoko"
 
@@ -937,8 +938,8 @@ msgstr "Srednje"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:270
-#: ui/options_graphics.rml:390 ui/options_graphics.rml:399
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:273
+#: ui/options_graphics.rml:393 ui/options_graphics.rml:402
 msgid "Low"
 msgstr "Nisko"
 
@@ -983,7 +984,7 @@ msgid "Fullscreen"
 msgstr "Cijeli Ekran"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:79
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:403
 msgid "Off"
 msgstr "Ugašeno"
 
@@ -1019,10 +1020,10 @@ msgid ""
 "This is a resource-intensive option."
 msgstr ""
 
-#: ui/options_graphics.rml:91 ui/options_graphics.rml:152
-#: ui/options_graphics.rml:216 ui/options_graphics.rml:255
-#: ui/options_graphics.rml:298 ui/options_graphics.rml:336
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:91 ui/options_graphics.rml:155
+#: ui/options_graphics.rml:219 ui/options_graphics.rml:258
+#: ui/options_graphics.rml:301 ui/options_graphics.rml:339
+#: ui/options_graphics.rml:367
 msgid "Apply now"
 msgstr "Prijavi se odmah"
 
@@ -1046,171 +1047,172 @@ msgstr ""
 msgid "Gamma:"
 msgstr "Gama:"
 
-#: ui/options_graphics.rml:106
+#: ui/options_graphics.rml:107
+msgid "Exposure (world brightness level)"
+msgstr ""
+
+#: ui/options_graphics.rml:110 ui/options_graphics.rml:286
+#: ui/options_graphics.rml:413 ui/options_mouse.rml:20 ui/server_setup.rml:72
+msgid "Current:"
+msgstr "Trenutno:"
+
+#: ui/options_graphics.rml:114
 msgid "Tone mapping"
 msgstr "Mapiranje tonova"
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:115
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr ""
 "Upravljajte dinamičkim rasponom kako biste ublažili isprana ili previše "
 "tamna područja."
 
-#: ui/options_graphics.rml:110
+#: ui/options_graphics.rml:118
 msgid "Enable tone mapping"
 msgstr "Omogući mapiranje tonova"
 
-#: ui/options_graphics.rml:113
-msgid "Exposure"
-msgstr "Izloženost"
-
-#: ui/options_graphics.rml:115
-msgid "Tone mapping brightness level"
-msgstr "Nivo svjetline mapiranja tonova"
-
-#: ui/options_graphics.rml:119
+#: ui/options_graphics.rml:122
 msgid "Lighting"
 msgstr "Rasvjeta"
 
-#: ui/options_graphics.rml:121
+#: ui/options_graphics.rml:124
 msgid "Lights"
 msgstr "Svjetla"
 
-#: ui/options_graphics.rml:124
+#: ui/options_graphics.rml:127
 msgid "Light mapping"
 msgstr "Mapiranje svjetla"
 
-#: ui/options_graphics.rml:124
+#: ui/options_graphics.rml:127
 msgid "normal"
 msgstr "normalno"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:128
 msgid "Vertex lighting"
 msgstr "Vertex rasvjeta"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:128
 msgid "low, ugly"
 msgstr "nisko, ružno"
 
-#: ui/options_graphics.rml:127
+#: ui/options_graphics.rml:130
 msgid "Lighting system"
 msgstr "Sistem rasvjete"
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:133
 msgid "Light styles"
 msgstr "Svjetli stilovi"
 
-#: ui/options_graphics.rml:132
+#: ui/options_graphics.rml:135
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
 "Unaprijed izračunata dinamička svjetla koja emituju statički objekti mape."
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:138
 msgid "Dynamic lights"
 msgstr "Dinamična svjetla"
 
-#: ui/options_graphics.rml:137
+#: ui/options_graphics.rml:140
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "Dinamična svjetla u realnom vremenu koja emituju pokretni objekti poput "
 "oružja i zgrada."
 
-#: ui/options_graphics.rml:140
+#: ui/options_graphics.rml:143
 msgid "Half Lambert lighting"
 msgstr "Half Lambert rasvjeta"
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:145
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "Tehnika nefizičkog osvjetljenja koja modele čini manje tamnim."
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:149
 msgid "Blobs"
 msgstr "Mrlje"
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:149
 msgid "low"
 msgstr "nisko"
 
-#: ui/options_graphics.rml:147 ui/options_graphics.rml:373
+#: ui/options_graphics.rml:150 ui/options_graphics.rml:376
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "Nema"
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:152
 msgid "Shadows"
 msgstr "Sjene"
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:159
 msgid "Textures"
 msgstr "Teksture"
 
-#: ui/options_graphics.rml:158 ui/options_graphics.rml:342
+#: ui/options_graphics.rml:161 ui/options_graphics.rml:345
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "Općenito"
 
-#: ui/options_graphics.rml:161 ui/options_graphics.rml:174
+#: ui/options_graphics.rml:164 ui/options_graphics.rml:177
 msgid "No limit"
 msgstr "Bez ograničenja"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:165
 msgid "(ultra)"
 msgstr "(ultra)"
 
-#: ui/options_graphics.rml:163
+#: ui/options_graphics.rml:166
 msgid "(high)"
 msgstr "(visoko)"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:167
 msgid "(medium)"
 msgstr "(srednje)"
 
-#: ui/options_graphics.rml:165
+#: ui/options_graphics.rml:168
 msgid "(low)"
 msgstr "(nisko)"
 
-#: ui/options_graphics.rml:166
+#: ui/options_graphics.rml:169
 msgid "(lowest)"
 msgstr "(najniža)"
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:171
 msgid "Image size limit"
 msgstr "Ograničenje veličine slike"
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:172
 msgid "Limit image size to save on memory."
 msgstr "Ograničite veličinu slike radi uštede memorije."
 
-#: ui/options_graphics.rml:175
+#: ui/options_graphics.rml:178
 msgid "No smaller than screen"
 msgstr "Nije manji od ekrana"
 
-#: ui/options_graphics.rml:176
+#: ui/options_graphics.rml:179
 msgid "No larger than screen"
 msgstr "Nije veće od ekrana"
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:181
 msgid "Menu image size limit"
 msgstr "Ograničenje veličine slike menija"
 
-#: ui/options_graphics.rml:179
+#: ui/options_graphics.rml:182
 msgid "Limit menu image size to save on memory."
 msgstr "Ograničite veličinu slike menija radi uštede memorije."
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:187
 msgid "High-precision rendering"
 msgstr "Visokoprecizno renderiranje"
 
-#: ui/options_graphics.rml:185
+#: ui/options_graphics.rml:188
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr "Koristite visokoprecizne piksel bafere koji smanjuju banding boja."
 
-#: ui/options_graphics.rml:189
+#: ui/options_graphics.rml:192
 msgid "Use bindless textures if possible"
 msgstr "Koristite teksture bez vezivanja ako je moguće"
 
-#: ui/options_graphics.rml:191
+#: ui/options_graphics.rml:194
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1218,17 +1220,17 @@ msgstr ""
 "Koristite teksture bez vezanja ako ih podržava hardver/drajver. Ovo bi moglo "
 "poboljšati performanse."
 
-#: ui/options_graphics.rml:191 ui/options_graphics.rml:241
-#: ui/options_graphics.rml:265 ui/options_graphics.rml:351
-#: ui/options_graphics.rml:356 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:194 ui/options_graphics.rml:244
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:354
+#: ui/options_graphics.rml:359 ui/options_graphics.rml:364
 msgid "Experimental."
 msgstr "Eksperimentalno."
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:197
 msgid "Mip-mapping"
 msgstr "MIP-mapiranje"
 
-#: ui/options_graphics.rml:195
+#: ui/options_graphics.rml:198
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1236,96 +1238,96 @@ msgstr ""
 "Mip-mapiranje poboljšava izgled udaljenih površina korištenjem tekstura niže "
 "rezolucije na njima. Ovo uglavnom ne utiče na performanse."
 
-#: ui/options_graphics.rml:202 ui/options_ui.rml:47
+#: ui/options_graphics.rml:205 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No"
 msgstr "Ne"
 
-#: ui/options_graphics.rml:204
+#: ui/options_graphics.rml:207
 msgid "Anisotropic mip-mapping"
 msgstr "Anizotropno mip-mapiranje"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:208
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Bolja interpretacija mip-mapa na kosim površinama."
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:212
 msgid "Trilinear"
 msgstr "Trilinearno"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:212
 msgid "better"
 msgstr "bolje"
 
-#: ui/options_graphics.rml:210
+#: ui/options_graphics.rml:213
 msgid "Bilinear"
 msgstr "Bilinearno"
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:215
 msgid "Texture scaling filter"
 msgstr "Filter za skaliranje teksture"
 
-#: ui/options_graphics.rml:220 ui/options_graphics.rml:222
+#: ui/options_graphics.rml:223 ui/options_graphics.rml:225
 msgid "Materials"
 msgstr "Materijali"
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:227
 msgid "Sky"
 msgstr "Nebo"
 
-#: ui/options_graphics.rml:226
+#: ui/options_graphics.rml:229
 msgid "Draw the sky."
 msgstr "Nacrtajte nebo."
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:232
 msgid "Normal mapping"
 msgstr "Normalno mapiranje"
 
-#: ui/options_graphics.rml:231
+#: ui/options_graphics.rml:234
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simulira dodatne detalje osvjetljenja na ravnim površinama."
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:237
 msgid "Deluxe mapping"
 msgstr "Deluxe mapiranje"
 
-#: ui/options_graphics.rml:236
+#: ui/options_graphics.rml:239
 msgid "Light direction based on baked textures."
 msgstr "Smjer svjetlosti zasnovan na pečenim teksturama."
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:242
 msgid "Relief mapping"
 msgstr "Mapiranje reljefa"
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Adds bumps on supported surfaces."
 msgstr "Dodaje neravnine na podržane površine."
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:247
 msgid "Specular mapping"
 msgstr "Spekularno mapiranje"
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Simulate light specularity."
 msgstr "Simulirajte svjetlosnu spekularnost."
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:252
 msgid "Physical mapping"
 msgstr "Fizičko mapiranje"
 
-#: ui/options_graphics.rml:251
+#: ui/options_graphics.rml:254
 msgid "Material appearance based on physical approximations."
 msgstr "Izgled materijala zasnovan na fizičkim aproksimacijama."
 
-#: ui/options_graphics.rml:259 ui/options_graphics.rml:261
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:264
 msgid "Reflections"
 msgstr "Razmišljanja"
 
-#: ui/options_graphics.rml:263
+#: ui/options_graphics.rml:266
 msgid "Static reflections"
 msgstr "Statičke refleksije"
 
-#: ui/options_graphics.rml:265
+#: ui/options_graphics.rml:268
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1334,23 +1336,23 @@ msgstr ""
 "normalno, spekularno i deluxe mapiranje. Trenutno nije podržano s fizičkim "
 "mapiranjem."
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:272
 msgid "Very low"
 msgstr "Vrlo nisko"
 
-#: ui/options_graphics.rml:271 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:274 ui/options_graphics.rml:401
 msgid "Moderate"
 msgstr "Umjereno"
 
-#: ui/options_graphics.rml:273
+#: ui/options_graphics.rml:276
 msgid "Very high"
 msgstr "Vrlo visoko"
 
-#: ui/options_graphics.rml:275 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:278 ui/options_graphics.rml:395
 msgid "Quality"
 msgstr "Kvalitet"
 
-#: ui/options_graphics.rml:276
+#: ui/options_graphics.rml:279
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1358,101 +1360,96 @@ msgstr ""
 "Kvalitet statičkih refleksijskih kockastih mapa. Viši kvaliteti mogu "
 "potrošiti puno prostora na disku."
 
-#: ui/options_graphics.rml:279
+#: ui/options_graphics.rml:282
 msgid "Cubemap grid spacing"
 msgstr "Razmak mreže Cubemap"
 
-#: ui/options_graphics.rml:283 ui/options_graphics.rml:410
-#: ui/options_mouse.rml:20 ui/server_setup.rml:72
-msgid "Current:"
-msgstr "Trenutno:"
-
-#: ui/options_graphics.rml:289 ui/options_ui.rml:139
+#: ui/options_graphics.rml:292 ui/options_ui.rml:139
 msgid "Never"
 msgstr "Nikad"
 
-#: ui/options_graphics.rml:290
+#: ui/options_graphics.rml:293
 msgid "Cache on disk"
 msgstr "Keš memorija na disku"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:294
 msgid "Always rebuild"
 msgstr "Uvijek ponovo izgradi"
 
-#: ui/options_graphics.rml:293
+#: ui/options_graphics.rml:296
 msgid "Static reflection cubemaps autobuild"
 msgstr "Automatska izrada kockastih mapa statičke refleksije"
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:297
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "Automatski izgradi/učitaj/spremi refleksijske kockaste mape."
 
-#: ui/options_graphics.rml:302 ui/options_graphics.rml:304
+#: ui/options_graphics.rml:305 ui/options_graphics.rml:307
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Efekti"
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:309
 msgid "Bloom"
 msgstr "Cvjetanje"
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:311
 msgid "Makes bright areas on your screen glow."
 msgstr "Čini da svijetla područja na vašem ekranu sjaje."
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:314
 msgid "Color grading"
 msgstr "Gradacija boja"
 
-#: ui/options_graphics.rml:313
+#: ui/options_graphics.rml:316
 msgid "Alter colors to create specific ambiences."
 msgstr "Promijenite boje kako biste stvorili specifične ambijente."
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:319
 msgid "Heat-haze"
 msgstr "Toplotna izmaglica"
 
-#: ui/options_graphics.rml:318
+#: ui/options_graphics.rml:321
 msgid "Simulate air refraction in severe heat."
 msgstr "Simulirajte prelamanje zraka pri jakoj vrućini."
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:324
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Ambijentalna okluzija prostora ekrana (SSAO)"
 
-#: ui/options_graphics.rml:323
+#: ui/options_graphics.rml:326
 msgid "Simulate dark corners."
 msgstr "Simulirajte tamne uglove."
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:329
 msgid "Marks"
 msgstr "Oznake"
 
-#: ui/options_graphics.rml:328
+#: ui/options_graphics.rml:331
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "Crtanje tragova (kao što su rupe od metaka ili puzanje) na površinama"
 
-#: ui/options_graphics.rml:331
+#: ui/options_graphics.rml:334
 msgid "Particle physics"
 msgstr "Fizika čestica"
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:336
 msgid "Allow particles to bounce off surfaces."
 msgstr "Dozvolite česticama da se odbijaju od površina."
 
-#: ui/options_graphics.rml:340
+#: ui/options_graphics.rml:343
 msgid "Renderer"
 msgstr "Renderer"
 
-#: ui/options_graphics.rml:345
+#: ui/options_graphics.rml:348
 msgid "Read-only depth buffer"
 msgstr "Dubinski bafer samo za čitanje"
 
-#: ui/options_graphics.rml:347 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:350 ui/options_graphics.rml:352
 msgid "Material system"
 msgstr "Materijalni sistem"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:354
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1460,91 +1457,91 @@ msgstr ""
 "Koristite novi sistem koji značajno poboljšava performanse. Neki drajveri "
 "mogu propasti kada je ovo uključeno (npr. Mesa i AMD vlasnički drajveri)."
 
-#: ui/options_graphics.rml:354
+#: ui/options_graphics.rml:357
 msgid "GPU frustum culling"
 msgstr "Uklanjanje skraćenog dijela GPU-a"
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:359
 msgid "Cull surfaces that are out of view."
 msgstr "Uklonite površine koje nisu vidljive."
 
-#: ui/options_graphics.rml:359
+#: ui/options_graphics.rml:362
 msgid "GPU occlusion culling"
 msgstr "Odvajanje zbog okluzije GPU-a"
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:364
 msgid "Cull hidden surfaces."
 msgstr "Uklonite skrivene površine."
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:371
 msgid "Gameplay"
 msgstr "Igranje"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:373
 msgid "Building markers"
 msgstr "Građevinski markeri"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:376
 msgid "disabled"
 msgstr "onemogućeno"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:377
 msgid "All structures"
 msgstr "Sve strukture"
 
-#: ui/options_graphics.rml:375
+#: ui/options_graphics.rml:378
 msgid "Support structures"
 msgstr "Potporne strukture"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:379
 msgid "Offensive structures"
 msgstr "Ofanzivne strukture"
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:380
 msgid "Alien structures"
 msgstr "Vanzemaljske strukture"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:381
 msgid "Human structures"
 msgstr "Ljudske strukture"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:382
 msgid "Alien support structures"
 msgstr "Vanzemaljske potporne strukture"
 
-#: ui/options_graphics.rml:380
+#: ui/options_graphics.rml:383
 msgid "Human support structures"
 msgstr "Ljudske potporne strukture"
 
-#: ui/options_graphics.rml:381
+#: ui/options_graphics.rml:384
 msgid "Offensive alien structures"
 msgstr "Ofanzivne vanzemaljske strukture"
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:385
 msgid "Offensive human structures"
 msgstr "Uvredljive ljudske strukture"
 
-#: ui/options_graphics.rml:384
+#: ui/options_graphics.rml:387
 msgid "Building ranges"
 msgstr "Građevinski rasponi"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:389
 msgid "Models"
 msgstr "Modeli"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:397
 msgid "Motion blur"
 msgstr "Zamućenje pokreta"
 
-#: ui/options_graphics.rml:402
+#: ui/options_graphics.rml:405
 msgid "Intensity"
 msgstr "Intenzitet"
 
-#: ui/options_graphics.rml:403
+#: ui/options_graphics.rml:406
 msgid "Level of motion-blur."
 msgstr "Nivo zamućenja pokreta."
 
-#: ui/options_graphics.rml:406
+#: ui/options_graphics.rml:409
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Minimalna brzina kretanja za aktiviranje zamućenja pokreta"
 
@@ -5615,6 +5612,12 @@ msgstr "vanzemaljci"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "ljudi"
+
+#~ msgid "Exposure"
+#~ msgstr "Izloženost"
+
+#~ msgid "Tone mapping brightness level"
+#~ msgstr "Nivo svjetline mapiranja tonova"
 
 #~ msgid "Fast approximate anti-aliasing (FXAA)"
 #~ msgstr "Brzo približno anti-aliasing (FXAA)"

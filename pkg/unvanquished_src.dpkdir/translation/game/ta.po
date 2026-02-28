@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 14:37+0100\n"
+"POT-Creation-Date: 2026-02-28 17:51+0100\n"
 "PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
@@ -834,9 +834,10 @@ msgstr "டிகிரி"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:103
-#: ui/options_graphics.rml:284 ui/options_graphics.rml:411
-#: ui/options_mouse.rml:21 ui/options_ui.rml:85 ui/options_ui.rml:164
-#: ui/options_ui.rml:194 ui/options_ui.rml:208 ui/server_setup.rml:73
+#: ui/options_graphics.rml:111 ui/options_graphics.rml:287
+#: ui/options_graphics.rml:414 ui/options_mouse.rml:21 ui/options_ui.rml:85
+#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
+#: ui/server_setup.rml:73
 msgid "reset"
 msgstr "மீட்டமை"
 
@@ -909,8 +910,8 @@ msgstr "அல்ட்ரா"
 msgid "Everything enabled."
 msgstr "எல்லாம் செயல்படுத்தப்பட்டது."
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:272
-#: ui/options_graphics.rml:389 ui/options_graphics.rml:397
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:275
+#: ui/options_graphics.rml:392 ui/options_graphics.rml:400
 msgid "High"
 msgstr "உயர்ந்த"
 
@@ -926,8 +927,8 @@ msgstr "சராசரி"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:270
-#: ui/options_graphics.rml:390 ui/options_graphics.rml:399
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:273
+#: ui/options_graphics.rml:393 ui/options_graphics.rml:402
 msgid "Low"
 msgstr "குறைந்த"
 
@@ -972,7 +973,7 @@ msgid "Fullscreen"
 msgstr "முழு திரை"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:79
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:403
 msgid "Off"
 msgstr "அணை"
 
@@ -1008,10 +1009,10 @@ msgid ""
 "This is a resource-intensive option."
 msgstr ""
 
-#: ui/options_graphics.rml:91 ui/options_graphics.rml:152
-#: ui/options_graphics.rml:216 ui/options_graphics.rml:255
-#: ui/options_graphics.rml:298 ui/options_graphics.rml:336
-#: ui/options_graphics.rml:364
+#: ui/options_graphics.rml:91 ui/options_graphics.rml:155
+#: ui/options_graphics.rml:219 ui/options_graphics.rml:258
+#: ui/options_graphics.rml:301 ui/options_graphics.rml:339
+#: ui/options_graphics.rml:367
 msgid "Apply now"
 msgstr "இப்பொழுது இடு"
 
@@ -1035,169 +1036,170 @@ msgstr ""
 msgid "Gamma:"
 msgstr "காமா:"
 
-#: ui/options_graphics.rml:106
+#: ui/options_graphics.rml:107
+msgid "Exposure (world brightness level)"
+msgstr ""
+
+#: ui/options_graphics.rml:110 ui/options_graphics.rml:286
+#: ui/options_graphics.rml:413 ui/options_mouse.rml:20 ui/server_setup.rml:72
+msgid "Current:"
+msgstr "நடப்பு:"
+
+#: ui/options_graphics.rml:114
 msgid "Tone mapping"
 msgstr "தொனி மேப்பிங்"
 
-#: ui/options_graphics.rml:107
+#: ui/options_graphics.rml:115
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
 msgstr "கழுவப்பட்ட அல்லது அதிக இருண்ட பகுதிகளைத் தணிக்க மாறும் வரம்பை நிர்வகிக்கவும்."
 
-#: ui/options_graphics.rml:110
+#: ui/options_graphics.rml:118
 msgid "Enable tone mapping"
 msgstr "டோன் மேப்பிங்கை இயக்கவும்"
 
-#: ui/options_graphics.rml:113
-msgid "Exposure"
-msgstr "நேரிடுவது"
-
-#: ui/options_graphics.rml:115
-msgid "Tone mapping brightness level"
-msgstr "டோன் மேப்பிங் பிரகாச நிலை"
-
-#: ui/options_graphics.rml:119
+#: ui/options_graphics.rml:122
 msgid "Lighting"
 msgstr "லைட்டிங்"
 
-#: ui/options_graphics.rml:121
+#: ui/options_graphics.rml:124
 msgid "Lights"
 msgstr "விளக்குகள்"
 
-#: ui/options_graphics.rml:124
+#: ui/options_graphics.rml:127
 msgid "Light mapping"
 msgstr "ஒளி மேப்பிங்"
 
-#: ui/options_graphics.rml:124
+#: ui/options_graphics.rml:127
 msgid "normal"
 msgstr "சாதாரண"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:128
 msgid "Vertex lighting"
 msgstr "வெர்டெக்ச் லைட்டிங்"
 
-#: ui/options_graphics.rml:125
+#: ui/options_graphics.rml:128
 msgid "low, ugly"
 msgstr "குறைந்த, அசிங்கமான"
 
-#: ui/options_graphics.rml:127
+#: ui/options_graphics.rml:130
 msgid "Lighting system"
 msgstr "லைட்டிங் சிச்டம்"
 
-#: ui/options_graphics.rml:130
+#: ui/options_graphics.rml:133
 msgid "Light styles"
 msgstr "ஒளி பாணிகள்"
 
-#: ui/options_graphics.rml:132
+#: ui/options_graphics.rml:135
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr "நிலையான வரைபட பொருள்களால் வெளிப்படும் முன்கூட்டிய மாறும் விளக்குகள்."
 
-#: ui/options_graphics.rml:135
+#: ui/options_graphics.rml:138
 msgid "Dynamic lights"
 msgstr "மாறும் விளக்குகள்"
 
-#: ui/options_graphics.rml:137
+#: ui/options_graphics.rml:140
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
 "ஆயுதங்கள் மற்றும் கட்டிடங்கள் போன்ற பொருட்களை நகர்த்துவதன் மூலம் உமிழப்படும் நிகழ்நேர மாறும் "
 "விளக்குகள்."
 
-#: ui/options_graphics.rml:140
+#: ui/options_graphics.rml:143
 msgid "Half Lambert lighting"
 msgstr "அரை லம்பேர்ட் லைட்டிங்"
 
-#: ui/options_graphics.rml:142
+#: ui/options_graphics.rml:145
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "மாதிரிகள் குறைவான இருட்டாக மாற்ற இயற்பியல் அல்லாத விளக்கு நுட்பம்."
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:149
 msgid "Blobs"
 msgstr "குமிழ்கள்"
 
-#: ui/options_graphics.rml:146
+#: ui/options_graphics.rml:149
 msgid "low"
 msgstr "குறைந்த"
 
-#: ui/options_graphics.rml:147 ui/options_graphics.rml:373
+#: ui/options_graphics.rml:150 ui/options_graphics.rml:376
 #: ui/options_ui.rml:187
 msgid "None"
 msgstr "எதுவுமில்லை"
 
-#: ui/options_graphics.rml:149
+#: ui/options_graphics.rml:152
 msgid "Shadows"
 msgstr "நிழல்கள்"
 
-#: ui/options_graphics.rml:156
+#: ui/options_graphics.rml:159
 msgid "Textures"
 msgstr "கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:158 ui/options_graphics.rml:342
+#: ui/options_graphics.rml:161 ui/options_graphics.rml:345
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "பொது"
 
-#: ui/options_graphics.rml:161 ui/options_graphics.rml:174
+#: ui/options_graphics.rml:164 ui/options_graphics.rml:177
 msgid "No limit"
 msgstr "வரம்பு இல்லை"
 
-#: ui/options_graphics.rml:162
+#: ui/options_graphics.rml:165
 msgid "(ultra)"
 msgstr "(அல்ட்ரா)"
 
-#: ui/options_graphics.rml:163
+#: ui/options_graphics.rml:166
 msgid "(high)"
 msgstr "(உயர்)"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:167
 msgid "(medium)"
 msgstr "(நடுத்தர)"
 
-#: ui/options_graphics.rml:165
+#: ui/options_graphics.rml:168
 msgid "(low)"
 msgstr "(குறைந்த)"
 
-#: ui/options_graphics.rml:166
+#: ui/options_graphics.rml:169
 msgid "(lowest)"
 msgstr "(மிகக் குறைந்த)"
 
-#: ui/options_graphics.rml:168
+#: ui/options_graphics.rml:171
 msgid "Image size limit"
 msgstr "பட அளவு வரம்பு"
 
-#: ui/options_graphics.rml:169
+#: ui/options_graphics.rml:172
 msgid "Limit image size to save on memory."
 msgstr "நினைவகத்தில் சேமிக்க பட அளவைக் கட்டுப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:175
+#: ui/options_graphics.rml:178
 msgid "No smaller than screen"
 msgstr "திரையை விட சிறியதாக இல்லை"
 
-#: ui/options_graphics.rml:176
+#: ui/options_graphics.rml:179
 msgid "No larger than screen"
 msgstr "திரையை விட பெரியது இல்லை"
 
-#: ui/options_graphics.rml:178
+#: ui/options_graphics.rml:181
 msgid "Menu image size limit"
 msgstr "பட்டியல் பட அளவு வரம்பு"
 
-#: ui/options_graphics.rml:179
+#: ui/options_graphics.rml:182
 msgid "Limit menu image size to save on memory."
 msgstr "நினைவகத்தில் சேமிக்க பட்டியல் பட அளவைக் கட்டுப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:187
 msgid "High-precision rendering"
 msgstr "உயர் துல்லியமான வழங்குதல்"
 
-#: ui/options_graphics.rml:185
+#: ui/options_graphics.rml:188
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "உயர் துல்லியமான படப்புள்ளி இடையகங்களைப் பயன்படுத்தவும், இது வண்ணக் குழிவைக் குறைக்கிறது."
 
-#: ui/options_graphics.rml:189
+#: ui/options_graphics.rml:192
 msgid "Use bindless textures if possible"
 msgstr "முடிந்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்துங்கள்"
 
-#: ui/options_graphics.rml:191
+#: ui/options_graphics.rml:194
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1205,17 +1207,17 @@ msgstr ""
 "வன்பொருள்/இயக்கி ஆதரித்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்தவும். இது செயல்திறனை "
 "மேம்படுத்தக்கூடும்."
 
-#: ui/options_graphics.rml:191 ui/options_graphics.rml:241
-#: ui/options_graphics.rml:265 ui/options_graphics.rml:351
-#: ui/options_graphics.rml:356 ui/options_graphics.rml:361
+#: ui/options_graphics.rml:194 ui/options_graphics.rml:244
+#: ui/options_graphics.rml:268 ui/options_graphics.rml:354
+#: ui/options_graphics.rml:359 ui/options_graphics.rml:364
 msgid "Experimental."
 msgstr "சோதனை."
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:197
 msgid "Mip-mapping"
 msgstr "மிப்-மேப்பிங்"
 
-#: ui/options_graphics.rml:195
+#: ui/options_graphics.rml:198
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1223,96 +1225,96 @@ msgstr ""
 "எம்ஐபி-மேப்பிங் குறைந்த தெளிவுத்திறன் கொண்ட அமைப்புகளைப் பயன்படுத்துவதன் மூலம் தொலைதூர "
 "மேற்பரப்புகளை சிறப்பாகக் காட்டுகிறது. இது பொதுவாக செயல்திறனை பாதிக்காது."
 
-#: ui/options_graphics.rml:202 ui/options_ui.rml:47
+#: ui/options_graphics.rml:205 ui/options_ui.rml:47
 #: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No"
 msgstr "இல்லை"
 
-#: ui/options_graphics.rml:204
+#: ui/options_graphics.rml:207
 msgid "Anisotropic mip-mapping"
 msgstr "அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங்"
 
-#: ui/options_graphics.rml:205
+#: ui/options_graphics.rml:208
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "கோண மேற்பரப்புகளில் எம்ஐபி-வரைபடங்களின் சிறந்த விளக்கம்."
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:212
 msgid "Trilinear"
 msgstr "மூநேர்கோடு"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:212
 msgid "better"
 msgstr "சிறந்தது"
 
-#: ui/options_graphics.rml:210
+#: ui/options_graphics.rml:213
 msgid "Bilinear"
 msgstr "பிலினியர்"
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:215
 msgid "Texture scaling filter"
 msgstr "அமைப்பு அளவிடுதல் வடிகட்டி"
 
-#: ui/options_graphics.rml:220 ui/options_graphics.rml:222
+#: ui/options_graphics.rml:223 ui/options_graphics.rml:225
 msgid "Materials"
 msgstr "பொருட்கள்"
 
-#: ui/options_graphics.rml:224
+#: ui/options_graphics.rml:227
 msgid "Sky"
 msgstr "வானம்"
 
-#: ui/options_graphics.rml:226
+#: ui/options_graphics.rml:229
 msgid "Draw the sky."
 msgstr "வானத்தை வரையவும்."
 
-#: ui/options_graphics.rml:229
+#: ui/options_graphics.rml:232
 msgid "Normal mapping"
 msgstr "சாதாரண மேப்பிங்"
 
-#: ui/options_graphics.rml:231
+#: ui/options_graphics.rml:234
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "தட்டையான மேற்பரப்புகளில் கூடுதல் விளக்கு விவரங்களை உருவகப்படுத்துகிறது."
 
-#: ui/options_graphics.rml:234
+#: ui/options_graphics.rml:237
 msgid "Deluxe mapping"
 msgstr "டீலக்ச் மேப்பிங்"
 
-#: ui/options_graphics.rml:236
+#: ui/options_graphics.rml:239
 msgid "Light direction based on baked textures."
 msgstr "வேகவைத்த அமைப்புகளின் அடிப்படையில் ஒளி திசை."
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:242
 msgid "Relief mapping"
 msgstr "நிவாரண மேப்பிங்"
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Adds bumps on supported surfaces."
 msgstr "உதவி மேற்பரப்புகளில் புடைப்புகளைச் சேர்க்கிறது."
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:247
 msgid "Specular mapping"
 msgstr "ஏகப்பட்ட மேப்பிங்"
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Simulate light specularity."
 msgstr "ஒளி ஊகத்தை உருவகப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:252
 msgid "Physical mapping"
 msgstr "உடல் வரைபடம்"
 
-#: ui/options_graphics.rml:251
+#: ui/options_graphics.rml:254
 msgid "Material appearance based on physical approximations."
 msgstr "உடல் தோராயங்களின் அடிப்படையில் பொருள் தோற்றம்."
 
-#: ui/options_graphics.rml:259 ui/options_graphics.rml:261
+#: ui/options_graphics.rml:262 ui/options_graphics.rml:264
 msgid "Reflections"
 msgstr "பிரதிபலிப்புகள்"
 
-#: ui/options_graphics.rml:263
+#: ui/options_graphics.rml:266
 msgid "Static reflections"
 msgstr "நிலையான பிரதிபலிப்புகள்"
 
-#: ui/options_graphics.rml:265
+#: ui/options_graphics.rml:268
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1320,23 +1322,23 @@ msgstr ""
 "ஆதரிக்கப்பட்ட மேற்பரப்புகளில் நிலையான கியூபேப் பிரதிபலிப்புகளைச் சேர்க்கிறது. சாதாரண, "
 "ஏகப்பட்ட மற்றும் டீலக்ச் மேப்பிங் தேவை. தற்போது உடல் மேப்பிங் மூலம் ஆதரிக்கப்படவில்லை."
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:272
 msgid "Very low"
 msgstr "மிகக் குறைவு"
 
-#: ui/options_graphics.rml:271 ui/options_graphics.rml:398
+#: ui/options_graphics.rml:274 ui/options_graphics.rml:401
 msgid "Moderate"
 msgstr "மிதமான"
 
-#: ui/options_graphics.rml:273
+#: ui/options_graphics.rml:276
 msgid "Very high"
 msgstr "மிக உயர்ந்த"
 
-#: ui/options_graphics.rml:275 ui/options_graphics.rml:392
+#: ui/options_graphics.rml:278 ui/options_graphics.rml:395
 msgid "Quality"
 msgstr "தகுதி"
 
-#: ui/options_graphics.rml:276
+#: ui/options_graphics.rml:279
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1344,101 +1346,96 @@ msgstr ""
 "நிலையான பிரதிபலிப்பு கியூபேப்சின் தகுதி. அதிக குணங்கள் நிறைய வட்டு இடத்தைப் "
 "பயன்படுத்தலாம்."
 
-#: ui/options_graphics.rml:279
+#: ui/options_graphics.rml:282
 msgid "Cubemap grid spacing"
 msgstr "க்யூப்மேப் கட்டம் இடைவெளி"
 
-#: ui/options_graphics.rml:283 ui/options_graphics.rml:410
-#: ui/options_mouse.rml:20 ui/server_setup.rml:72
-msgid "Current:"
-msgstr "நடப்பு:"
-
-#: ui/options_graphics.rml:289 ui/options_ui.rml:139
+#: ui/options_graphics.rml:292 ui/options_ui.rml:139
 msgid "Never"
 msgstr "ஒருபோதும்"
 
-#: ui/options_graphics.rml:290
+#: ui/options_graphics.rml:293
 msgid "Cache on disk"
 msgstr "வட்டில் கேச்"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:294
 msgid "Always rebuild"
 msgstr "எப்போதும் மீண்டும் உருவாக்கவும்"
 
-#: ui/options_graphics.rml:293
+#: ui/options_graphics.rml:296
 msgid "Static reflection cubemaps autobuild"
 msgstr "நிலையான பிரதிபலிப்பு கியூபேப்ச் தன்னியக்க கட்டை"
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:297
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "தானாகவே உருவாக்க/ஏற்ற/பிரதிபலிப்பு க்யூபேப்புகளை சேமிக்கவும்."
 
-#: ui/options_graphics.rml:302 ui/options_graphics.rml:304
+#: ui/options_graphics.rml:305 ui/options_graphics.rml:307
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "விளைவுகள்"
 
-#: ui/options_graphics.rml:306
+#: ui/options_graphics.rml:309
 msgid "Bloom"
 msgstr "பூக்கும்"
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:311
 msgid "Makes bright areas on your screen glow."
 msgstr "உங்கள் திரையில் பிரகாசமான பகுதிகளை ஒளிரச் செய்கிறது."
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:314
 msgid "Color grading"
 msgstr "வண்ண தகுதி"
 
-#: ui/options_graphics.rml:313
+#: ui/options_graphics.rml:316
 msgid "Alter colors to create specific ambiences."
 msgstr "குறிப்பிட்ட ஆத்மினங்களை உருவாக்க வண்ணங்களை மாற்றவும்."
 
-#: ui/options_graphics.rml:316
+#: ui/options_graphics.rml:319
 msgid "Heat-haze"
 msgstr "வெப்பம் கேள்விக்குரிய"
 
-#: ui/options_graphics.rml:318
+#: ui/options_graphics.rml:321
 msgid "Simulate air refraction in severe heat."
 msgstr "கடுமையான வெப்பத்தில் காற்று ஒளிவிலகல் உருவகப்படுத்தவும்."
 
-#: ui/options_graphics.rml:321
+#: ui/options_graphics.rml:324
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "திரை விண்வெளி சுற்றுப்புற மறுப்பு (SSAO)"
 
-#: ui/options_graphics.rml:323
+#: ui/options_graphics.rml:326
 msgid "Simulate dark corners."
 msgstr "இருண்ட மூலைகளை உருவகப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:329
 msgid "Marks"
 msgstr "மதிப்பெண்கள்"
 
-#: ui/options_graphics.rml:328
+#: ui/options_graphics.rml:331
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "மேற்பரப்புகளில் மதிப்பெண்களை (புல்லட் துளைகள் அல்லது க்ரீப் போன்றவை) வரையவும்"
 
-#: ui/options_graphics.rml:331
+#: ui/options_graphics.rml:334
 msgid "Particle physics"
 msgstr "துகள் இயற்பியல்"
 
-#: ui/options_graphics.rml:333
+#: ui/options_graphics.rml:336
 msgid "Allow particles to bounce off surfaces."
 msgstr "துகள்கள் மேற்பரப்புகளைத் துடைக்க அனுமதிக்கவும்."
 
-#: ui/options_graphics.rml:340
+#: ui/options_graphics.rml:343
 msgid "Renderer"
 msgstr "ரெண்டரர்"
 
-#: ui/options_graphics.rml:345
+#: ui/options_graphics.rml:348
 msgid "Read-only depth buffer"
 msgstr ""
 
-#: ui/options_graphics.rml:347 ui/options_graphics.rml:349
+#: ui/options_graphics.rml:350 ui/options_graphics.rml:352
 msgid "Material system"
 msgstr "பொருள் அமைப்பு"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:354
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1446,91 +1443,91 @@ msgstr ""
 "செயல்திறனை கணிசமாக மேம்படுத்தும் புதிய அமைப்பைப் பயன்படுத்தவும். சில ஓட்டுநர்கள் இதில் "
 "தோல்வியடையக்கூடும் (எ.கா. சி. மேசா மற்றும் ஏஎம்டி தனியுரிம ஓட்டுநர்கள்)."
 
-#: ui/options_graphics.rml:354
+#: ui/options_graphics.rml:357
 msgid "GPU frustum culling"
 msgstr "Finu freustum culling"
 
-#: ui/options_graphics.rml:356
+#: ui/options_graphics.rml:359
 msgid "Cull surfaces that are out of view."
 msgstr "பார்வைக்கு வெளியே இருக்கும் குல் மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:359
+#: ui/options_graphics.rml:362
 msgid "GPU occlusion culling"
 msgstr "சி.பீ.யூ மறைவு"
 
-#: ui/options_graphics.rml:361
+#: ui/options_graphics.rml:364
 msgid "Cull hidden surfaces."
 msgstr "மறைக்கப்பட்ட மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:368
+#: ui/options_graphics.rml:371
 msgid "Gameplay"
 msgstr "விளையாட்டு"
 
-#: ui/options_graphics.rml:370
+#: ui/options_graphics.rml:373
 msgid "Building markers"
 msgstr "கட்டிட குறிப்பான்கள்"
 
-#: ui/options_graphics.rml:373
+#: ui/options_graphics.rml:376
 msgid "disabled"
 msgstr "முடக்கப்பட்டது"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:377
 msgid "All structures"
 msgstr "அனைத்து கட்டமைப்புகளும்"
 
-#: ui/options_graphics.rml:375
+#: ui/options_graphics.rml:378
 msgid "Support structures"
 msgstr "உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:376
+#: ui/options_graphics.rml:379
 msgid "Offensive structures"
 msgstr "கெட்ட கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:380
 msgid "Alien structures"
 msgstr "அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:378
+#: ui/options_graphics.rml:381
 msgid "Human structures"
 msgstr "மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:382
 msgid "Alien support structures"
 msgstr "அன்னிய உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:380
+#: ui/options_graphics.rml:383
 msgid "Human support structures"
 msgstr "மனித உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:381
+#: ui/options_graphics.rml:384
 msgid "Offensive alien structures"
 msgstr "தாக்குதல் அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:385
 msgid "Offensive human structures"
 msgstr "தாக்குதல் மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:384
+#: ui/options_graphics.rml:387
 msgid "Building ranges"
 msgstr "கட்டிட வரம்புகள்"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:389
 msgid "Models"
 msgstr "மாதிரிகள்"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:397
 msgid "Motion blur"
 msgstr "இயக்க மங்கலானது"
 
-#: ui/options_graphics.rml:402
+#: ui/options_graphics.rml:405
 msgid "Intensity"
 msgstr "தீவிரம்"
 
-#: ui/options_graphics.rml:403
+#: ui/options_graphics.rml:406
 msgid "Level of motion-blur."
 msgstr "மோசன்-ப்ளூரின் நிலை."
 
-#: ui/options_graphics.rml:406
+#: ui/options_graphics.rml:409
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "இயக்க-BLUR ஐ செயல்படுத்த குறைந்தபட்ச இயக்க விரைவு"
 
@@ -5558,6 +5555,12 @@ msgstr "வேற்றுகிரகவாசிகள்"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "மனிதர்கள்"
+
+#~ msgid "Exposure"
+#~ msgstr "நேரிடுவது"
+
+#~ msgid "Tone mapping brightness level"
+#~ msgstr "டோன் மேப்பிங் பிரகாச நிலை"
 
 #~ msgid "Fast approximate anti-aliasing (FXAA)"
 #~ msgstr "வேகமாக தோராயமான எதிர்ப்பு மாற்றுப்பெயர் (FXAA)"
