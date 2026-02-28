@@ -116,7 +116,7 @@ static clipHandle_t G_CM_ClipHandleForEntity( const gentity_t *ent )
 	}
 
 	// create a temp tree/capsule from bounding box sizes
-	return CM_TempBoxModel( ent->r.mins, ent->r.maxs, /*capsule = */ ent->r.svFlags & SVF_CAPSULE );
+	return CM_TempBoxModel( ent->r.mins, ent->r.maxs, /*capsule = */ false );
 }
 
 /*
