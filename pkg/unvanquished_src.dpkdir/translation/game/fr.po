@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-28 17:51+0100\n"
-"PO-Revision-Date: 2026-02-24 13:46+0000\n"
+"PO-Revision-Date: 2026-03-01 17:09+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -1070,7 +1070,7 @@ msgstr "Gamma :"
 
 #: ui/options_graphics.rml:107
 msgid "Exposure (world brightness level)"
-msgstr ""
+msgstr "Exposition (niveau de luminosité du monde)"
 
 #: ui/options_graphics.rml:110 ui/options_graphics.rml:286
 #: ui/options_graphics.rml:413 ui/options_mouse.rml:20 ui/server_setup.rml:72
