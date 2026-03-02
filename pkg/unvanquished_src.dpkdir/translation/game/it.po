@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-28 17:51+0100\n"
-"PO-Revision-Date: 2026-02-24 10:09+0000\n"
+"PO-Revision-Date: 2026-03-03 09:09+0000\n"
 "Last-Translator: \"V. Elle\" <leonardo.luzzi@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1054,7 +1054,7 @@ msgstr "Gamma:"
 
 #: ui/options_graphics.rml:107
 msgid "Exposure (world brightness level)"
-msgstr ""
+msgstr "Esposizione (livello luminosità generale)"
 
 #: ui/options_graphics.rml:110 ui/options_graphics.rml:286
 #: ui/options_graphics.rml:413 ui/options_mouse.rml:20 ui/server_setup.rml:72
@@ -1063,11 +1063,11 @@ msgstr "Corrente:"
 
 #: ui/options_graphics.rml:114
 msgid "Tone mapping"
-msgstr ""
+msgstr "Mappatura dei toni"
 
 #: ui/options_graphics.rml:115
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
-msgstr ""
+msgstr "Gestisce la gamma dinamica per ridurre le aree sbiadite o troppo scure."
 
 #: ui/options_graphics.rml:118
 msgid "Enable tone mapping"
