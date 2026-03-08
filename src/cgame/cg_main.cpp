@@ -775,6 +775,8 @@ static void CG_RegisterGraphics()
 
 	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
+	cgs.media.outlineShader = trap_R_RegisterShader("gfx/outline", RSF_DEFAULT);
+
 	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", RSF_DEFAULT );
 
 	cgs.media.creepShader = trap_R_RegisterShader("gfx/buildables/creep/creep", RSF_DEFAULT );
@@ -1272,8 +1274,7 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 
 	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed,idle,idle2" );
-	cgs.media.whiteShader = trap_R_RegisterShader("gfx/colors/white", RSF_DEFAULT);
-	cgs.media.outlineShader = trap_R_RegisterShader("gfx/outline", RSF_DEFAULT);
+	cgs.media.whiteShader = trap_R_RegisterShader("gfx/colors/white", RSF_2D); // may be used for some 3D drawing too
 
 	// old servers
 	cgs.gameState = gameState;

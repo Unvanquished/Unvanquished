@@ -428,7 +428,7 @@ void Rocket_Init()
 	RegisterElement<RocketIncludeElement>( "include" );
 	RegisterElement<RocketCvarInlineElement>( "inlinecvar" );
 
-	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
+	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_2D );
 
 	CG_FocusEvent( rocketInfo.keyCatcher & KEYCATCH_CONSOLE ? false : true );
 }
