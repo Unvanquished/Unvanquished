@@ -329,7 +329,7 @@ struct clientPersistant_t
 {
 	clientConnected_t connected;
 	usercmd_t         cmd; // we would lose angles if not persistent
-	bool          localClient; // true if "ip" info key is "localhost"
+	bool          localClient; // true if this client is hosting the game, or is a bot
 	bool isBot;
 	bool          stickySpec; // don't stop spectating a player after they get killed
 	bool          pmoveFixed; //
