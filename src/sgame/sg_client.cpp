@@ -1239,7 +1239,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 
 	client->pers.isBot = true;
 	client->pers.localClient = true;
-	G_AddressParse( "localhost", &client->pers.ip );
 
 	Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
 	client->pers.admin = nullptr;
@@ -1259,13 +1258,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             client->pers.netname );
-
-	// don't do the "xxx connected" messages if they were caried over from previous level
-	if ( firstTime )
-	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* is connecting…") ),
-		                                Quote( client->pers.netname ) ) );
-	}
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
