@@ -2075,7 +2075,7 @@ static void SetNeedpass(const std::string& password)
 {
 	g_needpass.Set( !password.empty() && !Str::IsIEqual( password, "none" ) );
 }
-Cvar::Callback<Cvar::Cvar<std::string>> g_password("password", "password to join the server", Cvar::NONE, "", SetNeedpass);
+Cvar::Callback<Cvar::Cvar<std::string>> g_password("g_password", "password to join the server", Cvar::NONE, "", SetNeedpass);
 
 
 /*
