@@ -611,7 +611,7 @@ void G_admin_action( const char *action, const char *translation,
 		gentity_t *ent = &g_entities[ i ];
 
 		// If the client is local, don't send it to them again, because they see console output.
-		if ( ( level.inClient && i == 0 ) || !ent->inuse )
+		if ( !ent->inuse || ent->client->pers.localClient )
 		{
 			continue;
 		}
@@ -673,7 +673,7 @@ void G_admin_cmdlist( gentity_t *ent )
 	// If this is the local client, no need to send them commands.
 	// The local client will get their commands registered in
 	// G_admin_register_cmds.
-	if ( level.inClient && ent->num() == 0 )
+	if ( ent->client->pers.localClient )
 	{
 		return;
 	}
