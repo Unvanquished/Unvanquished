@@ -87,7 +87,7 @@
 				</row>
 
 				<row>
-					<select cvar="r_msaa">
+					<select cvar="r_MSAA">
 						<option value="0"><translate>Off</translate></option>
 						<option value="4">4x</option>
 						<option value="8">8x</option>
