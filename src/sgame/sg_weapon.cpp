@@ -533,9 +533,9 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	VectorMA( muzzle, 8192 * 16, forward, end );
 	if ( spread > 0.f )
 	{
-		float r = random() * M_PI * 2.0f;
-		float u = sinf( r ) * crandom() * spread * 16;
-		r = cosf( r ) * crandom() * spread * 16;
+		float r = BG_random() * M_PI * 2.0f;
+		float u = sinf( r ) * BG_crandom() * spread * 16;
+		r = cosf( r ) * BG_crandom() * spread * 16;
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 	}
