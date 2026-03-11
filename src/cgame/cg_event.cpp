@@ -759,12 +759,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				if ( ci->footsteps == FOOTSTEP_CUSTOM )
 				{
 					trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-					                   ci->customFootsteps[ rand() & 3 ] );
+					                   ci->customFootsteps[ BG_randrange( 4 ) ] );
 				}
 				else
 				{
 					trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-					                   cgs.media.footsteps[ ci->footsteps ][ rand() & 3 ] );
+					                   cgs.media.footsteps[ ci->footsteps ][ BG_randrange( 4 ) ] );
 				}
 			}
 
@@ -776,12 +776,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				if ( ci->footsteps == FOOTSTEP_CUSTOM )
 				{
 					trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-					                   ci->customMetalFootsteps[ rand() & 3 ] );
+					                   ci->customMetalFootsteps[ BG_randrange( 4 ) ] );
 				}
 				else
 				{
 					trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-					                   cgs.media.footsteps[ FOOTSTEP_METAL ][ rand() & 3 ] );
+					                   cgs.media.footsteps[ FOOTSTEP_METAL ][ BG_randrange( 4 ) ] );
 				}
 			}
 
@@ -791,7 +791,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-				                   cgs.media.footsteps[ FOOTSTEP_FLESH ][ rand() & 3 ] );
+				                   cgs.media.footsteps[ FOOTSTEP_FLESH ][ BG_randrange( 4 ) ] );
 			}
 
 			break;
@@ -800,7 +800,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
+				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ BG_randrange( 4 ) ] );
 			}
 
 			break;
@@ -809,7 +809,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
+				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ BG_randrange( 4 ) ] );
 			}
 
 			break;
@@ -818,7 +818,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
-				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
+				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ BG_randrange( 4 ) ]);
 			}
 
 			break;
@@ -1059,7 +1059,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_GRENADE_BOUNCE:
-			if ( rand() & 1 )
+			if ( BG_randrange( 2 ) )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.grenadeBounceSound0 );
 			}

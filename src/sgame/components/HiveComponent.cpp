@@ -98,7 +98,7 @@ bool HiveComponent::CompareTargets(Entity& a, Entity& b) const {
 	// TODO: Prefer target that is targeted by fewer hives.
 
 	// Break tie by random choice.
-	return rand() % 2 ? true : false;
+	return BG_randrange(2) ? true : false;
 }
 
 void HiveComponent::Fire(Entity& target) {

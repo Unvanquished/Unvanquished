@@ -2770,6 +2770,11 @@ void BG_InitRandom()
 	srand( rng() );
 }
 
+std::minstd_rand &BG_RandomEngine()
+{
+	return rng;
+}
+
 float BG_random()
 {
 	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -2779,6 +2784,12 @@ float BG_random()
 float BG_crandom()
 {
 	std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+	return dis(rng);
+}
+
+int BG_randrange( int n )
+{
+	std::uniform_int_distribution<int> dis(0, n - 1);
 	return dis(rng);
 }
 

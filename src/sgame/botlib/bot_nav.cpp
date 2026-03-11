@@ -368,11 +368,6 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 	}
 }
 
-static float frand()
-{
-	return ( float ) rand() / ( float ) RAND_MAX;
-}
-
 bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm::vec3 &point, float radius )
 {
 	rVec rorigin(origin);
@@ -389,7 +384,7 @@ bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm:
 	}
 
 	dtPolyRef randRef;
-	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->filter, frand, &randRef, nearPoint );
+	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->filter, BG_random, &randRef, nearPoint );
 
 	if ( dtStatusFailed( status ) )
 	{

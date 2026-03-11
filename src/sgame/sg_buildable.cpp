@@ -2080,7 +2080,7 @@ void G_LayoutSelect()
 		return;
 	}
 
-	layoutNum = ( rand() % cnt ) + 1;
+	layoutNum = BG_randrange( cnt ) + 1;
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
 	layoutPtr = &layouts2[ 0 ];
 

@@ -1336,7 +1336,7 @@ buildable_t BotChooseBuildableToBuild( gentity_t *self )
 		{
 			toBuild = BA_H_MGTURRET;
 			if ( BG_BuildableUnlocked( BA_H_ROCKETPOD ) &&
-				rand() < ( RAND_MAX + 1U ) * g_bot_buildProbRocketPod.Get() )
+				BG_random() < g_bot_buildProbRocketPod.Get() )
 			{
 				toBuild = BA_H_ROCKETPOD;
 			}

@@ -152,7 +152,8 @@ static gentity_t* ATrapper_FindEnemy(gentity_t* ent)
 	int       start;
 
 	// iterate through entities
-	start = rand() / (RAND_MAX / MAX_CLIENTS + 1);
+	// FIXME: extremely biased!
+	start = BG_randrange( MAX_CLIENTS );
 
 	for (i = start; i < MAX_CLIENTS + start; i++)
 	{

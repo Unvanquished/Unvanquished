@@ -380,7 +380,7 @@ void Rocket_Init()
 
 	// Initialize Lua
 	Rml::Lua::Initialise();
-	Rml::Lua::Interpreter::DoString("math.randomseed(os.time())");
+	Rml::Lua::Interpreter::DoString(Str::Format("math.randomseed(%u)", BG_RandomEngine()()));
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaEvents(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
