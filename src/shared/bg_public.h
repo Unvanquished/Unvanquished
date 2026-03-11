@@ -1904,6 +1904,10 @@ void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
 
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 
+void BG_InitRandom();
+WARN_UNUSED_RESULT float BG_random();
+WARN_UNUSED_RESULT float BG_crandom();
+
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
 WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles );
 glm::vec3 ProjectPointOntoVectorBounded(const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd);

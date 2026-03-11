@@ -186,7 +186,7 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	float averageTotalBurnTime = averagePostMinBurnTime + (float)MIN_BURN_TIME;
 
 	// Attempt to stop burning.
-	if (random() < burnStopChance) {
+	if (BG_random() < burnStopChance) {
 		fireLogger.Notice("Stopped burning after %.1fs, target average lifetime was %.1fs.",
 		                  (float)(level.time - igniteTime) / 1000.0f, averageTotalBurnTime / 1000.0f);
 
@@ -219,7 +219,7 @@ void IgnitableComponent::ConsiderSpread(int /*timeDelta*/) {
 		float distanceMod  = 1.0f - distanceFrac;
 		float spreadChance = distanceMod;
 
-		if (random() < spreadChance) {
+		if (BG_random() < spreadChance) {
 			if (G_LineOfSight(entity.oldEnt, other.oldEnt) && other.Ignite(fireStarter)) {
 				fireLogger.Notice("Ignited a neighbour, chance to do so was %.0f%%.",
 				                  spreadChance*100.0f);

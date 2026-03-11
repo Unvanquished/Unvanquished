@@ -155,8 +155,8 @@ static void fx_rumble_think( gentity_t *self )
 		}
 
 		ent->client->ps.groundEntityNum = ENTITYNUM_NONE;
-		ent->client->ps.velocity[ 0 ] += crandom() * 150;
-		ent->client->ps.velocity[ 1 ] += crandom() * 150;
+		ent->client->ps.velocity[ 0 ] += BG_crandom() * 150;
+		ent->client->ps.velocity[ 1 ] += BG_crandom() * 150;
 		ent->client->ps.velocity[ 2 ] = self->mapEntity.config.speed;
 	}
 

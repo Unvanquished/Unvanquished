@@ -75,11 +75,11 @@ static float CG_RandomiseValue( float value, float variance )
 {
 	if ( value != 0.0f )
 	{
-		return value * ( 1.0f + ( random() * variance ) );
+		return value * ( 1.0f + ( BG_random() * variance ) );
 	}
 	else
 	{
-		return random() * variance;
+		return BG_random() * variance;
 	}
 }
 
@@ -92,8 +92,8 @@ Randomly spread a vector by some amount
 */
 static void CG_SpreadVector( vec3_t v, float spread )
 {
-	float  randomSpread = crandom() * spread;
-	float  randomRotation = random() * 360.0f;
+	float  randomSpread = BG_crandom() * spread;
+	float  randomRotation = BG_random() * 360.0f;
 
 	vec3_t p;
 	PerpendicularVector( p, v );
@@ -233,9 +233,9 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				VectorAdd( p->origin, bp->displacement, p->origin );
 			}
 
-			p->origin[ 0 ] += ( crandom() * bp->randDisplacement[ 0 ] );
-			p->origin[ 1 ] += ( crandom() * bp->randDisplacement[ 1 ] );
-			p->origin[ 2 ] += ( crandom() * bp->randDisplacement[ 2 ] );
+			p->origin[ 0 ] += ( BG_crandom() * bp->randDisplacement[ 0 ] );
+			p->origin[ 1 ] += ( BG_crandom() * bp->randDisplacement[ 1 ] );
+			p->origin[ 2 ] += ( BG_crandom() * bp->randDisplacement[ 2 ] );
 
 			switch ( bp->velMoveType )
 			{
@@ -2353,7 +2353,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	if ( bp->bounceMarkName[ 0 ] && p->bounceMarkCount > 0 )
 	{
 		CG_RegisterMark( bp->bounceMark, trace.endpos, trace.plane.normal,
-			random() * 360, 1, 1, 1, 1,
+			BG_random() * 360, 1, 1, 1, 1,
 			true, bp->bounceMarkRadius, false );
 		p->bounceMarkCount--;
 	}

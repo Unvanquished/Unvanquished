@@ -4209,14 +4209,14 @@ static void PM_Weapon()
 		if ( BG_IsChaingunStabilized( pm->ps ) )
 		{
 			pm->ps->delta_angles[ PITCH ] += ANGLE2SHORT(
-				crandom() * STABILIZED_CHAINGUN_JITTER_SCALE + STABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
-			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( crandom() * STABILIZED_CHAINGUN_JITTER_SCALE );
+				BG_crandom() * STABILIZED_CHAINGUN_JITTER_SCALE + STABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
+			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( BG_crandom() * STABILIZED_CHAINGUN_JITTER_SCALE );
 		}
 		else
 		{
 			pm->ps->delta_angles[ PITCH ] += ANGLE2SHORT(
-				crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE + UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
-			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE );
+				BG_crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE + UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
+			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( BG_crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE );
 		}
 	}
 

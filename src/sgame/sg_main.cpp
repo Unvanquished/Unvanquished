@@ -474,7 +474,7 @@ G_InitGame
 */
 void G_InitGame( int levelTime, int randomSeed, bool inClient )
 {
-	srand( randomSeed );
+	Q_UNUSED( randomSeed ); // TODO(0.57): NUKE
 
 	Log::Notice( "------- Game Initialization -------" );
 	Log::Notice( "gamename: %s", GAME_VERSION );
