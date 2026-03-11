@@ -197,7 +197,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 
 			if ( bp->numModels )
 			{
-				p->model = bp->models[ rand() % bp->numModels ];
+				p->model = bp->models[ BG_randrange( bp->numModels ) ];
 
 				if ( bp->modelAnimation.frameLerp < 0 )
 				{

@@ -405,7 +405,7 @@ static const char *choose( const char *first, ... )
 		return first;
 	}
 
-	count = rand() % count;
+	count = BG_randrange( count );
 
 	ret = first;
 	va_start( ap, first );

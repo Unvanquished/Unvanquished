@@ -629,7 +629,7 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 	tent = G_NewTempEntity( muzzle, EV_SHOTGUN );
 	VectorScale( forward, 4096, tent->s.origin2 );
 	SnapVector( tent->s.origin2 );
-	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
+	tent->s.eventParm = BG_randrange( 0x100 ); // seed for spread pattern
 	tent->s.otherEntityNum = self->s.number;
 
 	// calculate the pattern and do the damage
@@ -670,9 +670,9 @@ void G_FirebombMissileIgnite( gentity_t *self )
 	{
 		glm::vec3 dir =
 		{
-			( rand() / static_cast<float>( RAND_MAX ) ) - 0.5f,
-			( rand() / static_cast<float>( RAND_MAX ) ) - 0.5f,
-			( rand() / static_cast<float>( RAND_MAX ) ) * 0.5f,
+			BG_random() - 0.5f,
+			BG_random() - 0.5f,
+			BG_random() * 0.5f,
 		};
 
 		VectorNormalize( dir );
@@ -681,7 +681,7 @@ void G_FirebombMissileIgnite( gentity_t *self )
 		gentity_t *m = G_SpawnDumbMissile( MIS_FIREBOMB_SUB, self->parent, VEC2GLM( self->s.origin ), dir );
 
 		// randomize missile speed
-		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
+		VectorScale( m->s.pos.trDelta, BG_random() + 0.5f, m->s.pos.trDelta );
 	}
 }
 

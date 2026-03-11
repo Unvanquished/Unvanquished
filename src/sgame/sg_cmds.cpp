@@ -970,7 +970,7 @@ static void Cmd_Team_f( gentity_t *ent )
 		}
 		else
 		{
-			team = (team_t) ( TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 ) );
+			team = (team_t) ( TEAM_ALIENS + BG_randrange( 2 ) );
 		}
 	}
 	else

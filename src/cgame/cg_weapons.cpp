@@ -2220,7 +2220,7 @@ static void PlayHitSound( vec3_t origin, const sfxHandle_t *impactSound )
 
 	if ( c > 0 )
 	{
-		c = rand() % c;
+		c = BG_randrange( c );
 
 		if ( impactSound[ c ] )
 		{
@@ -2503,7 +2503,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 	if ( c > 0 )
 	{
-		c = rand() % c;
+		c = BG_randrange( c );
 
 		if ( wi->wim[ weaponMode ].flashSound[ c ] )
 		{
