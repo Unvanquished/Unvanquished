@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-28 17:51+0100\n"
-"PO-Revision-Date: 2024-10-27 09:00+0000\n"
-"Last-Translator: Jeannes Bryan <jeannesbond@hotmail.com>\n"
+"PO-Revision-Date: 2026-03-14 19:09+0000\n"
+"Last-Translator: Mr Suit <wolfysnipers23@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/id/>\n"
 "Language: id\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.8.2-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Pembangunan"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
 #: ui/human_buy.rml:233
@@ -30,11 +30,11 @@ msgstr "Harga:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Evolusi"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "Poin perubahan bentuk"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -68,7 +68,7 @@ msgstr ""
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Durasi:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
