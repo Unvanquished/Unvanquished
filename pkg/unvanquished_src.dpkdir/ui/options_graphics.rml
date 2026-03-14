@@ -80,12 +80,6 @@
 					<p><translate>Multisample anti-aliasing is preferred when both are enabled.</translate></p>
 				</row>
 
- 				<row>
-					<input cvar="r_FXAA" type="checkbox" />
-					<h3><translate>Fast approximate anti-aliasing (FXAA)</translate></h3>
-					<p><translate>Smooth the edges using a fast but cheap filter, can blur some details.</translate></p>
-				</row>
-
 				<row>
 					<select cvar="r_MSAA">
 						<option value="0"><translate>Off</translate></option>
@@ -97,6 +91,12 @@
 					</select>
 					<h3><translate>Multisample anti-aliasing (MSAA)</translate></h3>
 					<p><translate>Render at higher precision at the boundaries of surfaces for crisp edges. This is a resource-intensive option.</translate></p>
+				</row>
+
+				<row>
+					<input cvar="r_FXAA" type="checkbox" />
+					<h3><translate>Fast approximate anti-aliasing (FXAA)</translate></h3>
+					<p><translate>Smooth the edges using a fast but cheap filter, can blur some details.</translate></p>
 				</row>
 
 				<buttonbar>
