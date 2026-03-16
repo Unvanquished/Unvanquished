@@ -566,8 +566,6 @@ Cmd_Argc() / Cmd_Argv()
 */
 bool ConsoleCommand()
 {
-	char buffer[BIG_INFO_STRING];
-
 	const cg_cmd_t *cmd = std::lower_bound( std::begin( commands ), std::end( commands ), CG_Argv( 0 ) );
 	bool found = cmd != std::end( commands ) && Str::IsIEqual( CG_Argv( 0 ), cmd->cmd );
 	if ( found && cmd->function )
@@ -579,8 +577,7 @@ bool ConsoleCommand()
 		//This command was added to provide completion of server-side commands
 		//forward it to the server
 		// (see also CG_ServerCommands)
-		trap_EscapedArgs( buffer, sizeof ( buffer ) );
-		trap_SendClientCommand( buffer );
+		trap_SendClientCommand( trap_EscapedArgs().c_str() );
 	}
 
 	return true;
