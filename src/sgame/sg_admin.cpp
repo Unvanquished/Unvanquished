@@ -1707,7 +1707,7 @@ static void G_admin_ban_message(
 		             "^3Banned player ^*%s^3 tried to connect from %s (ban #%d)",
 		             ( !Q_stricmp( name, ban->name )
 		               ? ban->name
-		               : Str::Format( "%s ^3(a.k.a. ^*%s^3)", name, ban->name ) ),
+		               : Str::Format( "%s ^3(a.k.a. ^*%s^3)", name, ban->name ) ).c_str(),
 		             ent->client->pers.ip.str,
 		             ban->id );
 	}
