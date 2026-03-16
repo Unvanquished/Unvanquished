@@ -1935,7 +1935,7 @@ extern Cvar::Cvar<bool> cg_lowQualityModels;
 //
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
-const char *CG_Args();
+std::string CG_Args();
 
 void       CG_StartMusic();
 

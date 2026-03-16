@@ -106,9 +106,7 @@ static void CG_Rocket_BuildDS()
 // and executes them later anyway.
 static void CG_Rocket_EventExec()
 {
-	const char *args = CG_Args();
-	args = Q_stristr( args, " ");
-	trap_SendConsoleCommand( args );
+	trap_SendConsoleCommand( Q_stristr( CG_Args().c_str(), " " ) );
 }
 
 static void CG_Rocket_SortDS()

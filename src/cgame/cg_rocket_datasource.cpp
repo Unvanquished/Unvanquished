@@ -287,15 +287,10 @@ static int ServerListCmpByPing( const void *one, const void *two )
 
 static int ServerListCmpByName( const void* one, const void* two )
 {
-	char cleanName1[ MAX_INFO_VALUE ];
-	char cleanName2[ MAX_INFO_VALUE ];
 	server_t* a = ( server_t* ) one;
 	server_t* b = ( server_t* ) two;
 
-	Color::StripColors( a->name, cleanName1, sizeof( cleanName1 ) );
-	Color::StripColors( b->name, cleanName2, sizeof( cleanName2 ) );
-
-	return Q_stricmp( cleanName1, cleanName2 );
+	return Color::StripColors( a->name ) == Color::StripColors( b->name );
 }
 
 static int ServerListCmpByMap( const void* one, const void* two )
@@ -397,10 +392,9 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 
 	for ( int i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
-		char name[ MAX_INFO_VALUE ];
-		Color::StripColors( rocketInfo.data.servers[ netSrc ][ i ].name, name, sizeof( name ) );
+		std::string name = Color::StripColors( rocketInfo.data.servers[ netSrc ][ i ].name );
 
-		if ( Q_stristr( name, filter ) )
+		if ( Q_stristr( name.c_str(), filter ) )
 		{
 			InfoMap info;
 			info["name"] = rocketInfo.data.servers[ netSrc ][ i ].name;
