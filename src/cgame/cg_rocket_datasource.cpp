@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "cg_local.h"
 #include "shared/parse.h"
 
-static bool AddToServerList( const char *name, const char *label, std::string version, std::string abiVersion, int clients, int bots,
+static bool AddToServerList( const char *name, const char *label, std::string abiVersion, int clients, int bots,
 	int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
@@ -60,7 +60,6 @@ static bool AddToServerList( const char *name, const char *label, std::string ve
 	node->maxClients = maxClients;
 	node->addr = BG_strdup( addr );
 	node->label = BG_strdup( label );
-	node->version = version;
 	node->mapName = BG_strdup( mapName );
 	node->abiVersion = abiVersion;
 	rocketInfo.data.serverCount[ netSrc ]++;
@@ -316,11 +315,10 @@ void CG_Rocket_BuildServerList()
 			maxClients = atoi( Info_ValueForKey( info.c_str(), "sv_maxclients" ) );
 			Q_strncpyz( mapname, Info_ValueForKey( info.c_str(), "mapname" ), sizeof( mapname ) );
 
-			const std::string version = Info_ValueForKey( info.c_str(), "version" );
-			const std::string abiVersion = Info_ValueForKey( info.c_str(), "abiVersion" );
+			const std::string abiVersion = Info_ValueForKey( info.c_str(), "abi" );
 			rocketInfo.data.haveServerInfo[ netSrc ][ i ] =
 				AddToServerList( Info_ValueForKey( info.c_str(), "hostname" ), trustedInfo.featuredLabel,
-					version, abiVersion, clients, bots, ping, maxClients, mapname, trustedInfo.addr, netSrc );
+					abiVersion, clients, bots, ping, maxClients, mapname, trustedInfo.addr, netSrc );
 		}
 	}
 
@@ -336,17 +334,25 @@ void CG_Rocket_BuildServerList()
 
 		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
 		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
-		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
 		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
 		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
 		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
 		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
 
+		// Use ABI as version for now. We would need to request the status packet to know more.
 		std::string version;
-		if ( !Q_stricmp( rocketInfo.data.servers[netSrc][i].abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION) ) {
-			version = rocketInfo.data.servers[netSrc][i].version;
+
+		if ( rocketInfo.data.servers[netSrc][i].abiVersion == IPC::AbiVersion() ) {
+			if ( IPC::AbiVersion() == IPC::SYSCALL_ABI_VERSION ) {
+				version = IPC::SYSCALL_ABI_VERSION;
+			}
+			else {
+				/* Display as orange as two engines with compat-breaking changes may not be compatible
+				if those compat-breaking changes aren't the same. */
+				version = Str::Format( "^A?%s?", IPC::AbiVersion() );
+			}
 		} else {
-			version = Str::Format( "^1!%s!", rocketInfo.data.servers[netSrc][i].version );
+			version = Str::Format( "^1!%s!", rocketInfo.data.servers[netSrc][i].abiVersion );
 		}
 
 		Info_SetValueForKey( data, "version", version.c_str(), false);
@@ -524,11 +530,23 @@ static ConnectToCurrentSelectedServerCmd ConnectToCurrentSelectedServerCmdRegist
 static void CG_Rocket_ExecServerList( const char *table )
 {
 	int netSrc = CG_StringToNetSource( table );
-	if ( Q_stricmp( rocketInfo.data.servers[netSrc]->abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION ) ) {
+
+	int i = rocketInfo.data.serverIndex[netSrc];
+
+	if ( rocketInfo.data.servers[netSrc][i].abiVersion == IPC::AbiVersion() ) {
+		if ( IPC::AbiVersion() == IPC::SYSCALL_ABI_VERSION ) {
+			trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[netSrc][i].addr ) );
+		}
+		else {
+			/* For now, use the “server mismatch” warning even if, when both servers are
+			using compat breaking changes, they may be compatible. */
+			cg_currentSelectedServer = rocketInfo.data.servers[netSrc][i].addr;
+			Rocket_DocumentAction( "server_mismatch", "show" );
+		}
+	}
+	else {
 		cg_currentSelectedServer = rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr;
 		Rocket_DocumentAction( "server_mismatch", "show" );
-	} else {
-		trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr ) );
 	}
 }
 
