@@ -316,8 +316,8 @@ void CG_Rocket_BuildServerList()
 			maxClients = atoi( Info_ValueForKey( info.c_str(), "sv_maxclients" ) );
 			Q_strncpyz( mapname, Info_ValueForKey( info.c_str(), "mapname" ), sizeof( mapname ) );
 
-			const std::string version = Info_ValueForKey( info.c_str(), "version" );
-			const std::string abiVersion = Info_ValueForKey( info.c_str(), "abiVersion" );
+			const std::string version = Info_ValueForKey( info.c_str(), "daemonver" );
+			const std::string abiVersion = Info_ValueForKey( info.c_str(), "abi" );
 			rocketInfo.data.haveServerInfo[ netSrc ][ i ] =
 				AddToServerList( Info_ValueForKey( info.c_str(), "hostname" ), trustedInfo.featuredLabel,
 					version, abiVersion, clients, bots, ping, maxClients, mapname, trustedInfo.addr, netSrc );
