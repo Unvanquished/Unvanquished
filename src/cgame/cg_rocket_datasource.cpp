@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "common/Common.h"
+#include "common/IPC/Primitives.h"
 #include "cg_local.h"
 #include "shared/parse.h"
 
