@@ -1120,7 +1120,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, refEntity_t* ent, l
 CG_WeaponAnimation
 ===============
 */
-static void CG_WeaponAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
+static void CG_WeaponAnimation( centity_t *cent, refEntity_t* ent, int16_t *old, int16_t *now, float *backLerp )
 {
 	lerpFrame_t   *lf = &cent->pe.weapon;
 	entityState_t *es = &cent->currentState;
@@ -1562,11 +1562,6 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 		{
 			CG_PositionRotatedEntityOnTag( &flash, entOffset, "tag_flash" );
 		}
-
-		if ( flash.hModel )
-		{
-			ents.push_back( flash );
-		}
 	}
 
 	if ( ps || cg.renderingThirdPerson ||
@@ -1597,12 +1592,15 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 		// make a dlight for the flash
 		if ( flashDlight )
 		{
-			trap_R_AddLightToScene( flash.origin, weapon->wim[ weaponMode ].flashDlight,
-			                        weapon->wim[ weaponMode ].flashDlightIntensity,
-			                        weapon->wim[ weaponMode ].flashDlightColor[ 0 ],
-			                        weapon->wim[ weaponMode ].flashDlightColor[ 1 ],
-			                        weapon->wim[ weaponMode ].flashDlightColor[ 2 ], 0 );
+			flash.dynamicLight[0] = weapon->wim[weaponMode].flashDlightColor[0] * weapon->wim[weaponMode].flashDlightIntensity;
+			flash.dynamicLight[1] = weapon->wim[weaponMode].flashDlightColor[1] * weapon->wim[weaponMode].flashDlightIntensity;
+			flash.dynamicLight[2] = weapon->wim[weaponMode].flashDlightColor[2] * weapon->wim[weaponMode].flashDlightIntensity;
+			flash.dynamicLight[3] = weapon->wim[weaponMode].flashDlight;
 		}
+	}
+
+	if ( flash.hModel ) {
+		ents.push_back( flash );
 	}
 
 	return ents;
