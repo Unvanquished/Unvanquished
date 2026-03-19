@@ -71,18 +71,54 @@ bool operator!=( const BoneMod& lhs, const BoneMod& rhs ) {
 	return !( lhs == rhs );
 }
 
-void UpdateEntity( const refEntity_t& ent, const uint16_t id ) {
-	refEntity_t* current = &entities[id];
+static bool CompareAnimations( refEntity_t& lhs, refEntity_t& rhs ) {
+	if ( lhs.frame != lhs.oldframe && lhs.backlerp != rhs.backlerp ) {
+		return false;
+	}
 
-	bool update = memcmp( &ent, current, offsetof( refEntity_t, lightingOrigin ) )
-		|| ent.tag != current->tag || !current->active
+	if ( lhs.animationHandle != rhs.animationHandle || lhs.animationHandle2 != rhs.animationHandle2 ) {
+		return false;
+	}
+
+	if ( !lhs.animationHandle && !rhs.animationHandle ) {
+		return true;
+	}
+
+	float lhsLerp = lhs.startFrame == lhs.endFrame ? 0.0f : lhs.lerp;
+	float rhsLerp = rhs.startFrame == rhs.endFrame ? 0.0f : rhs.lerp;
+
+	if ( lhsLerp != rhsLerp ) {
+		return false;
+	}
+
+	if ( !lhs.animationHandle2 ) {
+		return true;
+	}
+
+	lhsLerp = lhs.startFrame2 == lhs.endFrame2 ? 0.0f : lhs.lerp2;
+	rhsLerp = rhs.startFrame2 == rhs.endFrame2 ? 0.0f : rhs.lerp2;
+
+	if ( lhsLerp != rhsLerp ) {
+		return false;
+	}
+
+	return lhs.blendLerp == rhs.blendLerp;
+}
+
+static void UpdateEntity( refEntity_t& ent, const uint16_t id ) {
+	refEntity_t* current = &entities[id];
+	ent.active = true;
+
+	bool update = memcmp( &ent, current, offsetof( refEntity_t, padding ) )
+		|| ent.tag != current->tag
+		|| !CompareAnimations( ent, *current )
+		|| !VectorCompareEpsilon( ent.dynamicLight, current->dynamicLight, 0.01f )
 		|| !VectorCompareEpsilon( ent.origin, current->origin, 0.01f )
+		|| !VectorCompareEpsilon( ent.oldorigin, current->oldorigin, 0.01f )
 		|| !VectorCompareEpsilon( ent.boundsRotation, current->boundsRotation, 0.01f )
 		|| !VectorCompareEpsilon( ent.axis[0], current->axis[0], 0.01f )
 		|| !VectorCompareEpsilon( ent.axis[1], current->axis[1], 0.01f )
 		|| !VectorCompareEpsilon( ent.axis[2], current->axis[2], 0.01f )
-		|| ent.nonNormalizedAxes  != current->nonNormalizedAxes
-		|| ent.attachmentEntity   != current->attachmentEntity
 		|| ent.shaderRGBA.Red()   != current->shaderRGBA.Red()
 		|| ent.shaderRGBA.Green() != current->shaderRGBA.Green()
 		|| ent.shaderRGBA.Blue()  != current->shaderRGBA.Blue()
@@ -99,7 +135,6 @@ void UpdateEntity( const refEntity_t& ent, const uint16_t id ) {
 
 	if ( update ) {
 		entities[id] = ent;
-		entities[id].active = true;
 		entityUpdates.push_back( { entities[id], id } );
 	}
 }
@@ -119,70 +154,33 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents, const bool
 		);
 	}
 
-	// if ( realloc ) {
-		if ( ents.size() + frameCount > cent->refEntitiesCount ) {
-			entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, false );
-
-			const uint16_t oldOffset = cent->refEntitiesOffset;
-			cent->refEntitiesOffset = entityCache.Alloc( ents.size() + frameCount );
-
-			if ( cent->refEntitiesCount && cent->refEntitiesOffset != oldOffset ) {
-				entityCache.Free( oldOffset, cent->refEntitiesCount, true );
-
-				for ( refEntity_t* ent = entities + oldOffset, *ent2 = entities + cent->refEntitiesOffset;
-					ent < entities + oldOffset + cent->refEntitiesCount;
-					ent++, ent2++ ) {
-					*ent2 = *ent;
-				}
-			}
-
-			cent->refEntitiesCount = ents.size() + frameCount;
-		}
-
-		frameOffset = frameCount;
-		frameCount += ents.size();
-
-		if ( cg_showEntityCacheUpdates.Get() ) {
-			Log::defaultLogger.WithoutSuppression().Notice(
-				Str::Format( "Cache add entities: reallocated: frameOffset: %u frameCount: %u",
-					frameOffset, frameCount )
-			);
-	//	}
-	/* } else if ( ents.size() > cent->refEntitiesCount ) {
+	if ( ents.size() + frameCount > cent->refEntitiesCount ) {
 		entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, false );
 
-		cent->refEntitiesOffset = entityCache.Alloc( ents.size() );
-		cent->refEntitiesCount = ents.size();
-		frameCount = ents.size();
+		const uint16_t oldOffset = cent->refEntitiesOffset;
+		cent->refEntitiesOffset = entityCache.Alloc( ents.size() + frameCount );
 
-		if ( cg_showEntityCacheUpdates.Get() ) {
-			Log::defaultLogger.WithoutSuppression().Notice(
-				Str::Format( "Cache add entities: allocated: offset: %u frameCount: %u",
-					cent->refEntitiesOffset, frameCount )
-			);
-		} */
-	} else if ( false && ents.size() < cent->refEntitiesCount ) {
-		/* if ( ents.size() > lastFrameCount ) {
-			entityCache.Free( cent->refEntitiesOffset + ents.size(), cent->refEntitiesCount - ents.size(), true );
-			cent->refEntitiesCount = ents.size();
+		if ( cent->refEntitiesCount && cent->refEntitiesOffset != oldOffset ) {
+			entityCache.Free( oldOffset, cent->refEntitiesCount, true );
 
-			if ( cg_showEntityCacheUpdates.Get() ) {
-				Log::defaultLogger.WithoutSuppression().Notice(
-					Str::Format( "Cache add entities: free: %u", ents.size() )
-				);
-			}
-		} else */ if ( cent->refEntitiesCount > lastFrameCount ) {
-			entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
-			cent->refEntitiesCount = lastFrameCount;
-
-			if ( cg_showEntityCacheUpdates.Get() ) {
-				Log::defaultLogger.WithoutSuppression().Notice(
-					Str::Format( "Cache add entities: free: %u", lastFrameCount )
-				);
+			for ( refEntity_t* ent = entities + oldOffset, *ent2 = entities + cent->refEntitiesOffset;
+				ent < entities + oldOffset + cent->refEntitiesCount;
+				ent++, ent2++ ) {
+				*ent2 = *ent;
 			}
 		}
 
-		frameCount = ents.size();
+		cent->refEntitiesCount = ents.size() + frameCount;
+	}
+
+	frameOffset = frameCount;
+	frameCount += ents.size();
+
+	if ( cg_showEntityCacheUpdates.Get() ) {
+		Log::defaultLogger.WithoutSuppression().Notice(
+			Str::Format( "Cache add entities: reallocated: frameOffset: %u frameCount: %u",
+				frameOffset, frameCount )
+		);
 	}
 
 	uint16_t i = 0;
@@ -307,34 +305,28 @@ uint32_t EntityCache::Alloc( const uint32_t count ) {
 			return ( &block - &blocks[0] ) * 64;
 		}
 
-		uint64_t mask = UINT64_MAX;
+		uint64_t block2    = block;
+
 		uint32_t bitOffset = 0;
 		while ( true ) {
-			uint32_t offset = ( block & mask ) ? CountTrailingZeroes( block & mask ) : 64;
+			uint32_t offset = block2 ? CountTrailingZeroes( block2 ) : 64;
 
-			if ( offset == 64 && offset == bitOffset ) {
+			if ( offset == 64 && bitOffset >= 63 ) {
 				break;
 			}
-			
+
 			if ( count <= offset - bitOffset ) {
-				mask = UINT64_MAX >> ( 64 - count );
+				uint64_t mask = UINT64_MAX >> ( 64 - count );
 				block |= mask << bitOffset;
 				return bitOffset + ( &block - &blocks[0] ) * 64;
 			}
 
-			mask = offset == 63 ? 0 : UINT64_MAX << ( offset + 1 );
+			block2 |= UINT64_MAX >> ( 63 - offset );
+			block2  = ~block2;
 
-			bitOffset = offset + 1;
-
-			// Find the next zero bit so we don't loop over blocks that are allocated
-			uint64_t flipped = ~block & mask;
-
-			if ( flipped ) {
-				bitOffset = CountTrailingZeroes( flipped );
-				mask = UINT64_MAX << ( bitOffset );
-			} else {
-				break;
-			}
+			bitOffset = block2 ? CountTrailingZeroes( block2 ) : 64;
+			block2   ^= UINT64_MAX >> ( 64 - bitOffset );
+			block2    = ~block2;
 		}
 	}
 

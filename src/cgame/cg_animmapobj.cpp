@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_DoorAnimation
 ===============
 */
-static void CG_DoorAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_DoorAnimation( centity_t *cent, int16_t *old, int16_t *now, float *backLerp )
 {
 	CG_RunLerpFrame( &cent->lerpFrame );
 
@@ -108,7 +108,7 @@ void CG_ModelDoor( centity_t *cent )
 CG_AMOAnimation
 ===============
 */
-static void CG_AMOAnimation( centity_t *cent, int *old, int *now, float *backLerp )
+static void CG_AMOAnimation( centity_t *cent, int16_t *old, int16_t *now, float *backLerp )
 {
 	if ( !( cent->currentState.eFlags & EF_MOVER_STOP ) || cent->animPlaying )
 	{

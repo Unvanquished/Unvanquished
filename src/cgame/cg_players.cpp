@@ -1693,7 +1693,7 @@ static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationN
 CG_SegmentAnimation
 ===============
 */
-static void CG_SegmentAnimation( centity_t *cent, refEntity_t* ent, lerpFrame_t *lf, int anim, int *oldFrame, int *frame, float *backlerp )
+static void CG_SegmentAnimation( centity_t *cent, refEntity_t* ent, lerpFrame_t *lf, int anim, int16_t *oldFrame, int16_t *frame, float *backlerp )
 {
 	int clientNum = cent->currentState.clientNum;
 
@@ -2256,7 +2256,7 @@ CG_JetpackAnimation
 */
 #define JETPACK_USES_SKELETAL_ANIMATION 1
 
-static void CG_JetpackAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
+static void CG_JetpackAnimation( centity_t *cent, refEntity_t* ent, int16_t *old, int16_t *now, float *backLerp )
 {
 	lerpFrame_t	*lf = &cent->jetpackLerpFrame;
 	animation_t	*anim;
@@ -2754,7 +2754,6 @@ static void CG_PlayerSkeletal( centity_t* cent, int clientNum, vec3_t angles, in
 			VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, legs.origin );
 		}
 
-		VectorCopy( legs.origin, legs.lightingOrigin );
 		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 	} else {
 		VectorCopy( cent->lerpOrigin, playerOrigin );
@@ -2779,7 +2778,6 @@ static void CG_PlayerSkeletal( centity_t* cent, int clientNum, vec3_t angles, in
 		VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
 	}
 
-	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
 	if ( ci->gender != GENDER_NEUTER ) {
@@ -2964,7 +2962,6 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( cent->lerpOrigin, legs.origin );
 
-		VectorCopy( cent->lerpOrigin, legs.lightingOrigin );
 		legs.renderfx = renderfx;
 		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3033,8 +3030,6 @@ void CG_Player( centity_t *cent )
 				return;
 			}
 
-			VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
-
 			CG_PositionRotatedEntityOnTag( &torso, 0, "tag_torso" );
 
 			torso.renderfx = renderfx;
@@ -3050,8 +3045,6 @@ void CG_Player( centity_t *cent )
 				AddRefEntities( cent, ents );
 				return;
 			}
-
-			VectorCopy( cent->lerpOrigin, head.lightingOrigin );
 
 			CG_PositionRotatedEntityOnTag( &head, 1, "tag_head" );
 

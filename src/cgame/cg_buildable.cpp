@@ -958,7 +958,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent, refEntity_t* ent )
 CG_BuildableAnimation
 ===============
 */
-static void CG_BuildableAnimation( centity_t *cent, refEntity_t* ent, int *old, int *now, float *backLerp )
+static void CG_BuildableAnimation( centity_t *cent, refEntity_t* ent, int16_t *old, int16_t *now, float *backLerp )
 {
 	entityState_t *es = &cent->currentState;
 	lerpFrame_t   *lf = &cent->lerpFrame;
