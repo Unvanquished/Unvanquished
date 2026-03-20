@@ -1051,7 +1051,7 @@ msgstr "Valotus"
 
 #: ui/options_graphics.rml:112
 msgid "World brightness level."
-msgstr ""
+msgstr "Ympäristön kirkkaustaso."
 
 #: ui/options_graphics.rml:115 ui/options_graphics.rml:125
 #: ui/options_graphics.rml:301 ui/options_graphics.rml:428
