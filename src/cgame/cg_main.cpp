@@ -795,8 +795,10 @@ static void CG_RegisterGraphics()
 	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/buildables/common/greenbuild", RSF_DEFAULT );
 	cgs.media.yellowBuildShader = trap_R_RegisterShader("gfx/buildables/common/yellowbuild", RSF_DEFAULT );
 	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/buildables/common/redbuild", RSF_DEFAULT );
-	// could also be a customShader, but using a skin gets the engine to pre-build the GLSL shader variant
-	cgs.media.humanConstructingSkin = trap_R_RegisterSkin("gfx/buildables/common/human_constructing.skin" );
+	cgs.media.humanConstructingShader = trap_R_RegisterShader("gfx/buildables/human_base/spawning", RSF_DEFAULT);
+
+	// make the renderer prebuild the GLSL for the under construction shader applied to models
+	trap_R_RegisterSkin( "gfx/buildables/common/human_constructing.skin" );
 
 	for ( i = 0; i < 8; i++ )
 	{

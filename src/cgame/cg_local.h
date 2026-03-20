@@ -1527,7 +1527,7 @@ struct cgMedia_t
 	qhandle_t             greenBuildShader;
 	qhandle_t             yellowBuildShader;
 	qhandle_t             redBuildShader;
-	qhandle_t             humanConstructingSkin;
+	qhandle_t             humanConstructingShader;
 
 	qhandle_t             sphereModel;
 	qhandle_t             sphericalCone64Model;
