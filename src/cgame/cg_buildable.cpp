@@ -2077,7 +2077,7 @@ void CG_Buildable( centity_t *cent )
 		switch ( team )
 		{
 		case TEAM_HUMANS:
-			ent.customShader = cgs.media.humanConstructingSkin;
+			ent.customShader = cgs.media.humanConstructingShader;
 			prebuildSound = cgs.media.humanBuildablePrebuild;
 			break;
 		case TEAM_ALIENS:
