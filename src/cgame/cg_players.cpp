@@ -2085,7 +2085,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 			           DotProduct( inAxis[ 1 ], lastAxis[ 1 ] ) +
 			           DotProduct( inAxis[ 2 ], lastAxis[ 2 ] );
 
-			rotAngle = RAD2DEG( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = RAD2DEG( acosf( std::min( ( rotAngle - 1.0f ) / 2.0f, 1.0f ) ) );
 
 			CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
 			VectorCopy( temp, rotAxis );
