@@ -1071,7 +1071,7 @@ msgstr "Гамма"
 
 #: ui/options_graphics.rml:121
 msgid "Ugly method for increasing brightness."
-msgstr ""
+msgstr "Некрасивый способ увеличения яркости."
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."

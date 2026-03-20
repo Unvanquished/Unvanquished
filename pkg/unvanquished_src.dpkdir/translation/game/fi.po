@@ -1065,7 +1065,7 @@ msgstr "Gamma"
 
 #: ui/options_graphics.rml:121
 msgid "Ugly method for increasing brightness."
-msgstr ""
+msgstr "Ruma keino kirkkauden lisäämiseen."
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."

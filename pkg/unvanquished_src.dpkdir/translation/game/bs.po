@@ -1067,7 +1067,7 @@ msgstr "Gama"
 
 #: ui/options_graphics.rml:121
 msgid "Ugly method for increasing brightness."
-msgstr ""
+msgstr "Ružna metoda za povećanje svjetline."
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."

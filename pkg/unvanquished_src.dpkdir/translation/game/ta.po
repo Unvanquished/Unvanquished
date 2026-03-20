@@ -1056,7 +1056,7 @@ msgstr "காமா"
 
 #: ui/options_graphics.rml:121
 msgid "Ugly method for increasing brightness."
-msgstr ""
+msgstr "பிரகாசத்தை அதிகரிப்பதற்கான அசிங்கமான முறை. "
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."
