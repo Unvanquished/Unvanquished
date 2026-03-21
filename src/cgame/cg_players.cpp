@@ -1618,14 +1618,29 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static void CG_RunPlayerLerpFrame( clientInfo_t *ci, refEntity_t* ent, lerpFrame_t *lf, int newAnimation, const bool useAnim2 )
+static void CG_RunPlayerLerpFrame( clientInfo_t *ci, refEntity_t* ent, lerpFrame_t *lf, int newAnimation, const bool useAnim2,
+	bool blendExtraSkeleton = false )
 {
 	bool animChanged = false;
+	BoneMod boneMod;
+	bool    addBoneMod = false;
 
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
 		CG_SetLerpFrameAnimation( ci, ent, lf, newAnimation, useAnim2 );
+
+		// ent->animationHandle can be 0 when skipping initial / invalid blending
+		if ( blendExtraSkeleton && ent->animationHandle ) {
+			boneMod.type            = BUILD_EXTRA_BLEND_SKELETON;
+			boneMod.animationHandle = ent->animationHandle;
+			boneMod.startFrame      = ent->startFrame;
+			boneMod.endFrame        = ent->endFrame;
+			boneMod.lerp            = ent->lerp;
+
+			addBoneMod              = true;
+		}
+
 		animChanged = true;
 	}
 
@@ -1638,11 +1653,16 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, refEntity_t* ent, lerpFrame
 
 		if ( ci->team != TEAM_NONE ) {
 			CG_BuildAnimSkeleton( lf, ent, useAnim2 );
+			boneMod.blendLerp = ent->blendLerp;
 		}
 	}
 	else
 	{
 		CG_RunLerpFrame( lf );
+	}
+
+	if ( addBoneMod ) {
+		ent->boneMods.emplace_back( boneMod );
 	}
 }
 
@@ -1727,11 +1747,25 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent, refEntity_t* ent )
 
 	clientInfo_t* ci = &cgs.clientinfo[ clientNum ];
 
+	/* VVV Very buggy blending below VVV
+	The original code seems to have been intended to blend previous and current movement animation,
+	then blend them with the attack animation
+	However, the movement animation gets stuck if you start moving, then do +attack, then stop moving again, until you do -attack
+	Movement animation is also not used if you do +attack first and *then* start moving
+	(both cent->pe.nonseg.animation cent->pe.legs.animation contain attack animations)
+	Both of these issues were present in the original code,
+	the only thing that changed is that the skeletons are not copied a million times over the IPC
+	BuildSkeleton() in /daemon/engine/renderer/EntityCache.cpp handles the extra blend with a BUILD_EXTRA_BLEND_SKELETON BoneMod */
+
+	bool blend = false;
+
 	// If we are attacking/taunting, and in motion, allow blending the two skeletons
 	if ( ( CG_AnimNumber( cent->currentState.legsAnim ) >= NSPA_ATTACK1 &&
 				CG_AnimNumber( cent->currentState.legsAnim ) <= NSPA_ATTACK3 ) ||
 				CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_GESTURE )
 	{
+		blend = true;
+
 		if( CG_AnimNumber( cent->pe.nonseg.animationNumber ) <= NSPA_TURN &&
 			CG_AnimNumber( cent->pe.nonseg.animationNumber ) != NSPA_GESTURE )
 		{
@@ -1742,15 +1776,17 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent, refEntity_t* ent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, ent, &cent->pe.nonseg, NSPA_TURN, true );
+		CG_RunPlayerLerpFrame( ci, ent, &cent->pe.nonseg, NSPA_TURN, false, blend );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, ent, &cent->pe.nonseg, cent->currentState.legsAnim, true );
+		CG_RunPlayerLerpFrame( ci, ent, &cent->pe.nonseg, cent->currentState.legsAnim, false, blend );
 	}
 
-	CG_RunPlayerLerpFrame( ci, ent, &cent->pe.legs, cent->pe.legs.animationNumber, false );
-	ent->blendLerp = 0.5;
+	if ( blend ) {
+		CG_RunPlayerLerpFrame( ci, ent, &cent->pe.legs, cent->pe.legs.animationNumber, true );
+		ent->blendLerp = 0.5;
+	}
 }
 
 /*
