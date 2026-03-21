@@ -66,7 +66,10 @@ class EntityCache {
 	void Clear();
 
 	private:
-	static constexpr uint32_t blockCount = PAD( MAX_REF_ENTITIES / 64, 64 );
+	static constexpr uint32_t blockCount   = PAD( MAX_REF_ENTITIES / 64, 64 );
+	static constexpr uint32_t blockCountL2 = ( blockCount + 63 )   / 64;
+
+	uint64_t blocksL2[blockCountL2];
 	uint64_t blocks[blockCount];
 };
 
