@@ -129,7 +129,7 @@ private:
 			}
 			else
 			{
-				Log::Warn( "Unknown \"dest\" attribute in web RML tag" );
+				Log::Warn( "Unknown \"dest\" attribute in web RML tag: %s", dest );
 				SetInnerRML( "⚠ BUG" );
 			}
 		}
