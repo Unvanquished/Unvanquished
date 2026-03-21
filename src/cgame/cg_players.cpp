@@ -2360,15 +2360,13 @@ static void CG_JetpackAnimation( centity_t *cent, refEntity_t* ent, int16_t *old
 	}
 }
 
-static std::vector<refEntity_t> CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso, const int entID, const int entOffset )
+static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso, const uint16_t upgradeAttachmentEntityID,
+	std::vector<refEntity_t>& ents )
 {
 	entityState_t *es = &cent->currentState;
 
 	int held        = es->modelindex;
 	int publicFlags = es->modelindex2;
-
-	std::vector<refEntity_t> ents;
-	ents.reserve( 2 );
 
 	// jetpack model and effects
 	if ( held & ( 1 << UP_JETPACK ) )
@@ -2382,7 +2380,7 @@ static std::vector<refEntity_t> CG_PlayerUpgrades( centity_t *cent, refEntity_t 
 		AxisCopy( axisDefault, jetpack.axis );
 
 		// FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &jetpack, entID, "tag_gear" );
+		CG_PositionRotatedEntityOnTag( &jetpack, upgradeAttachmentEntityID, "tag_gear" );
 
 		CG_JetpackAnimation( cent, &jetpack, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
 		jetpack.scale = 1.0;
@@ -2419,14 +2417,14 @@ static std::vector<refEntity_t> CG_PlayerUpgrades( centity_t *cent, refEntity_t 
 			// attach ps
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 0 ] ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS[ 0 ]->attachment, cent, entOffset, jetpack.hModel, "nozzle.R" );
+				CG_SetAttachmentTag( &cent->jetPackPS[ 0 ]->attachment, cent, ents.size() - 1, jetpack.hModel, "nozzle.R");
 				CG_SetAttachmentCent( &cent->jetPackPS[ 0 ]->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS[ 0 ]->attachment );
 			}
 
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS[ 1 ] ) )
 			{
-				CG_SetAttachmentTag( &cent->jetPackPS[ 1 ]->attachment, cent, entOffset, jetpack.hModel, "nozzle.L" );
+				CG_SetAttachmentTag( &cent->jetPackPS[ 1 ]->attachment, cent, ents.size() - 1, jetpack.hModel, "nozzle.L");
 				CG_SetAttachmentCent( &cent->jetPackPS[ 1 ]->attachment, cent );
 				CG_AttachToTag( &cent->jetPackPS[ 1 ]->attachment );
 			}
@@ -2478,7 +2476,7 @@ static std::vector<refEntity_t> CG_PlayerUpgrades( centity_t *cent, refEntity_t 
 		AxisCopy( axisDefault, radar.axis );
 
 		//FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &radar, entID, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &radar, upgradeAttachmentEntityID, "tag_head" );
 
 		ents.push_back( radar );
 	}
@@ -2505,8 +2503,6 @@ static std::vector<refEntity_t> CG_PlayerUpgrades( centity_t *cent, refEntity_t 
 				false, size, true );
 		}
 	}
-
-	return ents;
 }
 
 /*
@@ -2516,7 +2512,7 @@ CG_PlayerFloatSprite
 Float a sprite over the player's head
 ===============
 */
-static refEntity_t CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
+static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader, std::vector<refEntity_t>& ents )
 {
 	int         rf;
 
@@ -2538,7 +2534,7 @@ static refEntity_t CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 	ent.renderfx = rf;
 	ent.shaderRGBA = Color::White;
 
-	return ent;
+	ents.push_back( ent );
 }
 
 /*
@@ -2548,17 +2544,12 @@ CG_PlayerSprites
 Float sprites over the player's head
 ===============
 */
-static bool CG_PlayerSprites( centity_t *cent, refEntity_t* ent )
+static void CG_PlayerSprites( centity_t *cent, std::vector<refEntity_t>& ents )
 {
 	if ( cent->currentState.eFlags & EF_CONNECTION ) {
-		*ent = CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
-		return true;
+		CG_PlayerFloatSprite( cent, cgs.media.connectionShader, ents );
 	} else if ( cent->currentState.eFlags & EF_TYPING ) {
-		*ent = CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
-		return true;
-	} else {
-		ent = nullptr;
-		return false;
+		CG_PlayerFloatSprite( cent, cgs.media.balloonShader, ents );
 	}
 }
 
@@ -2843,18 +2834,14 @@ static void CG_PlayerSkeletal( centity_t* cent, int clientNum, vec3_t angles, in
 
 	// add the gun / barrel / flash
 	if ( es->weapon != WP_NONE ) {
-		std::vector<refEntity_t> ents2 = CG_AddPlayerWeapon( &legs, nullptr, cent, 0, ents.size() );
-		ents.insert( ents.end(), std::make_move_iterator( ents2.begin() ), std::make_move_iterator( ents2.end() ) );
+		CG_AddPlayerWeapon( &legs, nullptr, cent, 0, ents );
 	}
 
-	std::vector<refEntity_t> ents2 = CG_PlayerUpgrades( cent, &legs, 0, ents.size() );
-	ents.insert( ents.end(), std::make_move_iterator( ents2.begin() ), std::make_move_iterator( ents2.end() ) );
+	CG_PlayerUpgrades( cent, &legs, 0, ents );
 
 	// add the talk baloon or disconnect icon
 	refEntity_t spriteEnt;
-	if ( CG_PlayerSprites( cent, &spriteEnt ) ) {
-		ents.push_back( spriteEnt );
-	}
+	CG_PlayerSprites( cent, ents );
 
 	AddRefEntities( cent, ents );
 }
@@ -3092,17 +3079,12 @@ void CG_Player( centity_t *cent )
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE ) {
-			std::vector<refEntity_t> ents2 = CG_AddPlayerWeapon( &torso, nullptr, cent, ci->nonsegmented ? 0 : 1, ents.size() );
-			ents.insert( ents.end(), std::make_move_iterator( ents2.begin() ), std::make_move_iterator( ents2.end() ) );
+			CG_AddPlayerWeapon( &torso, nullptr, cent, ci->nonsegmented ? 0 : 1, ents );
 		}
 
-		std::vector<refEntity_t> ents2 = CG_PlayerUpgrades( cent, &torso, 1, ents.size() );
-		ents.insert( ents.end(), std::make_move_iterator( ents2.begin() ), std::make_move_iterator( ents2.end() ) );
+		CG_PlayerUpgrades( cent, &torso, 1, ents );
 		// add the talk baloon or disconnect icon
-		refEntity_t spriteEnt;
-		if ( CG_PlayerSprites( cent, &spriteEnt ) ) {
-			ents.push_back( spriteEnt );
-		}
+		CG_PlayerSprites( cent, ents );
 
 		AddRefEntities( cent, ents );
 

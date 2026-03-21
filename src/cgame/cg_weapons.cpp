@@ -1311,8 +1311,8 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
-std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t* ps, centity_t* cent,
-	const int entID, const uint16_t entOffset )
+void CG_AddPlayerWeapon( refEntity_t* parent, playerState_t* ps, centity_t* cent, const uint16_t weaponAttachmentEntityID,
+	std::vector<refEntity_t>& ents )
 {
 	weapon_t weaponNum = (weapon_t) cent->currentState.weapon;
 	weaponMode_t weaponMode = (weaponMode_t) cent->currentState.generic1;
@@ -1340,7 +1340,7 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 	{
 		Log::Warn( "CG_AddPlayerWeapon: weapon %d (%s) "
 		            "is not registered", weaponNum, BG_Weapon( weaponNum )->name );
-		return {};
+		return;
 	}
 
 	// add the weapon
@@ -1416,10 +1416,9 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 		}
 	}
 
-	std::vector<refEntity_t> ents;
 	if ( !noGunModel )
 	{
-		CG_PositionEntityOnTag( &gun, entID, "tag_weapon" );
+		CG_PositionEntityOnTag( &gun, weaponAttachmentEntityID, "tag_weapon" );
 		if ( ps ) {
 			CG_WeaponAnimation( cent, &gun, &gun.oldframe, &gun.frame, &gun.backlerp );
 		}
@@ -1486,9 +1485,8 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 			angles[ ROLL ] = CG_MachinegunSpinAngle( cent, firing );
 			AnglesToAxis( angles, barrel.axis );
 
-			CG_PositionRotatedEntityOnTag( &barrel, entOffset, "tag_barrel" );
+			CG_PositionRotatedEntityOnTag( &barrel, ents.size() - 1, "tag_barrel");
 
-			// trap_R_AddRefEntityToScene( &barrel );
 			ents.push_back( barrel );
 		}
 	}
@@ -1500,11 +1498,11 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 		{
 			if ( noGunModel )
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entID, parent->hModel, "tag_weapon" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID, parent->hModel, "tag_weapon" );
 			}
 			else
 			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entOffset, gun.hModel, "tag_flash" );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID + 1, gun.hModel, "tag_flash" );
 			}
 		}
 
@@ -1521,7 +1519,7 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 		// impulse flash
 		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME )
 		{
-			return ents;
+			return;
 		}
 	}
 
@@ -1556,11 +1554,11 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 
 		if ( noGunModel )
 		{
-			CG_PositionRotatedEntityOnTag( &flash, entID, "tag_weapon" );
+			CG_PositionRotatedEntityOnTag( &flash, weaponAttachmentEntityID, "tag_weapon" );
 		}
 		else
 		{
-			CG_PositionRotatedEntityOnTag( &flash, entOffset, "tag_flash" );
+			CG_PositionRotatedEntityOnTag( &flash, weaponAttachmentEntityID + 1, "tag_flash" );
 		}
 	}
 
@@ -1575,11 +1573,11 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 			{
 				if ( noGunModel )
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entID, parent->hModel, "tag_weapon" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID, parent->hModel, "tag_weapon" );
 				}
 				else
 				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, entOffset, gun.hModel, "tag_flash" );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID + 1, gun.hModel, "tag_flash" );
 				}
 
 				CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );
@@ -1602,8 +1600,6 @@ std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t* parent, playerState_t*
 	if ( flash.hModel ) {
 		ents.push_back( flash );
 	}
-
-	return ents;
 }
 
 /*
@@ -1783,10 +1779,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 		std::vector<refEntity_t> ents{ hand };
 		ents.reserve( 4 );
 		
-		std::vector<refEntity_t> ents2 = CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, 0, ents.size() );
-		ents.insert( ents.end(), std::make_move_iterator( ents2.begin() ), std::make_move_iterator( ents2.end() ) );
+		CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, 0, ents );
 
-		AddRefEntities( cent, ents, true );
+		AddRefEntities( cent, ents );
 	}
 }
 

@@ -46,10 +46,10 @@ struct orientation_t;
 
 extern orientation_t entityOrientations[MAX_REF_ENTITIES];
 
-void AddRefEntities( centity_t* cent, std::initializer_list<refEntity_t> ents, const bool realloc = false );
+void AddRefEntities( centity_t* cent, std::initializer_list<refEntity_t> ents );
 
-void AddRefEntity( centity_t* cent, refEntity_t& ent, const bool realloc = false );
-void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents, const bool realloc = false );
+void AddRefEntity( centity_t* cent, refEntity_t& ent );
+void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents );
 
 void ClearRefEntityCache();
 
