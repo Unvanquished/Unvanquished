@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 17:01+0100\n"
-"PO-Revision-Date: 2026-03-01 17:09+0000\n"
+"PO-Revision-Date: 2026-03-21 22:05+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -1008,11 +1008,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:77
 msgid "Anti-aliasing"
-msgstr ""
+msgstr "Antialiasointi"
 
 #: ui/options_graphics.rml:80
 msgid "Multisample anti-aliasing is preferred when both are enabled."
-msgstr ""
+msgstr "Moninäytteistä antialiasointia suositaan kun molemmat ovat käytössä."
 
 #: ui/options_graphics.rml:92
 msgid "Multisample anti-aliasing (MSAA)"
@@ -1033,6 +1033,8 @@ msgstr "Nopea likiarvoinen antialiasointi (FXAA)"
 #: ui/options_graphics.rml:99
 msgid "Smooth the edges using a fast but cheap filter, can blur some details."
 msgstr ""
+"Pehmennä reunoja nopealla mutta halvalla filtterillä, voi sumentaa joitakin "
+"yksityiskohtia."
 
 #: ui/options_graphics.rml:103 ui/options_graphics.rml:170
 #: ui/options_graphics.rml:234 ui/options_graphics.rml:273
@@ -1069,11 +1071,11 @@ msgstr "Ruma keino kirkkauden lisäämiseen."
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."
-msgstr ""
+msgstr "Vanhentunut."
 
 #: ui/options_graphics.rml:122
 msgid "Consider resetting and using exposure instead."
-msgstr ""
+msgstr "Harkitse nollaamista ja valotuksen käyttöä tämän sijasta."
 
 #: ui/options_graphics.rml:129 ui/options_graphics.rml:133
 msgid "Tone mapping"
