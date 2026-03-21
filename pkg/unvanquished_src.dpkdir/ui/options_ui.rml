@@ -26,15 +26,19 @@
 
 					<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
 					<select cvar="language">
+						<option value="bs">Bosanski</option>
 						<option value="de">Deutsch</option>
 						<option value="en">English</option>
 						<option value="es">Español</option>
 						<option value="fi">Suomi</option>
 						<option value="fr">Français</option>
 						<option value="it">Italiano</option>
+						<option value="nb_NO">Bokmål</option>
+						<option value="nl">Nederlands</option>
 						<option value="pt_BR">Português (Brasil)</option>
 						<option value="pt">Português</option>
 						<option value="ru">Русский</option>
+						<option value="ta">தமிழ்</option>
 						<option value="zh_Hans">中文（简体）</option>
 						<option value="zh_Hant_HK">中文（香港）</option>
 						<option value="zh_Hant">中文（正體）</option>
