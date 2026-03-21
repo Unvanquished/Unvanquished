@@ -187,15 +187,15 @@ msgstr ""
 
 #: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr "மன்றங்களில் செய்திகளைப் பற்றி விவாதிக்கவும்: <web dest = \"forums\" />"
+msgstr "மன்றங்களில் செய்திகளைப் பற்றி விவாதிக்கவும்: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:35
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr "விக்கியில் விளையாட்டைப் பற்றி மேலும் கண்டறியவும்: <web dest = \"wiki\" />"
+msgstr "விக்கியில் விளையாட்டைப் பற்றி மேலும் கண்டறியவும்: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:37
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "பிழைகள் குறித்து புகாரளிக்கவும்: <web dest = \"bugs\" />"
+msgstr "பிழைகள் குறித்து புகாரளிக்கவும்: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:41
 msgid "Income &amp; evolution"
@@ -5250,11 +5250,11 @@ msgstr "$ 1 $ ^2 கட்டப்பட்ட ^* $ 2 $$ 3 by"
 
 #: src/sgame/sg_client.cpp:846
 msgid "Name change spam protection ($1$ = $2$)"
-msgstr "பெயர் மாற்றம் ச்பேம் பாதுகாப்பு ($ 1 $ = $ 2 $)"
+msgstr "பெயர் மாற்றம் ச்பேம் பாதுகாப்பு ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:855
 msgid "Maximum name changes reached ($1$ = $2$)"
-msgstr "அதிகபட்ச பெயர் மாற்றங்கள் எட்டப்பட்டன ($ 1 $ = $ 2 $)"
+msgstr "அதிகபட்ச பெயர் மாற்றங்கள் எட்டப்பட்டன ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:863
 msgid "You cannot change your name while you are muted"
