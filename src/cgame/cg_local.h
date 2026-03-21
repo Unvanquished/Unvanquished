@@ -2143,8 +2143,8 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin );
 void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 
 void CG_AddViewWeapon( playerState_t *ps );
-std::vector<refEntity_t> CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent,
-	const int entID, const uint16_t entOffset );
+void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent,
+	const uint16_t weaponAttachmentEntityID, std::vector<refEntity_t>& ents );
 void CG_DrawHumanInventory();
 float CG_ChargeProgress();
 

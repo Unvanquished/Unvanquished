@@ -139,7 +139,7 @@ static void UpdateEntity( refEntity_t& ent, const uint16_t id ) {
 	}
 }
 
-void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents, const bool realloc ) {
+void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
 	uint16_t frameOffset    = 0;
 	uint8_t& frameCount     = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
 	uint8_t  lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame ^ 1];
@@ -147,10 +147,10 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents, const bool
 	if ( cg_showEntityCacheUpdates.Get() ) {
 		Log::defaultLogger.WithoutSuppression().Notice(
 			Str::Format( "Cache add entities: centity: %u frame: %u "
-				"current entities: %u last frame entities: %u offset: %u count: %u new entities: %u realloc: %s",
+				"current entities: %u last frame entities: %u offset: %u count: %u new entities: %u",
 				cent - cg_entities, cent->refEntitiesFrame, frameCount, lastFrameCount,
 				cent->refEntitiesOffset, cent->refEntitiesCount,
-				ents.size(), realloc )
+				ents.size() )
 		);
 	}
 
@@ -191,13 +191,13 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents, const bool
 	}
 }
 
-void AddRefEntity( centity_t* cent, refEntity_t& ent, const bool realloc ) {
+void AddRefEntity( centity_t* cent, refEntity_t& ent ) {
 	std::vector<refEntity_t> ents{ ent };
 
-	AddRefEntities( cent, ents, realloc );
+	AddRefEntities( cent, ents );
 }
 
-void AddRefEntities( centity_t* cent, std::initializer_list<refEntity_t> ents, const bool realloc ) {
+void AddRefEntities( centity_t* cent, std::initializer_list<refEntity_t> ents ) {
 	std::vector<refEntity_t> ents2;
 	ents2.reserve( ents.size() );
 
@@ -205,7 +205,7 @@ void AddRefEntities( centity_t* cent, std::initializer_list<refEntity_t> ents, c
 		ents2.push_back( ent );
 	}
 
-	AddRefEntities( cent, ents2, realloc );
+	AddRefEntities( cent, ents2 );
 }
 
 void ClearRefEntityCache() {
