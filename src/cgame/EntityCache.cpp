@@ -144,10 +144,12 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
 	uint8_t  lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame ^ 1];
 
 	if ( cg_showEntityCacheUpdates.Get() && !( cg.clientFrame % cg_showEntityCacheUpdates.Get() ) ) {
+		const std::string centityID = cent == &cg.predictedPlayerEntity ? "predicted player entity" : Str::Format( "%u", cent - cg_entities );
+
 		Log::defaultLogger.WithoutSuppression().Notice(
-			Str::Format( "Cache add entities: centity: %u frame: %u "
+			Str::Format( "Cache add entities: centity: %s frame: %u "
 				"current entities: %u last frame entities: %u offset: %u count: %u new entities: %u",
-				cent - cg_entities, cent->refEntitiesFrame, frameCount, lastFrameCount,
+				centityID, cent->refEntitiesFrame, frameCount, lastFrameCount,
 				cent->refEntitiesOffset, cent->refEntitiesCount,
 				ents.size() )
 		);
