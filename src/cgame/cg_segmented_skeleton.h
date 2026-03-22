@@ -33,9 +33,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 class HumanSkeletonRotations : public SkeletonModifier
 {
 public:
-	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refEntity_t* unused ) override;
-	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) override;
+	bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
+	void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refEntity_t* unused ) override;
+	uint32_t GetBoneModCount( const SkeletonModifierContext& ctx ) override;
 
 private:
 	int torsoControlBone = -1;
@@ -46,9 +46,9 @@ private:
 class BsuitSkeletonRotations : public SkeletonModifier
 {
 public:
-	virtual bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
-	virtual void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refEntity_t* unused ) override;
-	virtual uint32_t GetBoneModCount( const SkeletonModifierContext& ) override;
+	bool ParseConfiguration( clientInfo_t* ci, const char* token, const char** data_p ) override;
+	void Apply( const SkeletonModifierContext& ctx, refEntity_t* ent, refEntity_t* unused ) override;
+	uint32_t GetBoneModCount( const SkeletonModifierContext& ) override;
 
 private:
 	int torsoControlBone = -1;
