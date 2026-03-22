@@ -1,2 +1,3 @@
 ar.po
 fa.po
+ta.po
