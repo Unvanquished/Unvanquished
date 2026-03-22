@@ -45,8 +45,8 @@ static std::vector<attachment_t*> attachmentUpdates;
 
 EntityCache entityCache;
 
-static Cvar::Cvar<bool> cg_showEntityCacheUpdates( "cg_showEntityCacheUpdates",
-	"Show cgame-side updates in render entity cache", Cvar::NONE, false );
+static Cvar::Cvar<int> cg_showEntityCacheUpdates( "cg_showEntityCacheUpdates",
+	"Cgame frames between cgame-side update logging of render entity cache (0 to disable)", Cvar::CHEAT, 0 );
 
 bool operator==( const BoneMod& lhs, const BoneMod& rhs ) {
 	if ( lhs.type != rhs.type ) {
@@ -140,11 +140,10 @@ static void UpdateEntity( refEntity_t& ent, const uint16_t id ) {
 }
 
 void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
-	uint16_t frameOffset    = 0;
 	uint8_t& frameCount     = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
 	uint8_t  lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame ^ 1];
 
-	if ( cg_showEntityCacheUpdates.Get() ) {
+	if ( cg_showEntityCacheUpdates.Get() && !( cg.clientFrame % cg_showEntityCacheUpdates.Get() ) ) {
 		Log::defaultLogger.WithoutSuppression().Notice(
 			Str::Format( "Cache add entities: centity: %u frame: %u "
 				"current entities: %u last frame entities: %u offset: %u count: %u new entities: %u",
@@ -173,15 +172,8 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
 		cent->refEntitiesCount = ents.size() + frameCount;
 	}
 
-	frameOffset = frameCount;
+	uint16_t frameOffset = frameCount;
 	frameCount += ents.size();
-
-	if ( cg_showEntityCacheUpdates.Get() ) {
-		Log::defaultLogger.WithoutSuppression().Notice(
-			Str::Format( "Cache add entities: reallocated: frameOffset: %u frameCount: %u",
-				frameOffset, frameCount )
-		);
-	}
 
 	uint16_t i = 0;
 	for ( refEntity_t& ent : ents ) {
@@ -223,7 +215,7 @@ void AddAttachment( attachment_t* attachment ) {
 }
 
 void SyncEntityCacheToEngine() {
-	if ( cg_showEntityCacheUpdates.Get() ) {
+	if ( cg_showEntityCacheUpdates.Get() && !( cg.clientFrame % cg_showEntityCacheUpdates.Get() ) ) {
 		Log::defaultLogger.WithoutSuppression().Notice(
 			Str::Format( "Cache sync cgame->engine: %u entity updates", entityUpdates.size() )
 		);
@@ -246,7 +238,7 @@ void SyncEntityCacheFromEngine() {
 
 	std::vector<LerpTagSync> orientations = trap_R_SyncLerpTags( lerpTagUpdates );
 
-	if ( cg_showEntityCacheUpdates.Get() ) {
+	if ( cg_showEntityCacheUpdates.Get() && !( cg.clientFrame % cg_showEntityCacheUpdates.Get() ) ) {
 		Log::defaultLogger.WithoutSuppression().Notice( Str::Format( "Cache sync engine->cgame:" ) );
 
 		for ( uint16_t i = 0; i < orientations.size(); i++ ) {
