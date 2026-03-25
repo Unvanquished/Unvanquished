@@ -524,7 +524,10 @@ static ConnectToCurrentSelectedServerCmd ConnectToCurrentSelectedServerCmdRegist
 static void CG_Rocket_ExecServerList( const char *table )
 {
 	int netSrc = CG_StringToNetSource( table );
-	if ( Q_stricmp( rocketInfo.data.servers[netSrc]->abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION ) ) {
+
+	int i = rocketInfo.data.serverIndex[netSrc];
+
+	if ( Q_stricmp( rocketInfo.data.servers[netSrc][i].abiVersion.c_str(), IPC::SYSCALL_ABI_VERSION ) ) {
 		cg_currentSelectedServer = rocketInfo.data.servers[netSrc][rocketInfo.data.serverIndex[netSrc]].addr;
 		Rocket_DocumentAction( "server_mismatch", "show" );
 	} else {
