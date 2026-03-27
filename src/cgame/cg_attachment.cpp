@@ -149,7 +149,7 @@ bool CG_AttachmentDir( attachment_t *a, vec3_t v )
 				return false;
 			}
 
-			VectorCopy( a->orientation.axis[ 0 ], v );
+			VectorCopy( a->axis[ 0 ], v );
 			break;
 
 		case AT_CENT:
@@ -217,7 +217,7 @@ bool CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 				return false;
 			}
 
-			AxisCopy( a->orientation.axis, axis );
+			AxisCopy( a->axis, axis );
 			break;
 
 		case AT_CENT:
