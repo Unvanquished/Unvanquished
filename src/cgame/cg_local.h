@@ -1476,7 +1476,7 @@ struct rocketInfo_t
 	int serverStatusLastRefresh;
 	int realtime;
 	int keyCatcher;
-	char downloadName[ MAX_STRING_CHARS ];
+	std::string downloadName;
 	cgClientState_t cstate;
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
@@ -1941,7 +1941,7 @@ extern Cvar::Cvar<bool> cg_lowQualityModels;
 // cg_main.cpp
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
-const char *CG_Args();
+std::string CG_Args();
 
 void       CG_StartMusic();
 
@@ -2390,9 +2390,9 @@ void Rocket_DSClearTable( const char *name, const char *table );
 void Rocket_SetInnerRML( const char* text, int parseFlags );
 void Rocket_SetInnerRMLRaw( const char* RML );
 void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length );
-void Rocket_GetEventParameters( char *params, int length );
+InfoMap Rocket_GetEventParameters();
 void Rocket_RegisterDataFormatter( const char *name );
-void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
+void Rocket_DataFormatterRawData( int handle, std::string& name, std::string& data );
 void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake );
 void Rocket_GetElementTag( char *tag, int length );
 void Rocket_RegisterElement( const char *tag );

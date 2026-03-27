@@ -506,13 +506,13 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		}
 		else
 		{
-			char    serverinfo[ MAX_INFO_STRING ];
+			std::string serverinfo;
 			qtime_t qt;
 
-			trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
+			serverinfo = trap_GetServerinfo();
 
 			G_LogPrintf( "------------------------------------------------------------" );
-			G_LogPrintf( "InitGame: %s", serverinfo );
+			G_LogPrintf( "InitGame: %s", serverinfo.c_str() );
 
 			Com_GMTime( &qt );
 			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z",
