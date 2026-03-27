@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 17:01+0100\n"
-"PO-Revision-Date: 2026-03-26 19:09+0000\n"
+"PO-Revision-Date: 2026-03-27 20:09+0000\n"
 "Last-Translator: XblateX <blate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/uk/>\n"
@@ -224,15 +224,15 @@ msgid ""
 msgstr ""
 "Чужі можуть еволюціонувати будь-де поза зоною прямої видимості людини або "
 "будівлі. Вони також можуть повернутися до [granger], менш просунуту форму (з "
-"втратою балів еволюції), коли вони поряд із [overmind] Над розумом."
+"втратою балів еволюції), коли вони поряд із [overmind] Надрозумом."
 
 #: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Побудуйте над розум, будучи [granger] Фермером, якщо він буде знищений, так "
-"вам потрібен живий над розум, щоб вижити!"
+"Побудуйте Надрозум, будучи [granger] Фермером, якщо він буде знищений, так "
+"вам потрібен живий Надрозум, щоб вижити!"
 
 #: ui/help_gameplay.rml:55
 msgid ""
@@ -242,8 +242,8 @@ msgid ""
 msgstr ""
 "Люди можуть заробляти кредити, вбиваючи Чужих і знищуючи їх споруди, потім "
 "вони можуть використовувати свої кредити, щоб купувати нові [lcannon] зброї, "
-"броню або [bsuit] бойовий костюм, а також аксесуари, такі як радар чи "
-"джетпак."
+"броню або [bsuit] бойовий костюм, а також аксесуари, такі як Радар чи "
+"Реактивний ранець."
 
 #: ui/help_gameplay.rml:58
 msgid ""
@@ -369,6 +369,10 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"Реактор [reactor] та Надрозум [overmind] надсилатимуть попередження команді, "
+"коли їхній запас здоров’я становитиме 75 %, 50 % та 25 %, а також у разі "
+"їхнього знищення. Знищення інших споруд спричинятиме появу попереджень \"під "
+"атакою\" для команди-власника."
 
 #: ui/help_gameplay.rml:122
 msgid "Healing"
@@ -763,11 +767,11 @@ msgstr "скинути"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr ""
+msgstr "Богомол"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr ""
+msgstr "Мародер"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
