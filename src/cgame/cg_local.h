@@ -167,19 +167,18 @@ struct attachment_t
 
 	vec3_t           lastValidAttachmentPoint;
 
-	//AT_STATIC
+	//AT_STATIC and AT_TAG
 	vec3_t origin;
 	axis_t axis;
 
-	//AT_TAG
-	orientation_t orientation;
-	centity_t* centity;
-	uint16_t entity;
-	qhandle_t   model;
-	std::string tagName;
-
-	//AT_CENT
+	//AT_CENT and AT_TAG
 	int centNum;
+
+	//AT_TAG
+	qhandle_t   model;
+	uint16_t    entity;
+	centity_t*  centity;
+	std::string tagName;
 
 	//AT_PARTICLE
 	particle_t *particle;
