@@ -1876,6 +1876,7 @@ static void SpawnBuildableThink( gentity_t *ent )
 void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 {
 	ent->s.modelindex = buildable;
+	ent->r.svFlags |= SVF_NOCLIENT;
 
 	// some movers spawn on the second frame, so delay item
 	// spawns until the third frame so they can ride trains
@@ -2363,6 +2364,7 @@ void G_BuildLogRevert( int id )
 			VectorCopy( log->angles, buildable->s.angles );
 			VectorCopy( log->origin2, buildable->s.origin2 );
 			VectorCopy( log->angles2, buildable->s.angles2 );
+			buildable->r.svFlags = SVF_NOCLIENT;
 			buildable->s.modelindex = log->modelindex;
 			buildable->deconMarkHack = log->markedForDeconstruction;
 			buildable->builtBy = log->builtBy;
