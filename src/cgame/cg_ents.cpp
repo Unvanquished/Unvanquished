@@ -1250,19 +1250,8 @@ void CG_AddPacketEntities()
 	centity_t* playerEnt = &cg.predictedPlayerEntity;
 
 	BG_PlayerStateToEntityState( ps, &playerEnt->currentState, false );
-	playerEnt->valid = true;
-
-	playerEnt->refEntitiesFrame ^= 1;
-	playerEnt->refEntitiesFrameCount[playerEnt->refEntitiesFrame] = 0;
 
 	CG_AddCEntity( playerEnt );
-
-	uint8_t lastFrameCount = playerEnt->refEntitiesFrameCount[playerEnt->refEntitiesFrame];
-
-	if ( playerEnt->refEntitiesCount > lastFrameCount ) {
-		entityCache.Free( playerEnt->refEntitiesOffset + lastFrameCount, playerEnt->refEntitiesCount - lastFrameCount, true );
-		playerEnt->refEntitiesCount = lastFrameCount;
-	}
 
 	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ] );
@@ -1293,7 +1282,7 @@ void CG_AddPacketEntities()
 		cent->refEntitiesFrameCount[cent->refEntitiesFrame] = 0;
 		CG_AddCEntity( cent );
 
-		lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
+		const uint8_t lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
 
 		if ( cent->refEntitiesCount > lastFrameCount ) {
 			entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
