@@ -1858,6 +1858,13 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	//build culling planes
 	CG_SetupFrustum();
 
+	/* Cache invalidation for predictedPlayerEntity must be done here
+	to avoid allocating increasingly large amounts of entities to it during teleports */
+	centity_t* playerEnt = &cg.predictedPlayerEntity;
+
+	playerEnt->refEntitiesFrame ^= 1;
+	playerEnt->refEntitiesFrameCount[playerEnt->refEntitiesFrame] = 0;
+
 	// build the render lists
 	if ( !cg.hyperspace )
 	{
@@ -1866,16 +1873,14 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 		CG_AddMarkPolys();
 	}
 
-	CG_AddViewWeapon( &cg.predictedPlayerState );
+	const uint8_t lastFrameCount = playerEnt->refEntitiesFrameCount[playerEnt->refEntitiesFrame];
 
-	centity_t* cent = &cg.predictedPlayerEntity;
-
-	uint8_t lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
-
-	if ( cent->refEntitiesCount > lastFrameCount ) {
-		entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
-		cent->refEntitiesCount = lastFrameCount;
+	if ( playerEnt->refEntitiesCount > lastFrameCount ) {
+		entityCache.Free( playerEnt->refEntitiesOffset + lastFrameCount, playerEnt->refEntitiesCount - lastFrameCount, true );
+		playerEnt->refEntitiesCount = lastFrameCount;
 	}
+
+	CG_AddViewWeapon( &cg.predictedPlayerState );
 
 	SyncEntityCacheToEngine();
 	SyncEntityCacheFromEngine();
