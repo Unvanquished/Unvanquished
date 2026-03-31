@@ -28,10 +28,14 @@
 				end
 				return 'execForm "map $map$ $layout$"'
 			end
+
+			function OnLoad(document)
+				Element.As.ElementFormControlInput(document:GetElementById("devmode")).checked = Cvar.get("vm.nacl.available") == "off"
+			end
 		</script>
 
 	</head>
-	<body template="window" id="createserver" onshow='Events.pushcmd("buildDS mapList")' style="width: 40em; margin: 15% auto auto auto;">
+	<body template="window" id="createserver" onload="OnLoad(document)" onshow='Events.pushcmd("buildDS mapList")' style="width: 40em; margin: 15% auto auto auto;">
 		<h1><translate>Start local/LAN game</translate></h1>
 		<form onsubmit='Events.pushevent(MapMode(document), event)'>
 			<row>
