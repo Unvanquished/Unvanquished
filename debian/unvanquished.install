@@ -1,7 +1,6 @@
 obj-*-*-*/daemon  usr/lib/games/unvanquished/
 
 debian/net.unvanquished.Unvanquished.desktop                 usr/share/applications/
-debian/net.unvanquished.UnvanquishedProtocolHandler.desktop  usr/share/applications/
 
 dist/icons/32x32/unvanquished.xpm    usr/share/pixmaps/
 dist/icons/32x32/unvanquished.png    usr/share/icons/hicolor/32x32/apps/
