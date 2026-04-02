@@ -2080,7 +2080,7 @@ void G_LayoutSelect()
 		return;
 	}
 
-	layoutNum = ( rand() % cnt ) + 1;
+	layoutNum = BG_randrange( cnt ) + 1;
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
 	layoutPtr = &layouts2[ 0 ];
 
@@ -2254,7 +2254,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 			{
 				float val = ( targ->client->ps.eFlags & EF_WALLCLIMB ) ? 300.0 : 150.0;
 
-				VectorSet( push, crandom() * val, crandom() * val, random() * val );
+				VectorSet( push, BG_crandom() * val, BG_crandom() * val, BG_random() * val );
 				VectorAdd( targ->client->ps.velocity, push, targ->client->ps.velocity );
 				victims++;
 			}

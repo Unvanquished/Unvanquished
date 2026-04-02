@@ -2747,6 +2747,52 @@ int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
 	return length;
 }
 
+static Cvar::Cvar<std::string> seedCvar(VM_STRING_PREFIX "randomSeed",
+	"seed to determine random numbers", Cvar::CHEAT, "");
+
+static std::minstd_rand rng;
+
+void BG_InitRandom()
+{
+	std::string seed = seedCvar.Get();
+
+	if ( seed.empty() )
+	{
+		std::seed_seq s{ int(time(nullptr)), Sys::Milliseconds() };
+		rng = std::minstd_rand(s);
+	}
+	else
+	{
+		std::seed_seq s(seed.begin(), seed.end());
+		rng = std::minstd_rand(s);
+	}
+
+	srand( rng() );
+}
+
+std::minstd_rand &BG_RandomEngine()
+{
+	return rng;
+}
+
+float BG_random()
+{
+	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+	return dis(rng);
+}
+
+float BG_crandom()
+{
+	std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+	return dis(rng);
+}
+
+int BG_randrange( int n )
+{
+	std::uniform_int_distribution<int> dis(0, n - 1);
+	return dis(rng);
+}
+
 const char *Com_EntityTypeName(entityType_t entityType)
 {
 	switch (entityType)

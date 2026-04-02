@@ -97,7 +97,6 @@ class IgnitableComponent: public IgnitableComponentBase {
 		int spreadAt;           /**< Will try to spread to neighbours at this time. */
 		gentity_t* fireStarter; /**< Client who originally started the fire. */
 
-		std::default_random_engine randomGenerator;
 		std::normal_distribution<float> normalDistribution;
 };
 

@@ -1549,7 +1549,7 @@ void CG_AddPlayerWeapon( refEntity_t* parent, playerState_t* ps, centity_t* cent
 		vec3_t angles;
 		angles[ YAW ] = 0;
 		angles[ PITCH ] = 0;
-		angles[ ROLL ] = crandom() * 10;
+		angles[ ROLL ] = BG_crandom() * 10;
 		AnglesToAxis( angles, flash.axis );
 
 		if ( noGunModel )
@@ -1749,9 +1749,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// Lucifer Cannon vibration effect
 	if ( weapon == WP_LUCIFER_CANNON && ps->weaponCharge > 0 ) {
 		float fraction = ( float ) ps->weaponCharge / LCANNON_CHARGE_TIME_MAX;
-		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 0 ],
+		VectorMA( hand.origin, BG_random() * fraction, cg.refdef.viewaxis[ 0 ],
 		          hand.origin );
-		VectorMA( hand.origin, random() * fraction, cg.refdef.viewaxis[ 1 ],
+		VectorMA( hand.origin, BG_random() * fraction, cg.refdef.viewaxis[ 1 ],
 		          hand.origin );
 	}
 
@@ -2220,7 +2220,7 @@ static void PlayHitSound( vec3_t origin, const sfxHandle_t *impactSound )
 
 	if ( c > 0 )
 	{
-		c = rand() % c;
+		c = BG_randrange( c );
 
 		if ( impactSound[ c ] )
 		{
@@ -2324,7 +2324,7 @@ static void DrawTracer( vec3_t source, vec3_t dest, float chance, float length, 
 	float      distance, begin, end;
 	vec3_t     start, finish;
 
-	if ( random() > chance )
+	if ( BG_random() > chance )
 	{
 		return;
 	}
@@ -2339,7 +2339,7 @@ static void DrawTracer( vec3_t source, vec3_t dest, float chance, float length, 
 	}
 
 	// Guarantee a minimum length of 1/4 * length.
-	begin = random() * Math::Clamp( distance - 0.25f * length, TRACER_MIN_DISTANCE, distance );
+	begin = BG_random() * Math::Clamp( distance - 0.25f * length, TRACER_MIN_DISTANCE, distance );
 	end   = Math::Clamp( begin + length, begin, distance );
 
 	VectorMA( source, begin, forward, start );
@@ -2503,7 +2503,7 @@ void CG_HandleFireWeapon( centity_t *cent, weaponMode_t weaponMode )
 
 	if ( c > 0 )
 	{
-		c = rand() % c;
+		c = BG_randrange( c );
 
 		if ( wi->wim[ weaponMode ].flashSound[ c ] )
 		{
@@ -2614,7 +2614,7 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	if ( wim->impactMark && wim->impactMarkSize > 0.0f )
 	{
 		CG_RegisterMark( wim->impactMark, origin, normal,
-			random() * 360, 1, 1, 1, 1,
+			BG_random() * 360, 1, 1, 1, 1,
 			false, wim->impactMarkSize, false );
 	}
 
@@ -2690,7 +2690,7 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	if ( ma->impactMark && ma->impactMarkSize > 0.0f )
 	{
 		CG_RegisterMark( ma->impactMark, origin, normal,
-			random() * 360, 1, 1, 1, 1,
+			BG_random() * 360, 1, 1, 1, 1,
 			false, ma->impactMarkSize, false );
 	}
 }

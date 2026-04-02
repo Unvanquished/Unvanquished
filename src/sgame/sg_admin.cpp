@@ -2712,9 +2712,9 @@ bool G_admin_slap( gentity_t *ent )
 	}
 	else
 	{
-		dir[0] = crandom();
-		dir[1] = crandom();
-		dir[2] = random();
+		dir[0] = BG_crandom();
+		dir[1] = BG_crandom();
+		dir[2] = BG_random();
 		VectorScale( dir, static_cast<float> (accel), kvel );
 	}
 

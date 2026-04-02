@@ -4111,7 +4111,7 @@ static void PM_Weapon()
 	}
 	else
 	{
-		int num = rand();
+		int num;
 
 		//FIXME: it would be nice to have these hard coded policies in
 		//       weapon.cfg
@@ -4120,7 +4120,7 @@ static void PM_Weapon()
 			case WP_ALEVEL1:
 				if ( attack1 )
 				{
-					num /= RAND_MAX / 6 + 1;
+					num = BG_randrange( 6 );
 					PM_ForceLegsAnim( NSPA_ATTACK1 );
 					PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				}
@@ -4138,18 +4138,18 @@ static void PM_Weapon()
 			case WP_ALEVEL2:
 				if ( attack1 )
 				{
-					num /= RAND_MAX / 3 + 1;
+					num = BG_randrange( 3 );
 					PM_ForceLegsAnim( NSPA_ATTACK1 + num );
-					num = rand() / ( RAND_MAX / 6 + 1 );
+					num = BG_randrange( 6 );
 					PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				}
 
 				break;
 
 			case WP_ALEVEL4:
-				num /= RAND_MAX / 3 + 1;
+				num = BG_randrange( 3 );
 				PM_ForceLegsAnim( NSPA_ATTACK1 + num );
-				num = rand() / ( RAND_MAX / 6 + 1 );
+				num = BG_randrange( 6 );
 				PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				break;
 
@@ -4209,14 +4209,14 @@ static void PM_Weapon()
 		if ( BG_IsChaingunStabilized( pm->ps ) )
 		{
 			pm->ps->delta_angles[ PITCH ] += ANGLE2SHORT(
-				crandom() * STABILIZED_CHAINGUN_JITTER_SCALE + STABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
-			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( crandom() * STABILIZED_CHAINGUN_JITTER_SCALE );
+				BG_crandom() * STABILIZED_CHAINGUN_JITTER_SCALE + STABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
+			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( BG_crandom() * STABILIZED_CHAINGUN_JITTER_SCALE );
 		}
 		else
 		{
 			pm->ps->delta_angles[ PITCH ] += ANGLE2SHORT(
-				crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE + UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
-			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE );
+				BG_crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE + UNSTABILIZED_CHAINGUN_JITTER_PITCH_BIAS );
+			pm->ps->delta_angles[ YAW ] += ANGLE2SHORT( BG_crandom() * UNSTABILIZED_CHAINGUN_JITTER_SCALE );
 		}
 	}
 

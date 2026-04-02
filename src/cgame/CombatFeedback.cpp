@@ -158,7 +158,7 @@ static void AddDamageIndicator(DamageIndicator di)
 	}
 
 	di.color = damageIndicatorColors[di.layer];
-	di.velocity = glm::vec3(crandom() * 20, crandom() * 20, 100);
+	di.velocity = glm::vec3(BG_crandom() * 20, BG_crandom() * 20, 100);
 
 	damageIndicators.push_back(di);
 }
