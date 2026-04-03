@@ -2,6 +2,7 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/template" href="/ui/shared/language_list.rml" />
 	</head>
 	<body id="options_welcome" template="window" style="width: 32em; margin: 30%; padding:-32em;">
 		<h1><translate>Hello there!</translate></h1>
@@ -16,27 +17,7 @@
 		<p><translate>You can change this at any time in the options.</translate></p>
 	        <!-- Keep in sync with language menu in options_ui.rml -->
 	        <h2><translate>What language do you want to use?</translate></h2>
-	        <p><translate>Some languages are not fully translated.</translate></p>
-
-	<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
-		<select cvar="language">
-			<option value="bs">Bosanski</option>
-			<option value="de">Deutsch</option>
-			<option value="en">English</option>
-			<option value="es">Español</option>
-			<option value="fi">Suomi</option>
-			<option value="fr">Français</option>
-			<option value="it">Italiano</option>
-			<option value="nb_NO">Bokmål</option>
-			<option value="nl">Nederlands</option>
-			<option value="pt_BR">Português (Brasil)</option>
-			<option value="pt">Português</option>
-			<option value="ru">Русский</option>
-			<option value="zh_Hans">中文（简体）</option>
-			<option value="zh_Hant_HK">中文（香港）</option>
-			<option value="zh_Hant">中文（正體）</option>
-		</select>
-		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Cmd.exec("updatelanguage")'><translate>Change language</translate></button>
+		<template src="language_list" />
 		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushcmd("show serverbrowser")'><translate>Select Battlefield</translate></button>
 	</body>
 </rml>
