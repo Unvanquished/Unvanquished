@@ -55,7 +55,6 @@ Maryland 20850 USA.
 #include "rocketFormControlSelect.h"
 #include "rocketConditionalElement.h"
 #include "rocketColorInput.h"
-#include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
 #include <RmlUi/Debugger.h>
 #include "lua/register_lua_extensions.h"
@@ -425,7 +424,6 @@ void Rocket_Init()
 	RegisterElement<CvarElementFormControlSelect>( "select" );
 	RegisterElement<RocketConditionalElement>( "if" );
 	RegisterElement<RocketColorInput>( "colorinput" );
-	RegisterElement<RocketIncludeElement>( "include" );
 	RegisterElement<RocketCvarInlineElement>( "inlinecvar" );
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_2D );
