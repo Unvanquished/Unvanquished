@@ -251,8 +251,7 @@ enum
   CS_VOTE_NO = CS_VOTE_YES + NUM_TEAMS,
   CS_VOTE_CALLER = CS_VOTE_NO + NUM_TEAMS,
 
-  CS_GAME_VERSION = CS_VOTE_CALLER + NUM_TEAMS,
-  CS_LEVEL_START_TIME, // so the timer only shows the current level
+  CS_LEVEL_START_TIME = CS_VOTE_CALLER + NUM_TEAMS, // so the timer only shows the current level
   CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
   CS_SHADERSTATE,
