@@ -1095,7 +1095,6 @@ static void SP_worldspawn()
 	}
 
 	// make some data visible to connecting client
-	trap_SetConfigstring( CS_GAME_VERSION, GAME_VERSION );
 
 	trap_SetConfigstring( CS_LEVEL_START_TIME, va( "%i", level.startTime ) );
 
