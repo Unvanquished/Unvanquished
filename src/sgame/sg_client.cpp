@@ -1265,6 +1265,28 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 	return nullptr;
 }
 
+// Resend configstrings that could be affected by https://github.com/Unvanquished/Unvanquished/issues/1102.
+// TODO(0.57): remove since with the new version we have well-behaved clients.
+static void ResendPossiblyWrongConfigstrings( int clientNum )
+{
+	for ( int cs = CS_PLAYERS + level.maxclients; cs--; )
+	{
+		char configstring[ 1022 ];
+		trap_GetConfigstring( cs, configstring, sizeof( configstring ) );
+		std::string command = Str::Format( "cs %d %s", cs, Cmd::Escape( configstring ) );
+		if ( command.size() > 1022 )
+		{
+			// don't want to re-implement all of the bcs0 bcs1 bcs2 junk for this band-aid
+			Log::Warn( "Disabling configstring update workaround for client %d string %d due to length",
+			           clientNum, cs );
+		}
+		else
+		{
+			trap_SendServerCommand( clientNum, command.c_str() );
+		}
+	}
+}
+
 /*
 ===========
 ClientBegin
@@ -1321,6 +1343,8 @@ void ClientBegin( int clientNum )
 
 	// locate ent at a spawn point
 	ClientSpawn( ent, nullptr, nullptr, nullptr );
+
+	ResendPossiblyWrongConfigstrings( clientNum );
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game") ), Quote( client->pers.netname ) ) );
 
