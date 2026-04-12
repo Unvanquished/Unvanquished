@@ -128,7 +128,7 @@ Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetAliens(
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		"g_BPBudgetPerMiner",
 		"Budget per Miner",
-		Cvar::SERVERINFO,
+		Cvar::NONE,
 		DEFAULT_BP_BUDGET_PER_MINER,
 		[](int) {
 			G_UpdateBuildPointBudgets();
@@ -136,18 +136,18 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 Cvar::Cvar<int> g_buildPointRecoveryInitialRate(
 		"g_BPRecoveryInitialRate",
 		"The initial speed at which BP will be recovered (in BP per minute)",
-		Cvar::SERVERINFO,
+		Cvar::NONE,
 		DEFAULT_BP_RECOVERY_INITIAL_RATE);
 Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife(
 		"g_BPRecoveryRateHalfLife",
 		"The duration one will wait before BP recovery gets twice as slow (in minutes)",
-		Cvar::SERVERINFO,
+		Cvar::NONE,
 		DEFAULT_BP_RECOVERY_RATE_HALF_LIFE);
 
 Cvar::Range<Cvar::Cvar<int>> g_debugMomentum("g_debugMomentum", "momentum debug level", Cvar::NONE, 0, 0, 2);
-Cvar::Cvar<float> g_momentumHalfLife("g_momentumHalfLife", "minutes for momentum to decrease 50%", Cvar::SERVERINFO, DEFAULT_MOMENTUM_HALF_LIFE);
+Cvar::Cvar<float> g_momentumHalfLife("g_momentumHalfLife", "minutes for momentum to decrease 50%", Cvar::NONE, DEFAULT_MOMENTUM_HALF_LIFE);
 Cvar::Cvar<float> g_momentumRewardDoubleTime("g_momentumRewardDoubleTime", "some momentum rewards double after x minutes", Cvar::NONE, DEFAULT_CONF_REWARD_DOUBLE_TIME);
-Cvar::Cvar<float> g_unlockableMinTime("g_unlockableMinTime", "an unlock is lost after x seconds without further momentum rewards", Cvar::SERVERINFO, DEFAULT_UNLOCKABLE_MIN_TIME);
+Cvar::Cvar<float> g_unlockableMinTime("g_unlockableMinTime", "an unlock is lost after x seconds without further momentum rewards", Cvar::NONE, DEFAULT_UNLOCKABLE_MIN_TIME);
 Cvar::Cvar<float> g_momentumBaseMod("g_momentumBaseMod", "generic momentum reward multiplier", Cvar::NONE, DEFAULT_MOMENTUM_BASE_MOD);
 Cvar::Cvar<float> g_momentumKillMod("g_momentumKillMod", "momentum reward multiplier for kills", Cvar::NONE, DEFAULT_MOMENTUM_KILL_MOD);
 Cvar::Cvar<float> g_momentumBuildMod("g_momentumBuildMod", "momentum reward multiplier for construction", Cvar::NONE, DEFAULT_MOMENTUM_BUILD_MOD);
@@ -266,7 +266,7 @@ Cvar::Cvar<int> g_emptyTeamsSkipMapTime("g_emptyTeamsSkipMapTime", "end game ove
 Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
 
 Cvar::Cvar<float>  g_evolveAroundHumans("g_evolveAroundHumans", "Ratio of alien buildings to human entities that always allow evolution", Cvar::NONE, 1.5f);
-Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::SERVERINFO, 1000.0f);
+Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::NONE, 1000.0f);
 
 Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, false);
 
@@ -2181,6 +2181,31 @@ static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 	VectorCopy( ent->acceleration, ent->oldAccel );
 }
 
+static void G_TransmitGameplayCvars()
+{
+	char info[ BIG_INFO_STRING ];
+	*info = '\0';
+
+	auto AddCvar = [ & ]( const auto& cvar )
+	{
+		Info_SetValueForKey( info, cvar.Name().c_str(),
+		                     Cvar::SerializeCvarValue( cvar.Get() ).c_str(), true );
+	};
+
+	AddCvar( g_devolveMaxBaseDistance );
+	AddCvar( g_momentumHalfLife );
+	AddCvar( g_unlockableMinTime );
+	AddCvar( g_buildPointBudgetPerMiner );
+	AddCvar( g_buildPointRecoveryInitialRate );
+	AddCvar( g_buildPointRecoveryRateHalfLife );
+
+	Info_SetValueForKey( info, "g_disabledEquipment", Cvar::GetValue( "g_disabledEquipment" ).c_str(), true );
+	Info_SetValueForKey( info, "g_disabledClasses", Cvar::GetValue( "g_disabledClasses" ).c_str(), true );
+	Info_SetValueForKey( info, "g_disabledBuildables", Cvar::GetValue( "g_disabledBuildables" ).c_str(), true );
+
+	trap_SetConfigstring( CS_GAMEPLAY_CVARS, info );
+}
+
 /*
 ================
 G_RunFrame
@@ -2415,6 +2440,8 @@ void G_RunFrame( int levelTime )
 	G_BotUpdateObstacles();
 
 	level.numBuildablesEstimate = numBuildables;
+
+	G_TransmitGameplayCvars();
 }
 
 void G_PrepareEntityNetCode() {

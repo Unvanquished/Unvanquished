@@ -177,6 +177,11 @@ void CG_ParseServerinfo()
 
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+}
+
+void CG_ParseGameplayCvars()
+{
+	const char *info = CG_ConfigString( CS_GAMEPLAY_CVARS );
 
 	cgs.devolveMaxBaseDistance = atof( Info_ValueForKey( info, "g_devolveMaxBaseDistance" ) );
 
@@ -187,6 +192,7 @@ void CG_ParseServerinfo()
 	cgs.buildPointRecoveryInitialRate  = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
 	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
 
+	// weapons/equipment/etc. must be parsed first for this to work!
 	BG_SetForbiddenEquipment(  std::string( Info_ValueForKey( info, "g_disabledEquipment"  ) ) );
 	BG_SetForbiddenClasses(    std::string( Info_ValueForKey( info, "g_disabledClasses"    ) ) );
 	BG_SetForbiddenBuildables( std::string( Info_ValueForKey( info, "g_disabledBuildables" ) ) );
@@ -306,6 +312,10 @@ static void CG_ConfigStringModified()
 	{
 		CG_SetMapNameFromServerinfo();
 		CG_ParseServerinfo();
+	}
+	else if ( num == CS_GAMEPLAY_CVARS )
+	{
+		CG_ParseGameplayCvars();
 	}
 	else if ( num == CS_WARMUP )
 	{
