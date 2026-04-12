@@ -1022,21 +1022,21 @@ static void InitDisabledItemCvars()
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment(
 		"g_disabledEquipment",
 		"Forbidden weapons and gear humans can buy, example: " QQ("lcannon, flamer, gren, firebomb, bsuit, larmour"),
-		Cvar::SERVERINFO,
+		Cvar::NONE,
 		"", // everything is allowed by default
 		BG_SetForbiddenEquipment
 		);
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses(
 		"g_disabledClasses",
 		"Forbidden alien classes, like " QQ("level3,level3upg,builder"),
-		Cvar::SERVERINFO,
+		Cvar::NONE,
 		"", // everything is allowed by default
 		BG_SetForbiddenClasses
 		);
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables(
 		"g_disabledBuildables",
 		"Forbidden (human and alien) buildings, like " QQ("acid_tube, barricade, medistat, drill, mgturret, rocketpod"),
-		Cvar::SERVERINFO,
+		Cvar::NONE,
 		"", // everything is allowed by default
 		BG_SetForbiddenBuildables
 		);

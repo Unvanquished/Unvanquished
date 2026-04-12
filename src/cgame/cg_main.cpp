@@ -1363,10 +1363,9 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	// load configs after initializing particles and trails since it registers some
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
 	BG_InitAllConfigs();
-	// parse the serverinfo only now because infos such as
-	// disabledEquipment wouldn't be parsed correctly before
-	// loading the configs
 	CG_ParseServerinfo();
+
+	CG_ParseGameplayCvars();
 
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
