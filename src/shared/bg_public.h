@@ -258,6 +258,8 @@ enum
   CS_GAMEPLAY_CVARS,
   CS_CLIENTS_READY,
 
+  // Everything before CS_PLAYERS gets a CG_ConfigStringModified(n) event generated in CG_Init
+
   CS_PLAYERS,
 
   // Stuff below this normally never changes after the match starts
