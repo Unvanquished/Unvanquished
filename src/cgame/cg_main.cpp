@@ -1358,7 +1358,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	// load configs after initializing particles and trails since it registers some
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
 	BG_InitAllConfigs();
-	CG_ParseServerinfo();
 
 	CG_ParseGameplayCvars();
 

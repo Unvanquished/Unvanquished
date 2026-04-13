@@ -1697,8 +1697,6 @@ struct cgs_t
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
 	// parsed from serverinfo
-	int      timelimit;
-	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
 	float    devolveMaxBaseDistance; // used for evolve/devolve ui
@@ -2186,7 +2184,6 @@ void     CG_ShowScores_f();
 //
 void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_SetMapNameFromServerinfo();
-void CG_ParseServerinfo();
 void CG_ParseGameplayCvars();
 void CG_SetConfigValues();
 void CG_ShaderStateChanged();

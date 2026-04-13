@@ -161,24 +161,6 @@ void CG_SetMapNameFromServerinfo()
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 
-/*
-================
-CG_ParseServerinfo
-
-This is called explicitly when the gamestate is first received,
-and whenever the server updates any serverinfo flagged cvars
-================
-*/
-void CG_ParseServerinfo()
-{
-	const char *info;
-
-	info = CG_ConfigString( CS_SERVERINFO );
-
-	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
-	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-}
-
 void CG_ParseGameplayCvars()
 {
 	const char *info = CG_ConfigString( CS_GAMEPLAY_CVARS );
@@ -311,7 +293,6 @@ static void CG_ConfigStringModified()
 	else if ( num == CS_SERVERINFO )
 	{
 		CG_SetMapNameFromServerinfo();
-		CG_ParseServerinfo();
 	}
 	else if ( num == CS_GAMEPLAY_CVARS )
 	{
