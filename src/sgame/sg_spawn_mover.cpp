@@ -1613,6 +1613,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	VectorCopy( maxs, other->r.maxs );
 	other->parent = self;
 	other->r.contents = CONTENTS_TRIGGER;
+	other->r.svFlags = SVF_NOCLIENT;
 	other->touch = door_trigger_touch;
 	// remember the thinnest axis
 	other->mapEntity.customNumber = best;
@@ -2097,6 +2098,7 @@ static void SpawnPlatSensor( gentity_t *self )
 	sensor->classname = BG_strdup( S_PLAT_SENSOR );
 	sensor->touch = Touch_PlatCenterTrigger;
 	sensor->r.contents = CONTENTS_TRIGGER;
+	sensor->r.svFlags = SVF_NOCLIENT;
 	sensor->parent = self;
 
 	tmin[ 0 ] = self->mapEntity.restingPosition[ 0 ] + self->r.mins[ 0 ] + 33;
