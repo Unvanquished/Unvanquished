@@ -78,9 +78,16 @@ set(GAMELOGIC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${GAMELOGIC_DIR})
 include(src.cmake)
 
-
+option(BUILD_DAEMON_CONF "Build daemon.ini file" ON)
 option(BUILD_CGAME "Build client-side gamelogic" 1)
 option(BUILD_SGAME "Build server-side gamelogic" 1)
+
+if (BUILD_DAEMON_CONF)
+    if (NOT DAEMON_CONF_FILE)
+      set(DAEMON_CONF_FILE
+        "${CMAKE_CURRENT_SOURCE_DIR}/daemon.ini")
+    endif()
+endif()
 
 # Whether we are building any gamelogic with the current toolchain
 if ((BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL) AND (BUILD_CGAME OR BUILD_SGAME))
@@ -107,7 +114,7 @@ if (BUILDING_ANY_GAMELOGIC)
         if (NOT ZLIB_FOUND AND NOT "${FREETYPE_INTERNAL_ZLIB}")
             find_package(ZLIB REQUIRED)
             set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
-        endif()
+endif()
 
         # RmlUi
         include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
@@ -155,7 +162,7 @@ endif()
 ################################################
 
 if (BUILDING_ANY_GAMELOGIC)
-    # keep
+# keep
     try_flag(WARNINGS           "-Wno-pragmas")
     try_flag(WARNINGS           "-Wno-unknown-pragmas")
     try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
@@ -174,8 +181,8 @@ if (BUILDING_ANY_GAMELOGIC)
         try_flag(WARNINGS "-Wno-error=deprecated-declarations")
     endif()
 
-    # remove
-    try_flag(WARNINGS           "-Wno-maybe-uninitialized")
+# remove
+try_flag(WARNINGS           "-Wno-maybe-uninitialized")
     try_flag(WARNINGS "/wd4127")  # conditional expression is constant
     try_flag(WARNINGS "/wd4458")  # declaration of 'XXX' hides class member
     try_flag(WARNINGS "/wd4459")  # declaration of 'XXX' hides global declaration
@@ -250,4 +257,15 @@ if (BUILD_CGAME)
         srclibs-recast
         srclibs-fastlz
   )
+endif()
+
+if(BUILD_DAEMON_CONF)
+    add_custom_target(daemon-ini ALL)
+    if (DAEMON_CONF_FILE)
+        add_custom_command(TARGET daemon-ini PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${DAEMON_CONF_FILE}
+                ${CMAKE_BINARY_DIR}/daemon.ini
+        )
+    endif()
 endif()

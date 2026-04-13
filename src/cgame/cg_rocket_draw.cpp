@@ -3670,7 +3670,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 
 static void CG_Rocket_DrawVersion()
 {
-	Rocket_SetInnerRML( PRODUCT_VERSION, 0 );
+	Rocket_SetInnerRML( GAME_VERSION, 0 );
 }
 
 static void CG_Rocket_DrawVote()

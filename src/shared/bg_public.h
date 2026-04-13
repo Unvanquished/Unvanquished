@@ -29,6 +29,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_public.h -- definitions shared by both the server game and client game modules
 //==================================================================
 
+// Custom definitions.
+#include "GameDefs.h"
+
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
@@ -115,10 +118,6 @@ constexpr float HUGE_DISTANCE = 1e15f;
 
 //Unvanquished balance header
 #include "bg_gameplay.h"
-
-// because games can change separately from the main system version, we need a
-// second version that must match between game and cgame
-#define GAME_VERSION       "base"
 
 #define DEFAULT_GRAVITY    800
 
@@ -253,7 +252,7 @@ enum
   CS_VOTE_NO = CS_VOTE_YES + NUM_TEAMS,
   CS_VOTE_CALLER = CS_VOTE_NO + NUM_TEAMS,
 
-  CS_GAME_VERSION = CS_VOTE_CALLER + NUM_TEAMS,
+  CS_MOD_NAME = CS_VOTE_CALLER + NUM_TEAMS,
   CS_LEVEL_START_TIME, // so the timer only shows the current level
   CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
