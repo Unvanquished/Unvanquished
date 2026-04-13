@@ -286,11 +286,7 @@ static void CG_ConfigStringModified()
 	//Log::Debug("configstring modification %i: %s", num, str);
 
 	// do something with it if necessary
-	if ( num == CS_MUSIC )
-	{
-		CG_StartMusic();
-	}
-	else if ( num == CS_SERVERINFO )
+	if ( num == CS_SERVERINFO )
 	{
 		CG_SetMapNameFromServerinfo();
 	}
