@@ -161,7 +161,7 @@ void CG_SetMapNameFromServerinfo()
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 
-void CG_ParseGameplayCvars()
+static void CG_ParseGameplayCvars()
 {
 	const char *info = CG_ConfigString( CS_GAMEPLAY_CVARS );
 
@@ -181,40 +181,11 @@ void CG_ParseGameplayCvars()
 }
 
 /*
-==================
-CG_ParseWarmup
-==================
-*/
-static void CG_ParseWarmup()
-{
-	const char *info;
-	int        warmup;
-
-	info = CG_ConfigString( CS_WARMUP );
-
-	warmup = atoi( info );
-	cg.warmupTime = warmup;
-}
-
-/*
-================
-CG_SetConfigValues
-
-Called on load to set the initial values from configure strings
-================
-*/
-void CG_SetConfigValues()
-{
-	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
-	cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
-}
-
-/*
 =====================
 CG_ShaderStateChanged
 =====================
 */
-void CG_ShaderStateChanged()
+static void CG_ShaderStateChanged()
 {
 	char       originalShader[ MAX_QPATH ];
 	char       newShader[ MAX_QPATH ];
@@ -263,27 +234,23 @@ void CG_ShaderStateChanged()
 	}
 }
 
-/*
-================
-CG_ConfigStringModified
 
-================
-*/
-static void CG_ConfigStringModified()
+static void CG_ConfigStringModified_f()
 {
-	const char *str;
-	int        num;
-
 	// update the config string state with the new data, keeping in sync
 	// with the config strings in the engine.
 	// The engine already checked the inputs
-	num = atoi( CG_Argv( 1 ) );
+	int num = atoi( CG_Argv( 1 ) );
 	cgs.gameState[num] = CG_Argv(2);
 
-	// look up the individual string that was modified
-	str = CG_ConfigString( num );
+	// react to new value
+	CG_ConfigStringModified( num );
+}
 
-	//Log::Debug("configstring modification %i: %s", num, str);
+void CG_ConfigStringModified( int num )
+{
+	// look up the individual string that was modified
+	const char *str = CG_ConfigString( num );
 
 	// do something with it if necessary
 	if ( num == CS_SERVERINFO )
@@ -296,7 +263,7 @@ static void CG_ConfigStringModified()
 	}
 	else if ( num == CS_WARMUP )
 	{
-		CG_ParseWarmup();
+		cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
 	}
 	else if ( num == CS_LEVEL_START_TIME )
 	{
@@ -1365,7 +1332,7 @@ static const consoleCommand_t svcommands[] =
 	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
 	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cp_tr_p",          CG_CenterPrintTR_plural_f },
-	{ "cs",               CG_ConfigStringModified },
+	{ "cs",               CG_ConfigStringModified_f },
 	{ "map_restart",      CG_MapRestart           },
 	{ "pmove_params",     CG_PmoveParams_f        },
 	{ "print",            CG_Print_f              },

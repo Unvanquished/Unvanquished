@@ -1258,8 +1258,6 @@ Will perform callbacks to make the loading info screen update.
 
 void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gameState)
 {
-	const char *s;
-
 	bool fullscreen;
 	if ( Cvar::ParseCvarValue( Cvar::GetValue( "r_fullscreen" ), fullscreen ) && !fullscreen )
 	{
@@ -1316,21 +1314,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 
 	cg.weaponSelect = WP_NONE;
 
-	// copy vote display strings so they don't show up blank if we see
-	// the same one directly after connecting
-	Q_strncpyz( cgs.voteString[ TEAM_NONE ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_NONE ),
-	            sizeof( cgs.voteString ) );
-	Q_strncpyz( cgs.voteString[ TEAM_ALIENS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
-	            sizeof( cgs.voteString[ TEAM_ALIENS ] ) );
-	Q_strncpyz( cgs.voteString[ TEAM_HUMANS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_HUMANS ),
-	            sizeof( cgs.voteString[ TEAM_HUMANS ] ) );
-
-	s = CG_ConfigString( CS_LEVEL_START_TIME );
-	cgs.levelStartTime = atoi( s );
-
 	CG_SetMapNameFromServerinfo();
 
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
@@ -1359,8 +1342,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
 	BG_InitAllConfigs();
 
-	CG_ParseGameplayCvars();
-
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
 
@@ -1386,6 +1367,12 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	CG_Rocket_LoadHuds();
 	CG_LoadBeaconsConfig();
 
+	// update state from configstrings
+	for ( int cs = 0; cs < CS_PLAYERS; cs++ )
+	{
+		CG_ConfigStringModified( cs );
+	}
+
 	trap_S_EndRegistration();
 
 	if ( cg_navgenOnLoad.Get() && Cvar::GetValue( "sv_running" ) == "1" )
@@ -1403,13 +1390,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	{
 		CG_UpdateLoadingStep( LOAD_DONE );
 	}
-
-	// Make sure we have update values (scores)
-	CG_SetConfigValues();
-
-	CG_ShaderStateChanged();
-
-	ui_winner.Set( "" ); // Clear the previous round's winner.
 
 	// Request server to resend pmoveParams.
 	trap_SendClientCommand( "client_ready" );
