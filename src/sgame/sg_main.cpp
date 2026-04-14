@@ -235,7 +235,6 @@ Cvar::Cvar<std::string> g_layouts("g_layouts", "layouts for next map (cleared af
 Cvar::Cvar<bool> g_layoutAuto("g_layoutAuto", "pick arbitrary layout instead of builtin", Cvar::NONE, false);
 
 Cvar::Cvar<bool> g_emoticonsAllowedInNames("g_emoticonsAllowedInNames", "allow [emoticon]s in player names", Cvar::NONE, true);
-Cvar::Cvar<int> g_unnamedNumbering("g_unnamedNumbering", "FOR INTERNAL USE", Cvar::NONE, -1);
 Cvar::Cvar<std::string> g_unnamedNamePrefix("g_unnamedNamePrefix", "prefix for auto-assigned player names", Cvar::NONE, UNNAMED_PLAYER "#");
 Cvar::Cvar<std::string> g_unnamedBotNamePrefix("g_unnamedBotNamePrefix", "default name prefix for bots", Cvar::NONE, UNNAMED_BOT "#");
 

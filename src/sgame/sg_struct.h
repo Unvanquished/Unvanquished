@@ -33,7 +33,6 @@ struct botMemory_t;
 #define MAX_NAMELOG_NAMES 5
 #define MAX_NAMELOG_ADDRS 5
 
-using unnamed_t = signed int;
 struct namelog_t
 {
 	namelog_t *next;
@@ -48,8 +47,6 @@ struct namelog_t
 	int nameChangeTime;
 	int nameChanges;
 	int voteCount;
-
-	unnamed_t unnamedNumber;
 
 	bool muted;
 	bool denyBuild;

@@ -147,7 +147,6 @@ extern Cvar::Cvar<std::string> g_layouts;
 extern Cvar::Cvar<bool> g_layoutAuto;
 
 extern Cvar::Cvar<bool> g_emoticonsAllowedInNames;
-extern Cvar::Cvar<int> g_unnamedNumbering;
 extern Cvar::Cvar<std::string> g_unnamedNamePrefix;
 extern Cvar::Cvar<std::string> g_unnamedBotNamePrefix;
 
