@@ -812,15 +812,13 @@ void G_CheckPmoveParamChanges() {
 		level.pmoveParams.msec = pmove_msec.Get();
 		level.pmoveParams.fixed = pmove_fixed.Get();
 		level.pmoveParams.accurate = pmove_accurate.Get();
-		G_SendClientPmoveParams(-1);
+		trap_SetConfigstring( CS_PMOVE_PARAMS, va(
+			"%i %i %i %i",
+			level.pmoveParams.synchronous,
+			+level.pmoveParams.fixed,
+			level.pmoveParams.msec,
+			+level.pmoveParams.accurate ) );
 	}
-}
-void G_SendClientPmoveParams(int client) {
-	trap_SendServerCommand(client, va("pmove_params %i %i %i %i",
-		level.pmoveParams.synchronous,
-		+level.pmoveParams.fixed,
-		level.pmoveParams.msec,
-		+level.pmoveParams.accurate));
 }
 
 /*

@@ -32,6 +32,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 #include "shared/CommonProxies.h"
 
+static void ParsePmoveParams() {
+	Cmd::Args args(CG_ConfigString( CS_PMOVE_PARAMS ));
+	if (args.Argc() != 4) {
+		Log::Warn( "ParsePmoveParams: bad configstring" );
+		return;
+	}
+
+	cg.pmoveParams.synchronous = atoi(args.Argv(0).c_str());
+	cg.pmoveParams.fixed = atoi(args.Argv(1).c_str());
+	cg.pmoveParams.msec = Math::Clamp( atoi(args.Argv(2).c_str()), 8, 33 );
+	cg.pmoveParams.accurate = atoi(args.Argv(3).c_str());
+}
+
 /*
 =================
 CG_ParseScores
@@ -260,6 +273,10 @@ void CG_ConfigStringModified( int num )
 	else if ( num == CS_GAMEPLAY_CVARS )
 	{
 		CG_ParseGameplayCvars();
+	}
+	else if ( num == CS_PMOVE_PARAMS )
+	{
+		ParsePmoveParams();
 	}
 	else if ( num == CS_WARMUP )
 	{
@@ -1303,24 +1320,6 @@ static void CG_GameCmds_f()
 	}
 }
 
-static void CG_PmoveParams_f() {
-	char arg1[64], arg2[64], arg3[64], arg4[64];
-
-	if (trap_Argc() != 5) {
-		return;
-	}
-
-	trap_Argv(1, arg1, sizeof(arg1));
-	trap_Argv(2, arg2, sizeof(arg2));
-	trap_Argv(3, arg3, sizeof(arg3));
-	trap_Argv(4, arg4, sizeof(arg4));
-
-	cg.pmoveParams.synchronous = atoi(arg1);
-	cg.pmoveParams.fixed = atoi(arg2);
-	cg.pmoveParams.msec = Math::Clamp( atoi(arg3), 8, 33 );
-	cg.pmoveParams.accurate = atoi(arg4);
-}
-
 static const consoleCommand_t svcommands[] =
 {	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
@@ -1334,7 +1333,6 @@ static const consoleCommand_t svcommands[] =
 	{ "cp_tr_p",          CG_CenterPrintTR_plural_f },
 	{ "cs",               CG_ConfigStringModified_f },
 	{ "map_restart",      CG_MapRestart           },
-	{ "pmove_params",     CG_PmoveParams_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_bp_message", CG_PrintBPMessage_f     },
 	{ "print_tr",         CG_PrintTR_f            },

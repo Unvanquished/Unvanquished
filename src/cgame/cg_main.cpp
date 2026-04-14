@@ -1296,14 +1296,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	// let's do it now.
 	trap_UpdateScreen();
 
-	// Set up the pmove params with sensible default values, the server params will
-	// be communicated with the "pmove_params" server commands.
-	// These values are the same as the default values of the servers to preserve
-	// compatibility with official Alpha 34 servers, but shouldn't be necessary anymore for Alpha 35
-	cg.pmoveParams.fixed = cg.pmoveParams.synchronous = 0;
-	cg.pmoveParams.accurate = 1;
-	cg.pmoveParams.msec = 8;
-
 	cg.clientNum = clientNum;
 
 	// Initialize item locking state
@@ -1390,9 +1382,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	{
 		CG_UpdateLoadingStep( LOAD_DONE );
 	}
-
-	// Request server to resend pmoveParams.
-	trap_SendClientCommand( "client_ready" );
 }
 
 /*
