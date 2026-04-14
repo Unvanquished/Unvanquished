@@ -230,7 +230,6 @@ void              G_InitGame( int levelTime, int randomSeed, bool inClient );
 void              G_RunFrame( int levelTime );
 void              G_ShutdownGame( int restart );
 void              G_CheckPmoveParamChanges();
-void              G_SendClientPmoveParams(int client);
 void              G_PrepareEntityNetCode();
 Str::StringRef G_NextMapCommand();
 

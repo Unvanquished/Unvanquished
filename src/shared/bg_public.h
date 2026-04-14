@@ -255,6 +255,7 @@ enum
   CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
   CS_SHADERSTATE,
+  CS_PMOVE_PARAMS,
   CS_GAMEPLAY_CVARS,
   CS_CLIENTS_READY,
 

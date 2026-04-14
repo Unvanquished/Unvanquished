@@ -1189,8 +1189,6 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	             client->pers.netname,
 	             client->pers.netname );
 
-	G_SendClientPmoveParams(clientNum);
-
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
