@@ -631,13 +631,6 @@ const char *CG_Rocket_GetAttribute( const char *attribute )
 	return buffer;
 }
 
-const char *CG_Rocket_QuakeToRML( const char *in )
-{
-	static char buffer[ MAX_STRING_CHARS ];
-	Rocket_QuakeToRMLBuffer( in, buffer, sizeof( buffer ) );
-	return buffer;
-}
-
 bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
 	playerState_t *ps;
