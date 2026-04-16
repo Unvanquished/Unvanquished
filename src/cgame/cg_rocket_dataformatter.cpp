@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "common/Common.h"
 #include "cg_local.h"
+#include "rocket/rocket.h"
 
 static int GCD( int a, int b )
 {
@@ -105,7 +106,8 @@ static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 
 static void CG_Rocket_DFPlayerName( int handle, const char *data )
 {
-	Rocket_DataFormatterFormattedData( handle, va("<span class=\"playername\">%s</span>", CG_Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) ) , false );
+	std::string nameRml = Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name, RP_QUAKE | RP_EMOTICONS );
+	Rocket_DataFormatterFormattedData( handle, va("<span class=\"playername\">%s</span>", nameRml.c_str() ), false );
 }
 
 static score_t *ScoreFromClientNum( int clientNum )

@@ -2464,18 +2464,12 @@ public:
 					color = Color::Green;
 				}
 
-				char deltaEfficiencyPctStr[64];
-				char deltaBudgetStr[64];
+				std::string deltaEfficiencyPctStr = Rocket_QuakeToRML(
+					va( "%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct), RP_QUAKE);
+				std::string deltaBudgetStr = Rocket_QuakeToRML(
+					va("%s%+d", Color::ToString(color).c_str(), deltaBudget), RP_QUAKE);
 
-				Q_strncpyz(deltaEfficiencyPctStr, CG_Rocket_QuakeToRML(va(
-					"%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct
-				)), 64);
-
-				Q_strncpyz(deltaBudgetStr, CG_Rocket_QuakeToRML(va(
-					"%s%+d", Color::ToString(color).c_str(), deltaBudget
-				)), 64);
-
-				SetInnerRML(va(
+				SetInnerRML(Str::Format(
 					"%s EFFICIENCY<br/>%s BUILD POINTS%s%s",
 					deltaEfficiencyPctStr, deltaBudgetStr, msg ? "<br/>" : "", msg ? msg : ""
 				));

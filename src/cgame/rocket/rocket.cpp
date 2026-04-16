@@ -657,11 +657,6 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	return out;
 }
 
-void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
-{
-	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).c_str(), length );
-}
-
 // FIXME: Poor naming, this deals with the custom cursors as well
 class EngineCursor
 {
