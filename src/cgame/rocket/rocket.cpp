@@ -548,16 +548,14 @@ std::string CG_EscapeHTMLText( Str::StringRef text )
 	return out;
 }
 
-// TODO: Make this take Rml::String as an input.
-// FIXME: This always parses colors even when RP_QUAKE is not specified. Many callers rely on this behavior.
-Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
+Rml::String Rocket_QuakeToRML( Str::StringRef in, bool emoticons )
 {
 	Rml::String out;
 	Rml::String spanstr;
 	bool span = false;
 	bool spanHasContent = false;
 
-	Color::Parser parser(in, Color::Color());
+	Color::Parser parser(in.c_str(), Color::Color());
 	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
 	{
 		const Color::Token& token = *iter;
@@ -624,7 +622,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				span = false;
 				spanHasContent = false;
 			}
-			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.RawToken().begin() ) ) )
+			else if ( emoticons && ( emoticon = BG_EmoticonAt( token.RawToken().begin() ) ) )
 			{
 				if ( span && !spanHasContent )
 				{

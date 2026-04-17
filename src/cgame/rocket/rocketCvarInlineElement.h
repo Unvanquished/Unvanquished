@@ -120,7 +120,7 @@ public:
 
 				if ( quakeColors )
 				{
-					value = Rocket_QuakeToRML( value.c_str(), RP_QUAKE | RP_EMOTICONS );
+					value = Rocket_QuakeToRML( value );
 				}
 				else
 				{
