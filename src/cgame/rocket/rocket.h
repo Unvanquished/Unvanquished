@@ -75,7 +75,7 @@ public:
 // somewhere weird like inside a tag, which may require a different form of escaping.
 std::string CG_EscapeHTMLText( Str::StringRef text );
 
-Rml::String Rocket_QuakeToRML( const char *in, int parseFlags );
+Rml::String Rocket_QuakeToRML( Str::StringRef in, bool emoticons = true );
 std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );

@@ -1357,11 +1357,6 @@ enum rocketMenuType_t {
 	ROCKETMENU_NUM_TYPES
 };
 
-enum rocketInnerRMLParseTypes_t {
-	RP_QUAKE = 1 << 0,
-	RP_EMOTICONS = 1 << 1,
-};
-
 struct rocketMenu_t
 {
 	const char *path;

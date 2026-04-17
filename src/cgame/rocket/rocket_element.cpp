@@ -41,8 +41,6 @@ Maryland 20850 USA.
 
 extern Rml::Element *activeElement;
 
-Rml::String Rocket_QuakeToRML( const char *in );
-
 // File contains support code for custom rocket elements
 
 void Rocket_GetElementTag( char *tag, int length )
@@ -117,7 +115,7 @@ void Rocket_SetInnerPlainText( Str::StringRef text )
 // This escapes HTML special characters and interprets color codes and emoticons.
 void Rocket_SetInnerQuake( Str::StringRef text )
 {
-	Rml::String newRML = Rocket_QuakeToRML( text.c_str(), RP_QUAKE | RP_EMOTICONS );
+	Rml::String newRML = Rocket_QuakeToRML( text.c_str() );
 
 	if ( activeElement )
 	{

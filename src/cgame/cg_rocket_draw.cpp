@@ -166,7 +166,7 @@ private:
 		const char* translated = Trans_Gettext( originalRML_.c_str() );
 		if ( quakeColors_ )
 		{
-			SetInnerRML( Rocket_QuakeToRML( translated, RP_QUAKE | RP_EMOTICONS ) );
+			SetInnerRML( Rocket_QuakeToRML( translated ) );
 		}
 		else
 		{
@@ -1316,7 +1316,7 @@ public:
 			? CS_LOCATIONS + locent->currentState.generic1
 			: CS_LOCATIONS;
 
-		SetInnerRML( Rocket_QuakeToRML( CG_ConfigString( cs_index ), RP_EMOTICONS ) );
+		SetInnerRML( Rocket_QuakeToRML( CG_ConfigString( cs_index ) ) );
 	}
 
 private:
@@ -1864,7 +1864,7 @@ public:
 		if ( name != name_ )
 		{
 			name_ = name;
-			SetInnerRML( Rocket_QuakeToRML( name.c_str(), RP_EMOTICONS ) );
+			SetInnerRML( Rocket_QuakeToRML( name ) );
 		}
 	}
 
@@ -1985,7 +1985,7 @@ public:
 		if ( showTime_ != cg.centerPrintTime )
 		{
 			showTime_ = cg.centerPrintTime;
-			SetInnerRML( Rocket_QuakeToRML( cg.centerPrint, RP_EMOTICONS ) );
+			SetInnerRML( Rocket_QuakeToRML( cg.centerPrint ) );
 			SetProperty( Rml::PropertyId::FontSize,
 			             Rml::Property( cg.centerPrintSizeFactor, Rml::Property::EM ) );
 		}
@@ -2047,7 +2047,7 @@ public:
 			// HACK: use <span> and hard coded CSS attributes to put the numbers to the sides of the bar
 			auto rml = [] ( std::string s )
 			{
-				return Rocket_QuakeToRML( s.c_str(), RP_EMOTICONS );
+				return Rocket_QuakeToRML( s );
 			};
 			std::string innerRML;
 			innerRML += "<span style=\"line-height: 1.3em;\">";
@@ -2251,7 +2251,7 @@ public:
 			if ( name_ != cg.beaconRocket.name )
 			{
 				name_ = cg.beaconRocket.name;
-				SetInnerRML( Rocket_QuakeToRML( name_.c_str(), RP_EMOTICONS ) );
+				SetInnerRML( Rocket_QuakeToRML( name_ ) );
 			}
 
 			if ( alpha_ != cg.beaconRocket.nameAlpha )
@@ -2337,7 +2337,7 @@ public:
 			if ( owner_ != cg.beaconRocket.owner )
 			{
 				owner_ = cg.beaconRocket.owner;
-				SetInnerRML( Rocket_QuakeToRML( owner_.c_str(), RP_EMOTICONS ) );
+				SetInnerRML( Rocket_QuakeToRML( owner_ ) );
 			}
 
 			if ( alpha_ != cg.beaconRocket.ownerAlpha )
@@ -2455,9 +2455,9 @@ public:
 				}
 
 				std::string deltaEfficiencyPctStr = Rocket_QuakeToRML(
-					va( "%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct), RP_QUAKE);
+					va( "%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct));
 				std::string deltaBudgetStr = Rocket_QuakeToRML(
-					va("%s%+d", Color::ToString(color).c_str(), deltaBudget), RP_QUAKE);
+					va("%s%+d", Color::ToString(color).c_str(), deltaBudget));
 
 				SetInnerRML(Str::Format(
 					"%s EFFICIENCY<br/>%s BUILD POINTS%s%s",

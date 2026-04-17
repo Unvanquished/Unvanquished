@@ -106,7 +106,7 @@ static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 
 static void CG_Rocket_DFPlayerName( int handle, const char *data )
 {
-	std::string nameRml = Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name, RP_QUAKE | RP_EMOTICONS );
+	std::string nameRml = Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name );
 	Rocket_DataFormatterFormattedData( handle, va("<span class=\"playername\">%s</span>", nameRml.c_str() ), false );
 }
 
