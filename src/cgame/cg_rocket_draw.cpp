@@ -3191,7 +3191,7 @@ static void CG_Rocket_DrawFollow()
 
 		Q_strcat( buffer, sizeof( buffer ), cgs.clientinfo[ cg.snap->ps.clientNum ].name );
 
-		Rocket_SetInnerRML( buffer, RP_EMOTICONS );
+		Rocket_SetInnerQuake( buffer );
 	}
 	else
 	{
@@ -3322,7 +3322,7 @@ static void CG_Rocket_DrawTutorial()
 		return;
 	}
 
-	Rocket_SetInnerRML( CG_TutorialText().c_str(), RP_EMOTICONS | RP_QUAKE );
+	Rocket_SetInnerQuake( CG_TutorialText() );
 }
 
 static void CG_Rocket_DrawChatType()
@@ -3344,11 +3344,11 @@ static void CG_Rocket_DrawChatType()
 
 		if ( ui_chatPromptColors.Get() )
 		{
-			Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, prompt ), RP_QUAKE );
+			Rocket_SetInnerQuake( va( "%s%s", sayText[ cg.sayType ].colour, prompt ) );
 		}
 		else
 		{
-			Rocket_SetInnerRML( prompt, RP_QUAKE );
+			Rocket_SetInnerQuake( prompt );
 		}
 	}
 }
@@ -3649,12 +3649,12 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ],
 			timerColor, timerColor2, sec, timerColor );
 
-	Rocket_SetInnerRML( s.c_str(), RP_EMOTICONS );
+	Rocket_SetInnerQuake( s );
 }
 
 static void CG_Rocket_DrawVersion()
 {
-	Rocket_SetInnerRML( PRODUCT_VERSION, 0 );
+	Rocket_SetInnerPlainText( PRODUCT_VERSION );
 }
 
 static void CG_Rocket_DrawVote()
@@ -3685,7 +3685,7 @@ static void CG_Rocket_DrawWarmup()
 		return;
 	}
 
-	Rocket_SetInnerRML( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ), 0 );
+	Rocket_SetInnerPlainText( va( "%s", sec ? va( "%d", sec ) : _("FIGHT!") ) );
 }
 
 static void CG_Rocket_DrawProgressValue()
@@ -3700,17 +3700,17 @@ static void CG_Rocket_DrawProgressValue()
 
 static void CG_Rocket_DrawLoadingText()
 {
-	Rocket_SetInnerRML( cg.loadingText.c_str(), 0 );
+	Rocket_SetInnerPlainText( cg.loadingText );
 }
 
 static void CG_Rocket_DrawLevelAuthors()
 {
-	Rocket_SetInnerRML( cg.mapAuthors.c_str(), RP_QUAKE | RP_EMOTICONS );
+	Rocket_SetInnerQuake( cg.mapAuthors );
 }
 
 static void CG_Rocket_DrawLevelName()
 {
-	Rocket_SetInnerRML( cg.mapLongName.c_str(), RP_QUAKE | RP_EMOTICONS );
+	Rocket_SetInnerQuake( cg.mapLongName );
 }
 
 static void CG_Rocket_DrawMOTD()
@@ -3720,14 +3720,14 @@ static void CG_Rocket_DrawMOTD()
 
 	s = CG_ConfigString( CS_MOTD );
 	Q_ParseNewlines( parsed, s, sizeof( parsed ) );
-	Rocket_SetInnerRML( parsed, RP_EMOTICONS );
+	Rocket_SetInnerQuake( parsed );
 }
 
 static void CG_Rocket_DrawHostname()
 {
 	const char *info;
 	info = CG_ConfigString( CS_SERVERINFO );
-	Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE | RP_EMOTICONS );
+	Rocket_SetInnerQuake( Info_ValueForKey( info, "sv_hostname" ) );
 }
 
 static void CG_Rocket_DrawDownloadName()
@@ -3739,7 +3739,7 @@ static void CG_Rocket_DrawDownloadName()
 	if ( Q_stricmp( downloadName, rocketInfo.downloadName ) )
 	{
 		Q_strncpyz( rocketInfo.downloadName, downloadName, sizeof( rocketInfo.downloadName ) );
-		Rocket_SetInnerRML( rocketInfo.downloadName, RP_QUAKE );
+		Rocket_SetInnerPlainText( rocketInfo.downloadName );
 	}
 }
 
@@ -3775,11 +3775,11 @@ static void CG_Rocket_DrawDownloadTime()
 		// We do it in K (/1024) because we'd overflow around 4MB
 		CG_PrintTime( dlTimeBuf, sizeof dlTimeBuf,
 				  ( n - ( ( ( downloadCount / 1024 ) * n ) / ( downloadSize / 1024 ) ) ) * 1000 );
-		Rocket_SetInnerRML( dlTimeBuf, RP_QUAKE );
+		Rocket_SetInnerPlainText( dlTimeBuf );
 	}
 	else
 	{
-		Rocket_SetInnerRML( _( "estimating" ), RP_QUAKE );
+		Rocket_SetInnerPlainText( _( "estimating" ) );
 	}
 }
 
@@ -3796,7 +3796,7 @@ static void CG_Rocket_DrawDownloadTotalSize()
 
 	CG_ReadableSize( totalSizeBuf,  sizeof totalSizeBuf,  downloadSize );
 
-	Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
+	Rocket_SetInnerPlainText( totalSizeBuf );
 }
 
 static void CG_Rocket_DrawDownloadSpeed()
@@ -3818,12 +3818,12 @@ static void CG_Rocket_DrawDownloadSpeed()
 	{
 		xferRate = downloadCount / downloadTimeDelta;
 		CG_ReadableSize( xferRateBuf, sizeof xferRateBuf, xferRate );
-		Rocket_SetInnerRML( va( "%s/Sec", xferRateBuf ), RP_QUAKE );
+		Rocket_SetInnerPlainText( va( "%s/Sec", xferRateBuf ) );
 	}
 	else
 	{
 		xferRate = 0;
-		Rocket_SetInnerRML( "0 KB/Sec", RP_QUAKE );
+		Rocket_SetInnerPlainText( "0 KB/Sec" );
 	}
 }
 

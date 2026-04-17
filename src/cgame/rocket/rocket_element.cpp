@@ -99,17 +99,30 @@ static inline void Rocket_SetInnerRMLGuarded( Rml::Element *e, const Rml::String
 	}
 }
 
-// This always escapes HTML special characters.
-// With additional flags parses colors or emoticons (see Rocket_QuakeToRML).
-void Rocket_SetInnerRML( const char *text, int parseFlags )
+void Rocket_SetInnerPlainText( Str::StringRef text )
 {
-	Rml::String newRML = Rocket_QuakeToRML( text, parseFlags );
+	Rml::String newRML = CG_EscapeHTMLText( text );
 
 	if ( activeElement )
 	{
 		Rocket_SetInnerRMLGuarded( activeElement, newRML );
 	}
 
+	else
+	{
+		// TODO warning?
+	}
+}
+
+// This escapes HTML special characters and interprets color codes and emoticons.
+void Rocket_SetInnerQuake( Str::StringRef text )
+{
+	Rml::String newRML = Rocket_QuakeToRML( text.c_str(), RP_QUAKE | RP_EMOTICONS );
+
+	if ( activeElement )
+	{
+		Rocket_SetInnerRMLGuarded( activeElement, newRML );
+	}
 	else
 	{
 		// TODO warning?
@@ -123,7 +136,6 @@ void Rocket_SetInnerRMLRaw( const char* RML )
 	{
 		Rocket_SetInnerRMLGuarded( activeElement, RML );
 	}
-
 	else
 	{
 		// TODO warning?
