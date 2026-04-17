@@ -144,15 +144,7 @@ public:
 	void InitContent(const Rml::String& content)
 	{
 		originalRML_ = content;
-		if ( HasAttribute( "quake" ) )
-		{
-			flags_ |= RP_QUAKE;
-		}
-
-		if ( HasAttribute( "emoticons" ) )
-		{
-			flags_ |= RP_EMOTICONS;
-		}
+		quakeColors_ = HasAttribute( "quake" );
 		FillTranslatedContent();
 	}
 
@@ -161,10 +153,8 @@ public:
 	void GetRML(Rml::String& out) override
 	{
 		out.append("<translate");
-		if (flags_ & RP_QUAKE)
+		if (quakeColors_)
 			out.append(" quake");
-		if (flags_ & RP_EMOTICONS)
-			out.append(" emoticons");
 		out.push_back('>');
 		out.append(originalRML_);
 		out.append("</translate>");
@@ -174,9 +164,9 @@ private:
 	void FillTranslatedContent()
 	{
 		const char* translated = Trans_Gettext( originalRML_.c_str() );
-		if ( flags_ != 0 )
+		if ( quakeColors_ )
 		{
-			SetInnerRML( Rocket_QuakeToRML( translated, flags_ ) );
+			SetInnerRML( Rocket_QuakeToRML( translated, RP_QUAKE | RP_EMOTICONS ) );
 		}
 		else
 		{
@@ -191,7 +181,7 @@ private:
 	}
 
 	Rml::String originalRML_;
-	int flags_ = 0;
+	bool quakeColors_ = false; // interpret color codes + emoticons (but then not HTML!)
 };
 
 class TranslateNodeHandler : public Rml::XMLNodeHandler

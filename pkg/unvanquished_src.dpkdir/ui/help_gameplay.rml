@@ -42,38 +42,38 @@
 			</tab>
 			<panel>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/dretch" />
-				<translate emoticons>Aliens can earn evolution points by killing humans. They can then use those evolution points to evolve into [dragoon] more advanced forms.</translate>
+				<translate quake>Aliens can earn evolution points by killing humans. They can then use those evolution points to evolve into [dragoon] more advanced forms.</translate>
 				<br />
 				<br />
-				<translate emoticons>Aliens can evolve from everywhere if not in line of sight of an human player or buildable. Aliens can also devolve to [granger] less advanced forms (at some cost) when being near the [overmind] overmind.</translate>
+				<translate quake>Aliens can evolve from everywhere if not in line of sight of an human player or buildable. Aliens can also devolve to [granger] less advanced forms (at some cost) when being near the [overmind] overmind.</translate>
 				<br />
 				<br />
-				<translate emoticons>Build an overmind with a [granger] granger if it gets destroyed, you need a live overmind to evolve!</translate>
+				<translate quake>Build an overmind with a [granger] granger if it gets destroyed, you need a live overmind to evolve!</translate>
 				<br />
 				<br />
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/human" />
-				<translate emoticons>Humans can earn credits by killing aliens and destroying alien buildables, then they can uses those credits to buy new [lcannon] weapons, body armours or [bsuit] battlesuit, and accessories like a radar or a jetpack.</translate>
+				<translate quake>Humans can earn credits by killing aliens and destroying alien buildables, then they can uses those credits to buy new [lcannon] weapons, body armours or [bsuit] battlesuit, and accessories like a radar or a jetpack.</translate>
 				<br />
 				<br />
-				<translate emoticons>Humans buy and sell weapons at the [armoury] armoury, make sure one is built! Use the construction kit to build an armoury if it's missing.</translate>
+				<translate quake>Humans buy and sell weapons at the [armoury] armoury, make sure one is built! Use the construction kit to build an armoury if it's missing.</translate>
 			</panel>
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/drill" />
 				<translate>Powering buildables</translate>
 			</tab>
 			<panel>
-				<translate emoticons>Building a structure requires build points. Your team will start with a small pool of build points but if you want to place a greater number of buildables in an area, you can build a [leech] mining structure to increase the available power and provide more build points. Be wary that you will loose the build points if the mining structures are destroyed.</translate>
+				<translate quake>Building a structure requires build points. Your team will start with a small pool of build points but if you want to place a greater number of buildables in an area, you can build a [leech] mining structure to increase the available power and provide more build points. Be wary that you will loose the build points if the mining structures are destroyed.</translate>
 				<br />
 				<br />
-				<translate emoticons>When you are using more BP (Build Point) than the mining structures ([leech] Leech, [drill] Drill) are capable of providing (current BPs + BPs you will recover over time), buildables will power down until the other buildables have enough energy to remain operational.</translate>
-				<translate emoticons>Spawn structures ([egg] eggs and [telenode] telenodes), mining structures (leech and drill) and unique structures ([overmind] overmind and [reactor] reactor) are NOT affected by the lack of BPs.</translate>
+				<translate quake>When you are using more BP (Build Point) than the mining structures ([leech] Leech, [drill] Drill) are capable of providing (current BPs + BPs you will recover over time), buildables will power down until the other buildables have enough energy to remain operational.</translate>
+				<translate quake>Spawn structures ([egg] eggs and [telenode] telenodes), mining structures (leech and drill) and unique structures ([overmind] overmind and [reactor] reactor) are NOT affected by the lack of BPs.</translate>
 			</panel>
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/leech" />
 				<translate>Mining structures</translate>
 			</tab>
 			<panel>
-				<translate emoticons>Build points are acquired via two mining structures: the human [drill] drill and the alien [leech] leech. These buildings need to be spread out for efficiency.</translate>
+				<translate quake>Build points are acquired via two mining structures: the human [drill] drill and the alien [leech] leech. These buildings need to be spread out for efficiency.</translate>
 				<br />
 				<br />
 				<translate>Don't build mining structures too close together or they will compete with each other and ultimately cost build resources!</translate>
@@ -99,23 +99,23 @@
 				<translate>Wildfire</translate>
 			</tab>
 			<panel>
-				<translate emoticons>Alien buildables can catch fire when they are hit with the [flamer] flamethrower or the [firebomb] firebomb.</translate>
+				<translate quake>Alien buildables can catch fire when they are hit with the [flamer] flamethrower or the [firebomb] firebomb.</translate>
 				<br />
 				<br />
 				<translate>If structures are built too close, the fire can jump over to the unfortunate neighbors.</translate>
 				<br />
 				<br />
-				<translate emoticons>A small [fire] fire has a good chance to go out after a while but a group of burning structures will keep itself hot enough for greater mayhem.</translate>
+				<translate quake>A small [fire] fire has a good chance to go out after a while but a group of burning structures will keep itself hot enough for greater mayhem.</translate>
 				<br />
 				<br />
-				<translate emoticons>The [advgranger] advanced granger's spit attack can be used to put out fires or slow down intruders!</translate>
+				<translate quake>The [advgranger] advanced granger's spit attack can be used to put out fires or slow down intruders!</translate>
 			</panel>
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/lcannon" />
 				<translate>Under attack</translate>
 			</tab>
 			<panel>
-				<translate emoticons>The [reactor] reactor and the [overmind] overmind will issue warnings to the team when at 75% health, at 50% health, at 25% health and when destroyed.Destroying other buildings will trigger “under attack” warnings for the owning team.</translate>
+				<translate quake>The [reactor] reactor and the [overmind] overmind will issue warnings to the team when at 75% health, at 50% health, at 25% health and when destroyed.Destroying other buildings will trigger “under attack” warnings for the owning team.</translate>
 			</panel>
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/medstat" />
@@ -126,28 +126,28 @@
 				<br />
 				<br />
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/dretch" />
-				<translate emoticons>Aliens heal slowly wherever they are, but they heal faster in groups and near alien buildables. Building forward ones can be decisive! Healing in any manner will also contribute to restoring the [advdragoon] advanced dragoon projectiles.</translate>
+				<translate quake>Aliens heal slowly wherever they are, but they heal faster in groups and near alien buildables. Building forward ones can be decisive! Healing in any manner will also contribute to restoring the [advdragoon] advanced dragoon projectiles.</translate>
 				<br/>
 				<br/>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/booster" />
 				<translate>The booster gives rapid healing for nearby aliens, build one as soon as you can, try to unlock it the soonest possible. The booster will also gives you some poison to make your attacks more deadly.</translate>
 				<br />
 				<br />
-				<translate emoticons>Staying at an intermediate distance of the [overmind] overmind or [egg] eggs will give you some slightly improved healing too, although lower than creep. This can help defending bases.</translate>
+				<translate quake>Staying at an intermediate distance of the [overmind] overmind or [egg] eggs will give you some slightly improved healing too, although lower than creep. This can help defending bases.</translate>
 				<br />
 				<br />
 				<translate>Aliens have a third healing boost: proximity with other aliens. If you are near a friendly fellow alien, you will heal slightly faster, and with two teammates, you will heal as fast as you would by touching an alien buildable. With some teamwork, this is a great way to besiege enemies!</translate>
 				<br />
 				<br />
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/human" />
-				<translate emoticons>Humans carry with them a medkit they can use to heal once, after that they have to return to the [medstat] medistation to heal and refill their medkit.</translate>
+				<translate quake>Humans carry with them a medkit they can use to heal once, after that they have to return to the [medstat] medistation to heal and refill their medkit.</translate>
 			</panel>
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/dretch" />
 				<translate>Wallwalking</translate>
 			</tab>
 			<panel>
-				<translate emoticons>Some alien forms like the [dretch] dretch, the [mantis] mantis and the [advgranger] advanced granger can walk on walls!</translate>
+				<translate quake>Some alien forms like the [dretch] dretch, the [mantis] mantis and the [advgranger] advanced granger can walk on walls!</translate>
 				<br />
 				<br />
 				<translate>Use this to reach special places or use shortcuts through vents.</translate>
