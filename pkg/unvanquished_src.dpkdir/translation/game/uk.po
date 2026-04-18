@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 17:01+0100\n"
-"PO-Revision-Date: 2026-03-27 20:09+0000\n"
+"PO-Revision-Date: 2026-04-19 17:10+0000\n"
 "Last-Translator: XblateX <blate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/uk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 "X-POOTLE-MTIME: 1377273168.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -125,19 +125,19 @@ msgstr "Кількість"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:37
 msgid "Change map"
-msgstr "Змінити карту"
+msgstr "Змінити мапу"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Голосування: наступна карта"
+msgstr "Голосування: наступна мапа"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "Голосування: встановити поточну карту"
+msgstr "Голосування: встановити поточну мапу"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "Встановити поточну карту (хост)"
+msgstr "Встановити поточну мапу (хост)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
@@ -2062,7 +2062,7 @@ msgstr ""
 
 #: ui/options_ui.rml:123 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr ""
+msgstr "Кулемет"
 
 #: ui/options_ui.rml:124
 msgid "Flamer"
@@ -2195,7 +2195,7 @@ msgstr "Версія:"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:63
 msgid "Players (Bots)"
-msgstr "Гравці (Боти)"
+msgstr "Гравців (Ботів)"
 
 #: ui/server_browser.rml:47 ui/server_browser.rml:64
 msgid "Ping"
