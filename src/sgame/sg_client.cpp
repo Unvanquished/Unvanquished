@@ -440,7 +440,6 @@ static void SpawnCorpse( gentity_t *ent )
 	body->r.contents = CONTENTS_CORPSE;
 	body->clipmask = MASK_DEADSOLID;
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
-	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
 	if ( ent->client->pers.team == TEAM_HUMANS )
 	{

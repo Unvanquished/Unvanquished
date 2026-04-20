@@ -375,7 +375,6 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = false;
 	ci->fixedtorso = false;
-	ci->nonsegmented = false;
 
 	// read optional parameters
 	while ( 1 )
@@ -470,11 +469,6 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			ci->fixedtorso = true;
 			continue;
 		}
-		else if ( !Q_stricmp( token, "nonsegmented" ) )
-		{
-			ci->nonsegmented = true;
-			continue;
-		}
 
 		// if it is a number, start parsing animations
 		if ( token[ 0 ] >= '0' && token[ 0 ] <= '9' )
@@ -486,7 +480,6 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		Log::Notice( "unknown token '%s' is %s\n", token, filename );
 	}
 
-	if ( !ci->nonsegmented )
 	{
 		// read information for each frame
 		for ( i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
@@ -607,80 +600,6 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		animations[ FLAG_STAND2RUN ].initialLerp = 1000 / 15;
 		animations[ FLAG_STAND2RUN ].reversed = true;
 	}
-	else
-	{
-		// read information for each frame
-		for ( i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
-		{
-			const char *token = COM_Parse2( &text_p );
-
-			if ( !*token )
-			{
-				break;
-			}
-
-			animations[ i ].firstFrame = atoi( token );
-
-			token = COM_Parse2( &text_p );
-
-			if ( !*token )
-			{
-				break;
-			}
-
-			animations[ i ].numFrames = atoi( token );
-			animations[ i ].reversed = false;
-			animations[ i ].flipflop = false;
-
-			// if numFrames is negative the animation is reversed
-			if ( animations[ i ].numFrames < 0 )
-			{
-				animations[ i ].numFrames = -animations[ i ].numFrames;
-				animations[ i ].reversed = true;
-			}
-
-			token = COM_Parse2( &text_p );
-
-			if ( !*token )
-			{
-				break;
-			}
-
-			animations[ i ].loopFrames = atoi( token );
-			if ( animations[ i ].loopFrames && animations[ i ].loopFrames != animations[ i ].numFrames )
-			{
-				Log::Warn("CG_ParseAnimationFile: loopFrames != numFrames");
-				animations[ i ].loopFrames = animations[ i ].numFrames;
-			}
-
-			token = COM_Parse2( &text_p );
-
-			if ( !*token )
-			{
-				break;
-			}
-
-			fps = atof( token );
-
-			if ( fps == 0 )
-			{
-				fps = 1;
-			}
-
-			animations[ i ].frameLerp = 1000 / fps;
-			animations[ i ].initialLerp = 1000 / fps;
-		}
-
-		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
-		{
-			Log::Warn( "Error parsing animation file: %s", filename );
-			return false;
-		}
-
-		// walk backward animation
-		animations[ NSPA_WALKBACK ] = animations[ NSPA_WALK ];
-		animations[ NSPA_WALKBACK ].reversed = true;
-	}
 
 	return true;
 }
@@ -705,7 +624,7 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 			return false;
 		}
 	}
-	else if ( !ci->nonsegmented )
+	else
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/lower_%s.skin", modelName, skinName );
 		ci->legsSkin = trap_R_RegisterSkin( filename );
@@ -733,17 +652,6 @@ static bool CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, cons
 
 		if ( !ci->legsSkin || !ci->torsoSkin || !ci->headSkin )
 		{
-			return false;
-		}
-	}
-	else
-	{
-		Com_sprintf( filename, sizeof( filename ), "models/players/%s/nonseg_%s.skin", modelName, skinName );
-		ci->nonSegSkin = trap_R_RegisterSkin( filename );
-
-		if ( !ci->nonSegSkin )
-		{
-			Log::Notice( "Non-segmented skin load failure: %s\n", filename );
 			return false;
 		}
 	}
@@ -1122,7 +1030,6 @@ NSPA_STAND, "idle", true, false, false )
 		return true;
 	}
 
-	// do this first so the nonsegmented property is set
 	// load the animations
 	Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg", modelName );
 
@@ -1133,7 +1040,6 @@ NSPA_STAND, "idle", true, false, false )
 	}
 
 	// load cmodels before models so filecache works
-	if ( !ci->nonsegmented )
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/lower.md3", modelName );
 		ci->legsModel = trap_R_RegisterModel( filename );
@@ -1157,17 +1063,6 @@ NSPA_STAND, "idle", true, false, false )
 		ci->headModel = trap_R_RegisterModel( filename );
 
 		if ( !ci->headModel )
-		{
-			Log::Notice( "Failed to load model file %s\n", filename );
-			return false;
-		}
-	}
-	else
-	{
-		Com_sprintf( filename, sizeof( filename ), "models/players/%s/nonseg.md3", modelName );
-		ci->nonSegModel = trap_R_RegisterModel( filename );
-
-		if ( !ci->nonSegModel )
 		{
 			Log::Notice( "Failed to load model file %s\n", filename );
 			return false;
@@ -1293,9 +1188,6 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->torsoSkin = from->torsoSkin;
 	to->headModel = from->headModel;
 	to->headSkin = from->headSkin;
-	to->nonSegModel = from->nonSegModel;
-	to->nonSegSkin = from->nonSegSkin;
-	to->nonsegmented = from->nonsegmented;
 	to->modelIcon = from->modelIcon;
 	to->bodyModel = from->bodyModel;
 	to->bodySkin = from->bodySkin;
@@ -2929,11 +2821,7 @@ void CG_Player( centity_t *cent )
 	} else {
 
 		// get the rotation information
-		if ( !ci->nonsegmented ) {
-			CG_PlayerAxis( cent, angles, legs.axis, torso.axis, head.axis );
-		} else {
-			CG_PlayerNonSegAxis( cent, angles, legs.axis );
-		}
+		CG_PlayerAxis( cent, angles, legs.axis, torso.axis, head.axis );
 
 		AxisCopy( legs.axis, tempAxis );
 
@@ -2949,16 +2837,12 @@ void CG_Player( centity_t *cent )
 		AxisCopy( tempAxis, cent->pe.lastAxis );
 
 		// get the animation state (after rotation, to allow feet shuffle)
-		if ( !ci->nonsegmented ) {
+		{
 			bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == LEGS_IDLE;
 			CG_SegmentAnimation( cent, &legs, &cent->pe.legs, yawing ? LEGS_TURN : cent->currentState.legsAnim,
 				&legs.oldframe, &legs.frame, &legs.backlerp );
 			CG_SegmentAnimation( cent, &torso, &cent->pe.torso, cent->currentState.torsoAnim,
 				&torso.oldframe, &torso.frame, &torso.backlerp );
-		} else {
-			bool yawing = cent->pe.legs.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_STAND;
-			CG_SegmentAnimation( cent, &legs, &cent->pe.legs, yawing ? NSPA_TURN : cent->currentState.legsAnim,
-				&legs.oldframe, &legs.frame, &legs.backlerp );
 		}
 
 		// add the talk baloon or disconnect icon
@@ -2975,13 +2859,8 @@ void CG_Player( centity_t *cent )
 		CG_PlayerSplash( cent, class_ );
 
 		// add the legs
-		if ( !ci->nonsegmented ) {
-			legs.hModel = ci->legsModel;
-			legs.customSkin = ci->legsSkin;
-		} else {
-			legs.hModel = ci->nonSegModel;
-			legs.customSkin = ci->nonSegSkin;
-		}
+		legs.hModel = ci->legsModel;
+		legs.customSkin = ci->legsSkin;
 
 		VectorCopy( cent->lerpOrigin, legs.origin );
 
@@ -3037,7 +2916,7 @@ void CG_Player( centity_t *cent )
 			return;
 		}
 
-		if ( !ci->nonsegmented ) {
+		{
 			// add the torso
 			torso.hModel = ci->torsoModel;
 
@@ -3079,7 +2958,7 @@ void CG_Player( centity_t *cent )
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE ) {
-			CG_AddPlayerWeapon( &torso, nullptr, cent, ci->nonsegmented ? 0 : 1, ents );
+			CG_AddPlayerWeapon( &torso, nullptr, cent, 1, ents );
 		}
 
 		CG_PlayerUpgrades( cent, &torso, 1, ents );
@@ -3147,14 +3026,7 @@ void CG_Corpse( centity_t *cent )
 	VectorCopy( es->angles, cent->lerpAngles );
 
 	// get the rotation information
-	if ( !ci->nonsegmented )
-	{
-		CG_PlayerAxis( cent, cent->lerpAngles, legs.axis, torso.axis, head.axis );
-	}
-	else
-	{
-		CG_PlayerNonSegAxis( cent, cent->lerpAngles, legs.axis );
-	}
+	CG_PlayerAxis( cent, cent->lerpAngles, legs.axis, torso.axis, head.axis );
 
 	//set the correct frame (should always be dead)
 	if ( cg_noPlayerAnims.Get() )
@@ -3180,7 +3052,7 @@ void CG_Corpse( centity_t *cent )
 			legs.backlerp = cent->pe.legs.backlerp;
 		}
 	}
-	else if ( !ci->nonsegmented )
+	else
 	{
 		cent->pe.legs = {};
 		CG_RunPlayerLerpFrame( ci, &legs, &cent->pe.legs, es->legsAnim, false );
@@ -3193,14 +3065,6 @@ void CG_Corpse( centity_t *cent )
 		torso.oldframe = cent->pe.torso.oldFrame;
 		torso.frame = cent->pe.torso.frame;
 		torso.backlerp = cent->pe.torso.backlerp;
-	}
-	else
-	{
-		cent->pe.nonseg = {};
-		CG_RunPlayerLerpFrame( ci, &legs, &cent->pe.nonseg, es->legsAnim, false );
-		legs.oldframe = cent->pe.nonseg.oldFrame;
-		legs.frame = cent->pe.nonseg.frame;
-		legs.backlerp = cent->pe.nonseg.backlerp;
 	}
 
 	// add the shadow
@@ -3217,15 +3081,10 @@ void CG_Corpse( centity_t *cent )
 		legs.customSkin = ci->bodySkin;
 		legs.scale = ci->modelScale;
 	}
-	else if ( !ci->nonsegmented )
+	else
 	{
 		legs.hModel = ci->legsModel;
 		legs.customSkin = ci->legsSkin;
-	}
-	else
-	{
-		legs.hModel = ci->nonSegModel;
-		legs.customSkin = ci->nonSegSkin;
 	}
 
 	VectorCopy( origin, legs.origin );
@@ -3258,7 +3117,6 @@ void CG_Corpse( centity_t *cent )
 		return;
 	}
 
-	if ( !ci->nonsegmented )
 	{
 		torso.hModel = ci->torsoModel;
 
