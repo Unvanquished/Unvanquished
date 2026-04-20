@@ -889,7 +889,6 @@ struct clientInfo_t
 	bool    iqm; // true if model is an iqm model
 	bool    fixedlegs; // true if legs yaw is always the same as torso yaw
 	bool    fixedtorso; // true if torso never changes yaw
-	bool    nonsegmented; // true if model is Q2 style nonsegmented
 	bool    skeletal; // true if model is a skeletal model
 
 	vec3_t      headOffset; // move head in icon views
@@ -904,9 +903,6 @@ struct clientInfo_t
 
 	qhandle_t   headModel;
 	qhandle_t   headSkin;
-
-	qhandle_t   nonSegModel; //non-segmented model system
-	qhandle_t   nonSegSkin; //non-segmented model system
 
 	qhandle_t   bodyModel; //md5 model format
 	qhandle_t   bodySkin; //md5 model format

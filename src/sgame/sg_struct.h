@@ -280,8 +280,6 @@ struct gentity_t
 
 	vec4_t      animation; // animated map objects
 
-	bool    nonSegModel; // this entity uses a nonsegmented player model
-
 	int         suicideTime; // when the client will suicide
 
 	int         lastDamageTime;
