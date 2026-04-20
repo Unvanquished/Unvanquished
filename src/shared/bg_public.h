@@ -1703,7 +1703,6 @@ public:
 // Parsers
 bool                  BG_ReadWholeFile( const char *filename, char *buffer, size_t size);
 bool                  BG_CheckConfigVars();
-bool                  BG_NonSegModel( const char *filename );
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
 void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );

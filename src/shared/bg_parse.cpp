@@ -1237,46 +1237,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
 /*
 ======================
-BG_NonSegModel
-
-Reads an animation.cfg to check for nonsegmentation
-======================
-*/
-bool BG_NonSegModel( const char *filename )
-{
-	const char *text_p;
-	char text[ 20000 ];
-
-	if ( !BG_ReadWholeFile( filename, text, sizeof( text ) ) )
-	{
-		return false;
-	}
-
-	// parse the text
-	text_p = text;
-
-	// read optional parameters
-	while ( 1 )
-	{
-		const char *token = COM_Parse( &text_p );
-
-		//EOF
-		if ( !token[ 0 ] )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "nonsegmented" ) )
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/*
-======================
 BG_ParseClassModelFile
 
 Parses a configuration file describing the model of a class
