@@ -885,26 +885,16 @@ struct clientInfo_t
 	char        modelName[ MAX_QPATH ];
 	char        skinName[ MAX_QPATH ];
 
-	bool    iqm; // true if model is an iqm model
+	bool    iqm; // true if model is an iqm model, false if md5 (model is always skeletal)
 	bool    fixedlegs; // true if legs yaw is always the same as torso yaw
 	bool    fixedtorso; // true if torso never changes yaw
-	bool    skeletal; // true if model is a skeletal model
 
 	vec3_t      headOffset; // move head in icon views
 	footstep_t  footsteps;
 	gender_t    gender; // from model
 
-	qhandle_t   legsModel;
-	qhandle_t   legsSkin;
-
-	qhandle_t   torsoModel;
-	qhandle_t   torsoSkin;
-
-	qhandle_t   headModel;
-	qhandle_t   headSkin;
-
-	qhandle_t   bodyModel; //md5 model format
-	qhandle_t   bodySkin; //md5 model format
+	qhandle_t   bodyModel;
+	qhandle_t   bodySkin;
 
 	qhandle_t   modelIcon;
 
@@ -1588,11 +1578,6 @@ struct cgMedia_t
 
 	sfxHandle_t alienL4ChargePrepare;
 	sfxHandle_t alienL4ChargeStart;
-
-	//light armour
-	qhandle_t   larmourHeadSkin;
-	qhandle_t   larmourLegsSkin;
-	qhandle_t   larmourTorsoSkin;
 
 	qhandle_t   jetpackModel;
 	qhandle_t   radarModel;
