@@ -83,9 +83,6 @@ void CG_TestModel_f()
 	cg.testModelEntity.~refEntity_t();
 	new(&cg.testModelEntity) refEntity_t{};
 
-	cg.testModelBarrelEntity.~refEntity_t();
-	new(&cg.testModelBarrelEntity) refEntity_t{};
-
 	if ( trap_Argc() < 2 )
 	{
 		return;
@@ -93,11 +90,6 @@ void CG_TestModel_f()
 
 	Q_strncpyz( cg.testModelName, CG_Argv( 1 ), MAX_QPATH );
 	cg.testModelEntity.hModel = trap_R_RegisterModel( cg.testModelName );
-
-	Q_strncpyz( cg.testModelBarrelName, CG_Argv( 1 ), MAX_QPATH );
-	cg.testModelBarrelName[ strlen( cg.testModelBarrelName ) - 4 ] = '\0';
-	Q_strcat( cg.testModelBarrelName, MAX_QPATH, "_barrel.md3" );
-	cg.testModelBarrelEntity.hModel = trap_R_RegisterModel( cg.testModelBarrelName );
 
 	if ( trap_Argc() == 3 )
 	{
@@ -120,14 +112,6 @@ void CG_TestModel_f()
 
 	AnglesToAxis( angles, cg.testModelEntity.axis );
 	cg.testGun = false;
-
-	if ( cg.testModelBarrelEntity.hModel )
-	{
-		angles[ YAW ] = 0;
-		angles[ PITCH ] = 0;
-		angles[ ROLL ] = 0;
-		AnglesToAxis( angles, cg.testModelBarrelEntity.axis );
-	}
 
 	cg.testModelEntity.scale = 1.0f;
 }
@@ -188,7 +172,6 @@ static void CG_AddTestModel()
 
 	// re-register the model, because the level may have changed
 	cg.testModelEntity.hModel = trap_R_RegisterModel( cg.testModelName );
-	cg.testModelBarrelEntity.hModel = trap_R_RegisterModel( cg.testModelBarrelName );
 
 	if ( !cg.testModelEntity.hModel )
 	{
@@ -213,15 +196,7 @@ static void CG_AddTestModel()
 		}
 	}
 
-	const int testModel = trap_R_AddRefEntityToScene( &cg.testModelEntity );
-
-	if ( cg.testModelBarrelEntity.hModel )
-	{
-		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, testModel,
-		                        "tag_barrel" );
-
-		trap_R_AddRefEntityToScene( &cg.testModelBarrelEntity );
-	}
+	trap_R_AddRefEntityToScene( &cg.testModelEntity );
 }
 
 // Textures may be subject to the map's light grid
