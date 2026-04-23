@@ -1241,9 +1241,7 @@ struct cg_t
 
 	// development tool
 	refEntity_t             testModelEntity;
-	refEntity_t             testModelBarrelEntity;
 	char                    testModelName[ MAX_QPATH ];
-	char                    testModelBarrelName[ MAX_QPATH ];
 	bool                testGun;
 	qhandle_t hTestShader;
 	polyVert_t testShaderPoly[ 4 ];
