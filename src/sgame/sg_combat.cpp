@@ -198,8 +198,8 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	return assistant;
 }
 
-Cvar::Cvar<bool> g_BPVampire("g_BPVampire", "BP transfer experiment", Cvar::NONE, false);
-static Cvar::Cvar<bool> g_BPVampireNotifyTeam("g_BPVampireNotifyTeam", "BP transfer experiment team notifications", Cvar::NONE, true);
+Cvar::Cvar<bool> g_BPVampire("g_BPVampire", "BP transfer", Cvar::NONE, true);
+static Cvar::Cvar<bool> g_BPVampireNotifyTeam("g_BPVampireNotifyTeam", "BP transfer team notifications", Cvar::NONE, true);
 Cvar::Cvar<float> g_BPVampireFactor("g_BPVampireFactor", "BP transfer factor", Cvar::NONE, 0.5f);
 
 static int bpStolenAtThisFrame[ NUM_TEAMS ];
