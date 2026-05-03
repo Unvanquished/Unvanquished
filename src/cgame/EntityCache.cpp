@@ -314,7 +314,7 @@ uint32_t EntityCache::Alloc( const uint32_t count ) {
 					break;
 				}
 
-				uint32_t offset = block2 ? CountTrailingZeroes( block2 ) : 64;
+				uint32_t offset = block2 ? CountTrailingZeroes( block2 ) : 64 - bitOffset;
 
 				if ( count <= offset ) {
 					uint64_t mask = UINT64_MAX >> ( 64 - count );
@@ -346,12 +346,12 @@ void EntityCache::Free( const uint32_t offset, const uint32_t count, const bool 
 	uint64_t& block = blocks[offset / 64];
 
 	if ( block == UINT64_MAX ) {
-		blocksL2[offset >> 12] ^= 1ull << ( offset & 0x1000 );
+		blocksL2[offset >> 12] ^= 1ull << ( ( offset >> 6 ) & 63 );
 	}
 
 	const uint64_t mask = UINT64_MAX >> ( 64 - count );
 
-	block ^= mask << offset;
+	block &= ~( mask << ( offset & 63 ) );
 
 	if ( update ) {
 		for ( refEntity_t* ent = entities + offset; ent < entities + offset + count; ent++ ) {
