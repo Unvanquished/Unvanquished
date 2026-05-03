@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 17:01+0100\n"
-"PO-Revision-Date: 2025-10-01 14:02+0000\n"
-"Last-Translator: Tom <tomiguillot@gmail.com>\n"
+"PO-Revision-Date: 2026-05-04 20:09+0000\n"
+"Last-Translator: niv41 <niv41.trabajando@proton.me>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.17.1\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -934,7 +934,7 @@ msgstr "Alta"
 
 #: ui/options_graphics.rml:32
 msgid "Special effects, large textures…"
-msgstr ""
+msgstr "Efectos especiales, texturas grandes…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -942,7 +942,7 @@ msgstr "Media"
 
 #: ui/options_graphics.rml:36
 msgid "Dynamic lights, surface details, good textures…"
-msgstr ""
+msgstr "Luces dinámicas, detalles de superficie, buenas texturas…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:288
 #: ui/options_graphics.rml:408 ui/options_graphics.rml:417
@@ -1028,7 +1028,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:92
 msgid "Multisample anti-aliasing (MSAA)"
-msgstr ""
+msgstr "Anti-solapaje multimuestra (MSAA)"
 
 #: ui/options_graphics.rml:93
 msgid ""
@@ -1075,11 +1075,11 @@ msgstr "Gamma"
 
 #: ui/options_graphics.rml:121
 msgid "Ugly method for increasing brightness."
-msgstr ""
+msgstr "Forma fea de incrementar el brillo."
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."
-msgstr ""
+msgstr "Obsoleto."
 
 #: ui/options_graphics.rml:122
 msgid "Consider resetting and using exposure instead."
