@@ -2154,10 +2154,20 @@ void G_LayoutLoad()
 
 		const buildableAttributes_t *attr = BG_BuildableByName( buildName );
 
-		if ( attr->number == BA_NONE )
+		switch ( attr->number )
 		{
-			Log::Warn( "bad buildable name (%s) in layout. skipping", buildName );
-			continue;
+			case BA_NONE:
+				Log::Warn( "bad buildable name (%s) in layout. skipping", buildName );
+				continue;
+			case BA_A_LEECH:
+			case BA_H_DRILL:
+				// Do not spawn any miner if no miner is allowed.
+				if ( !g_maxMiners.Get() )
+				{
+					continue;
+				}
+			default:
+				break;
 		}
 
 		LayoutBuildItem( attr->number, origin, angles, origin2, angles2 );
