@@ -1493,19 +1493,6 @@ void CG_AddPlayerWeapon( refEntity_t* parent, playerState_t* ps, centity_t* cent
 
 	if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
 	{
-		if ( ps || cg.renderingThirdPerson ||
-		     cent->currentState.number != cg.predictedPlayerState.clientNum )
-		{
-			if ( noGunModel )
-			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID, parent->hModel, "tag_weapon" );
-			}
-			else
-			{
-				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID + 1, gun.hModel, "tag_flash" );
-			}
-		}
-
 		//if the PS is infinite disable it when not firing
 		if ( !firing && CG_IsParticleSystemInfinite( cent->muzzlePS ) )
 		{
@@ -1568,23 +1555,22 @@ void CG_AddPlayerWeapon( refEntity_t* parent, playerState_t* ps, centity_t* cent
 		if ( weapon->wim[ weaponMode ].muzzleParticleSystem && cent->muzzlePsTrigger )
 		{
 			cent->muzzlePS = CG_SpawnNewParticleSystem( weapon->wim[ weaponMode ].muzzleParticleSystem );
+			cent->muzzlePsTrigger = false;
+		}
 
-			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+		if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+		{
+			if ( noGunModel )
 			{
-				if ( noGunModel )
-				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID, parent->hModel, "tag_weapon" );
-				}
-				else
-				{
-					CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID + 1, gun.hModel, "tag_flash" );
-				}
-
-				CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );
-				CG_AttachToTag( &cent->muzzlePS->attachment );
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID, parent->hModel, "tag_weapon" );
+			}
+			else
+			{
+				CG_SetAttachmentTag( &cent->muzzlePS->attachment, cent, weaponAttachmentEntityID + 1, gun.hModel, "tag_flash" );
 			}
 
-			cent->muzzlePsTrigger = false;
+			CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );
+			CG_AttachToTag( &cent->muzzlePS->attachment );
 		}
 
 		// make a dlight for the flash
