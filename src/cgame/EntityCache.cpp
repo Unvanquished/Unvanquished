@@ -37,6 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "EntityCache.h"
 
+constexpr uint32_t EntityCache::blockSize1;
+constexpr uint32_t EntityCache::blockSize2;
+
 static refEntity_t entities[MAX_REF_ENTITIES];
 orientation_t entityOrientations[MAX_REF_ENTITIES];
 
@@ -156,21 +159,10 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
 	}
 
 	if ( ents.size() + frameCount > cent->refEntitiesCount ) {
-		entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, false );
-
-		const uint16_t oldOffset = cent->refEntitiesOffset;
-		cent->refEntitiesOffset = entityCache.Alloc( ents.size() + frameCount );
-
-		if ( cent->refEntitiesCount && cent->refEntitiesOffset != oldOffset ) {
-			entityCache.Free( oldOffset, cent->refEntitiesCount, true );
-
-			for ( refEntity_t* ent = entities + oldOffset, *ent2 = entities + cent->refEntitiesOffset;
-				ent < entities + oldOffset + cent->refEntitiesCount;
-				ent++, ent2++ ) {
-				*ent2 = *ent;
-			}
-		}
-
+		uint16_t newOffset = entityCache.Alloc( ents.size() + frameCount );
+		std::copy_n( entities + cent->refEntitiesOffset, cent->refEntitiesCount, entities + newOffset );
+		entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, true );
+		cent->refEntitiesOffset = newOffset;
 		cent->refEntitiesCount = ents.size() + frameCount;
 	}
 
@@ -241,7 +233,7 @@ void SyncEntityCacheFromEngine() {
 	std::vector<LerpTagSync> orientations = trap_R_SyncLerpTags( lerpTagUpdates );
 
 	if ( cg_showEntityCacheUpdates.Get() && !( cg.clientFrame % cg_showEntityCacheUpdates.Get() ) ) {
-		Log::defaultLogger.WithoutSuppression().Notice( Str::Format( "Cache sync engine->cgame:" ) );
+		Log::defaultLogger.WithoutSuppression().Notice( "Cache sync engine->cgame:" );
 
 		for ( uint16_t i = 0; i < orientations.size(); i++ ) {
 			orientation_t& entityOrientation = orientations[i].entityOrientation;
@@ -281,72 +273,58 @@ void SyncEntityCacheFromEngine() {
 
 uint32_t EntityCache::Alloc( const uint32_t count ) {
 	if ( !count ) {
-		Log::Warn( "EntityCache: tried to allocate 0 blocks" );
+		Log::Warn( "EntityCache: tried to allocate 0 entities" );
 		return 0;
 	}
 
-	if ( count > 64 ) {
-		Sys::Drop( "EntityCache: allocation failed: only up to 64 blocks are supported in one allocation, got %u", count );
+	if ( count > blockSize1 ) {
+		Sys::Drop( "EntityCache: allocation failed: only up to %u entities are supported in one allocation, got %u", blockSize1, count );
 	}
 
-	for( uint64_t& blockL2 : blocksL2 ) {
-		if ( blockL2 == UINT64_MAX ) {
-			continue;
-		}
+	for ( block2_t& blockL2 : blocksL2 )
+	{
+		block2_t freeL2 = ~blockL2;
+		uint32_t blockID = 0;
 
-		uint32_t blockID = blockL2 ? CountTrailingZeroes( ~blockL2 ) : 0;
-		uint64_t maskL2  = 0;
+		while ( freeL2 )
+		{
+			const uint32_t occupiedSkip = CountTrailingZeroes( freeL2 );
+			blockID += occupiedSkip;
+			freeL2 >>= occupiedSkip;
 
-		while ( blockID != 64 ) {
-			uint64_t& block = blocks[blockID + ( &blockL2 - blocksL2 ) * 64];
-			maskL2         |= 1ull << blockID;
-
-			if ( block == UINT64_MAX ) {
-				blockID = ( blockL2 | maskL2 ) ? CountTrailingZeroes( ~( blockL2 | maskL2 ) ) : 64;
-
-				continue;
-			}
-
-			if ( !block ) {
-				block |= UINT64_MAX >> ( 64 - count );
-
-				if ( block == UINT64_MAX ) {
-					blockL2 |= 1ull << blockID;
-				}
-
-				return ( &block - &blocks[0] ) * 64;
-			}
-
-			uint64_t block2    = block;
+			block1_t& block = blocks[blockID | ( &blockL2 - blocksL2 ) * blockSize2];
+			block1_t freeL1 = ~block;
 			uint32_t bitOffset = 0;
+			block1_t maskL1 = block1_t(-1) >> ( blockSize1 - count );
 
-			while ( true ) {
-				if ( block2 == UINT64_MAX || bitOffset == 64 ) {
-					break;
+			while ( freeL1 >= maskL1 )
+			{
+				uint32_t skip = CountTrailingZeroes( freeL1 );
+				freeL1 >>= skip;
+				bitOffset += skip;
+
+				if ( ( freeL1 & maskL1 ) == maskL1 )
+				{
+					maskL1 <<= bitOffset;
+					ASSERT_EQ( block & maskL1, 0u );
+					block |= maskL1;
+
+					ASSERT_EQ( blockL2 & ( block2_t(1) << blockID ), 0u );
+					blockL2 |= block2_t(!~block) << blockID;
+					return ( &block - blocks ) * blockSize1 | bitOffset;
 				}
 
-				uint32_t offset = block2 ? CountTrailingZeroes( block2 ) : 64;
-
-				if ( count <= offset ) {
-					uint64_t mask = UINT64_MAX >> ( 64 - count );
-					block |= mask << bitOffset;
-
-					if ( block == UINT64_MAX ) {
-						blockL2 |= 1ull << blockID;
-					}
-
-					return bitOffset + ( &block - &blocks[0] ) * 64;
-				}
-
-				bitOffset += offset ? offset : CountTrailingZeroes( ~block2 );
-				block2   >>= offset ? offset : CountTrailingZeroes( ~block2 );
+				skip = CountTrailingZeroes( ~freeL1 );
+				freeL1 >>= skip;
+				bitOffset += skip;
 			}
 
-			blockID = ( blockL2 | maskL2 ) ? CountTrailingZeroes( ~( blockL2 | maskL2 ) ) : 64;
+			freeL2 >>= 1;
+			blockID++;
 		}
 	}
 
-	Sys::Drop( "EntityCache: allocation failed: no contiguous memory found for %u blocks", count );
+	Sys::Drop( "EntityCache: allocation failed: no contiguous memory found for %u entities", count );
 }
 
 void EntityCache::Free( const uint32_t offset, const uint32_t count, const bool update ) {
@@ -354,15 +332,18 @@ void EntityCache::Free( const uint32_t offset, const uint32_t count, const bool 
 		return;
 	}
 
-	uint64_t& block = blocks[offset / 64];
+	block1_t& block = blocks[offset / blockSize1];
 
-	if ( block == UINT64_MAX ) {
-		blocksL2[offset >> 12] ^= 1ull << ( offset & 0x1000 );
+	if ( ~block == 0 ) {
+		block2_t bit = block2_t(1) << ( offset / blockSize1 % blockSize2 );
+		ASSERT( blocksL2[offset / blockSize1 / blockSize2] & bit );
+		blocksL2[offset / blockSize1 / blockSize2] ^= bit;
 	}
 
-	const uint64_t mask = UINT64_MAX >> ( 64 - count );
-
-	block ^= mask << offset;
+	block1_t mask = block1_t(-1) >> ( blockSize1 - count );
+	mask <<= offset % blockSize1;
+	ASSERT_EQ( block & mask, mask );
+	block &= ~mask;
 
 	if ( update ) {
 		for ( refEntity_t* ent = entities + offset; ent < entities + offset + count; ent++ ) {
@@ -373,5 +354,6 @@ void EntityCache::Free( const uint32_t offset, const uint32_t count, const bool 
 }
 
 void EntityCache::Clear() {
-	memset( blocks, 0, blockCount * sizeof( uint64_t ) );
+	memset( blocks, 0, sizeof( blocks ) );
+	memset( blocksL2, 0, sizeof( blocksL2 ) );
 }
