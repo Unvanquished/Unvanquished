@@ -7,17 +7,17 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 17:01+0100\n"
-"PO-Revision-Date: 2024-02-09 01:19+0000\n"
-"Last-Translator: Mykhailo Muzyka <mykhailo.muzyka535@gmail.com>\n"
+"PO-Revision-Date: 2026-04-19 17:10+0000\n"
+"Last-Translator: XblateX <blate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 "X-POOTLE-MTIME: 1377273168.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -63,7 +63,7 @@ msgstr "Повернутися до вибору команди"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Вас заблоковано"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
@@ -71,7 +71,7 @@ msgstr ""
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Тривалість:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
@@ -99,7 +99,7 @@ msgstr "Заповнити ботами"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Скільки гравців (користувачів та ботів) має бути в командах?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -125,19 +125,19 @@ msgstr "Кількість"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:37
 msgid "Change map"
-msgstr "Змінити карту"
+msgstr "Змінити мапу"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Голосування: наступна карта"
+msgstr "Голосування: наступна мапа"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "Голосування: встановити поточну карту"
+msgstr "Голосування: встановити поточну мапу"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "Встановити поточну карту (хост)"
+msgstr "Встановити поточну мапу (хост)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
@@ -224,15 +224,15 @@ msgid ""
 msgstr ""
 "Чужі можуть еволюціонувати будь-де поза зоною прямої видимості людини або "
 "будівлі. Вони також можуть повернутися до [granger], менш просунуту форму (з "
-"втратою балів еволюції), коли вони поряд із [overmind] Над розумом."
+"втратою балів еволюції), коли вони поряд із [overmind] Надрозумом."
 
 #: ui/help_gameplay.rml:51
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Побудуйте над розум, будучи [granger] Фермером, якщо він буде знищений, так "
-"вам потрібен живий над розум, щоб вижити!"
+"Побудуйте Надрозум, будучи [granger] Фермером, якщо він буде знищений, так "
+"вам потрібен живий Надрозум, щоб вижити!"
 
 #: ui/help_gameplay.rml:55
 msgid ""
@@ -242,8 +242,8 @@ msgid ""
 msgstr ""
 "Люди можуть заробляти кредити, вбиваючи Чужих і знищуючи їх споруди, потім "
 "вони можуть використовувати свої кредити, щоб купувати нові [lcannon] зброї, "
-"броню або [bsuit] бойовий костюм, а також аксесуари, такі як радар чи "
-"джетпак."
+"броню або [bsuit] бойовий костюм, а також аксесуари, такі як Радар чи "
+"Реактивний ранець."
 
 #: ui/help_gameplay.rml:58
 msgid ""
@@ -360,7 +360,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:115
 msgid "Under attack"
-msgstr ""
+msgstr "Під атакою"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -369,6 +369,10 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"Реактор [reactor] та Надрозум [overmind] надсилатимуть попередження команді, "
+"коли їхній запас здоров’я становитиме 75 %, 50 % та 25 %, а також у разі "
+"їхнього знищення. Знищення інших споруд спричинятиме появу попереджень \"під "
+"атакою\" для команди-власника."
 
 #: ui/help_gameplay.rml:122
 msgid "Healing"
@@ -512,7 +516,7 @@ msgstr ""
 
 #: ui/human_buy.rml:210 ui/human_buy.rml:226
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:218
 msgid "Range:"
@@ -550,7 +554,7 @@ msgstr ""
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "Маяки"
 
 #: ui/ingame_bottacticmenu.rml:78
 msgid "Bot Tactic"
@@ -563,11 +567,11 @@ msgstr ""
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:45
 #: ui/server_browser.rml:62
 msgid "Map:"
-msgstr ""
+msgstr "Мапа:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "Час:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -625,7 +629,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:33 ui/options_democracy.rml:13
 msgid "Democracy"
-msgstr ""
+msgstr "Демократія"
 
 #: ui/menu_ingame.rml:37
 msgid "Host menu"
@@ -633,27 +637,28 @@ msgstr ""
 
 #: ui/menu_ingame.rml:39 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "Налаштування сервера"
 
 #: ui/menu_ingame.rml:41
+#, fuzzy
 msgid "Stop server"
-msgstr ""
+msgstr "Зупинити сервер"
 
 #: ui/menu_ingame.rml:43
 msgid "Pause server"
-msgstr ""
+msgstr "Пауза"
 
 #: ui/menu_ingame.rml:45 ui/options_bots.rml:8
 msgid "Bots"
-msgstr ""
+msgstr "Боти"
 
 #: ui/menu_ingame.rml:49 ui/menu_main.rml:27
 msgid "Main menu"
-msgstr ""
+msgstr "Головне меню"
 
 #: ui/menu_ingame.rml:51 ui/menu_main.rml:28
 msgid "Server listings"
-msgstr ""
+msgstr "Список серверів"
 
 #: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:35
 msgid "Start local/LAN game"
@@ -668,12 +673,14 @@ msgid "Gameplay guide"
 msgstr ""
 
 #: ui/menu_ingame.rml:57 ui/menu_main.rml:37
+#, fuzzy
 msgid "Quit game"
-msgstr ""
+msgstr "Завершити гру"
 
 #: ui/menu_ingame.rml:59 ui/menu_main.rml:41
+#, fuzzy
 msgid "Beta"
-msgstr ""
+msgstr "Бета-версія"
 
 #: ui/menu_main.rml:33 ui/options_fov.rml:8
 msgid "Fields of view"
@@ -697,15 +704,15 @@ msgstr ""
 
 #: ui/options_democracy.rml:20 ui/options_democracy.rml:29
 msgid "yes"
-msgstr ""
+msgstr "так"
 
 #: ui/options_democracy.rml:21 ui/options_democracy.rml:30
 msgid "or"
-msgstr ""
+msgstr "чи"
 
 #: ui/options_democracy.rml:23 ui/options_democracy.rml:32
 msgid "no"
-msgstr ""
+msgstr "ні"
 
 #: ui/options_democracy.rml:27
 msgid "Team vote:"
@@ -754,16 +761,17 @@ msgstr ""
 #: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:85
 #: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
 #: ui/server_setup.rml:73
+#, fuzzy
 msgid "reset"
-msgstr ""
+msgstr "скинути"
 
 #: ui/options_fov.rml:40 ui/server_setup.rml:356
 msgid "Mantis"
-msgstr ""
+msgstr "Богомол"
 
 #: ui/options_fov.rml:48 ui/server_setup.rml:360
 msgid "Marauder"
-msgstr ""
+msgstr "Мародер"
 
 #: ui/options_fov.rml:56 ui/server_setup.rml:368
 msgid "Dragoon"
@@ -782,8 +790,9 @@ msgid "Camera pitching"
 msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
+#, fuzzy
 msgid "Disabled"
-msgstr ""
+msgstr "Вимкнено"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -811,8 +820,9 @@ msgid "Twisting movement"
 msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options.rml:15
+#, fuzzy
 msgid "Graphics"
-msgstr ""
+msgstr "Графіка"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 msgid "Presets"
@@ -1090,7 +1100,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:186
 msgid "Image size limit"
-msgstr ""
+msgstr "Обмеження розміру зображення"
 
 #: ui/options_graphics.rml:187
 msgid "Limit image size to save on memory."
@@ -1181,11 +1191,12 @@ msgstr ""
 
 #: ui/options_graphics.rml:242
 msgid "Sky"
-msgstr ""
+msgstr "Небо"
 
 #: ui/options_graphics.rml:244
+#, fuzzy
 msgid "Draw the sky."
-msgstr ""
+msgstr "Намалювати небо."
 
 #: ui/options_graphics.rml:247
 msgid "Normal mapping"
@@ -1273,7 +1284,7 @@ msgstr "Ніколи"
 
 #: ui/options_graphics.rml:308
 msgid "Cache on disk"
-msgstr ""
+msgstr "Кеш на диску"
 
 #: ui/options_graphics.rml:309
 msgid "Always rebuild"
@@ -1383,8 +1394,9 @@ msgid "Building markers"
 msgstr ""
 
 #: ui/options_graphics.rml:391
+#, fuzzy
 msgid "disabled"
-msgstr ""
+msgstr "вимкнено"
 
 #: ui/options_graphics.rml:392
 msgid "All structures"
@@ -1436,7 +1448,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:420
 msgid "Intensity"
-msgstr ""
+msgstr "Інтенсивність"
 
 #: ui/options_graphics.rml:421
 msgid "Level of motion-blur."
@@ -1470,8 +1482,9 @@ msgid "Special binds for left-handed,<br />touchpad users."
 msgstr ""
 
 #: ui/options_keys.rml:28
+#, fuzzy
 msgid "Gamepad"
-msgstr ""
+msgstr "Геймпад"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
@@ -1518,8 +1531,9 @@ msgid "Wallwalk:"
 msgstr ""
 
 #: ui/options_keys.rml:72
+#, fuzzy
 msgid "Abilities"
-msgstr ""
+msgstr "Здібності"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
@@ -1681,7 +1695,7 @@ msgstr ""
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Чутливість миші"
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
@@ -1751,7 +1765,7 @@ msgstr ""
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr ""
+msgstr "Вимкнути"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
@@ -1778,8 +1792,9 @@ msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr ""
 
 #: ui/options_movements_cosmetic.rml:48
+#, fuzzy
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Режим для лівшів"
 
 #: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
@@ -1787,15 +1802,16 @@ msgstr ""
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
-msgstr ""
+msgstr "Налаштування гравця"
 
 #: ui/options_player.rml:20
 msgid "Personal"
 msgstr ""
 
 #: ui/options_player.rml:23 ui/options_welcome.rml:12
+#, fuzzy
 msgid "Nickname"
-msgstr ""
+msgstr "Позивний"
 
 #: ui/options_player.rml:24 ui/options_welcome.rml:13
 msgid "Your name visible to others."
@@ -1839,11 +1855,12 @@ msgstr ""
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "Інші"
 
 #: ui/options_player.rml:214
+#, fuzzy
 msgid "Tutorial mode"
-msgstr ""
+msgstr "Навчальний режим"
 
 #: ui/options_player.rml:216
 msgid "Display hints for key bindings on-screen."
@@ -1875,7 +1892,7 @@ msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Музика"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1907,11 +1924,11 @@ msgstr ""
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Головний"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "Мова"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -1919,7 +1936,7 @@ msgstr ""
 
 #: ui/options_ui.rml:42 ui/options_welcome.rml:36
 msgid "Change language"
-msgstr ""
+msgstr "Змінити мову"
 
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
@@ -2033,7 +2050,7 @@ msgstr ""
 
 #: ui/options_ui.rml:120 ui/server_setup.rml:283
 msgid "Shotgun"
-msgstr ""
+msgstr "Рушниця"
 
 #: ui/options_ui.rml:121 ui/server_setup.rml:287
 msgid "Lasgun"
@@ -2045,7 +2062,7 @@ msgstr ""
 
 #: ui/options_ui.rml:123 ui/server_setup.rml:295
 msgid "Chaingun"
-msgstr ""
+msgstr "Кулемет"
 
 #: ui/options_ui.rml:124
 msgid "Flamer"
@@ -2125,7 +2142,7 @@ msgstr ""
 
 #: ui/options_ui.rml:199
 msgid "Scale:"
-msgstr ""
+msgstr "Масштаб:"
 
 #: ui/options_ui.rml:203
 msgid "Offset:"
@@ -2137,11 +2154,11 @@ msgstr ""
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "Вітаю!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "Як ми повинні до Вас звертатись?"
 
 #: ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
@@ -2152,8 +2169,9 @@ msgid "You can change this at any time in the options."
 msgstr ""
 
 #: ui/options_welcome.rml:18
+#, fuzzy
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "Якій мові Ви надаєте перевагу?"
 
 #: ui/options_welcome.rml:37
 msgid "Select Battlefield"
@@ -2161,7 +2179,7 @@ msgstr ""
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Список серверів"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
@@ -2177,7 +2195,7 @@ msgstr "Версія:"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:63
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Гравців (Ботів)"
 
 #: ui/server_browser.rml:47 ui/server_browser.rml:64
 msgid "Ping"
@@ -2201,7 +2219,7 @@ msgstr ""
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
@@ -2212,8 +2230,9 @@ msgid "Building layout to use"
 msgstr ""
 
 #: ui/server_create.rml:62
+#, fuzzy
 msgid "Start"
-msgstr ""
+msgstr "Почати"
 
 #: ui/server_mismatch.rml:8
 msgid "Engine version mismatch"
@@ -2244,7 +2263,7 @@ msgstr ""
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "секунд"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
@@ -2284,7 +2303,7 @@ msgstr ""
 
 #: ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Команди"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
@@ -2296,11 +2315,11 @@ msgstr ""
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "Фізика"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "Гравітація"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
@@ -2332,7 +2351,7 @@ msgstr ""
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "хвилин"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
@@ -2432,7 +2451,7 @@ msgstr ""
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "боти"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
@@ -2440,11 +2459,11 @@ msgstr ""
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Працює лише для нових ботів."
 
 #: ui/server_setup.rml:206
 msgid "Humanity"
-msgstr ""
+msgstr "Людство"
 
 #: ui/server_setup.rml:209
 msgid "Field of view"
@@ -2504,7 +2523,7 @@ msgstr ""
 
 #: ui/server_setup.rml:267 ui/server_setup.rml:353
 msgid "Individually"
-msgstr ""
+msgstr "Індивідуально"
 
 #: ui/server_setup.rml:268
 msgid "Primary Weapons"
@@ -2548,7 +2567,7 @@ msgstr "Граната"
 
 #: ui/server_setup.rml:333
 msgid "Radar"
-msgstr ""
+msgstr "Радар"
 
 #: ui/server_setup.rml:342
 msgid "Alien bots morph"
@@ -2571,8 +2590,9 @@ msgid "Additional files are required. Please be patient while they download."
 msgstr ""
 
 #: ui/transition_downloading.rml:59
+#, fuzzy
 msgid "Time left:"
-msgstr ""
+msgstr "Залишилось часу:"
 
 #: ui/transition_downloading.rml:60
 msgid "Download rate:"
@@ -2580,11 +2600,11 @@ msgstr ""
 
 #: ui/transition_downloading.rml:61
 msgid "Size:"
-msgstr ""
+msgstr "Розмір:"
 
 #: ui/welcome.rml:12 ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Ласкаво просимо в Unvanquished"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
@@ -3967,17 +3987,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:579
 msgctxt "male"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* помер"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "female"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* померла"
 
 #: src/cgame/cg_event.cpp:579
 msgctxt "neuter"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* померло"
 
 #: src/cgame/cg_consolecmds.cpp:128
 #, c-format
@@ -3995,19 +4015,20 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
-msgstr ""
+msgstr "Реактор атакують!"
 
 #: src/cgame/cg_event.cpp:1240
 msgid "The Overmind is dying!"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:1246
+#, fuzzy
 msgid "The reactor is going down!"
-msgstr ""
+msgstr "Реактор виходить з ладу!"
 
 #: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
 msgid "Our base is under attack!"
-msgstr ""
+msgstr "Нашу базу атакують!"
 
 #: src/cgame/cg_event.cpp:1269
 #, c-format
@@ -4147,9 +4168,9 @@ msgid "%s^* left the %s"
 msgstr ""
 
 #: src/cgame/cg_players.cpp:1443
-#, c-format
+#, c-format, fuzzy
 msgid "%s^* joined the %s"
-msgstr ""
+msgstr "%s^* приєднався до %s"
 
 #: src/cgame/cg_players.cpp:1448
 #, c-format
@@ -4173,7 +4194,7 @@ msgstr ""
 #: src/cgame/cg_rocket_datasource.cpp:1512
 #: src/cgame/cg_rocket_datasource.cpp:1545
 msgid "Defend"
-msgstr ""
+msgstr "Захистіть"
 
 #: src/cgame/cg_rocket_datasource.cpp:1512
 msgid "The bots stay in the base."
@@ -4206,8 +4227,9 @@ msgid "The bots follow you wherever you go."
 msgstr ""
 
 #: src/cgame/cg_rocket_datasource.cpp:1545
+#, fuzzy
 msgid "Defend our base!!"
-msgstr ""
+msgstr "Захистіть нашу базу!!"
 
 #: src/cgame/cg_rocket_datasource.cpp:1546
 msgid "Attack!"
@@ -4219,7 +4241,7 @@ msgstr ""
 
 #: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "No."
-msgstr ""
+msgstr "Ні."
 
 #: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes"
@@ -4227,11 +4249,11 @@ msgstr "Так"
 
 #: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Yes."
-msgstr ""
+msgstr "Так."
 
 #: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank"
-msgstr ""
+msgstr "Фланг"
 
 #: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Flank, behind you!"
@@ -4493,8 +4515,9 @@ msgid ""
 msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:608
+#, fuzzy
 msgid "There is no reactor"
-msgstr ""
+msgstr "Реактора немає"
 
 #: src/cgame/cg_servercmds.cpp:612
 msgid ""
@@ -4798,7 +4821,7 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
-msgstr ""
+msgstr "Кинути гранату"
 
 #: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
@@ -4816,7 +4839,7 @@ msgstr "%s або %s"
 #: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:381
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: src/cgame/cg_tutorial.cpp:134
 #, c-format
@@ -4995,7 +5018,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:489
 #, c-format
 msgid "Press %s to join a team."
-msgstr ""
+msgstr "Натисніть %s, щоб приєднатись до команди."
 
 #: src/cgame/cg_tutorial.cpp:495
 #, c-format
@@ -5142,7 +5165,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:1999
 msgid "Timelimit hit"
-msgstr ""
+msgstr "Час вичерпано"
 
 #: src/sgame/sg_main.cpp:2010
 msgid "$1$ minutes remaining!"
@@ -5150,7 +5173,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:2018
 msgid "1 minute remaining!"
-msgstr ""
+msgstr "Залишилася 1 хвилина!"
 
 #: src/sgame/sg_main.cpp:2031
 msgid "Humans win"
@@ -5166,7 +5189,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:2225
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "Гру призупинено. Будь ласка, зачекайте."
 
 #: src/sgame/sg_main.cpp:2229
 msgid "Server: Game will auto-unpause in $1$ seconds"

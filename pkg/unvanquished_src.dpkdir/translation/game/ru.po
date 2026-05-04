@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 17:01+0100\n"
-"PO-Revision-Date: 2026-03-01 17:09+0000\n"
+"PO-Revision-Date: 2026-03-29 01:09+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1014,11 +1014,13 @@ msgstr ""
 
 #: ui/options_graphics.rml:77
 msgid "Anti-aliasing"
-msgstr ""
+msgstr "Сглаживание"
 
 #: ui/options_graphics.rml:80
 msgid "Multisample anti-aliasing is preferred when both are enabled."
 msgstr ""
+"Если оба включены, предпочтительным является сглаживание с несколькими "
+"выборками."
 
 #: ui/options_graphics.rml:92
 msgid "Multisample anti-aliasing (MSAA)"
@@ -1039,6 +1041,8 @@ msgstr "Быстрое приблизительное сглаживание (FX
 #: ui/options_graphics.rml:99
 msgid "Smooth the edges using a fast but cheap filter, can blur some details."
 msgstr ""
+"Сглаживание краёв с помощью быстрого, но простого фильтра может привести к "
+"потере некоторых деталей."
 
 #: ui/options_graphics.rml:103 ui/options_graphics.rml:170
 #: ui/options_graphics.rml:234 ui/options_graphics.rml:273
@@ -1075,11 +1079,13 @@ msgstr "Некрасивый способ увеличения яркости."
 
 #: ui/options_graphics.rml:121
 msgid "Obsolete."
-msgstr ""
+msgstr "Устарело."
 
 #: ui/options_graphics.rml:122
 msgid "Consider resetting and using exposure instead."
 msgstr ""
+"Попробуйте сбросить настройки и вместо этого воспользоваться режимом "
+"экспозиции."
 
 #: ui/options_graphics.rml:129 ui/options_graphics.rml:133
 msgid "Tone mapping"
