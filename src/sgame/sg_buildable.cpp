@@ -425,6 +425,11 @@ void G_UpdateBuildablePowerStates()
 				return;
 			}
 
+			if (g_BPVampire.Get()) {
+				buildableComponent.SetPowerState(true);
+				return;
+			}
+
 			// In order to make good a deficit, don't shut down buildables that have no cost.
 			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
 			if (!entity.oldEnt->powered) {
