@@ -376,13 +376,9 @@ const char *CG_Argv( int arg )
 CG_Args
 ================
 */
-const char *CG_Args()
+std::string CG_Args()
 {
-	static char buffer[ MAX_STRING_CHARS ];
-
-	trap_LiteralArgs( buffer, sizeof( buffer ) );
-
-	return buffer;
+	return trap_LiteralArgs();
 }
 
 //========================================================================

@@ -81,8 +81,9 @@ void G_namelog_connect( gclient_t *client )
 
 	// If they're muted, copy in their last known name - this will stop people
 	// reconnecting to get around the name change protection.
+	std::string err;
 	if ( n->muted && G_admin_name_check( &g_entities[ n->slot ],
-	                                     newname, nullptr, 0 ) )
+	                                     newname, err ) )
 	{
 		Q_strncpyz( client->pers.netname, newname, MAX_NAME_LENGTH );
 	}
