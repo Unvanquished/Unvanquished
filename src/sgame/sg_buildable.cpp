@@ -2382,7 +2382,6 @@ void G_BuildLogRevert( int id )
 		level.team[ TEAM_HUMANS ].totalBudget = log->humanBP;
 		level.team[ TEAM_ALIENS ].totalBudget = log->alienBP;
 
-		G_UpdateBPVampire( -1 );
 	}
 
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )

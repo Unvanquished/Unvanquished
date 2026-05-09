@@ -2037,6 +2037,7 @@ public:
 	{
 		if ( !cg.bpVampireTime )
 		{
+			SetInnerRML( "" );
 			return; // bp vampire mode not enabled
 		}
 

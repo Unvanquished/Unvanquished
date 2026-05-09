@@ -2204,6 +2204,21 @@ static void G_TransmitGameplayCvars()
 	trap_SetConfigstring( CS_GAMEPLAY_CVARS, info );
 }
 
+static void G_TransmitBPVampire()
+{
+	if ( g_BPVampire.Get() )
+	{
+		std::string string = Str::Format( "%d %d",
+			static_cast<int>( level.team[ TEAM_ALIENS ].totalBudget ),
+			static_cast<int>( level.team[ TEAM_HUMANS ].totalBudget ) );
+		trap_SetConfigstring( CS_BP_VAMPIRE, string.c_str() );
+	}
+	else
+	{
+		trap_SetConfigstring( CS_BP_VAMPIRE, "" );
+	}
+}
+
 /*
 ================
 G_RunFrame
@@ -2439,7 +2454,9 @@ void G_RunFrame( int levelTime )
 
 	level.numBuildablesEstimate = numBuildables;
 
+	// update some configstrings
 	G_TransmitGameplayCvars();
+	G_TransmitBPVampire();
 }
 
 void G_PrepareEntityNetCode() {

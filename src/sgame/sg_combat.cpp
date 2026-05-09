@@ -309,8 +309,6 @@ void G_AnnounceStolenBP()
 		{
 			continue;
 		}
-		
-		G_UpdateBPVampire( -1 ); // update the BP bars for everyone
 
 		AnnounceDestructions( team );
 
