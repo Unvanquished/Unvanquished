@@ -1930,14 +1930,6 @@ msgstr "Головний"
 msgid "Language"
 msgstr "Мова"
 
-#: ui/options_ui.rml:25 ui/options_welcome.rml:19
-msgid "Some languages are not fully translated."
-msgstr ""
-
-#: ui/options_ui.rml:42 ui/options_welcome.rml:36
-msgid "Change language"
-msgstr "Змінити мову"
-
 #: ui/options_ui.rml:45
 msgid "Real-time clock"
 msgstr ""
@@ -2587,7 +2579,7 @@ msgstr ""
 
 #: ui/shared/language_list.rml:24
 msgid "Change language"
-msgstr ""
+msgstr "Змінити мову"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
