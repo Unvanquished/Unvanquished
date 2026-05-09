@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 17:01+0100\n"
+"POT-Creation-Date: 2026-05-09 23:06+0200\n"
 "PO-Revision-Date: 2025-10-10 13:07+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/unvanquished/"
@@ -106,7 +106,7 @@ msgid "Both teams"
 msgstr "Oba tima"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:116
+#: ui/options_player.rml:107 ui/options_ui.rml:99
 msgid "Aliens"
 msgstr "Vanzemaljci"
 
@@ -143,7 +143,7 @@ msgstr "Postavi trenutnu mapu (host)"
 msgid "Method"
 msgstr "Metoda"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:59
+#: ui/callvote_map.rml:39 ui/server_create.rml:63
 msgid "Map"
 msgstr "Mapa"
 
@@ -748,7 +748,7 @@ msgstr "Glavni meni"
 msgid "Server listings"
 msgstr "Popisi servera"
 
-#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:35
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:39
 msgid "Start local/LAN game"
 msgstr "Pokreni lokalnu/LAN igru"
 
@@ -846,8 +846,8 @@ msgstr "stepeni"
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:116
 #: ui/options_graphics.rml:126 ui/options_graphics.rml:302
-#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:85
-#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
+#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:68
+#: ui/options_ui.rml:147 ui/options_ui.rml:177 ui/options_ui.rml:191
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "resetiraj"
@@ -885,7 +885,7 @@ msgid "Mild"
 msgstr "Blago"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "Default"
 msgstr "Zadano"
 
@@ -1152,7 +1152,7 @@ msgid "low"
 msgstr "nisko"
 
 #: ui/options_graphics.rml:165 ui/options_graphics.rml:391
-#: ui/options_ui.rml:187
+#: ui/options_ui.rml:170
 msgid "None"
 msgstr "Nema"
 
@@ -1255,8 +1255,8 @@ msgstr ""
 "Mip-mapiranje poboljšava izgled udaljenih površina korištenjem tekstura niže "
 "rezolucije na njima. Ovo uglavnom ne utiče na performanse."
 
-#: ui/options_graphics.rml:220 ui/options_ui.rml:47
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: ui/options_graphics.rml:220 ui/options_ui.rml:30
+#: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No"
 msgstr "Ne"
 
@@ -1381,7 +1381,7 @@ msgstr ""
 msgid "Cubemap grid spacing"
 msgstr "Razmak mreže Cubemap"
 
-#: ui/options_graphics.rml:307 ui/options_ui.rml:139
+#: ui/options_graphics.rml:307 ui/options_ui.rml:122
 msgid "Never"
 msgstr "Nikad"
 
@@ -1917,11 +1917,11 @@ msgstr "Podešavanje plejera"
 msgid "Personal"
 msgstr "Lično"
 
-#: ui/options_player.rml:23 ui/options_welcome.rml:12
+#: ui/options_player.rml:23 ui/options_welcome.rml:13
 msgid "Nickname"
 msgstr "Nadimak"
 
-#: ui/options_player.rml:24 ui/options_welcome.rml:13
+#: ui/options_player.rml:24 ui/options_welcome.rml:14
 msgid "Your name visible to others."
 msgstr "Vaše ime vidljivo drugima."
 
@@ -2029,11 +2029,11 @@ msgstr "OpenAL uređaj"
 msgid "Audio output device/card"
 msgstr "Izlazni audio uređaj/kartica"
 
-#: ui/options_ui.rml:18
+#: ui/options_ui.rml:19
 msgid "User interface"
 msgstr "Korisnički interfejs"
 
-#: ui/options_ui.rml:20
+#: ui/options_ui.rml:21
 msgid "Main"
 msgstr "Glavna"
 
@@ -2041,43 +2041,35 @@ msgstr "Glavna"
 msgid "Language"
 msgstr "Jezik"
 
-#: ui/options_ui.rml:25 ui/options_welcome.rml:19
-msgid "Some languages are not fully translated."
-msgstr "Neki jezici nisu u potpunosti prevedeni."
-
-#: ui/options_ui.rml:42 ui/options_welcome.rml:36
-msgid "Change language"
-msgstr "Promijeni jezik"
-
-#: ui/options_ui.rml:45
+#: ui/options_ui.rml:28
 msgid "Real-time clock"
 msgstr "Sat realnog vremena"
 
-#: ui/options_ui.rml:48
+#: ui/options_ui.rml:31
 msgid "12 Hour"
 msgstr "12 sati"
 
-#: ui/options_ui.rml:49
+#: ui/options_ui.rml:32
 msgid "24 Hour"
 msgstr "24 sata"
 
-#: ui/options_ui.rml:51
+#: ui/options_ui.rml:34
 msgid "Show the time in real-life."
 msgstr "Prikažite vrijeme u stvarnom životu."
 
-#: ui/options_ui.rml:54
+#: ui/options_ui.rml:37
 msgid "Game-time clock"
 msgstr "Sat za vrijeme igre"
 
-#: ui/options_ui.rml:56
+#: ui/options_ui.rml:39
 msgid "Show how long a match has lasted."
 msgstr "Prikažite koliko dugo je trajala utakmica."
 
-#: ui/options_ui.rml:59
+#: ui/options_ui.rml:42
 msgid "Console input persistence on map change"
 msgstr "Perzistencija ulaza konzole pri promjeni mape"
 
-#: ui/options_ui.rml:61
+#: ui/options_ui.rml:44
 msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
@@ -2085,208 +2077,208 @@ msgstr ""
 "Trenutni unos u konzolu bit će vraćen prvi put kada se konzola otvori nakon "
 "učitavanja nove mape."
 
-#: ui/options_ui.rml:64
+#: ui/options_ui.rml:47
 msgid "Chat field auto-clear"
 msgstr "Automatsko brisanje polja za chat"
 
-#: ui/options_ui.rml:66
+#: ui/options_ui.rml:49
 msgid "Clear chat field when closed."
 msgstr "Obriši polje za chat kada se zatvori."
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:53
 msgid "Show ping"
 msgstr "Prikaži ping"
 
-#: ui/options_ui.rml:72
+#: ui/options_ui.rml:55
 msgid "Time that information takes to get to the server and back."
 msgstr "Vrijeme koje je potrebno da informacija stigne do servera i nazad."
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:58
 msgid "Show movement speed"
 msgstr "Prikaži brzinu kretanja"
 
-#: ui/options_ui.rml:77
+#: ui/options_ui.rml:60
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Struja, maksimum i grafikon brzine kretanja."
 
-#: ui/options_ui.rml:80
+#: ui/options_ui.rml:63
 msgid "Show FPS"
 msgstr "Prikaži FPS"
 
-#: ui/options_ui.rml:82
+#: ui/options_ui.rml:65
 msgid "Frames per second."
 msgstr "Broj sličica u sekundi."
 
-#: ui/options_ui.rml:85
+#: ui/options_ui.rml:68
 msgid "Console colors"
 msgstr "Boje konzole"
 
-#: ui/options_ui.rml:89 ui/options_ui.rml:168 ui/options_ui.rml:212
+#: ui/options_ui.rml:72 ui/options_ui.rml:151 ui/options_ui.rml:195
 msgid "Red:"
 msgstr "Crvena:"
 
-#: ui/options_ui.rml:93 ui/options_ui.rml:172 ui/options_ui.rml:216
+#: ui/options_ui.rml:76 ui/options_ui.rml:155 ui/options_ui.rml:199
 msgid "Green:"
 msgstr "Zelena:"
 
-#: ui/options_ui.rml:97 ui/options_ui.rml:176 ui/options_ui.rml:220
+#: ui/options_ui.rml:80 ui/options_ui.rml:159 ui/options_ui.rml:203
 msgid "Blue:"
 msgstr "Plava:"
 
-#: ui/options_ui.rml:101 ui/options_ui.rml:180 ui/options_ui.rml:224
+#: ui/options_ui.rml:84 ui/options_ui.rml:163 ui/options_ui.rml:207
 msgid "Alpha:"
 msgstr "Alfa:"
 
-#: ui/options_ui.rml:106
+#: ui/options_ui.rml:89
 msgid "Crosshair"
 msgstr "Križić"
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:93
 msgid "WARN: Preview only works in game."
 msgstr "UPOZORENJE: Pregled radi samo u igri."
 
-#: ui/options_ui.rml:114
+#: ui/options_ui.rml:97
 msgid "Weapon"
 msgstr "Oružje"
 
-#: ui/options_ui.rml:117
+#: ui/options_ui.rml:100
 msgid "Blaster"
 msgstr "Ispaljujuće oružje"
 
-#: ui/options_ui.rml:118
+#: ui/options_ui.rml:101
 msgid "Rifle"
 msgstr "Puška"
 
-#: ui/options_ui.rml:119
+#: ui/options_ui.rml:102
 msgid "Pain Saw"
 msgstr "Pila za bol"
 
-#: ui/options_ui.rml:120 ui/server_setup.rml:283
+#: ui/options_ui.rml:103 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr "Sačmarica"
 
-#: ui/options_ui.rml:121 ui/server_setup.rml:287
+#: ui/options_ui.rml:104 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr "Laserski pištolj"
 
-#: ui/options_ui.rml:122 ui/server_setup.rml:291
+#: ui/options_ui.rml:105 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr "Masovni vozač"
 
-#: ui/options_ui.rml:123 ui/server_setup.rml:295
+#: ui/options_ui.rml:106 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr "Čahura"
 
-#: ui/options_ui.rml:124
+#: ui/options_ui.rml:107
 msgid "Flamer"
 msgstr "Plamenik"
 
-#: ui/options_ui.rml:125 ui/server_setup.rml:303
+#: ui/options_ui.rml:108 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr "Pulsna puška"
 
-#: ui/options_ui.rml:126 ui/server_setup.rml:307
+#: ui/options_ui.rml:109 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr "Luciferov top"
 
-#: ui/options_ui.rml:137
+#: ui/options_ui.rml:120
 msgid "Crosshair visiblity"
 msgstr "Vidljivost nišana"
 
-#: ui/options_ui.rml:140
+#: ui/options_ui.rml:123
 msgid "Ranged weapons only"
 msgstr "Samo oružje za daljinsku borbu"
 
-#: ui/options_ui.rml:141
+#: ui/options_ui.rml:124
 msgid "Always"
 msgstr "Uvijek"
 
-#: ui/options_ui.rml:146
+#: ui/options_ui.rml:129
 msgid "Crosshair size"
 msgstr "Veličina križića"
 
-#: ui/options_ui.rml:148
+#: ui/options_ui.rml:131
 msgid "Tiny"
 msgstr "Maleno"
 
-#: ui/options_ui.rml:149
+#: ui/options_ui.rml:132
 msgid "Small"
 msgstr "Malo"
 
-#: ui/options_ui.rml:150
+#: ui/options_ui.rml:133
 msgid "Regular"
 msgstr "Regularno"
 
-#: ui/options_ui.rml:151
+#: ui/options_ui.rml:134
 msgid "Huge"
 msgstr "Ogromno"
 
-#: ui/options_ui.rml:156
+#: ui/options_ui.rml:139
 msgid "Crosshair colour"
 msgstr "Boja križića"
 
-#: ui/options_ui.rml:158
+#: ui/options_ui.rml:141
 msgid "Image colour"
 msgstr "Boja slike"
 
-#: ui/options_ui.rml:159 ui/options_ui.rml:189
+#: ui/options_ui.rml:142 ui/options_ui.rml:172
 msgid "Custom colour"
 msgstr "Prilagođena boja"
 
-#: ui/options_ui.rml:164
+#: ui/options_ui.rml:147
 msgid "Crosshair colours"
 msgstr "Boje križića"
 
-#: ui/options_ui.rml:185
+#: ui/options_ui.rml:168
 msgid "Crosshair outline colour"
 msgstr "Boja obrisa križića"
 
-#: ui/options_ui.rml:188
+#: ui/options_ui.rml:171
 msgid "Auto colour"
 msgstr "Automatska boja"
 
-#: ui/options_ui.rml:194
+#: ui/options_ui.rml:177
 msgid "Crosshair outline scale"
 msgstr "Skala obrisa križića"
 
-#: ui/options_ui.rml:196
+#: ui/options_ui.rml:179
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
 "Negativne vrijednosti će promijeniti obris tako da bude unutar križića."
 
-#: ui/options_ui.rml:199
+#: ui/options_ui.rml:182
 msgid "Scale:"
 msgstr "Razmjera:"
 
-#: ui/options_ui.rml:203
+#: ui/options_ui.rml:186
 msgid "Offset:"
 msgstr "Pomak:"
 
-#: ui/options_ui.rml:208
+#: ui/options_ui.rml:191
 msgid "Crosshair outline colours"
 msgstr "Boje kontura križića"
 
-#: ui/options_welcome.rml:7
+#: ui/options_welcome.rml:8
 msgid "Hello there!"
 msgstr "Zdravo!"
 
-#: ui/options_welcome.rml:9
+#: ui/options_welcome.rml:10
 msgid "How should we call you?"
 msgstr "Kako da te zovemo?"
 
-#: ui/options_welcome.rml:14
+#: ui/options_welcome.rml:15
 msgid "Colours and symbols can be used."
 msgstr "Mogu se koristiti boje i simboli."
 
-#: ui/options_welcome.rml:16
+#: ui/options_welcome.rml:17
 msgid "You can change this at any time in the options."
 msgstr "Ovo možete promijeniti u bilo kojem trenutku u opcijama."
 
-#: ui/options_welcome.rml:18
+#: ui/options_welcome.rml:19
 msgid "What language do you want to use?"
 msgstr "Koji jezik želite koristiti?"
 
-#: ui/options_welcome.rml:37
+#: ui/options_welcome.rml:21
 msgid "Select Battlefield"
 msgstr "Odaberite bojno polje"
 
@@ -2326,23 +2318,23 @@ msgstr "Osvježi"
 msgid "LAN"
 msgstr "Lokalna mreža (LAN)"
 
-#: ui/server_create.rml:39
+#: ui/server_create.rml:43
 msgid "Hostname"
 msgstr "Naziv osnivača"
 
-#: ui/server_create.rml:44
+#: ui/server_create.rml:48
 msgid "Password"
 msgstr "Lozinka"
 
-#: ui/server_create.rml:49
+#: ui/server_create.rml:53
 msgid "Developer mode (enable cheats)"
 msgstr "Režim za razvojne programere (omogući varalice)"
 
-#: ui/server_create.rml:54
+#: ui/server_create.rml:58
 msgid "Building layout to use"
 msgstr "Raspored zgrade koji će se koristiti"
 
-#: ui/server_create.rml:62
+#: ui/server_create.rml:66
 msgid "Start"
 msgstr "Započni"
 
@@ -2696,6 +2688,14 @@ msgstr "Napredni pljačkaš"
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
 msgstr "Napredni zmajski vojnik"
+
+#: ui/shared/language_list.rml:4
+msgid "Some languages are not fully translated."
+msgstr "Neki jezici nisu u potpunosti prevedeni."
+
+#: ui/shared/language_list.rml:24
+msgid "Change language"
+msgstr "Promijeni jezik"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
@@ -4206,238 +4206,238 @@ msgstr "%s pod napadom – %s"
 msgid "%s under attack"
 msgstr "%s pod napadom"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:473
 msgid "Calling home…"
 msgstr "Poziv kući…"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:473
 msgid "Sending to the front…"
 msgstr "Slanje na front…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:478
 msgid "Tracking your movements…"
 msgstr "Praćenje vaših kretanja…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:478
 msgid "Letting out the magic smoke…"
 msgstr "Ispuštanje magičnog dima…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:482
 msgid "Collecting bees for the hives…"
 msgstr "Sakupljanje pčela za košnice…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:482
 msgid "Initialising fireworks…"
 msgstr "Inicijalizacija vatrometa…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:482
 msgid "Causing electrical faults…"
 msgstr "Uzrokuje električne kvarove…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:486
 msgid "Reading the manual…"
 msgstr "Čitanje priručnika…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:486
 msgid "Looking at blueprints…"
 msgstr "Gledanje nacrta…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:490
 msgid "Generating annoying noises…"
 msgstr "Generisanje iritantnih zvukova…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:490
 msgid "Recording granger purring…"
 msgstr "Snimanje predenja grangerice…"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:494
 msgid "Hello World!"
 msgstr "Zdravo svijete!"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:494
 msgid "Making a scene…"
 msgstr "Pravljenje scene…"
 
-#: src/cgame/cg_main.cpp:496
+#: src/cgame/cg_main.cpp:498
 msgid "Taking pictures of the world…"
 msgstr "Fotografisanje svijeta…"
 
-#: src/cgame/cg_main.cpp:496
+#: src/cgame/cg_main.cpp:498
 msgid "Drawing smiley faces…"
 msgstr "Crtanje smajlića…"
 
-#: src/cgame/cg_main.cpp:500
+#: src/cgame/cg_main.cpp:502
 msgid "Sharpening the aliens' claws…"
 msgstr "Oštrenje kandži vanzemaljaca…"
 
-#: src/cgame/cg_main.cpp:500
+#: src/cgame/cg_main.cpp:502
 msgid "Overloading lucifer cannons…"
 msgstr "Prepunjavanje Luciferovih topova…"
 
-#: src/cgame/cg_main.cpp:504
+#: src/cgame/cg_main.cpp:506
 msgid "Unwrapping jetpacks…"
 msgstr "Raspakivanje mlaznih rančeva…"
 
-#: src/cgame/cg_main.cpp:504
+#: src/cgame/cg_main.cpp:506
 msgid "Spinning silk for reticles…"
 msgstr "Predenje svile za končanice…"
 
-#: src/cgame/cg_main.cpp:508
+#: src/cgame/cg_main.cpp:510
 msgid "Adding turret spam…"
 msgstr "Dodavanje spama u kupolu…"
 
-#: src/cgame/cg_main.cpp:508
+#: src/cgame/cg_main.cpp:510
 msgid "Awakening the overmind…"
 msgstr "Buđenje nadsveštenosti…"
 
-#: src/cgame/cg_main.cpp:512
+#: src/cgame/cg_main.cpp:514
 msgid "Teleporting soldiers…"
 msgstr "Teleportiranje vojnika…"
 
-#: src/cgame/cg_main.cpp:512
+#: src/cgame/cg_main.cpp:514
 msgid "Replicating alien DNA…"
 msgstr "Repliciranje vanzemaljske DNK…"
 
-#: src/cgame/cg_main.cpp:516
+#: src/cgame/cg_main.cpp:518
 msgid "Customizing helmets…"
 msgstr "Prilagođavanje kaciga…"
 
-#: src/cgame/cg_main.cpp:520
+#: src/cgame/cg_main.cpp:522
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr "Kompajliranje GLSL shadera (molimo vas za strpljenje)…"
 
-#: src/cgame/cg_main.cpp:524
+#: src/cgame/cg_main.cpp:526
 msgid "Surveying the map…"
 msgstr "Pregledavanje karte…"
 
-#: src/cgame/cg_main.cpp:528
+#: src/cgame/cg_main.cpp:530
 msgid "Done!"
 msgstr "Gotovo!"
 
-#: src/cgame/cg_main.cpp:1156
+#: src/cgame/cg_main.cpp:1157
 msgid "Generating bot navigation meshes"
 msgstr "Generiranje mreža za navigaciju botova"
 
-#: src/cgame/cg_main.cpp:1200
+#: src/cgame/cg_main.cpp:1201
 #, c-format
 msgid "by %s"
 msgstr "od %s"
 
-#: src/cgame/cg_players.cpp:1431
+#: src/cgame/cg_players.cpp:963
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr "%s^* su preimenovani u %s"
 
-#: src/cgame/cg_players.cpp:1438
+#: src/cgame/cg_players.cpp:970
 #, c-format
 msgid "%s^* left the %s"
 msgstr "%s^* su napustili %s"
 
-#: src/cgame/cg_players.cpp:1443
+#: src/cgame/cg_players.cpp:975
 #, c-format
 msgid "%s^* joined the %s"
 msgstr "%s^* su se pridružili %s"
 
-#: src/cgame/cg_players.cpp:1448
+#: src/cgame/cg_players.cpp:980
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr "%s^* su napustili %s i pridružili se sa %s"
 
-#: src/cgame/cg_rocket_dataformatter.cpp:77
+#: src/cgame/cg_rocket_dataformatter.cpp:78
 #, c-format
 msgid "Custom: %dx%d"
 msgstr "Prilagođeno: %dx%d"
 
-#: src/cgame/cg_rocket_dataformatter.cpp:83
+#: src/cgame/cg_rocket_dataformatter.cpp:84
 #, c-format
 msgid "Same as screen (%dx%d)"
 msgstr "Isto kao i ekran (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr "Zadano ponašanje. Ovo je ono što botovi rade kada igra počne."
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
-#: src/cgame/cg_rocket_datasource.cpp:1545
+#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "Defend"
 msgstr "Braniti"
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1515
 msgid "The bots stay in the base."
 msgstr "Botovi ostaju u bazi."
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
-#: src/cgame/cg_rocket_datasource.cpp:1546
+#: src/cgame/cg_rocket_datasource.cpp:1516
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Attack"
 msgstr "Napad"
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1516
 msgid "The bots attack the enemy base."
 msgstr "Botovi napadaju neprijateljsku bazu."
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1517
 msgid "Stay Here"
 msgstr "Ostani ovdje"
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1517
 msgid "The bots stay where you are currently."
 msgstr "Botovi ostaju tamo gdje se trenutno nalazite."
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
-#: src/cgame/cg_rocket_datasource.cpp:1547
+#: src/cgame/cg_rocket_datasource.cpp:1518
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Follow"
 msgstr "Prati"
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1518
 msgid "The bots follow you wherever you go."
 msgstr "Botovi vas prate gdje god da idete."
 
-#: src/cgame/cg_rocket_datasource.cpp:1545
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "Defend our base!!"
 msgstr "Branimo našu bazu!!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1546
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Attack!"
 msgstr "Napad!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1547
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Follow me!"
 msgstr "Prati me!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No."
 msgstr "Br."
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1552
 msgid "Yes"
 msgstr "Da"
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1552
 msgid "Yes."
 msgstr "Da."
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1553
 msgid "Flank"
 msgstr "Bok"
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1553
 msgid "Flank, behind you!"
 msgstr "Bok, iza tebe!"
 
-#: src/cgame/cg_rocket_draw.cpp:2645
+#: src/cgame/cg_rocket_draw.cpp:2629
 msgid "You are at the front of the spawn queue"
 msgstr "Nalazite se na početku reda za pojavljivanje"
 
-#: src/cgame/cg_rocket_draw.cpp:2649
+#: src/cgame/cg_rocket_draw.cpp:2633
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Nalazite se na poziciji %d u redu čekanja za pojavljivanje"
 
-#: src/cgame/cg_rocket_draw.cpp:2689
+#: src/cgame/cg_rocket_draw.cpp:2673
 msgid "There are no spawns remaining"
 msgstr "Nema preostalih mrijestilišta"
 
-#: src/cgame/cg_rocket_draw.cpp:2693
+#: src/cgame/cg_rocket_draw.cpp:2677
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
@@ -4445,45 +4445,45 @@ msgstr[0] "Preostalo je %d mjesto mrijesta"
 msgstr[1] "Preostala su %d mjesta mrijesta"
 msgstr[2] "Preostalo je %d mjesta mrijesta"
 
-#: src/cgame/cg_rocket_draw.cpp:3242
+#: src/cgame/cg_rocket_draw.cpp:3226
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Čekanje veze…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3246
+#: src/cgame/cg_rocket_draw.cpp:3230
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Čeka se izazov…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3250
+#: src/cgame/cg_rocket_draw.cpp:3234
 msgid "Awaiting gamestate…"
 msgstr "Čekanje stanja igre…"
 
-#: src/cgame/cg_rocket_draw.cpp:3351
+#: src/cgame/cg_rocket_draw.cpp:3335
 msgid "Say:"
 msgstr "Reci:"
 
-#: src/cgame/cg_rocket_draw.cpp:3352
+#: src/cgame/cg_rocket_draw.cpp:3336
 msgid "Team Say:"
 msgstr "Tim kaže:"
 
-#: src/cgame/cg_rocket_draw.cpp:3353
+#: src/cgame/cg_rocket_draw.cpp:3337
 msgid "Admin Say:"
 msgstr "Administrator kaže:"
 
-#: src/cgame/cg_rocket_draw.cpp:3354
+#: src/cgame/cg_rocket_draw.cpp:3338
 msgid "Command:"
 msgstr "Naredba:"
 
-#: src/cgame/cg_rocket_draw.cpp:3704
+#: src/cgame/cg_rocket_draw.cpp:3688
 msgid "FIGHT!"
 msgstr "BORBA!"
 
-#: src/cgame/cg_rocket_draw.cpp:3798
+#: src/cgame/cg_rocket_draw.cpp:3782
 msgid "estimating"
 msgstr "procjena"
 
-#: src/cgame/cg_servercmds.cpp:469
+#: src/cgame/cg_servercmds.cpp:437
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -4491,11 +4491,11 @@ msgstr ""
 "Vanzemaljski tim ima previše igrača. Molimo pričekajte dok se ne oslobode "
 "mjesta ili se pridružite ljudskom timu."
 
-#: src/cgame/cg_servercmds.cpp:471
+#: src/cgame/cg_servercmds.cpp:439
 msgid "The alien team has too many players"
 msgstr "Vanzemaljski tim ima previše igrača"
 
-#: src/cgame/cg_servercmds.cpp:475
+#: src/cgame/cg_servercmds.cpp:443
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -4503,29 +4503,29 @@ msgstr ""
 "Ljudski tim ima previše igrača. Molimo pričekajte dok se ne oslobode mjesta "
 "ili se pridružite vanzemaljskom timu."
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:445
 msgid "The human team has too many players"
 msgstr "Ljudski tim ima previše igrača"
 
-#: src/cgame/cg_servercmds.cpp:481
+#: src/cgame/cg_servercmds.cpp:449
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 "Tim vanzemaljaca je zaključan. Trenutno se ne možete pridružiti "
 "vanzemaljcima."
 
-#: src/cgame/cg_servercmds.cpp:483
+#: src/cgame/cg_servercmds.cpp:451
 msgid "The alien team is locked"
 msgstr "Vanzemaljski tim je zaključan"
 
-#: src/cgame/cg_servercmds.cpp:487
+#: src/cgame/cg_servercmds.cpp:455
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr "Ljudski tim je zaključan. Trenutno se ne možete pridružiti ljudima."
 
-#: src/cgame/cg_servercmds.cpp:489
+#: src/cgame/cg_servercmds.cpp:457
 msgid "The human team is locked"
 msgstr "Ljudski tim je zaključan"
 
-#: src/cgame/cg_servercmds.cpp:493
+#: src/cgame/cg_servercmds.cpp:461
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -4533,25 +4533,25 @@ msgstr ""
 "Dostignut je maksimalan broj klijenata za igranje. Molimo pričekajte dok "
 "slotovi ne postanu dostupni."
 
-#: src/cgame/cg_servercmds.cpp:495
+#: src/cgame/cg_servercmds.cpp:463
 msgid "No free player slots"
 msgstr "Nema besplatnih slotova za igrače"
 
-#: src/cgame/cg_servercmds.cpp:499
+#: src/cgame/cg_servercmds.cpp:467
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Morate sačekati da se završi vrijeme zagrijavanja prije nego što se "
 "pridružite timu."
 
-#: src/cgame/cg_servercmds.cpp:501
+#: src/cgame/cg_servercmds.cpp:469
 msgid "You cannot join a team during warmup."
 msgstr "Ne možete se pridružiti timu tokom zagrijavanja."
 
-#: src/cgame/cg_servercmds.cpp:509
+#: src/cgame/cg_servercmds.cpp:477
 msgid "Cheats are not enabled on this server"
 msgstr "Čitovi nisu omogućeni na ovom serveru"
 
-#: src/cgame/cg_servercmds.cpp:513
+#: src/cgame/cg_servercmds.cpp:481
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -4559,27 +4559,27 @@ msgstr ""
 "Varalice nisu omogućene na ovom serveru, tako da ne možete koristiti ovu "
 "komandu dok ste u timu"
 
-#: src/cgame/cg_servercmds.cpp:520
+#: src/cgame/cg_servercmds.cpp:488
 msgid "Join a team first"
 msgstr "Prvo se pridružite timu"
 
-#: src/cgame/cg_servercmds.cpp:526
+#: src/cgame/cg_servercmds.cpp:494
 msgid "You can only use this command when spectating"
 msgstr "Ovu komandu možete koristiti samo prilikom posmatranja"
 
-#: src/cgame/cg_servercmds.cpp:531
+#: src/cgame/cg_servercmds.cpp:499
 msgid "Must be alien to use this command"
 msgstr "Mora biti stranac da bi se koristila ova komanda"
 
-#: src/cgame/cg_servercmds.cpp:536
+#: src/cgame/cg_servercmds.cpp:504
 msgid "Must be human to use this command"
 msgstr "Mora biti čovjek da bi se koristila ova komanda"
 
-#: src/cgame/cg_servercmds.cpp:541
+#: src/cgame/cg_servercmds.cpp:509
 msgid "Must be alive to use this command"
 msgstr "Morate biti živi da biste koristili ovu komandu"
 
-#: src/cgame/cg_servercmds.cpp:547
+#: src/cgame/cg_servercmds.cpp:515
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -4587,11 +4587,11 @@ msgstr ""
 "Ovdje nema mjesta za gradnju. Krećite se dok struktura ne postane prozirno "
 "zelena, što ukazuje na valjanu lokaciju za gradnju."
 
-#: src/cgame/cg_servercmds.cpp:549
+#: src/cgame/cg_servercmds.cpp:517
 msgid "There is no room to build here"
 msgstr "Ovdje nema mjesta za gradnju"
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:521
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -4599,15 +4599,15 @@ msgstr ""
 "Ne može se graditi na ovoj površini. Površina je previše strma ili nepogodna "
 "za gradnju. Molimo odaberite drugu lokaciju za ovu strukturu."
 
-#: src/cgame/cg_servercmds.cpp:556
+#: src/cgame/cg_servercmds.cpp:524
 msgid "Cannot build on this surface"
 msgstr "Ne može se graditi na ovoj površini"
 
-#: src/cgame/cg_servercmds.cpp:561
+#: src/cgame/cg_servercmds.cpp:529
 msgid "You cannot build that structure"
 msgstr "Ne možeš izgraditi tu strukturu"
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:533
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -4615,11 +4615,11 @@ msgstr ""
 "Ova akcija bi uklonila posljednju tačku pojavljivanja vašeg tima, što često "
 "brzo rezultira gubitkom. Pokušajte izgraditi više tačaka pojavljivanja."
 
-#: src/cgame/cg_servercmds.cpp:568
+#: src/cgame/cg_servercmds.cpp:536
 msgid "You may not deconstruct the last spawn"
 msgstr "Ne smiješ dekonstruirati posljednji spawn"
 
-#: src/cgame/cg_servercmds.cpp:572
+#: src/cgame/cg_servercmds.cpp:540
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -4627,27 +4627,27 @@ msgstr ""
 "Glavna struktura je zaštićena od trenutnog uklanjanja. Kada je označena, "
 "možete je premjestiti na drugo mjesto tako što ćete je tamo izgraditi."
 
-#: src/cgame/cg_servercmds.cpp:575
+#: src/cgame/cg_servercmds.cpp:543
 msgid "You may not deconstruct this structure"
 msgstr "Ne smijete dekonstruirati ovu strukturu"
 
-#: src/cgame/cg_servercmds.cpp:579
+#: src/cgame/cg_servercmds.cpp:547
 msgid "Building has been disabled on the server for your team."
 msgstr "Izgradnja je onemogućena na serveru za vaš tim."
 
-#: src/cgame/cg_servercmds.cpp:580
+#: src/cgame/cg_servercmds.cpp:548
 msgid "Building has been disabled for your team"
 msgstr "Izgradnja je onemogućena za vaš tim"
 
-#: src/cgame/cg_servercmds.cpp:584
+#: src/cgame/cg_servercmds.cpp:552
 msgid "You are no longer permitted to build."
 msgstr "Više vam nije dozvoljeno da gradite."
 
-#: src/cgame/cg_servercmds.cpp:585
+#: src/cgame/cg_servercmds.cpp:553
 msgid "You are no longer permitted to build"
 msgstr "Više vam nije dozvoljeno da gradite"
 
-#: src/cgame/cg_servercmds.cpp:589
+#: src/cgame/cg_servercmds.cpp:557
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4655,11 +4655,11 @@ msgstr ""
 "Vaš tim je odlučio priznati poraz i predati utakmicu: Nema smisla više "
 "graditi bilo šta."
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:559
 msgid "Cannot build after admitting defeat"
 msgstr "Ne može se graditi nakon priznanja poraza"
 
-#: src/cgame/cg_servercmds.cpp:595
+#: src/cgame/cg_servercmds.cpp:563
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4667,19 +4667,19 @@ msgstr ""
 "Nema preostalih resursa. Oslobodite resurse označavanjem postojećih objekata "
 "za izgradnju za demontažu."
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:565
 msgid "There are no resources remaining"
 msgstr "Nema preostalih resursa"
 
-#: src/cgame/cg_servercmds.cpp:601
+#: src/cgame/cg_servercmds.cpp:569
 msgid "This buildable is not powered."
 msgstr "Ova konstrukcija nije napajana."
 
-#: src/cgame/cg_servercmds.cpp:602
+#: src/cgame/cg_servercmds.cpp:570
 msgid "This buildable is not powered"
 msgstr "Ova konstrukcija nije napajana"
 
-#: src/cgame/cg_servercmds.cpp:606
+#: src/cgame/cg_servercmds.cpp:574
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -4687,26 +4687,26 @@ msgstr ""
 "Nema reaktora. Reaktor mora biti izgrađen prije nego što se može postaviti "
 "bilo koja druga struktura."
 
-#: src/cgame/cg_servercmds.cpp:608
+#: src/cgame/cg_servercmds.cpp:576
 msgid "There is no reactor"
 msgstr "Nema reaktora"
 
-#: src/cgame/cg_servercmds.cpp:612
+#: src/cgame/cg_servercmds.cpp:580
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Može postojati samo jedan Reaktor. Označite postojeći ako ga želite "
 "premjestiti."
 
-#: src/cgame/cg_servercmds.cpp:614
+#: src/cgame/cg_servercmds.cpp:582
 msgid "There can only be one Reactor"
 msgstr "Može postojati samo jedan reaktor"
 
-#: src/cgame/cg_servercmds.cpp:619
+#: src/cgame/cg_servercmds.cpp:587
 msgid "Your team cannot have any more drills"
 msgstr "Vaš tim ne može imati više vježbi"
 
-#: src/cgame/cg_servercmds.cpp:623
+#: src/cgame/cg_servercmds.cpp:591
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4714,31 +4714,31 @@ msgstr ""
 "Nemate mjesta da ovo nosite. Molimo vas da prodate sve konfliktne "
 "nadogradnje prije kupovine ovog predmeta."
 
-#: src/cgame/cg_servercmds.cpp:625
+#: src/cgame/cg_servercmds.cpp:593
 msgid "You have no room to carry this"
 msgstr "Nemaš mjesta da ovo nosiš"
 
-#: src/cgame/cg_servercmds.cpp:629
+#: src/cgame/cg_servercmds.cpp:597
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr "Nedovoljno sredstava. Nemate dovoljno kredita za izvršenje ove radnje."
 
-#: src/cgame/cg_servercmds.cpp:631
+#: src/cgame/cg_servercmds.cpp:599
 msgid "Insufficient funds"
 msgstr "Nedovoljno sredstava"
 
-#: src/cgame/cg_servercmds.cpp:635
+#: src/cgame/cg_servercmds.cpp:603
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr ""
 "Već posjedujete ovaj predmet. Nije moguće nositi više predmeta iste vrste."
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:605
 msgid "You already hold this item"
 msgstr "Već posjedujete ovu stavku"
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:609
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4746,11 +4746,11 @@ msgstr ""
 "Morate biti u blizini oružarnice s napajanjem kako biste kupili oružje, "
 "nadogradnje ili municiju."
 
-#: src/cgame/cg_servercmds.cpp:643
+#: src/cgame/cg_servercmds.cpp:611
 msgid "You must be near a powered Armoury"
 msgstr "Moraš biti blizu oružarnice s električnim pogonom"
 
-#: src/cgame/cg_servercmds.cpp:647
+#: src/cgame/cg_servercmds.cpp:615
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4758,19 +4758,19 @@ msgstr ""
 "Morate biti u blizini reaktora, bušilice ili oružarnice s pogonom da biste "
 "kupili energetsku municiju."
 
-#: src/cgame/cg_servercmds.cpp:649
+#: src/cgame/cg_servercmds.cpp:617
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr "Morate biti blizu reaktora, bušilice ili oružarnice s pogonom"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:621
 msgid "There is not enough room here to change armour."
 msgstr "Ovdje nema dovoljno mjesta za promjenu oklopa."
 
-#: src/cgame/cg_servercmds.cpp:654
+#: src/cgame/cg_servercmds.cpp:622
 msgid "Not enough room here to change armour."
 msgstr "Nema dovoljno mjesta ovdje za promjenu oklopa."
 
-#: src/cgame/cg_servercmds.cpp:658
+#: src/cgame/cg_servercmds.cpp:626
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -4778,25 +4778,25 @@ msgstr ""
 "Nije vam dozvoljeno kupovati ili prodavati oružje dok vam ne istekne vrijeme "
 "za izgradnju."
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:628
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Ne možete kupovati ili prodavati oružje dok ne istekne vrijeme potrebno za "
 "izgradnju"
 
-#: src/cgame/cg_servercmds.cpp:665
+#: src/cgame/cg_servercmds.cpp:633
 msgid "You must be dead to use the class command"
 msgstr "Morate biti mrtvi da bi ste koristili komandu klase"
 
-#: src/cgame/cg_servercmds.cpp:669
+#: src/cgame/cg_servercmds.cpp:637
 msgid "Unknown starting item"
 msgstr "Nepoznata početna stavka"
 
-#: src/cgame/cg_servercmds.cpp:673
+#: src/cgame/cg_servercmds.cpp:641
 msgid "Starting item not allowed"
 msgstr "Početna stavka nije dozvoljena"
 
-#: src/cgame/cg_servercmds.cpp:679
+#: src/cgame/cg_servercmds.cpp:647
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4804,11 +4804,11 @@ msgstr ""
 "Ne postoji Nadsvijest. Nadsvijest mora biti izgrađena prije nego što se može "
 "postaviti bilo koja druga struktura."
 
-#: src/cgame/cg_servercmds.cpp:681 src/cgame/cg_servercmds.cpp:721
+#: src/cgame/cg_servercmds.cpp:649 src/cgame/cg_servercmds.cpp:689
 msgid "There is no Overmind"
 msgstr "Ne postoji Nadsvestan um"
 
-#: src/cgame/cg_servercmds.cpp:685
+#: src/cgame/cg_servercmds.cpp:653
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4816,15 +4816,15 @@ msgstr ""
 "Može postojati samo jedan Nadsvestan. Dekonstruišite postojeći ako ga želite "
 "premjestiti."
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:655
 msgid "There can only be one Overmind"
 msgstr "Može postojati samo jedan Nadsvest"
 
-#: src/cgame/cg_servercmds.cpp:692
+#: src/cgame/cg_servercmds.cpp:660
 msgid "Your team cannot have any more leeches"
 msgstr "Vaš tim ne može imati više pijavica"
 
-#: src/cgame/cg_servercmds.cpp:696
+#: src/cgame/cg_servercmds.cpp:664
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4832,11 +4832,11 @@ msgstr ""
 "Nadsvijest ne može kontrolirati više struktura. Dekonstruirajte postojeće "
 "strukture kako biste izgradili nove."
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:666
 msgid "The Overmind cannot control any more structures"
 msgstr "Nadmoć ne može kontrolirati više nijednu strukturu"
 
-#: src/cgame/cg_servercmds.cpp:702
+#: src/cgame/cg_servercmds.cpp:670
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4844,11 +4844,11 @@ msgstr ""
 "Ovdje nema mjesta za evoluciju. Odmaknite se od zidova ili drugih obližnjih "
 "objekata i pokušajte ponovo."
 
-#: src/cgame/cg_servercmds.cpp:704
+#: src/cgame/cg_servercmds.cpp:672
 msgid "There is no room to evolve here"
 msgstr "Ovdje nema prostora za evoluciju"
 
-#: src/cgame/cg_servercmds.cpp:708
+#: src/cgame/cg_servercmds.cpp:676
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4856,83 +4856,83 @@ msgstr ""
 "Ova lokacija je preblizu neprijatelju da bi se razvijala. Udaljite se od "
 "neprijateljskog prisustva i pokušajte ponovo."
 
-#: src/cgame/cg_servercmds.cpp:710
+#: src/cgame/cg_servercmds.cpp:678
 msgid "This location is too close to the enemy to evolve"
 msgstr "Ova lokacija je preblizu neprijatelju da bi se razvijala"
 
-#: src/cgame/cg_servercmds.cpp:714 src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:682 src/cgame/cg_servercmds.cpp:683
 msgid "The Overmind is too far away to devolve."
 msgstr "Nadsveštenstvo je previše daleko da bi se devoluiralo."
 
-#: src/cgame/cg_servercmds.cpp:719
+#: src/cgame/cg_servercmds.cpp:687
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Ne postoji Nadsvestan (Overmind). Nadsvestan (Overmind) mora biti izgrađen "
 "da bi vam se omogućila nadogradnja."
 
-#: src/cgame/cg_servercmds.cpp:725
+#: src/cgame/cg_servercmds.cpp:693
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Ne možete evoluirati dok vam ne istekne tajmer za izgradnju."
 
-#: src/cgame/cg_servercmds.cpp:726
+#: src/cgame/cg_servercmds.cpp:694
 msgid "You cannot evolve until your build timer expires"
 msgstr "Ne možete evoluirati dok vam ne istekne tajmer za izgradnju"
 
-#: src/cgame/cg_servercmds.cpp:730
+#: src/cgame/cg_servercmds.cpp:698
 msgid "Wait a second after attacking or evolving"
 msgstr "Sačekajte sekundu nakon napada ili evolucije"
 
-#: src/cgame/cg_servercmds.cpp:738
+#: src/cgame/cg_servercmds.cpp:706
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Ne možeš se razviti u %s"
 
-#: src/cgame/cg_servercmds.cpp:743
+#: src/cgame/cg_servercmds.cpp:711
 msgid "You cannot evolve while wallwalking"
 msgstr "Ne možeš evoluirati dok hodaš po zidovima"
 
-#: src/cgame/cg_servercmds.cpp:747
+#: src/cgame/cg_servercmds.cpp:715
 msgid "Unknown class"
 msgstr "Nepoznata klasa"
 
-#: src/cgame/cg_servercmds.cpp:751
+#: src/cgame/cg_servercmds.cpp:719
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Ne možete se pojaviti kao %s"
 
-#: src/cgame/cg_servercmds.cpp:756
+#: src/cgame/cg_servercmds.cpp:724
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s nije dozvoljeno"
 
-#: src/cgame/cg_servercmds.cpp:761
+#: src/cgame/cg_servercmds.cpp:729
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "%s još nije otključano"
 
-#: src/cgame/cg_servercmds.cpp:766
+#: src/cgame/cg_servercmds.cpp:734
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame: debug: nema takvog menija %d"
 
-#: src/cgame/cg_servercmds.cpp:869
+#: src/cgame/cg_servercmds.cpp:837
 msgid "^1*DEAD*^*"
 msgstr "^1*MRTAV*^*"
 
-#: src/cgame/cg_servercmds.cpp:930
+#: src/cgame/cg_servercmds.cpp:898
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sPrivatna poruka od: ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:938
+#: src/cgame/cg_servercmds.cpp:906
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
 ">> da biste odgovorili, recite: '/m %d [vaša poruka]' ili '/r [vaša poruka]' "
 "<<"
 
-#: src/cgame/cg_servercmds.cpp:1428
+#: src/cgame/cg_servercmds.cpp:1377
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Nepoznata naredba klijentske igre: %s"
@@ -5299,39 +5299,39 @@ msgstr "^1Generisanje navigacijske mreže bota nije uspjelo!"
 msgid "Server: generating bot navigation meshes... $1$%"
 msgstr "Server: generiranje mreža za navigaciju botova... $1$%"
 
-#: src/sgame/sg_buildable.cpp:1697
+#: src/sgame/sg_buildable.cpp:1702
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$1$ ^2izgrađeno^* od strane $2$^*, ^3zamjenjuje^* $3$"
 
-#: src/sgame/sg_buildable.cpp:1698
+#: src/sgame/sg_buildable.cpp:1703
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$1$ ^2izgrađeno^* od strane $2$$3$"
 
-#: src/sgame/sg_client.cpp:846
+#: src/sgame/sg_client.cpp:845
 msgid "Name change spam protection ($1$ = $2$)"
 msgstr "Zaštita od neželjene pošte prilikom promjene imena (1$ = 2$)"
 
-#: src/sgame/sg_client.cpp:855
+#: src/sgame/sg_client.cpp:854
 msgid "Maximum name changes reached ($1$ = $2$)"
 msgstr "Dostignut je maksimalan broj promjena imena ($1$ = $2$)"
 
-#: src/sgame/sg_client.cpp:863
+#: src/sgame/sg_client.cpp:862
 msgid "You cannot change your name while you are muted"
 msgstr "Ne možete promijeniti ime dok ste utišani"
 
-#: src/sgame/sg_client.cpp:875
+#: src/sgame/sg_client.cpp:874
 msgid "Name is too long! Must be less than $1$ characters or color codes."
 msgstr "Naziv je predugačak! Mora imati manje od $1$ znakova ili kodova boja."
 
-#: src/sgame/sg_client.cpp:1156
+#: src/sgame/sg_client.cpp:1155
 msgid "Your GUID is not secure"
 msgstr "Vaš GUID nije siguran"
 
-#: src/sgame/sg_client.cpp:1197
+#: src/sgame/sg_client.cpp:1194
 msgid "$1$^* connected"
 msgstr "Povezano $1$^*"
 
-#: src/sgame/sg_client.cpp:1325
+#: src/sgame/sg_client.cpp:1346
 msgid "$1$^* entered the game"
 msgstr "$1$^* je ušao u igru"
 
@@ -5347,43 +5347,43 @@ msgstr "$1$ ^3DEKONSTRUISANO^* od strane $2$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3UNISTIO^* od strane $2$"
 
-#: src/sgame/sg_main.cpp:1999
+#: src/sgame/sg_main.cpp:1997
 msgid "Timelimit hit"
 msgstr "Vremenski limit dostignut"
 
-#: src/sgame/sg_main.cpp:2010
+#: src/sgame/sg_main.cpp:2008
 msgid "$1$ minutes remaining!"
 msgstr "Preostalo je još 1$ minuta!"
 
-#: src/sgame/sg_main.cpp:2018
+#: src/sgame/sg_main.cpp:2016
 msgid "1 minute remaining!"
 msgstr "Preostala je 1 minuta!"
 
-#: src/sgame/sg_main.cpp:2031
+#: src/sgame/sg_main.cpp:2029
 msgid "Humans win"
 msgstr "Ljudi pobjeđuju"
 
-#: src/sgame/sg_main.cpp:2045
+#: src/sgame/sg_main.cpp:2043
 msgid "Aliens win"
 msgstr "Vanzemaljci pobjeđuju"
 
-#: src/sgame/sg_main.cpp:2059
+#: src/sgame/sg_main.cpp:2057
 msgid "Empty teams skip map time exceeded."
 msgstr "Prazni timovi preskaču vrijeme mape."
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2248
 msgid "The game has been paused. Please wait."
 msgstr "Igra je pauzirana. Molimo pričekajte."
 
-#: src/sgame/sg_main.cpp:2229
+#: src/sgame/sg_main.cpp:2252
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Server: Igra će se automatski prekinuti za $1$ sekundi"
 
-#: src/sgame/sg_main.cpp:2248
+#: src/sgame/sg_main.cpp:2271
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Server: Igra je automatski prekinuta (maksimalno 1$ minuta)"
 
-#: src/sgame/sg_main.cpp:2251
+#: src/sgame/sg_main.cpp:2274
 msgid "The game has been unpaused!"
 msgstr "Igra je ponovo pokrenuta!"
 

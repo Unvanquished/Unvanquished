@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 17:01+0100\n"
+"POT-Creation-Date: 2026-05-09 23:06+0200\n"
 "PO-Revision-Date: 2026-03-21 21:08+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -106,7 +106,7 @@ msgid "Both teams"
 msgstr "Toutes les équipes"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:116
+#: ui/options_player.rml:107 ui/options_ui.rml:99
 msgid "Aliens"
 msgstr "Extraterrestres"
 
@@ -143,7 +143,7 @@ msgstr "Définir la carte actuelle (hôte)"
 msgid "Method"
 msgstr "Méthode"
 
-#: ui/callvote_map.rml:39 ui/server_create.rml:59
+#: ui/callvote_map.rml:39 ui/server_create.rml:63
 msgid "Map"
 msgstr "Carte"
 
@@ -762,7 +762,7 @@ msgstr "Menu principal"
 msgid "Server listings"
 msgstr "Listes des serveurs"
 
-#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:35
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:30 ui/server_create.rml:39
 msgid "Start local/LAN game"
 msgstr "Jeu en local (LAN)"
 
@@ -860,8 +860,8 @@ msgstr "degrés"
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:116
 #: ui/options_graphics.rml:126 ui/options_graphics.rml:302
-#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:85
-#: ui/options_ui.rml:164 ui/options_ui.rml:194 ui/options_ui.rml:208
+#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:68
+#: ui/options_ui.rml:147 ui/options_ui.rml:177 ui/options_ui.rml:191
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "réinitialiser"
@@ -899,7 +899,7 @@ msgid "Mild"
 msgstr "Léger"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "Default"
 msgstr "Par défaut"
 
@@ -1179,7 +1179,7 @@ msgid "low"
 msgstr "basse"
 
 #: ui/options_graphics.rml:165 ui/options_graphics.rml:391
-#: ui/options_ui.rml:187
+#: ui/options_ui.rml:170
 msgid "None"
 msgstr "Aucune"
 
@@ -1284,8 +1284,8 @@ msgstr ""
 "Le mip-mapping améliore l'apparence des surfaces distantes avec textures de "
 "résolution inférieure. Cela n'affecte généralement pas les performances."
 
-#: ui/options_graphics.rml:220 ui/options_ui.rml:47
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: ui/options_graphics.rml:220 ui/options_ui.rml:30
+#: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No"
 msgstr "Non"
 
@@ -1411,7 +1411,7 @@ msgstr ""
 msgid "Cubemap grid spacing"
 msgstr "Espacement de la grille de cubemap"
 
-#: ui/options_graphics.rml:307 ui/options_ui.rml:139
+#: ui/options_graphics.rml:307 ui/options_ui.rml:122
 msgid "Never"
 msgstr "Jamais"
 
@@ -1958,11 +1958,11 @@ msgstr "Configuration du Joueur"
 msgid "Personal"
 msgstr "Personnel"
 
-#: ui/options_player.rml:23 ui/options_welcome.rml:12
+#: ui/options_player.rml:23 ui/options_welcome.rml:13
 msgid "Nickname"
 msgstr "Pseudonyme"
 
-#: ui/options_player.rml:24 ui/options_welcome.rml:13
+#: ui/options_player.rml:24 ui/options_welcome.rml:14
 msgid "Your name visible to others."
 msgstr "Votre nom est visible par tous."
 
@@ -2070,11 +2070,11 @@ msgstr "Périphérique OpenAL"
 msgid "Audio output device/card"
 msgstr "Périphérique/carte de sortie audio"
 
-#: ui/options_ui.rml:18
+#: ui/options_ui.rml:19
 msgid "User interface"
 msgstr "Interface utilisateur"
 
-#: ui/options_ui.rml:20
+#: ui/options_ui.rml:21
 msgid "Main"
 msgstr "Principal"
 
@@ -2082,43 +2082,35 @@ msgstr "Principal"
 msgid "Language"
 msgstr "Langue"
 
-#: ui/options_ui.rml:25 ui/options_welcome.rml:19
-msgid "Some languages are not fully translated."
-msgstr "Certaines langues ne sont pas complètement traduites."
-
-#: ui/options_ui.rml:42 ui/options_welcome.rml:36
-msgid "Change language"
-msgstr "Changer de langue"
-
-#: ui/options_ui.rml:45
+#: ui/options_ui.rml:28
 msgid "Real-time clock"
 msgstr "Horloge en temps réel"
 
-#: ui/options_ui.rml:48
+#: ui/options_ui.rml:31
 msgid "12 Hour"
 msgstr "12 heures"
 
-#: ui/options_ui.rml:49
+#: ui/options_ui.rml:32
 msgid "24 Hour"
 msgstr "24 heures"
 
-#: ui/options_ui.rml:51
+#: ui/options_ui.rml:34
 msgid "Show the time in real-life."
 msgstr "Afficher l'heure dans la vraie vie."
 
-#: ui/options_ui.rml:54
+#: ui/options_ui.rml:37
 msgid "Game-time clock"
 msgstr "Horloge de temps de jeu"
 
-#: ui/options_ui.rml:56
+#: ui/options_ui.rml:39
 msgid "Show how long a match has lasted."
 msgstr "Afficher la durée d'un match."
 
-#: ui/options_ui.rml:59
+#: ui/options_ui.rml:42
 msgid "Console input persistence on map change"
 msgstr "Persistance de l’entrée de console au changement de carte"
 
-#: ui/options_ui.rml:61
+#: ui/options_ui.rml:44
 msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
@@ -2126,211 +2118,211 @@ msgstr ""
 "L’entrée courante de la console sera restaurée la première fois que la "
 "console sera ouverte après qu’une nouvelle carte soit chargée."
 
-#: ui/options_ui.rml:64
+#: ui/options_ui.rml:47
 msgid "Chat field auto-clear"
 msgstr "Auto-vidage de l’entrée de discussion"
 
-#: ui/options_ui.rml:66
+#: ui/options_ui.rml:49
 msgid "Clear chat field when closed."
 msgstr "Vider l’entrée de discussion à la fermeture."
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:53
 msgid "Show ping"
 msgstr "Montrer le ping"
 
-#: ui/options_ui.rml:72
+#: ui/options_ui.rml:55
 msgid "Time that information takes to get to the server and back."
 msgstr "Temps que l’information met à aller au serveur et à en revenir."
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:58
 msgid "Show movement speed"
 msgstr "Afficher la vitesse de déplacement"
 
-#: ui/options_ui.rml:77
+#: ui/options_ui.rml:60
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Vitesse de déplacement actuelle et maximum avec graphique."
 
-#: ui/options_ui.rml:80
+#: ui/options_ui.rml:63
 msgid "Show FPS"
 msgstr "Afficher les IPS"
 
-#: ui/options_ui.rml:82
+#: ui/options_ui.rml:65
 msgid "Frames per second."
 msgstr "Images par seconde."
 
-#: ui/options_ui.rml:85
+#: ui/options_ui.rml:68
 msgid "Console colors"
 msgstr "Couleurs de la console"
 
-#: ui/options_ui.rml:89 ui/options_ui.rml:168 ui/options_ui.rml:212
+#: ui/options_ui.rml:72 ui/options_ui.rml:151 ui/options_ui.rml:195
 msgid "Red:"
 msgstr "Rouge :"
 
-#: ui/options_ui.rml:93 ui/options_ui.rml:172 ui/options_ui.rml:216
+#: ui/options_ui.rml:76 ui/options_ui.rml:155 ui/options_ui.rml:199
 msgid "Green:"
 msgstr "Vert :"
 
-#: ui/options_ui.rml:97 ui/options_ui.rml:176 ui/options_ui.rml:220
+#: ui/options_ui.rml:80 ui/options_ui.rml:159 ui/options_ui.rml:203
 msgid "Blue:"
 msgstr "Bleu :"
 
-#: ui/options_ui.rml:101 ui/options_ui.rml:180 ui/options_ui.rml:224
+#: ui/options_ui.rml:84 ui/options_ui.rml:163 ui/options_ui.rml:207
 msgid "Alpha:"
 msgstr "Alpha :"
 
-#: ui/options_ui.rml:106
+#: ui/options_ui.rml:89
 msgid "Crosshair"
 msgstr "Réticule"
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:93
 msgid "WARN: Preview only works in game."
 msgstr ""
 "ATTENTION : La prévisualisation des réticules fonctionne seulement en jeu."
 
-#: ui/options_ui.rml:114
+#: ui/options_ui.rml:97
 msgid "Weapon"
 msgstr "Arme"
 
-#: ui/options_ui.rml:117
+#: ui/options_ui.rml:100
 msgid "Blaster"
 msgstr "Pistolaser"
 
-#: ui/options_ui.rml:118
+#: ui/options_ui.rml:101
 msgid "Rifle"
 msgstr "Mitraillette"
 
-#: ui/options_ui.rml:119
+#: ui/options_ui.rml:102
 msgid "Pain Saw"
 msgstr "Scie endolorissante"
 
-#: ui/options_ui.rml:120 ui/server_setup.rml:283
+#: ui/options_ui.rml:103 ui/server_setup.rml:283
 msgid "Shotgun"
 msgstr "Fusil à pompe"
 
-#: ui/options_ui.rml:121 ui/server_setup.rml:287
+#: ui/options_ui.rml:104 ui/server_setup.rml:287
 msgid "Lasgun"
 msgstr "Fusil laser"
 
-#: ui/options_ui.rml:122 ui/server_setup.rml:291
+#: ui/options_ui.rml:105 ui/server_setup.rml:291
 msgid "Mass Driver"
 msgstr "Fusil électromagnétique"
 
-#: ui/options_ui.rml:123 ui/server_setup.rml:295
+#: ui/options_ui.rml:106 ui/server_setup.rml:295
 msgid "Chaingun"
 msgstr "Mitrailleuse"
 
-#: ui/options_ui.rml:124
+#: ui/options_ui.rml:107
 msgid "Flamer"
 msgstr "Lance-flammes"
 
-#: ui/options_ui.rml:125 ui/server_setup.rml:303
+#: ui/options_ui.rml:108 ui/server_setup.rml:303
 msgid "Pulse Rifle"
 msgstr "Fusil à impulsions"
 
-#: ui/options_ui.rml:126 ui/server_setup.rml:307
+#: ui/options_ui.rml:109 ui/server_setup.rml:307
 msgid "Lucifer Cannon"
 msgstr "Canon Lucifer"
 
-#: ui/options_ui.rml:137
+#: ui/options_ui.rml:120
 msgid "Crosshair visiblity"
 msgstr "Visibilité du réticule"
 
-#: ui/options_ui.rml:140
+#: ui/options_ui.rml:123
 msgid "Ranged weapons only"
 msgstr "Armes à distance uniquement"
 
-#: ui/options_ui.rml:141
+#: ui/options_ui.rml:124
 msgid "Always"
 msgstr "Toujours"
 
-#: ui/options_ui.rml:146
+#: ui/options_ui.rml:129
 msgid "Crosshair size"
 msgstr "Taille du réticule"
 
-#: ui/options_ui.rml:148
+#: ui/options_ui.rml:131
 msgid "Tiny"
 msgstr "Minuscule"
 
 # Cette traduction est incorrecte en contexte car non accordée
-#: ui/options_ui.rml:149
+#: ui/options_ui.rml:132
 msgid "Small"
 msgstr "Petit"
 
-#: ui/options_ui.rml:150
+#: ui/options_ui.rml:133
 msgid "Regular"
 msgstr "Normal"
 
-#: ui/options_ui.rml:151
+#: ui/options_ui.rml:134
 msgid "Huge"
 msgstr "Grand"
 
-#: ui/options_ui.rml:156
+#: ui/options_ui.rml:139
 msgid "Crosshair colour"
 msgstr "Couleur du réticule"
 
-#: ui/options_ui.rml:158
+#: ui/options_ui.rml:141
 msgid "Image colour"
 msgstr "Couleur de l’image"
 
-#: ui/options_ui.rml:159 ui/options_ui.rml:189
+#: ui/options_ui.rml:142 ui/options_ui.rml:172
 msgid "Custom colour"
 msgstr "Couleur personnalisée"
 
-#: ui/options_ui.rml:164
+#: ui/options_ui.rml:147
 msgid "Crosshair colours"
 msgstr "Couleurs du réticule"
 
-#: ui/options_ui.rml:185
+#: ui/options_ui.rml:168
 msgid "Crosshair outline colour"
 msgstr "Couleur de bordure du réticule"
 
-#: ui/options_ui.rml:188
+#: ui/options_ui.rml:171
 msgid "Auto colour"
 msgstr "Couleur automatique"
 
-#: ui/options_ui.rml:194
+#: ui/options_ui.rml:177
 msgid "Crosshair outline scale"
 msgstr "Échelle de la bordure de réticule"
 
-#: ui/options_ui.rml:196
+#: ui/options_ui.rml:179
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
 "Des valeurs négatives modifieront la bordure pour être à l’intérieur du "
 "réticule."
 
-#: ui/options_ui.rml:199
+#: ui/options_ui.rml:182
 msgid "Scale:"
 msgstr "Échelle :"
 
-#: ui/options_ui.rml:203
+#: ui/options_ui.rml:186
 msgid "Offset:"
 msgstr "Décalage :"
 
-#: ui/options_ui.rml:208
+#: ui/options_ui.rml:191
 msgid "Crosshair outline colours"
 msgstr "Couleurs de bordure du réticule"
 
-#: ui/options_welcome.rml:7
+#: ui/options_welcome.rml:8
 msgid "Hello there!"
 msgstr "Salut !"
 
-#: ui/options_welcome.rml:9
+#: ui/options_welcome.rml:10
 msgid "How should we call you?"
 msgstr "Comment doit-on t’appeler ?"
 
-#: ui/options_welcome.rml:14
+#: ui/options_welcome.rml:15
 msgid "Colours and symbols can be used."
 msgstr "Vous pouvez utiliser les couleurs et symboles."
 
-#: ui/options_welcome.rml:16
+#: ui/options_welcome.rml:17
 msgid "You can change this at any time in the options."
 msgstr "Vous pouvez le modifier à tout moment dans les options."
 
-#: ui/options_welcome.rml:18
+#: ui/options_welcome.rml:19
 msgid "What language do you want to use?"
 msgstr "Quelle langue souhaitez-vous employer ?"
 
-#: ui/options_welcome.rml:37
+#: ui/options_welcome.rml:21
 msgid "Select Battlefield"
 msgstr "Choisir le champ de bataille"
 
@@ -2370,23 +2362,23 @@ msgstr "Actualiser"
 msgid "LAN"
 msgstr "Réseau local"
 
-#: ui/server_create.rml:39
+#: ui/server_create.rml:43
 msgid "Hostname"
 msgstr "Nom du serveur"
 
-#: ui/server_create.rml:44
+#: ui/server_create.rml:48
 msgid "Password"
 msgstr "Mot de passe"
 
-#: ui/server_create.rml:49
+#: ui/server_create.rml:53
 msgid "Developer mode (enable cheats)"
 msgstr "Mode développeur (active la triche)"
 
-#: ui/server_create.rml:54
+#: ui/server_create.rml:58
 msgid "Building layout to use"
 msgstr "Layout de construction à utiliser"
 
-#: ui/server_create.rml:62
+#: ui/server_create.rml:66
 msgid "Start"
 msgstr "Lancer"
 
@@ -2748,6 +2740,14 @@ msgstr "Maraudeur Avancé"
 #: ui/server_setup.rml:372
 msgid "Advanced Dragoon"
 msgstr "Dragon Avancé"
+
+#: ui/shared/language_list.rml:4
+msgid "Some languages are not fully translated."
+msgstr "Certaines langues ne sont pas complètement traduites."
+
+#: ui/shared/language_list.rml:24
+msgid "Change language"
+msgstr "Changer de langue"
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:56
 msgid "Disconnect"
@@ -4242,286 +4242,286 @@ msgstr "%s attaqué– %s"
 msgid "%s under attack"
 msgstr "%s attaqué"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:473
 msgid "Calling home…"
 msgstr "Communication…"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:473
 msgid "Sending to the front…"
 msgstr "Envoi des soldats au front…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:478
 msgid "Tracking your movements…"
 msgstr "Suivi des déplacements…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:478
 msgid "Letting out the magic smoke…"
 msgstr "Génération de fumée magique…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:482
 msgid "Collecting bees for the hives…"
 msgstr "Collecte d'abeilles pour les ruches…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:482
 msgid "Initialising fireworks…"
 msgstr "Préparation de feux d'artifice…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:482
 msgid "Causing electrical faults…"
 msgstr "Préparation de pannes électriques…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:486
 msgid "Reading the manual…"
 msgstr "Lecture du manuel…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:486
 msgid "Looking at blueprints…"
 msgstr "Vérification des plans…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:490
 msgid "Generating annoying noises…"
 msgstr "Génération de bruits gênants…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:490
 msgid "Recording granger purring…"
 msgstr "Enregistrement de ronronnements de Granger…"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:494
 msgid "Hello World!"
 msgstr "Bonjour tout le monde !"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:494
 msgid "Making a scene…"
 msgstr "Mise en place de la scène…"
 
-#: src/cgame/cg_main.cpp:496
+#: src/cgame/cg_main.cpp:498
 msgid "Taking pictures of the world…"
 msgstr "Prise de vue du monde…"
 
-#: src/cgame/cg_main.cpp:496
+#: src/cgame/cg_main.cpp:498
 msgid "Drawing smiley faces…"
 msgstr "Dessin de smileys…"
 
-#: src/cgame/cg_main.cpp:500
+#: src/cgame/cg_main.cpp:502
 msgid "Sharpening the aliens' claws…"
 msgstr "Aiguisage des griffes extraterrestres…"
 
-#: src/cgame/cg_main.cpp:500
+#: src/cgame/cg_main.cpp:502
 msgid "Overloading lucifer cannons…"
 msgstr "Surcharge des canons lucifer…"
 
-#: src/cgame/cg_main.cpp:504
+#: src/cgame/cg_main.cpp:506
 msgid "Unwrapping jetpacks…"
 msgstr "Déballage des jetpacks…"
 
-#: src/cgame/cg_main.cpp:504
+#: src/cgame/cg_main.cpp:506
 msgid "Spinning silk for reticles…"
 msgstr "File la soie des réticules…"
 
-#: src/cgame/cg_main.cpp:508
+#: src/cgame/cg_main.cpp:510
 msgid "Adding turret spam…"
 msgstr "Ajout de tourelles…"
 
-#: src/cgame/cg_main.cpp:508
+#: src/cgame/cg_main.cpp:510
 msgid "Awakening the overmind…"
 msgstr "Éveil de l'Overmind…"
 
-#: src/cgame/cg_main.cpp:512
+#: src/cgame/cg_main.cpp:514
 msgid "Teleporting soldiers…"
 msgstr "Téléportation des soldats…"
 
-#: src/cgame/cg_main.cpp:512
+#: src/cgame/cg_main.cpp:514
 msgid "Replicating alien DNA…"
 msgstr "Réplication de l'ADN extraterrestre…"
 
-#: src/cgame/cg_main.cpp:516
+#: src/cgame/cg_main.cpp:518
 msgid "Customizing helmets…"
 msgstr "Personnalisation des casques…"
 
-#: src/cgame/cg_main.cpp:520
+#: src/cgame/cg_main.cpp:522
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr "Compilation des nuanceurs GLSL (veuillez patienter)…"
 
-#: src/cgame/cg_main.cpp:524
+#: src/cgame/cg_main.cpp:526
 msgid "Surveying the map…"
 msgstr "Arpentage de la carte…"
 
-#: src/cgame/cg_main.cpp:528
+#: src/cgame/cg_main.cpp:530
 msgid "Done!"
 msgstr "Terminé !"
 
-#: src/cgame/cg_main.cpp:1156
+#: src/cgame/cg_main.cpp:1157
 msgid "Generating bot navigation meshes"
 msgstr "Génération du maillages de navigation des robots"
 
-#: src/cgame/cg_main.cpp:1200
+#: src/cgame/cg_main.cpp:1201
 #, c-format
 msgid "by %s"
 msgstr "par %s"
 
-#: src/cgame/cg_players.cpp:1431
+#: src/cgame/cg_players.cpp:963
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr "%s^* s'est renommé en %s"
 
-#: src/cgame/cg_players.cpp:1438
+#: src/cgame/cg_players.cpp:970
 #, c-format
 msgid "%s^* left the %s"
 msgstr "%s^* a quitté les %s"
 
-#: src/cgame/cg_players.cpp:1443
+#: src/cgame/cg_players.cpp:975
 #, c-format
 msgid "%s^* joined the %s"
 msgstr "%s^* a rejoint les %s"
 
-#: src/cgame/cg_players.cpp:1448
+#: src/cgame/cg_players.cpp:980
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr "%s^* a quitté les %s et a rejoint les %s"
 
-#: src/cgame/cg_rocket_dataformatter.cpp:77
+#: src/cgame/cg_rocket_dataformatter.cpp:78
 #, c-format
 msgid "Custom: %dx%d"
 msgstr "Personalisée : %dx%d"
 
-#: src/cgame/cg_rocket_dataformatter.cpp:83
+#: src/cgame/cg_rocket_dataformatter.cpp:84
 #, c-format
 msgid "Same as screen (%dx%d)"
 msgstr "Identique à l'écran (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1511
+#: src/cgame/cg_rocket_datasource.cpp:1514
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
 "Le comportement par défaut. C’est ce que les bots font lorsque la partie "
 "commence."
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
-#: src/cgame/cg_rocket_datasource.cpp:1545
+#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "Defend"
 msgstr "Défendre"
 
-#: src/cgame/cg_rocket_datasource.cpp:1512
+#: src/cgame/cg_rocket_datasource.cpp:1515
 msgid "The bots stay in the base."
 msgstr "Les bots restent dans la base."
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
-#: src/cgame/cg_rocket_datasource.cpp:1546
+#: src/cgame/cg_rocket_datasource.cpp:1516
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Attack"
 msgstr "Attaque"
 
-#: src/cgame/cg_rocket_datasource.cpp:1513
+#: src/cgame/cg_rocket_datasource.cpp:1516
 msgid "The bots attack the enemy base."
 msgstr "Les bots attaquent la base ennemie."
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1517
 msgid "Stay Here"
 msgstr "Reste ici"
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1517
 msgid "The bots stay where you are currently."
 msgstr "Les bots restent là où tu es actuellement."
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
-#: src/cgame/cg_rocket_datasource.cpp:1547
+#: src/cgame/cg_rocket_datasource.cpp:1518
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Follow"
 msgstr "Suivre"
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1518
 msgid "The bots follow you wherever you go."
 msgstr "Les bots te suivent partout où tu vas."
 
-#: src/cgame/cg_rocket_datasource.cpp:1545
+#: src/cgame/cg_rocket_datasource.cpp:1548
 msgid "Defend our base!!"
 msgstr "Défendez notre base !!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1546
+#: src/cgame/cg_rocket_datasource.cpp:1549
 msgid "Attack!"
 msgstr "À l’attaque !"
 
-#: src/cgame/cg_rocket_datasource.cpp:1547
+#: src/cgame/cg_rocket_datasource.cpp:1550
 msgid "Follow me!"
 msgstr "Suivez-moi !"
 
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No."
 msgstr "Non."
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1552
 msgid "Yes"
 msgstr "Oui"
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1552
 msgid "Yes."
 msgstr "Oui."
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1553
 msgid "Flank"
 msgstr "Flanquer"
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1553
 msgid "Flank, behind you!"
 msgstr "Flanquez, derrière vous !"
 
-#: src/cgame/cg_rocket_draw.cpp:2645
+#: src/cgame/cg_rocket_draw.cpp:2629
 msgid "You are at the front of the spawn queue"
 msgstr "Vous êtes en tête de la file d’attente pour réapparaître"
 
 # Should be singular.
-#: src/cgame/cg_rocket_draw.cpp:2649
+#: src/cgame/cg_rocket_draw.cpp:2633
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Vous êtes en position %d de la file de réapparition"
 
-#: src/cgame/cg_rocket_draw.cpp:2689
+#: src/cgame/cg_rocket_draw.cpp:2673
 msgid "There are no spawns remaining"
 msgstr "Il ne reste aucun point de réapparition"
 
-#: src/cgame/cg_rocket_draw.cpp:2693
+#: src/cgame/cg_rocket_draw.cpp:2677
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Il reste %d point d'apparition"
 msgstr[1] "Il reste %d points d'apparition"
 
-#: src/cgame/cg_rocket_draw.cpp:3242
+#: src/cgame/cg_rocket_draw.cpp:3226
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "En attente de connexion…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3246
+#: src/cgame/cg_rocket_draw.cpp:3230
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "En attente de l’épreuve de test…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3250
+#: src/cgame/cg_rocket_draw.cpp:3234
 msgid "Awaiting gamestate…"
 msgstr "En attente de l’état de la partie…"
 
-#: src/cgame/cg_rocket_draw.cpp:3351
+#: src/cgame/cg_rocket_draw.cpp:3335
 msgid "Say:"
 msgstr "Dire :"
 
-#: src/cgame/cg_rocket_draw.cpp:3352
+#: src/cgame/cg_rocket_draw.cpp:3336
 msgid "Team Say:"
 msgstr "Dire à l’équipe :"
 
-#: src/cgame/cg_rocket_draw.cpp:3353
+#: src/cgame/cg_rocket_draw.cpp:3337
 msgid "Admin Say:"
 msgstr "Dire à l’adiminstrateur :"
 
-#: src/cgame/cg_rocket_draw.cpp:3354
+#: src/cgame/cg_rocket_draw.cpp:3338
 msgid "Command:"
 msgstr "Commande :"
 
-#: src/cgame/cg_rocket_draw.cpp:3704
+#: src/cgame/cg_rocket_draw.cpp:3688
 msgid "FIGHT!"
 msgstr "À L’ATTAQUE !"
 
-#: src/cgame/cg_rocket_draw.cpp:3798
+#: src/cgame/cg_rocket_draw.cpp:3782
 msgid "estimating"
 msgstr "estimation"
 
-#: src/cgame/cg_servercmds.cpp:469
+#: src/cgame/cg_servercmds.cpp:437
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -4529,11 +4529,11 @@ msgstr ""
 "L’équipe extraterrestre a trop de joueurs. Patientez jusqu’à ce qu’une place "
 "se libère, ou rejoignez l’équipe humaine."
 
-#: src/cgame/cg_servercmds.cpp:471
+#: src/cgame/cg_servercmds.cpp:439
 msgid "The alien team has too many players"
 msgstr "L’équipe extraterrestre a trop de joueurs"
 
-#: src/cgame/cg_servercmds.cpp:475
+#: src/cgame/cg_servercmds.cpp:443
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -4541,31 +4541,31 @@ msgstr ""
 "L’équipe humaine a trop de joueurs. Patientez jusqu’à ce qu’une place se "
 "libère, ou rejoignez l’équipe extraterrestre."
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:445
 msgid "The human team has too many players"
 msgstr "L’équipe des humains a trop de joueurs"
 
-#: src/cgame/cg_servercmds.cpp:481
+#: src/cgame/cg_servercmds.cpp:449
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 "L’équipe extraterrestre est verrouillée. Vous ne pouvez pas les rejoindre "
 "pour le moment."
 
-#: src/cgame/cg_servercmds.cpp:483
+#: src/cgame/cg_servercmds.cpp:451
 msgid "The alien team is locked"
 msgstr "L’équipe extraterrestre est verrouillée"
 
-#: src/cgame/cg_servercmds.cpp:487
+#: src/cgame/cg_servercmds.cpp:455
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 "L’équipe humaine est verrouillée. Vous ne pouvez pas les rejoindre pour le "
 "moment."
 
-#: src/cgame/cg_servercmds.cpp:489
+#: src/cgame/cg_servercmds.cpp:457
 msgid "The human team is locked"
 msgstr "L’équipe humaine est verrouillée"
 
-#: src/cgame/cg_servercmds.cpp:493
+#: src/cgame/cg_servercmds.cpp:461
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -4573,25 +4573,25 @@ msgstr ""
 "Le nombre maximum de joueur a été atteint. Veuillez patienter jusqu’à ce "
 "qu’une place se libère."
 
-#: src/cgame/cg_servercmds.cpp:495
+#: src/cgame/cg_servercmds.cpp:463
 msgid "No free player slots"
 msgstr "Aucune place de libre"
 
-#: src/cgame/cg_servercmds.cpp:499
+#: src/cgame/cg_servercmds.cpp:467
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Vous devez attendre que le délais soit écoulé pour pouvoir rejoindre une "
 "équipe."
 
-#: src/cgame/cg_servercmds.cpp:501
+#: src/cgame/cg_servercmds.cpp:469
 msgid "You cannot join a team during warmup."
 msgstr "Vous ne pouvez pas rejoindre d’équipe pendant l’échauffement."
 
-#: src/cgame/cg_servercmds.cpp:509
+#: src/cgame/cg_servercmds.cpp:477
 msgid "Cheats are not enabled on this server"
 msgstr "La triche n’est pas activée sur ce serveur"
 
-#: src/cgame/cg_servercmds.cpp:513
+#: src/cgame/cg_servercmds.cpp:481
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -4599,29 +4599,29 @@ msgstr ""
 "La triche n’est pas activée sur ce serveur, vous ne pouvez donc pas utiliser "
 "cette commande en étant dans une équipe"
 
-#: src/cgame/cg_servercmds.cpp:520
+#: src/cgame/cg_servercmds.cpp:488
 msgid "Join a team first"
 msgstr "Rejoignez d’abord une équipe"
 
-#: src/cgame/cg_servercmds.cpp:526
+#: src/cgame/cg_servercmds.cpp:494
 msgid "You can only use this command when spectating"
 msgstr "Vous ne pouvez utiliser cette commande qu’en étant spectateur"
 
-#: src/cgame/cg_servercmds.cpp:531
+#: src/cgame/cg_servercmds.cpp:499
 msgid "Must be alien to use this command"
 msgstr "Vous devez être alien pour utiliser cette commande"
 
-#: src/cgame/cg_servercmds.cpp:536
+#: src/cgame/cg_servercmds.cpp:504
 msgid "Must be human to use this command"
 msgstr "Vous devez être humain pour utiliser cette commande"
 
-#: src/cgame/cg_servercmds.cpp:541
+#: src/cgame/cg_servercmds.cpp:509
 msgid "Must be alive to use this command"
 msgstr "Vous devez être en vie pour utiliser cette commande"
 
 # Note : c’est bien « vert translucide ». Deux adjectifs employés pour
 # désigner une seule couleur sont invariables.
-#: src/cgame/cg_servercmds.cpp:547
+#: src/cgame/cg_servercmds.cpp:515
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -4630,11 +4630,11 @@ msgstr ""
 "structure devienne vert translucide, ce qui indique un emplacement de "
 "construction valide."
 
-#: src/cgame/cg_servercmds.cpp:549
+#: src/cgame/cg_servercmds.cpp:517
 msgid "There is no room to build here"
 msgstr "Il n’y a pas de place pour construire ici"
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:521
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -4643,15 +4643,15 @@ msgstr ""
 "impropre à la construction. Veuillez choisir un autre emplacement pour cette "
 "structure."
 
-#: src/cgame/cg_servercmds.cpp:556
+#: src/cgame/cg_servercmds.cpp:524
 msgid "Cannot build on this surface"
 msgstr "Impossible de construire à cet endroit"
 
-#: src/cgame/cg_servercmds.cpp:561
+#: src/cgame/cg_servercmds.cpp:529
 msgid "You cannot build that structure"
 msgstr "Vous ne pouvez pas construire cette structure"
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:533
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -4660,11 +4660,11 @@ msgstr ""
 "ce qui entraîne souvent une défaite rapide. Essayez de construire d’autres "
 "points de réapparition."
 
-#: src/cgame/cg_servercmds.cpp:568
+#: src/cgame/cg_servercmds.cpp:536
 msgid "You may not deconstruct the last spawn"
 msgstr "Vous ne pouvez pas déconstruire le dernier point de réapparition"
 
-#: src/cgame/cg_servercmds.cpp:572
+#: src/cgame/cg_servercmds.cpp:540
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -4673,27 +4673,27 @@ msgstr ""
 "est marqué, vous pouvez le déplacer vers un autre endroit en le construisant "
 "à cet endroit."
 
-#: src/cgame/cg_servercmds.cpp:575
+#: src/cgame/cg_servercmds.cpp:543
 msgid "You may not deconstruct this structure"
 msgstr "Vous ne pouvez pas déconstruire cette structure"
 
-#: src/cgame/cg_servercmds.cpp:579
+#: src/cgame/cg_servercmds.cpp:547
 msgid "Building has been disabled on the server for your team."
 msgstr "La construction a été désactivée sur ce serveur pour votre équipe."
 
-#: src/cgame/cg_servercmds.cpp:580
+#: src/cgame/cg_servercmds.cpp:548
 msgid "Building has been disabled for your team"
 msgstr "La construction a été désactivée pour votre équipe"
 
-#: src/cgame/cg_servercmds.cpp:584
+#: src/cgame/cg_servercmds.cpp:552
 msgid "You are no longer permitted to build."
 msgstr "Vous n'êtes plus autorisé à construire."
 
-#: src/cgame/cg_servercmds.cpp:585
+#: src/cgame/cg_servercmds.cpp:553
 msgid "You are no longer permitted to build"
 msgstr "Vous n'êtes plus autorisé à construire"
 
-#: src/cgame/cg_servercmds.cpp:589
+#: src/cgame/cg_servercmds.cpp:557
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4701,11 +4701,11 @@ msgstr ""
 "Votre équipe a décidé d’admettre la défaite et de concéder la partie : il "
 "n’y a plus d'intérêt à construire quelque chose."
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:559
 msgid "Cannot build after admitting defeat"
 msgstr "Impossible de construire après avoir admis une défaite"
 
-#: src/cgame/cg_servercmds.cpp:595
+#: src/cgame/cg_servercmds.cpp:563
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4713,19 +4713,19 @@ msgstr ""
 "Il n'y a plus de ressources restantes. Libérez des ressources en marquant "
 "des constructions existances pour une démolition."
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:565
 msgid "There are no resources remaining"
 msgstr "Il ne reste plus de rescources"
 
-#: src/cgame/cg_servercmds.cpp:601
+#: src/cgame/cg_servercmds.cpp:569
 msgid "This buildable is not powered."
 msgstr "Cette structure n'est pas alimenté."
 
-#: src/cgame/cg_servercmds.cpp:602
+#: src/cgame/cg_servercmds.cpp:570
 msgid "This buildable is not powered"
 msgstr "Cette construction n’est pas alimentée"
 
-#: src/cgame/cg_servercmds.cpp:606
+#: src/cgame/cg_servercmds.cpp:574
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -4733,26 +4733,26 @@ msgstr ""
 "Il n'y a pas de réacteur. Un réacteur doit être construit avant que toute "
 "autre structure puisse être placée."
 
-#: src/cgame/cg_servercmds.cpp:608
+#: src/cgame/cg_servercmds.cpp:576
 msgid "There is no reactor"
 msgstr "Il n'y a pas de réacteur"
 
-#: src/cgame/cg_servercmds.cpp:612
+#: src/cgame/cg_servercmds.cpp:580
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Il ne peut y avoir qu'un seul Réacteur. Marquez celui existant si vous "
 "souhaitez le déplacer."
 
-#: src/cgame/cg_servercmds.cpp:614
+#: src/cgame/cg_servercmds.cpp:582
 msgid "There can only be one Reactor"
 msgstr "Il ne peut y avoir qu’un seul réacteur"
 
-#: src/cgame/cg_servercmds.cpp:619
+#: src/cgame/cg_servercmds.cpp:587
 msgid "Your team cannot have any more drills"
 msgstr "Votre équipe ne peut plus avoir de drill(s)"
 
-#: src/cgame/cg_servercmds.cpp:623
+#: src/cgame/cg_servercmds.cpp:591
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4760,22 +4760,22 @@ msgstr ""
 "Vous n’avez pas la place pour porter cela. Veuillez vendre les objets qui "
 "gènent avant d’acheter cet objet."
 
-#: src/cgame/cg_servercmds.cpp:625
+#: src/cgame/cg_servercmds.cpp:593
 msgid "You have no room to carry this"
 msgstr "Vous n’avez pas la place pour porter cela"
 
-#: src/cgame/cg_servercmds.cpp:629
+#: src/cgame/cg_servercmds.cpp:597
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 "Fonds insuffisants. Vous n’avez pas assez de crédits pour effectuer cette "
 "action."
 
-#: src/cgame/cg_servercmds.cpp:631
+#: src/cgame/cg_servercmds.cpp:599
 msgid "Insufficient funds"
 msgstr "Fonds insuffisants"
 
-#: src/cgame/cg_servercmds.cpp:635
+#: src/cgame/cg_servercmds.cpp:603
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
@@ -4783,11 +4783,11 @@ msgstr ""
 "Vous possédez déjà cet objet. Il n’est pas possible d’avoir plusieurs objets "
 "du même type."
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:605
 msgid "You already hold this item"
 msgstr "Vous possédez déjà cet objet"
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:609
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4795,11 +4795,11 @@ msgstr ""
 "Vous devez être à côté d’une armurerie alimentée pour pouvoir acheter des "
 "armes, de l’équipement ou des munitions."
 
-#: src/cgame/cg_servercmds.cpp:643
+#: src/cgame/cg_servercmds.cpp:611
 msgid "You must be near a powered Armoury"
 msgstr "Vous devez être à côté d’une armurerie alimentée"
 
-#: src/cgame/cg_servercmds.cpp:647
+#: src/cgame/cg_servercmds.cpp:615
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4807,22 +4807,22 @@ msgstr ""
 "Vous devez être à proximité d'un réacteur, d'un drill ou d'une armurerie "
 "alimentée pour pouvoir acheter des munitions énergétiques."
 
-#: src/cgame/cg_servercmds.cpp:649
+#: src/cgame/cg_servercmds.cpp:617
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 "Vous devez être à proximité d'un réacteur, d'un drill ou d'une armurerie "
 "alimentée"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:621
 msgid "There is not enough room here to change armour."
 msgstr "Il n'y a pas assez de place ici pour changer d'armure."
 
-#: src/cgame/cg_servercmds.cpp:654
+#: src/cgame/cg_servercmds.cpp:622
 msgid "Not enough room here to change armour."
 msgstr "Pas assez de place ici pour changer d'armure."
 
 # Adapté au contexte car « timer » se traduit difficilement.
-#: src/cgame/cg_servercmds.cpp:658
+#: src/cgame/cg_servercmds.cpp:626
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -4830,26 +4830,26 @@ msgstr ""
 "Vous n'êtes pas autorisé à acheter ou à vendre des armes tant que votre "
 "minuterie de construction n'est pas terminée."
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:628
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Vous ne pouvez pas acheter ou vendre des armes tant que votre minuterie de "
 "construction n'est pas terminée"
 
 # Quelque soit la langue, le nom de la commande à taper est toujours le même.
-#: src/cgame/cg_servercmds.cpp:665
+#: src/cgame/cg_servercmds.cpp:633
 msgid "You must be dead to use the class command"
 msgstr "Vous devez être mort pour utiliser la commande « class »"
 
-#: src/cgame/cg_servercmds.cpp:669
+#: src/cgame/cg_servercmds.cpp:637
 msgid "Unknown starting item"
 msgstr "Objet de départ inconnu"
 
-#: src/cgame/cg_servercmds.cpp:673
+#: src/cgame/cg_servercmds.cpp:641
 msgid "Starting item not allowed"
 msgstr "Élément de départ non autorisé"
 
-#: src/cgame/cg_servercmds.cpp:679
+#: src/cgame/cg_servercmds.cpp:647
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4857,11 +4857,11 @@ msgstr ""
 "Il n'y a pas d'Overmind. Un Overmind doit être construit avant que toute "
 "autre structure puisse être placée."
 
-#: src/cgame/cg_servercmds.cpp:681 src/cgame/cg_servercmds.cpp:721
+#: src/cgame/cg_servercmds.cpp:649 src/cgame/cg_servercmds.cpp:689
 msgid "There is no Overmind"
 msgstr "Il n’y a pas d’Overmind"
 
-#: src/cgame/cg_servercmds.cpp:685
+#: src/cgame/cg_servercmds.cpp:653
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4869,15 +4869,15 @@ msgstr ""
 "Il ne peut y avoir qu’un seul Overmind. Déconstruisez l’Overmind en place si "
 "vous souhaitez le déplacer."
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:655
 msgid "There can only be one Overmind"
 msgstr "Il ne peut y avoir qu’un seul Overmind"
 
-#: src/cgame/cg_servercmds.cpp:692
+#: src/cgame/cg_servercmds.cpp:660
 msgid "Your team cannot have any more leeches"
 msgstr "Votre équipe ne peut plus avoir de leech(s)"
 
-#: src/cgame/cg_servercmds.cpp:696
+#: src/cgame/cg_servercmds.cpp:664
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4885,11 +4885,11 @@ msgstr ""
 "L’Overmind ne peut pas contrôler davantage de structures. Déconstruisez les "
 "structures en place pour en construire d’autres."
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:666
 msgid "The Overmind cannot control any more structures"
 msgstr "L’Overmind ne peut pas contrôler davantage de structures"
 
-#: src/cgame/cg_servercmds.cpp:702
+#: src/cgame/cg_servercmds.cpp:670
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4897,11 +4897,11 @@ msgstr ""
 "Il n’y a pas assez de place pour évoluer ici. Éloignez-vous des murs et "
 "autres objets qui vous entourent, puis essayez à nouveau."
 
-#: src/cgame/cg_servercmds.cpp:704
+#: src/cgame/cg_servercmds.cpp:672
 msgid "There is no room to evolve here"
 msgstr "Il n’y a pas assez de place pour évoluer ici"
 
-#: src/cgame/cg_servercmds.cpp:708
+#: src/cgame/cg_servercmds.cpp:676
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4909,15 +4909,15 @@ msgstr ""
 "Cet endroit est trop proche de l’ennemi pour évoluer. Éloignez-vous des "
 "ennemis et essayez à nouveau."
 
-#: src/cgame/cg_servercmds.cpp:710
+#: src/cgame/cg_servercmds.cpp:678
 msgid "This location is too close to the enemy to evolve"
 msgstr "Cet endroit est trop proche de l’ennemi pour évoluer"
 
-#: src/cgame/cg_servercmds.cpp:714 src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:682 src/cgame/cg_servercmds.cpp:683
 msgid "The Overmind is too far away to devolve."
 msgstr "L'Overmind est trop loin pour désévoluer."
 
-#: src/cgame/cg_servercmds.cpp:719
+#: src/cgame/cg_servercmds.cpp:687
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
@@ -4925,71 +4925,71 @@ msgstr ""
 "puissiez évoluer."
 
 # Adapté au contexte car « timer » se traduit difficilement.
-#: src/cgame/cg_servercmds.cpp:725
+#: src/cgame/cg_servercmds.cpp:693
 msgid "You cannot evolve until your build timer has expired."
 msgstr ""
 "Vous ne pouvez pas évoluer tant que la structure en cours de construction "
 "n’est pas terminée."
 
-#: src/cgame/cg_servercmds.cpp:726
+#: src/cgame/cg_servercmds.cpp:694
 msgid "You cannot evolve until your build timer expires"
 msgstr ""
 "Vous ne pouvez pas évoluer avant que la structure en cours de construction "
 "ne se termine"
 
-#: src/cgame/cg_servercmds.cpp:730
+#: src/cgame/cg_servercmds.cpp:698
 msgid "Wait a second after attacking or evolving"
 msgstr "Attendez une seconde après avoir attaqué ou évolué"
 
-#: src/cgame/cg_servercmds.cpp:738
+#: src/cgame/cg_servercmds.cpp:706
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Vous ne pouvez pas évoluer en %s"
 
-#: src/cgame/cg_servercmds.cpp:743
+#: src/cgame/cg_servercmds.cpp:711
 msgid "You cannot evolve while wallwalking"
 msgstr "Vous ne pouvez pas évoluer tout en marchant aux murs"
 
-#: src/cgame/cg_servercmds.cpp:747
+#: src/cgame/cg_servercmds.cpp:715
 msgid "Unknown class"
 msgstr "Classe inconnue"
 
-#: src/cgame/cg_servercmds.cpp:751
+#: src/cgame/cg_servercmds.cpp:719
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Vous ne pouvez pas réapparaître en %s"
 
-#: src/cgame/cg_servercmds.cpp:756
+#: src/cgame/cg_servercmds.cpp:724
 #, c-format
 msgid "The %s is not allowed"
 msgstr "Le %s n’est pas autorisé"
 
-#: src/cgame/cg_servercmds.cpp:761
+#: src/cgame/cg_servercmds.cpp:729
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "Le %s n'est pas encore déverrouillé"
 
-#: src/cgame/cg_servercmds.cpp:766
+#: src/cgame/cg_servercmds.cpp:734
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame : débogage : aucun menu de ce type %d"
 
-#: src/cgame/cg_servercmds.cpp:869
+#: src/cgame/cg_servercmds.cpp:837
 msgid "^1*DEAD*^*"
 msgstr "^1*MORT*^*"
 
-#: src/cgame/cg_servercmds.cpp:930
+#: src/cgame/cg_servercmds.cpp:898
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sMessage privé de : ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:938
+#: src/cgame/cg_servercmds.cpp:906
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
 ">> pour répondre, disez '/m %d [votre message] ' ou '/r [votre message]' <<"
 
-#: src/cgame/cg_servercmds.cpp:1428
+#: src/cgame/cg_servercmds.cpp:1377
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Commande de jeu client inconnue : %s"
@@ -5359,41 +5359,41 @@ msgstr "^1La génération de navmesh des bots a échoué !"
 msgid "Server: generating bot navigation meshes... $1$%"
 msgstr "Serveur : génération des maillages de navigation des bots... $1$%"
 
-#: src/sgame/sg_buildable.cpp:1697
+#: src/sgame/sg_buildable.cpp:1702
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$1$ ^2construit^* par $2$^*, ^3remplaçant^* $3$"
 
-#: src/sgame/sg_buildable.cpp:1698
+#: src/sgame/sg_buildable.cpp:1703
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$1$ ^2construit^* par $2$$3$"
 
-#: src/sgame/sg_client.cpp:846
+#: src/sgame/sg_client.cpp:845
 msgid "Name change spam protection ($1$ = $2$)"
 msgstr "Protection anti-spam de changement de nom ($1$ = $2$)"
 
-#: src/sgame/sg_client.cpp:855
+#: src/sgame/sg_client.cpp:854
 msgid "Maximum name changes reached ($1$ = $2$)"
 msgstr "Nombre maximal de changements de nom atteint : ($1$ = $2$)"
 
-#: src/sgame/sg_client.cpp:863
+#: src/sgame/sg_client.cpp:862
 msgid "You cannot change your name while you are muted"
 msgstr "Vous ne pouvez pas changer votre nom pendant que vous êtes muté"
 
-#: src/sgame/sg_client.cpp:875
+#: src/sgame/sg_client.cpp:874
 msgid "Name is too long! Must be less than $1$ characters or color codes."
 msgstr ""
 "Le nom est trop long ! Il doit contenir moins de $1$ caractères ou codes de "
 "couleur."
 
-#: src/sgame/sg_client.cpp:1156
+#: src/sgame/sg_client.cpp:1155
 msgid "Your GUID is not secure"
 msgstr "Votre GUID n'est pas sécurisé"
 
-#: src/sgame/sg_client.cpp:1197
+#: src/sgame/sg_client.cpp:1194
 msgid "$1$^* connected"
 msgstr "$1$^* s’est connecté"
 
-#: src/sgame/sg_client.cpp:1325
+#: src/sgame/sg_client.cpp:1346
 msgid "$1$^* entered the game"
 msgstr "$1$^* a rejoint la partie"
 
@@ -5409,43 +5409,43 @@ msgstr "$1$ ^3DÉMONTÉ^* par $2$"
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3DÉTRUIT^* par $2$"
 
-#: src/sgame/sg_main.cpp:1999
+#: src/sgame/sg_main.cpp:1997
 msgid "Timelimit hit"
 msgstr "Temps dépassé"
 
-#: src/sgame/sg_main.cpp:2010
+#: src/sgame/sg_main.cpp:2008
 msgid "$1$ minutes remaining!"
 msgstr "il reste $1$ minutes !"
 
-#: src/sgame/sg_main.cpp:2018
+#: src/sgame/sg_main.cpp:2016
 msgid "1 minute remaining!"
 msgstr "il ne reste plus qu'une minute !"
 
-#: src/sgame/sg_main.cpp:2031
+#: src/sgame/sg_main.cpp:2029
 msgid "Humans win"
 msgstr "Victoire des humains"
 
-#: src/sgame/sg_main.cpp:2045
+#: src/sgame/sg_main.cpp:2043
 msgid "Aliens win"
 msgstr "Victoire des extraterrestres"
 
-#: src/sgame/sg_main.cpp:2059
+#: src/sgame/sg_main.cpp:2057
 msgid "Empty teams skip map time exceeded."
 msgstr "Les équipes vides sautent le temps de carte dépassé."
 
-#: src/sgame/sg_main.cpp:2225
+#: src/sgame/sg_main.cpp:2248
 msgid "The game has been paused. Please wait."
 msgstr "Le jeu à été mis en pause. Merci de patienter."
 
-#: src/sgame/sg_main.cpp:2229
+#: src/sgame/sg_main.cpp:2252
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
 
-#: src/sgame/sg_main.cpp:2248
+#: src/sgame/sg_main.cpp:2271
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Serveur : La pause à été automatiquement anulée ($1$ minutes max)"
 
-#: src/sgame/sg_main.cpp:2251
+#: src/sgame/sg_main.cpp:2274
 msgid "The game has been unpaused!"
 msgstr "Le jeu reprends !"
 
