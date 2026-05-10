@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:34+0200\n"
-"PO-Revision-Date: 2026-03-21 21:08+0000\n"
+"PO-Revision-Date: 2026-05-10 21:34+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 2026.5-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1172,15 +1172,16 @@ msgstr ""
 
 #: ui/options_graphics.rml:163
 msgid "sRGB conversion accuracy"
-msgstr ""
+msgstr "Exactitude de la conversion sRGB"
 
 #: ui/options_graphics.rml:165
 msgid "Disabling accuracy makes color conversions faster but less precise."
 msgstr ""
+"Désactiver l’exactitude rend la conversion plus rapide mais moins exacte."
 
 #: ui/options_graphics.rml:169
 msgid "Detect"
-msgstr ""
+msgstr "Détecter"
 
 #: ui/options_graphics.rml:170
 msgid "Forced naive blend (approximation)"
