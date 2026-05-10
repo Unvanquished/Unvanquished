@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-10 21:10+0200\n"
+"POT-Creation-Date: 2026-05-10 23:34+0200\n"
 "PO-Revision-Date: 2025-10-26 16:58+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/unvanquished/"
@@ -1032,7 +1032,7 @@ msgid "sRGB conversion accuracy"
 msgstr ""
 
 #: ui/options_graphics.rml:165
-msgid "Disabling accuracy makes color conversions faster but less accurate."
+msgid "Disabling accuracy makes color conversions faster but less precise."
 msgstr ""
 
 #: ui/options_graphics.rml:169
@@ -1040,7 +1040,7 @@ msgid "Detect"
 msgstr ""
 
 #: ui/options_graphics.rml:170
-msgid "Forced naive blend (cheap approximation)"
+msgid "Forced naive blend (approximation)"
 msgstr ""
 
 #: ui/options_graphics.rml:172
