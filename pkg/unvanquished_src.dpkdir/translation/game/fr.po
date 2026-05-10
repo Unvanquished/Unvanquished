@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:43+0200\n"
-"PO-Revision-Date: 2026-05-10 21:34+0000\n"
+"PO-Revision-Date: 2026-05-10 21:54+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -1185,11 +1185,11 @@ msgstr "Détecter"
 
 #: ui/options_graphics.rml:170
 msgid "Forced naive blend (approximation)"
-msgstr ""
+msgstr "Fusion naïve forcée (approximation)"
 
 #: ui/options_graphics.rml:172
 msgid "Blend regime"
-msgstr ""
+msgstr "Régime de fusion"
 
 # Pour les "Blob shadows"
 #: ui/options_graphics.rml:176
@@ -2593,26 +2593,32 @@ msgid "Initial build points count"
 msgstr "Points de construction initiaux"
 
 #: ui/server_setup.rml:164
+#, fuzzy
 msgid "BP Vampire"
-msgstr ""
+msgstr "Vampire BP"
 
 #: ui/server_setup.rml:165
 msgid "Bleed build points from the enemy team by killing buildables."
 msgstr ""
+"Saigner les points de constructions de l’équipe ennemie en détruisant des "
+"constructions."
 
 #: ui/server_setup.rml:168
 msgid "Mining"
-msgstr ""
+msgstr "Minage"
 
 #: ui/server_setup.rml:169
+#, fuzzy
 msgid ""
 "Increase build budget by building mining structures. BP returns slowly when "
 "a buildable is lost."
 msgstr ""
+"Augmentez votre budget de construction en bâtissant des structures minières. "
+"Les BP se régénèrent lentement lorsqu'un élément constructible est perdu."
 
 #: ui/server_setup.rml:171
 msgid "Mining mode options"
-msgstr ""
+msgstr "Options du mode minage"
 
 #: ui/server_setup.rml:174
 msgid "Miner bonus"
