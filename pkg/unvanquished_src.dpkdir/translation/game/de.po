@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-09 23:06+0200\n"
+"POT-Creation-Date: 2026-05-10 21:10+0200\n"
 "PO-Revision-Date: 2025-10-01 14:01+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -610,7 +610,7 @@ msgstr "Aufrüstung"
 msgid "Choose your starting equipment:"
 msgstr "Wähle deine Startausrüstung:"
 
-#: ui/human_spawn.rml:45 ui/server_setup.rml:275
+#: ui/human_spawn.rml:45 ui/server_setup.rml:285
 msgid "SMG"
 msgstr "Maschinenpistole"
 
@@ -839,26 +839,26 @@ msgstr "Grad"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:116
-#: ui/options_graphics.rml:126 ui/options_graphics.rml:302
-#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:68
+#: ui/options_graphics.rml:126 ui/options_graphics.rml:314
+#: ui/options_graphics.rml:441 ui/options_mouse.rml:21 ui/options_ui.rml:68
 #: ui/options_ui.rml:147 ui/options_ui.rml:177 ui/options_ui.rml:191
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "Zurücksetzen"
 
-#: ui/options_fov.rml:40 ui/server_setup.rml:356
+#: ui/options_fov.rml:40 ui/server_setup.rml:366
 msgid "Mantis"
 msgstr "Mantis"
 
-#: ui/options_fov.rml:48 ui/server_setup.rml:360
+#: ui/options_fov.rml:48 ui/server_setup.rml:370
 msgid "Marauder"
 msgstr "Plünderer"
 
-#: ui/options_fov.rml:56 ui/server_setup.rml:368
+#: ui/options_fov.rml:56 ui/server_setup.rml:378
 msgid "Dragoon"
 msgstr "Dragoon"
 
-#: ui/options_fov.rml:64 ui/server_setup.rml:376
+#: ui/options_fov.rml:64 ui/server_setup.rml:386
 msgid "Tyrant"
 msgstr "Tyrant"
 
@@ -904,6 +904,7 @@ msgid "Graphics"
 msgstr "Grafik"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
+#: ui/server_setup.rml:162
 msgid "Presets"
 msgstr "Voreinstellungen"
 
@@ -915,8 +916,8 @@ msgstr "Ultra"
 msgid "Everything enabled."
 msgstr "Alles aktiviert."
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:290
-#: ui/options_graphics.rml:407 ui/options_graphics.rml:415
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:302
+#: ui/options_graphics.rml:419 ui/options_graphics.rml:427
 msgid "High"
 msgstr "Hoch"
 
@@ -932,8 +933,8 @@ msgstr "Mittel"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:288
-#: ui/options_graphics.rml:408 ui/options_graphics.rml:417
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:300
+#: ui/options_graphics.rml:420 ui/options_graphics.rml:429
 msgid "Low"
 msgstr "Niedrig"
 
@@ -980,7 +981,7 @@ msgid "Fullscreen"
 msgstr "Vollbild"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:85
-#: ui/options_graphics.rml:418
+#: ui/options_graphics.rml:430
 msgid "Off"
 msgstr "Aus"
 
@@ -1033,10 +1034,10 @@ msgstr "Schnelle Annäherung für Kantenglättung (FXAA)"
 msgid "Smooth the edges using a fast but cheap filter, can blur some details."
 msgstr ""
 
-#: ui/options_graphics.rml:103 ui/options_graphics.rml:170
-#: ui/options_graphics.rml:234 ui/options_graphics.rml:273
-#: ui/options_graphics.rml:316 ui/options_graphics.rml:354
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:103 ui/options_graphics.rml:182
+#: ui/options_graphics.rml:246 ui/options_graphics.rml:285
+#: ui/options_graphics.rml:328 ui/options_graphics.rml:366
+#: ui/options_graphics.rml:394
 msgid "Apply now"
 msgstr "Jetzt anwenden"
 
@@ -1053,7 +1054,7 @@ msgid "World brightness level."
 msgstr ""
 
 #: ui/options_graphics.rml:115 ui/options_graphics.rml:125
-#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
+#: ui/options_graphics.rml:313 ui/options_graphics.rml:440
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Aktuell:"
@@ -1143,94 +1144,114 @@ msgstr ""
 "Nicht-physische Beleuchtungstechnik, um Modelle weniger dunkel erscheinen zu "
 "lassen."
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:163
+msgid "sRGB conversion accuracy"
+msgstr ""
+
+#: ui/options_graphics.rml:165
+msgid "Disabling accuracy makes color conversions faster but less accurate."
+msgstr ""
+
+#: ui/options_graphics.rml:169
+msgid "Detect"
+msgstr ""
+
+#: ui/options_graphics.rml:170
+msgid "Forced naive blend (cheap approximation)"
+msgstr ""
+
+#: ui/options_graphics.rml:172
+msgid "Blend regime"
+msgstr ""
+
+#: ui/options_graphics.rml:176
 msgid "Blobs"
 msgstr "Kleckse"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:176
 msgid "low"
 msgstr "niedrig"
 
-#: ui/options_graphics.rml:165 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:177 ui/options_graphics.rml:403
 #: ui/options_ui.rml:170
 msgid "None"
 msgstr "Kein"
 
-#: ui/options_graphics.rml:167
+#: ui/options_graphics.rml:179
 msgid "Shadows"
 msgstr "Schatten"
 
-#: ui/options_graphics.rml:174
+#: ui/options_graphics.rml:186
 msgid "Textures"
 msgstr "Texturen"
 
-#: ui/options_graphics.rml:176 ui/options_graphics.rml:360
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:372
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "Allgemeines"
 
-#: ui/options_graphics.rml:179 ui/options_graphics.rml:192
+#: ui/options_graphics.rml:191 ui/options_graphics.rml:204
 msgid "No limit"
 msgstr "Unbegrenzt"
 
-#: ui/options_graphics.rml:180
+#: ui/options_graphics.rml:192
 msgid "(ultra)"
 msgstr "(ultra)"
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:193
 msgid "(high)"
 msgstr "(hoch)"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:194
 msgid "(medium)"
 msgstr "(mittel)"
 
-#: ui/options_graphics.rml:183
+#: ui/options_graphics.rml:195
 msgid "(low)"
 msgstr "(niedrig)"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:196
 msgid "(lowest)"
 msgstr "(am niedrigsten)"
 
-#: ui/options_graphics.rml:186
+#: ui/options_graphics.rml:198
 msgid "Image size limit"
 msgstr "Bildgrößen-Limit"
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:199
 msgid "Limit image size to save on memory."
 msgstr "Begrenze die Bildgröße um Speicher zu sparen."
 
-#: ui/options_graphics.rml:193
+#: ui/options_graphics.rml:205
 msgid "No smaller than screen"
 msgstr "Nicht kleiner als der Bildschirm"
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:206
 msgid "No larger than screen"
 msgstr "Nicht größer als der Bildschirm"
 
-#: ui/options_graphics.rml:196
+#: ui/options_graphics.rml:208
 msgid "Menu image size limit"
 msgstr "Hauptmenü-Bild Größenbegrenzung"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:209
 msgid "Limit menu image size to save on memory."
 msgstr "Begrenzt die maximale Größe des Menü-Bilds um Speicher zu sparen."
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:214
 msgid "High-precision rendering"
 msgstr "Hochpräzises Rendering"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:215
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "Verwende Hochpräzisions Pixelbuffer um Farbstreifenbildung zu reduzieren."
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:219
 msgid "Use bindless textures if possible"
 msgstr "Verwende Bindless Textures falls möglich"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:221
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1238,17 +1259,17 @@ msgstr ""
 "Verwende Bindless Textures falls durch die Hardware/den Treiber unterstützt. "
 "Dies kann Einfluss auf die Performance haben."
 
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:259
-#: ui/options_graphics.rml:283 ui/options_graphics.rml:369
-#: ui/options_graphics.rml:374 ui/options_graphics.rml:379
+#: ui/options_graphics.rml:221 ui/options_graphics.rml:271
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:381
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:391
 msgid "Experimental."
 msgstr "Experimentell."
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:224
 msgid "Mip-mapping"
 msgstr "Mip-mapping"
 
-#: ui/options_graphics.rml:213
+#: ui/options_graphics.rml:225
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1257,96 +1278,96 @@ msgstr ""
 "niedrig aufgelöste Texturen für sie verwendet. Dies beeinträchtigt in der "
 "Regel nicht die Leistung."
 
-#: ui/options_graphics.rml:220 ui/options_ui.rml:30
+#: ui/options_graphics.rml:232 ui/options_ui.rml:30
 #: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No"
 msgstr "Nein"
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:234
 msgid "Anisotropic mip-mapping"
 msgstr "Anisotropes Mip-Mapping"
 
-#: ui/options_graphics.rml:223
+#: ui/options_graphics.rml:235
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Bessere Interpretation von Mip-Maps auf geneigten Oberflächen."
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "Trilinear"
 msgstr "Trilinear"
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "better"
 msgstr "besser"
 
-#: ui/options_graphics.rml:228
+#: ui/options_graphics.rml:240
 msgid "Bilinear"
 msgstr "Bilinear"
 
-#: ui/options_graphics.rml:230
+#: ui/options_graphics.rml:242
 msgid "Texture scaling filter"
 msgstr "Texturskalierungsfilter"
 
-#: ui/options_graphics.rml:238 ui/options_graphics.rml:240
+#: ui/options_graphics.rml:250 ui/options_graphics.rml:252
 msgid "Materials"
 msgstr "Materialien"
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:254
 msgid "Sky"
 msgstr "Himmel"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:256
 msgid "Draw the sky."
 msgstr "Stelle den Himmel dar."
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:259
 msgid "Normal mapping"
 msgstr "Normal-Mapping"
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:261
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simuliert zusätzliche Beleuchtungsdetails auf flachen Oberflächen."
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:264
 msgid "Deluxe mapping"
 msgstr "Deluxe-Mapping"
 
-#: ui/options_graphics.rml:254
+#: ui/options_graphics.rml:266
 msgid "Light direction based on baked textures."
 msgstr "Lichtrichtung basierend auf vorberechneten Texturen."
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:269
 msgid "Relief mapping"
 msgstr "Relief-Mapping"
 
-#: ui/options_graphics.rml:259
+#: ui/options_graphics.rml:271
 msgid "Adds bumps on supported surfaces."
 msgstr "Fügt Unebenheiten auf unterstützten Oberflächen hinzu."
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:274
 msgid "Specular mapping"
 msgstr "Specular-Mapping"
 
-#: ui/options_graphics.rml:264
+#: ui/options_graphics.rml:276
 msgid "Simulate light specularity."
 msgstr "Simuliere Lichtspekularität."
 
-#: ui/options_graphics.rml:267
+#: ui/options_graphics.rml:279
 msgid "Physical mapping"
 msgstr "Physisches Mapping"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:281
 msgid "Material appearance based on physical approximations."
 msgstr "Materialerscheinung basierend auf physikalischen Näherungen."
 
-#: ui/options_graphics.rml:277 ui/options_graphics.rml:279
+#: ui/options_graphics.rml:289 ui/options_graphics.rml:291
 msgid "Reflections"
 msgstr "Reflektionen"
 
-#: ui/options_graphics.rml:281
+#: ui/options_graphics.rml:293
 msgid "Static reflections"
 msgstr "Statische Reflektionen"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:295
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1355,23 +1376,23 @@ msgstr ""
 "Erfordert Normal-, Specular- und Deluxe-Mapping. Derzeit nicht unterstützt "
 "mit physischem Mapping."
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:299
 msgid "Very low"
 msgstr "Sehr niedrig"
 
-#: ui/options_graphics.rml:289 ui/options_graphics.rml:416
+#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
 msgid "Moderate"
 msgstr "Mäßig"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:303
 msgid "Very high"
 msgstr "Sehr hoch"
 
-#: ui/options_graphics.rml:293 ui/options_graphics.rml:410
+#: ui/options_graphics.rml:305 ui/options_graphics.rml:422
 msgid "Quality"
 msgstr "Qualität"
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:306
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1379,97 +1400,97 @@ msgstr ""
 "Qualität statischer Reflektions Cube Maps. Höhere Qualität kann eine große "
 "Menge Festplattenspeicher verbrauchen."
 
-#: ui/options_graphics.rml:297
+#: ui/options_graphics.rml:309
 msgid "Cubemap grid spacing"
 msgstr "Cubemap-Rasterabstände"
 
-#: ui/options_graphics.rml:307 ui/options_ui.rml:122
+#: ui/options_graphics.rml:319 ui/options_ui.rml:122
 msgid "Never"
 msgstr "Niemals"
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:320
 msgid "Cache on disk"
 msgstr "Auf Festplatte zwischenspeichern"
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:321
 msgid "Always rebuild"
 msgstr "Immer neu erzeugen"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:323
 msgid "Static reflection cubemaps autobuild"
 msgstr "Statische Reflektions Cube Maps automatisch erstellen"
 
-#: ui/options_graphics.rml:312
+#: ui/options_graphics.rml:324
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "Reflektions Cube Maps automatisch bauen/laden/speichern."
 
-#: ui/options_graphics.rml:320 ui/options_graphics.rml:322
+#: ui/options_graphics.rml:332 ui/options_graphics.rml:334
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Effekte"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:336
 msgid "Bloom"
 msgstr "Ueberstrahlen"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:338
 msgid "Makes bright areas on your screen glow."
 msgstr "Lässt helle Bereiche auf dem Bildschirm leuchten."
 
-#: ui/options_graphics.rml:329
+#: ui/options_graphics.rml:341
 msgid "Color grading"
 msgstr "Farbkorrektur"
 
-#: ui/options_graphics.rml:331
+#: ui/options_graphics.rml:343
 msgid "Alter colors to create specific ambiences."
 msgstr "Ändern Sie die Farben, um bestimmte Stimmungen zu erzeugen."
 
-#: ui/options_graphics.rml:334
+#: ui/options_graphics.rml:346
 msgid "Heat-haze"
 msgstr "Hitzeflimmern"
 
-#: ui/options_graphics.rml:336
+#: ui/options_graphics.rml:348
 msgid "Simulate air refraction in severe heat."
 msgstr "Simuliere Luftbrechung bei intensiver Hitze."
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:351
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Bildraum Umgebungsokklusion (SSAO)"
 
-#: ui/options_graphics.rml:341
+#: ui/options_graphics.rml:353
 msgid "Simulate dark corners."
 msgstr "Dunkle Ecken simulieren."
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:356
 msgid "Marks"
 msgstr "Markierung"
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:358
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
 "Zeichne Markierungen (wie Einschusslöcher oder Kriecher) auf Oberflächen"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:361
 msgid "Particle physics"
 msgstr "Partikelphysik"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:363
 msgid "Allow particles to bounce off surfaces."
 msgstr "Erlaube Partikeln, von Oberflächen abzuprallen."
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:370
 msgid "Renderer"
 msgstr "Renderer"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:375
 msgid "Read-only depth buffer"
 msgstr "Nur-Lese-Tiefenpuffer"
 
-#: ui/options_graphics.rml:365 ui/options_graphics.rml:367
+#: ui/options_graphics.rml:377 ui/options_graphics.rml:379
 msgid "Material system"
 msgstr "Werkstoffsystem"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:381
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1477,91 +1498,91 @@ msgstr ""
 "Verwende ein neues System mit stark verbesserter Leistung. Manche Treiber "
 "können hiermit Probleme haben (z.b. Mesa und proprietäre AMD Treiber)."
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:384
 msgid "GPU frustum culling"
 msgstr "GPU Frustrum Culling"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:386
 msgid "Cull surfaces that are out of view."
 msgstr "Oberflächen, die nicht gesehen werden nicht rendern."
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:389
 msgid "GPU occlusion culling"
 msgstr "GPU Occlusion Culling"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:391
 msgid "Cull hidden surfaces."
 msgstr "Verhindert das Rendern verdeckter Oberflächen."
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:398
 msgid "Gameplay"
 msgstr "Spielerfahrung"
 
-#: ui/options_graphics.rml:388
+#: ui/options_graphics.rml:400
 msgid "Building markers"
 msgstr "Bau-Marker"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:403
 msgid "disabled"
 msgstr "ausgeschaltet"
 
-#: ui/options_graphics.rml:392
+#: ui/options_graphics.rml:404
 msgid "All structures"
 msgstr "Alle Strukturen"
 
-#: ui/options_graphics.rml:393
+#: ui/options_graphics.rml:405
 msgid "Support structures"
 msgstr "Unterstützungsstrukturen"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:406
 msgid "Offensive structures"
 msgstr "Offensive Strukturen"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:407
 msgid "Alien structures"
 msgstr "Außerirdische-Strukturen"
 
-#: ui/options_graphics.rml:396
+#: ui/options_graphics.rml:408
 msgid "Human structures"
 msgstr "Menschen-Strukturen"
 
-#: ui/options_graphics.rml:397
+#: ui/options_graphics.rml:409
 msgid "Alien support structures"
 msgstr "Außerirdische-Unterstützungsstrukturen"
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:410
 msgid "Human support structures"
 msgstr "Menschen-Unterstützungsstrukturen"
 
-#: ui/options_graphics.rml:399
+#: ui/options_graphics.rml:411
 msgid "Offensive alien structures"
 msgstr "Außerirdische-Angriffs-Strukturen"
 
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:412
 msgid "Offensive human structures"
 msgstr "Menschen-Angriffs-Strukturen"
 
-#: ui/options_graphics.rml:402
+#: ui/options_graphics.rml:414
 msgid "Building ranges"
 msgstr "Bauwerkbereiche"
 
-#: ui/options_graphics.rml:404
+#: ui/options_graphics.rml:416
 msgid "Models"
 msgstr "Modelle"
 
-#: ui/options_graphics.rml:412
+#: ui/options_graphics.rml:424
 msgid "Motion blur"
 msgstr "Bewegungsunschärfe"
 
-#: ui/options_graphics.rml:420
+#: ui/options_graphics.rml:432
 msgid "Intensity"
 msgstr "Intensität"
 
-#: ui/options_graphics.rml:421
+#: ui/options_graphics.rml:433
 msgid "Level of motion-blur."
 msgstr "Stärke der Bewegungsunschärfe."
 
-#: ui/options_graphics.rml:424
+#: ui/options_graphics.rml:436
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Minimale Bewegungsgeschwindigkeit um Bewegungsunschärfe zu aktivieren"
 
@@ -1712,7 +1733,7 @@ msgstr "Team-Abstimmung Ja:"
 msgid "Team vote No:"
 msgstr "Team-Abstimmung Nein:"
 
-#: ui/options_keys.rml:142 ui/server_setup.rml:322
+#: ui/options_keys.rml:142 ui/server_setup.rml:332
 msgid "Misc"
 msgstr "Sonstiges"
 
@@ -2159,19 +2180,19 @@ msgstr "Gewehr"
 msgid "Pain Saw"
 msgstr "Energiesäge"
 
-#: ui/options_ui.rml:103 ui/server_setup.rml:283
+#: ui/options_ui.rml:103 ui/server_setup.rml:293
 msgid "Shotgun"
 msgstr "Shotgun"
 
-#: ui/options_ui.rml:104 ui/server_setup.rml:287
+#: ui/options_ui.rml:104 ui/server_setup.rml:297
 msgid "Lasgun"
 msgstr "Laserpistole"
 
-#: ui/options_ui.rml:105 ui/server_setup.rml:291
+#: ui/options_ui.rml:105 ui/server_setup.rml:301
 msgid "Mass Driver"
 msgstr "Teilchenbeschleuniger"
 
-#: ui/options_ui.rml:106 ui/server_setup.rml:295
+#: ui/options_ui.rml:106 ui/server_setup.rml:305
 msgid "Chaingun"
 msgstr "Chaingun"
 
@@ -2179,11 +2200,11 @@ msgstr "Chaingun"
 msgid "Flamer"
 msgstr "Flammenwerfer"
 
-#: ui/options_ui.rml:108 ui/server_setup.rml:303
+#: ui/options_ui.rml:108 ui/server_setup.rml:313
 msgid "Pulse Rifle"
 msgstr "Pulsgewehr"
 
-#: ui/options_ui.rml:109 ui/server_setup.rml:307
+#: ui/options_ui.rml:109 ui/server_setup.rml:317
 msgid "Lucifer Cannon"
 msgstr "Luziferkanone"
 
@@ -2464,7 +2485,7 @@ msgid "Time for momentum to decrease 50%. 0 disables this behavior."
 msgstr ""
 "Zeit für den Schwung um 50% zu verringern. 0 deaktiviert dieses Verhalten."
 
-#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
+#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:194
 msgid "minutes"
 msgstr "Minuten"
 
@@ -2529,174 +2550,196 @@ msgid "Initial build points count"
 msgstr "Anfängliche Anzahl von Baupunkten"
 
 #: ui/server_setup.rml:164
+msgid "BP Vampire"
+msgstr ""
+
+#: ui/server_setup.rml:165
+msgid "Bleed build points from the enemy team by killing buildables."
+msgstr ""
+
+#: ui/server_setup.rml:168
+msgid "Mining"
+msgstr ""
+
+#: ui/server_setup.rml:169
+msgid ""
+"Increase build budget by building mining structures. BP returns slowly when "
+"a buildable is lost."
+msgstr ""
+
+#: ui/server_setup.rml:171
+msgid "Mining mode options"
+msgstr ""
+
+#: ui/server_setup.rml:174
 msgid "Miner bonus"
 msgstr "Minenarbeiter-Bonus"
 
-#: ui/server_setup.rml:165
+#: ui/server_setup.rml:175
 msgid "Build point budget per miner"
 msgstr "Baupunkte-Budget pro Minenarbeiter"
 
-#: ui/server_setup.rml:172
+#: ui/server_setup.rml:182
 msgid "Initial regeneration speed"
 msgstr "Anfängliche Regenerationsgeschwindigkeit"
 
-#: ui/server_setup.rml:173
+#: ui/server_setup.rml:183
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr ""
 "Die anfängliche Geschwindigkeit, mit der Baupunkte wiederhergestellt werden "
 "(in Baupunkten pro Minute)"
 
-#: ui/server_setup.rml:180
+#: ui/server_setup.rml:190
 msgid "Half regeneration time"
 msgstr "Halbe Regenerationszeit"
 
-#: ui/server_setup.rml:181
+#: ui/server_setup.rml:191
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
 "Die Dauer, bevor sich die Baupunkt-Wiederherstellung doppelt so langsam "
 "abspielt"
 
-#: ui/server_setup.rml:189
+#: ui/server_setup.rml:199
 msgid "Bots: General"
 msgstr "Bots: Allgemein"
 
-#: ui/server_setup.rml:192
+#: ui/server_setup.rml:202
 msgid "Minimum bots per team"
 msgstr "Mindestanzahl von Bots pro Team"
 
-#: ui/server_setup.rml:193
+#: ui/server_setup.rml:203
 msgid "Fill teams until they have enough players"
 msgstr "Teams auffüllen bis sie genug Spieler haben"
 
-#: ui/server_setup.rml:196
+#: ui/server_setup.rml:206
 msgid "bots"
 msgstr "Bots"
 
-#: ui/server_setup.rml:200
+#: ui/server_setup.rml:210
 msgid "Default skill level"
 msgstr "Standardfähigkeitsstufe"
 
-#: ui/server_setup.rml:201
+#: ui/server_setup.rml:211
 msgid "Only works for new bots."
 msgstr "Funktioniert nur für neue Bots."
 
-#: ui/server_setup.rml:206
+#: ui/server_setup.rml:216
 msgid "Humanity"
 msgstr "Menschheit"
 
-#: ui/server_setup.rml:209
+#: ui/server_setup.rml:219
 msgid "Field of view"
 msgstr "Sichtfeld"
 
-#: ui/server_setup.rml:217
+#: ui/server_setup.rml:227
 msgid "Reaction time"
 msgstr "Reaktionszeit"
 
-#: ui/server_setup.rml:224
+#: ui/server_setup.rml:234
 msgid "Behaviour"
 msgstr "Verhalten"
 
-#: ui/server_setup.rml:227
+#: ui/server_setup.rml:237
 msgid "Attack structures"
 msgstr "Greife Gebäude an"
 
-#: ui/server_setup.rml:229
+#: ui/server_setup.rml:239
 msgid "Cheating"
 msgstr "Cheaten"
 
-#: ui/server_setup.rml:232
+#: ui/server_setup.rml:242
 msgid "Infinite funds"
 msgstr "Unendliche Resourcen"
 
-#: ui/server_setup.rml:236
+#: ui/server_setup.rml:246
 msgid "Ignore momentum"
 msgstr "Ignoriere Schwung"
 
-#: ui/server_setup.rml:238
+#: ui/server_setup.rml:248
 msgid "Navmesh generation"
 msgstr "Navmesh Generierung"
 
-#: ui/server_setup.rml:241
+#: ui/server_setup.rml:251
 msgid "Generate navmeshes at load time"
 msgstr "Erzeuge Navhmeshes während des Ladens"
 
-#: ui/server_setup.rml:245
+#: ui/server_setup.rml:255
 msgid "Number of worker threads"
 msgstr "Anzahl Arbeiterthreads"
 
-#: ui/server_setup.rml:253
+#: ui/server_setup.rml:263
 msgid "Bots: Humans"
 msgstr "Bots: Menschen"
 
-#: ui/server_setup.rml:254 ui/server_setup.rml:339
+#: ui/server_setup.rml:264 ui/server_setup.rml:349
 msgid "Overall"
 msgstr "Insgesamt"
 
-#: ui/server_setup.rml:257
+#: ui/server_setup.rml:267
 msgid "Human bots purchase equipment"
 msgstr "Menschliche Bots kaufen Ausrüstung"
 
-#: ui/server_setup.rml:261 ui/server_setup.rml:346
+#: ui/server_setup.rml:271 ui/server_setup.rml:356
 msgid "Aim speed modifier (higher is slower)"
 msgstr "Zielgeschwindigkeits-Modifikator (höher bedeutet langsamer)"
 
-#: ui/server_setup.rml:267 ui/server_setup.rml:353
+#: ui/server_setup.rml:277 ui/server_setup.rml:363
 msgid "Individually"
 msgstr "Individuell"
 
-#: ui/server_setup.rml:268
+#: ui/server_setup.rml:278
 msgid "Primary Weapons"
 msgstr "Primärwaffen"
 
-#: ui/server_setup.rml:271
+#: ui/server_setup.rml:281
 msgid "Construction Kit (repairs)"
 msgstr "Konstruktionswerkzeug (repariert)"
 
-#: ui/server_setup.rml:279
+#: ui/server_setup.rml:289
 msgid "Painsaw"
 msgstr "Schreckensäge"
 
-#: ui/server_setup.rml:299
+#: ui/server_setup.rml:309
 msgid "Flamethrower"
 msgstr "Flammenwerfer"
 
-#: ui/server_setup.rml:309
+#: ui/server_setup.rml:319
 msgid "Armors"
 msgstr "Panzerung"
 
-#: ui/server_setup.rml:312
+#: ui/server_setup.rml:322
 msgid "whether bots buy Light Armour"
 msgstr "falls Bots leichte Panzerung kaufen sollen"
 
-#: ui/server_setup.rml:316
+#: ui/server_setup.rml:326
 msgid "whether bots buy Medium Armour"
 msgstr "falls Bots mittlere Panzerung kaufen sollen"
 
-#: ui/server_setup.rml:320
+#: ui/server_setup.rml:330
 msgid "whether bots buy the Battlesuit"
 msgstr "falls Bots den Kampfanzug kaufen sollen"
 
-#: ui/server_setup.rml:325
+#: ui/server_setup.rml:335
 msgid "Firebomb"
 msgstr "Brandbombe"
 
-#: ui/server_setup.rml:329
+#: ui/server_setup.rml:339
 msgid "Grenade"
 msgstr "Granate"
 
-#: ui/server_setup.rml:333
+#: ui/server_setup.rml:343
 msgid "Radar"
 msgstr "Radar"
 
-#: ui/server_setup.rml:342
+#: ui/server_setup.rml:352
 msgid "Alien bots morph"
 msgstr "Alien Bots verwandeln sich"
 
-#: ui/server_setup.rml:364
+#: ui/server_setup.rml:374
 msgid "Advanced Marauder"
 msgstr "Verbesserter Marauder"
 
-#: ui/server_setup.rml:372
+#: ui/server_setup.rml:382
 msgid "Advanced Dragoon"
 msgstr "Verbesserter Dragoon"
 
@@ -4454,65 +4497,65 @@ msgstr "Flanke"
 msgid "Flank, behind you!"
 msgstr "Flanke, hinter dir!"
 
-#: src/cgame/cg_rocket_draw.cpp:2629
+#: src/cgame/cg_rocket_draw.cpp:2630
 msgid "You are at the front of the spawn queue"
 msgstr "Du bist vorne in der Warteschlange"
 
-#: src/cgame/cg_rocket_draw.cpp:2633
+#: src/cgame/cg_rocket_draw.cpp:2634
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Du bist auf Position %d in der Warteschlange"
 
-#: src/cgame/cg_rocket_draw.cpp:2673
+#: src/cgame/cg_rocket_draw.cpp:2674
 msgid "There are no spawns remaining"
 msgstr "Es gibt keine Startpunkte mehr"
 
-#: src/cgame/cg_rocket_draw.cpp:2677
+#: src/cgame/cg_rocket_draw.cpp:2678
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Es ist noch %d Spawn vorhanden"
 msgstr[1] "Es sind noch %d Spawns übrig"
 
-#: src/cgame/cg_rocket_draw.cpp:3226
+#: src/cgame/cg_rocket_draw.cpp:3227
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Erwarte Verbindungsaufbau ...%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3230
+#: src/cgame/cg_rocket_draw.cpp:3231
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Erwarte Herausforderung ...%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3234
+#: src/cgame/cg_rocket_draw.cpp:3235
 msgid "Awaiting gamestate…"
 msgstr "Erwarte Spielzustand…"
 
-#: src/cgame/cg_rocket_draw.cpp:3335
+#: src/cgame/cg_rocket_draw.cpp:3336
 msgid "Say:"
 msgstr "Sagen:"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3337
 msgid "Team Say:"
 msgstr "Team sagen:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3338
 msgid "Admin Say:"
 msgstr "Admin sagen:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3339
 msgid "Command:"
 msgstr "Befehl:"
 
-#: src/cgame/cg_rocket_draw.cpp:3688
+#: src/cgame/cg_rocket_draw.cpp:3689
 msgid "FIGHT!"
 msgstr "LOS!"
 
-#: src/cgame/cg_rocket_draw.cpp:3782
+#: src/cgame/cg_rocket_draw.cpp:3783
 msgid "estimating"
 msgstr "schätze"
 
-#: src/cgame/cg_servercmds.cpp:437
+#: src/cgame/cg_servercmds.cpp:451
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -4520,11 +4563,11 @@ msgstr ""
 "Die Außerirdischen haben zu viele Spieler. Warte, bis ein Platz frei ist "
 "oder trete den Menschen bei."
 
-#: src/cgame/cg_servercmds.cpp:439
+#: src/cgame/cg_servercmds.cpp:453
 msgid "The alien team has too many players"
 msgstr "Die Außerirdischen haben zu viele Spieler"
 
-#: src/cgame/cg_servercmds.cpp:443
+#: src/cgame/cg_servercmds.cpp:457
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -4532,31 +4575,31 @@ msgstr ""
 "Die Menschen haben zu viele Spieler. Warte, bis ein Platz frei ist oder "
 "trete den Außerirdischen bei."
 
-#: src/cgame/cg_servercmds.cpp:445
+#: src/cgame/cg_servercmds.cpp:459
 msgid "The human team has too many players"
 msgstr "Die Menschen haben zu viele Spieler"
 
-#: src/cgame/cg_servercmds.cpp:449
+#: src/cgame/cg_servercmds.cpp:463
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 "Die Außerirdischen sind zur Zeit ein geschlossenes Team. Du kannst den "
 "Außerirdischen zur Zeit nicht beitreten."
 
-#: src/cgame/cg_servercmds.cpp:451
+#: src/cgame/cg_servercmds.cpp:465
 msgid "The alien team is locked"
 msgstr "Die Außerirdischen sind ein geschlossenes Team"
 
-#: src/cgame/cg_servercmds.cpp:455
+#: src/cgame/cg_servercmds.cpp:469
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 "Die Menschen sind zur Zeit ein geschlossenes Team. Du kannst diesem Team "
 "nicht beitreten."
 
-#: src/cgame/cg_servercmds.cpp:457
+#: src/cgame/cg_servercmds.cpp:471
 msgid "The human team is locked"
 msgstr "Die Menschen sind ein geschlossenes Team"
 
-#: src/cgame/cg_servercmds.cpp:461
+#: src/cgame/cg_servercmds.cpp:475
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -4564,25 +4607,25 @@ msgstr ""
 "Das Spielerlimit des Servers wurde erreicht. Bitte warte, bis ein Platz frei "
 "wird."
 
-#: src/cgame/cg_servercmds.cpp:463
+#: src/cgame/cg_servercmds.cpp:477
 msgid "No free player slots"
 msgstr "Keine freien Plätze"
 
-#: src/cgame/cg_servercmds.cpp:467
+#: src/cgame/cg_servercmds.cpp:481
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Sie müssen warten, bis die Aufwärmzeit beendet ist, bevor Sie sich einem "
 "Team anschließen."
 
-#: src/cgame/cg_servercmds.cpp:469
+#: src/cgame/cg_servercmds.cpp:483
 msgid "You cannot join a team during warmup."
 msgstr "Während der Aufwärmphase kannst du keinem Team beitreten."
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:491
 msgid "Cheats are not enabled on this server"
 msgstr "Cheats sind auf diesem Server deaktiviert"
 
-#: src/cgame/cg_servercmds.cpp:481
+#: src/cgame/cg_servercmds.cpp:495
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -4590,27 +4633,27 @@ msgstr ""
 "Cheats sind auf diesem Server deaktiviert, während du mitspielst, darfst du "
 "diesen Befehl daher nicht verwenden"
 
-#: src/cgame/cg_servercmds.cpp:488
+#: src/cgame/cg_servercmds.cpp:502
 msgid "Join a team first"
 msgstr "Tritt zuerst einem Team bei"
 
-#: src/cgame/cg_servercmds.cpp:494
+#: src/cgame/cg_servercmds.cpp:508
 msgid "You can only use this command when spectating"
 msgstr "Du darfst diesen Befehl nur als Zuschauer verwenden"
 
-#: src/cgame/cg_servercmds.cpp:499
+#: src/cgame/cg_servercmds.cpp:513
 msgid "Must be alien to use this command"
 msgstr "Für diesen Befehl musst du ein Außerirdischer sein"
 
-#: src/cgame/cg_servercmds.cpp:504
+#: src/cgame/cg_servercmds.cpp:518
 msgid "Must be human to use this command"
 msgstr "Für diesen Befehl musst du ein Mensch sein"
 
-#: src/cgame/cg_servercmds.cpp:509
+#: src/cgame/cg_servercmds.cpp:523
 msgid "Must be alive to use this command"
 msgstr "Du musst für diesen Befehl am Leben sein"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:529
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -4618,11 +4661,11 @@ msgstr ""
 "An dieser Stelle ist nicht genug Platz zum Bauen. Die Struktur wird grün, "
 "wenn du sie bauen kannst."
 
-#: src/cgame/cg_servercmds.cpp:517
+#: src/cgame/cg_servercmds.cpp:531
 msgid "There is no room to build here"
 msgstr "An dieser Stelle ist nicht genug Platz zum Bauen"
 
-#: src/cgame/cg_servercmds.cpp:521
+#: src/cgame/cg_servercmds.cpp:535
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -4631,15 +4674,15 @@ msgstr ""
 "oder zum Bauen ungeeignet. Bitte wähle einen anderen Bauplatz für dieses "
 "Bauwerk."
 
-#: src/cgame/cg_servercmds.cpp:524
+#: src/cgame/cg_servercmds.cpp:538
 msgid "Cannot build on this surface"
 msgstr "Auf dieser Oberfläche kann nicht gebaut werden"
 
-#: src/cgame/cg_servercmds.cpp:529
+#: src/cgame/cg_servercmds.cpp:543
 msgid "You cannot build that structure"
 msgstr "Du kannst dieses Bauwerk nicht bauen"
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:547
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -4647,11 +4690,11 @@ msgstr ""
 "Diese Aktion würde den letzten Startpunkt deines Teams abbauen, was meist in "
 "einer Niederlage endet. Baue zunächst weitere Startpunkte."
 
-#: src/cgame/cg_servercmds.cpp:536
+#: src/cgame/cg_servercmds.cpp:550
 msgid "You may not deconstruct the last spawn"
 msgstr "Du darfst den letzten Startpunkt nicht abbauen"
 
-#: src/cgame/cg_servercmds.cpp:540
+#: src/cgame/cg_servercmds.cpp:554
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -4659,27 +4702,27 @@ msgstr ""
 "Die Hauptstruktur ist gegen Entfernung geschützt. Wenn sie markiert ist, "
 "kannst du sie an einem anderen Ort wiederaufbauen."
 
-#: src/cgame/cg_servercmds.cpp:543
+#: src/cgame/cg_servercmds.cpp:557
 msgid "You may not deconstruct this structure"
 msgstr "Du darfst diese Struktur nicht abbauen"
 
-#: src/cgame/cg_servercmds.cpp:547
+#: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled on the server for your team."
 msgstr "Für dein Team wurde das Bauen auf dem Server deaktiviert."
 
-#: src/cgame/cg_servercmds.cpp:548
+#: src/cgame/cg_servercmds.cpp:562
 msgid "Building has been disabled for your team"
 msgstr "Für dein Team wurde das Bauen deaktivert"
 
-#: src/cgame/cg_servercmds.cpp:552
+#: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "Sie dürfen nicht mehr bauen."
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:567
 msgid "You are no longer permitted to build"
 msgstr "Sie dürfen nicht mehr bauen"
 
-#: src/cgame/cg_servercmds.cpp:557
+#: src/cgame/cg_servercmds.cpp:571
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4687,11 +4730,11 @@ msgstr ""
 "Dein Team hat sich entschieden, aufzugeben: Es hat keinen Sinn mehr, "
 "irgendetwas zu bauen."
 
-#: src/cgame/cg_servercmds.cpp:559
+#: src/cgame/cg_servercmds.cpp:573
 msgid "Cannot build after admitting defeat"
 msgstr "Nach Aufgabe kann nicht gebaut werden"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:577
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4699,19 +4742,19 @@ msgstr ""
 "Es sind keine Ressourcen übrig. Hol dir neue Ressourcen, indem du "
 "existierende Bauwerke für den Abbau markierst."
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:579
 msgid "There are no resources remaining"
 msgstr "Es sind keine Ressourcen übrig"
 
-#: src/cgame/cg_servercmds.cpp:569
+#: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered."
 msgstr "Dieses Bauwerk ist nicht mit Strom versorgt."
 
-#: src/cgame/cg_servercmds.cpp:570
+#: src/cgame/cg_servercmds.cpp:584
 msgid "This buildable is not powered"
 msgstr "Dieses Bauwerk hat keinen Strom"
 
-#: src/cgame/cg_servercmds.cpp:574
+#: src/cgame/cg_servercmds.cpp:588
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -4719,26 +4762,26 @@ msgstr ""
 "Es gibt keinen Reaktor. Ein Reaktor muss gebaut werden, bevor ein anderes "
 "Bauwerk errichtet werden kann."
 
-#: src/cgame/cg_servercmds.cpp:576
+#: src/cgame/cg_servercmds.cpp:590
 msgid "There is no reactor"
 msgstr "Da ist kein Reaktor"
 
-#: src/cgame/cg_servercmds.cpp:580
+#: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Es darf höchstens einen Reaktor existieren. Markiere den bestehenden Reaktor "
 "um ihn wo anders wieder aufzubauen."
 
-#: src/cgame/cg_servercmds.cpp:582
+#: src/cgame/cg_servercmds.cpp:596
 msgid "There can only be one Reactor"
 msgstr "Es darf nur einen Reaktor geben"
 
-#: src/cgame/cg_servercmds.cpp:587
+#: src/cgame/cg_servercmds.cpp:601
 msgid "Your team cannot have any more drills"
 msgstr "Ihr Team kann keine Bohrer mehr bauen"
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:605
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4746,31 +4789,31 @@ msgstr ""
 "Du hast keinen Platz für diesen Gegenstand. Verkaufe zunächst in Konflikt "
 "stehende Aufrüstungen."
 
-#: src/cgame/cg_servercmds.cpp:593
+#: src/cgame/cg_servercmds.cpp:607
 msgid "You have no room to carry this"
 msgstr "Du hast keinen Platz für diesen Gegenstand"
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:611
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr "Dir fehlt das nötige Kleingeld, um diese Aktion auszuführen."
 
-#: src/cgame/cg_servercmds.cpp:599
+#: src/cgame/cg_servercmds.cpp:613
 msgid "Insufficient funds"
 msgstr "Unzureichend Geld"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:617
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr ""
 "Du hast diesen Gegenstand schon. Du kannst ihn nur einmal bei dir tragen."
 
-#: src/cgame/cg_servercmds.cpp:605
+#: src/cgame/cg_servercmds.cpp:619
 msgid "You already hold this item"
 msgstr "Du trägst dieses Gegenstand bereits"
 
-#: src/cgame/cg_servercmds.cpp:609
+#: src/cgame/cg_servercmds.cpp:623
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4778,11 +4821,11 @@ msgstr ""
 "Du musst in der Nähe einer funktionstüchtigen Waffenkammer sein, um Waffen, "
 "Aufrüstungen oder Munition kaufen zu können."
 
-#: src/cgame/cg_servercmds.cpp:611
+#: src/cgame/cg_servercmds.cpp:625
 msgid "You must be near a powered Armoury"
 msgstr "Du musst in der Nähe einer funktionstüchtigen Waffenkammer sein"
 
-#: src/cgame/cg_servercmds.cpp:615
+#: src/cgame/cg_servercmds.cpp:629
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4790,45 +4833,45 @@ msgstr ""
 "Um Energiemunition kaufen zu können, müssen Sie sich in der Nähe eines "
 "Reaktors, eines Bohrers oder einer aktiven Waffenkammer befinden."
 
-#: src/cgame/cg_servercmds.cpp:617
+#: src/cgame/cg_servercmds.cpp:631
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 "Sie müssen sich in der Nähe eines Reaktors, eines Bohrers oder einer aktiven "
 "Waffenkammer befinden"
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:635
 msgid "There is not enough room here to change armour."
 msgstr "Es ist hier zu eng um die Rüstung zu wechseln."
 
-#: src/cgame/cg_servercmds.cpp:622
+#: src/cgame/cg_servercmds.cpp:636
 msgid "Not enough room here to change armour."
 msgstr "Kein Platz um die Rüstung zu wechseln."
 
-#: src/cgame/cg_servercmds.cpp:626
+#: src/cgame/cg_servercmds.cpp:640
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 "Du darfst keine Waffen kaufen oder verkaufen, bis die Bauzeit abgelaufen ist."
 
-#: src/cgame/cg_servercmds.cpp:628
+#: src/cgame/cg_servercmds.cpp:642
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Du kannst keine Waffen kaufen oder verkaufen, bis die Bauzeit abgelaufen ist"
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:647
 msgid "You must be dead to use the class command"
 msgstr "Du musst tot sein, um den »class«-Befehl zu benutzen"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:651
 msgid "Unknown starting item"
 msgstr "Unbekannter Startgegenstand"
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:655
 msgid "Starting item not allowed"
 msgstr "Startgegenstand nicht erlaubt"
 
-#: src/cgame/cg_servercmds.cpp:647
+#: src/cgame/cg_servercmds.cpp:661
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4836,11 +4879,11 @@ msgstr ""
 "Es gibt keinen Overmind. Ein Overmind muss gebaut werden, bevor eine andere "
 "Struktur platziert werden kann."
 
-#: src/cgame/cg_servercmds.cpp:649 src/cgame/cg_servercmds.cpp:689
+#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
 msgid "There is no Overmind"
 msgstr "Keine Overmind vorhanden"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4848,15 +4891,15 @@ msgstr ""
 "Es darf nur einen Overmind geben. Entferne den Overmind, falls du ihn "
 "bewegen möchtest."
 
-#: src/cgame/cg_servercmds.cpp:655
+#: src/cgame/cg_servercmds.cpp:669
 msgid "There can only be one Overmind"
 msgstr "Es darf nur einen Overmind geben"
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:674
 msgid "Your team cannot have any more leeches"
 msgstr "Dein Team kann keine weiteren Leeches haben"
 
-#: src/cgame/cg_servercmds.cpp:664
+#: src/cgame/cg_servercmds.cpp:678
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4864,11 +4907,11 @@ msgstr ""
 "Die Overmind kann keine weiteren Strukturen kontrollieren. Baue alte "
 "Strukturen ab, um mehr zu bauen."
 
-#: src/cgame/cg_servercmds.cpp:666
+#: src/cgame/cg_servercmds.cpp:680
 msgid "The Overmind cannot control any more structures"
 msgstr "Die Overmind kann keine weiteren Strukturen kontrollieren"
 
-#: src/cgame/cg_servercmds.cpp:670
+#: src/cgame/cg_servercmds.cpp:684
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4876,11 +4919,11 @@ msgstr ""
 "Nicht genug Platz für die Entwicklung. Entferne dich von Wänden oder nahen "
 "Objekten und versuche es nochmals."
 
-#: src/cgame/cg_servercmds.cpp:672
+#: src/cgame/cg_servercmds.cpp:686
 msgid "There is no room to evolve here"
 msgstr "Nicht genug Platz für die Entwicklung"
 
-#: src/cgame/cg_servercmds.cpp:676
+#: src/cgame/cg_servercmds.cpp:690
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4888,84 +4931,84 @@ msgstr ""
 "Diese Stelle ist zu nah am Feind, um sich zu entwickeln. Entferne dich aus "
 "der Anwesenheit des Feindes und versuch es noch mal."
 
-#: src/cgame/cg_servercmds.cpp:678
+#: src/cgame/cg_servercmds.cpp:692
 msgid "This location is too close to the enemy to evolve"
 msgstr "Während Feinde in der Nähe sind, kannst Du dich nicht entwickeln"
 
-#: src/cgame/cg_servercmds.cpp:682 src/cgame/cg_servercmds.cpp:683
+#: src/cgame/cg_servercmds.cpp:696 src/cgame/cg_servercmds.cpp:697
 msgid "The Overmind is too far away to devolve."
 msgstr "Der Overmind ist zu weit entfernt, um sich zurückzuentwickeln."
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:701
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Es existiert kein Overmind. Ohne Overmind kannst du dich nicht entwickeln."
 
-#: src/cgame/cg_servercmds.cpp:693
+#: src/cgame/cg_servercmds.cpp:707
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Du kannst dich nicht entwickeln, bis der Bautimer abgelaufen ist."
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:708
 msgid "You cannot evolve until your build timer expires"
 msgstr ""
 "Du kannst dich während der Konstruktion einer Struktur nicht entwickeln"
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:712
 msgid "Wait a second after attacking or evolving"
 msgstr ""
 "Warte eine Sekunde, nachdem du angegriffen oder dich weiterentwickelt hast"
 
-#: src/cgame/cg_servercmds.cpp:706
+#: src/cgame/cg_servercmds.cpp:720
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Du kannst dich nicht zu einem %s entwickeln"
 
-#: src/cgame/cg_servercmds.cpp:711
+#: src/cgame/cg_servercmds.cpp:725
 msgid "You cannot evolve while wallwalking"
 msgstr "Du kannst dich nicht entwickeln, während du an Wänden läufst"
 
-#: src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:729
 msgid "Unknown class"
 msgstr "Unbekannte Klasse"
 
-#: src/cgame/cg_servercmds.cpp:719
+#: src/cgame/cg_servercmds.cpp:733
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Du kannst nicht als %s aus einem Ei schlüpfen"
 
-#: src/cgame/cg_servercmds.cpp:724
+#: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "The %s is not allowed"
 msgstr "Der %s ist nicht erlaubt"
 
-#: src/cgame/cg_servercmds.cpp:729
+#: src/cgame/cg_servercmds.cpp:743
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "Das %s wurde noch nicht freigeschaltet"
 
-#: src/cgame/cg_servercmds.cpp:734
+#: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame: Debug: Kein solches Menü %d"
 
-#: src/cgame/cg_servercmds.cpp:837
+#: src/cgame/cg_servercmds.cpp:851
 msgid "^1*DEAD*^*"
 msgstr "^1*TOT*^*"
 
-#: src/cgame/cg_servercmds.cpp:898
+#: src/cgame/cg_servercmds.cpp:912
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sPrivate Nachricht von: ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:906
+#: src/cgame/cg_servercmds.cpp:920
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
 ">> um zu antworten, sagen Sie: '/m %d [Ihre Nachricht]' oder '/r [Ihre "
 "Nachricht]' <<"
 
-#: src/cgame/cg_servercmds.cpp:1377
+#: src/cgame/cg_servercmds.cpp:1390
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Unbekannter Client-Spielbefehl: %s"
@@ -5374,15 +5417,15 @@ msgstr "$1$^* hat eine Verbindung hergestellt"
 msgid "$1$^* entered the game"
 msgstr "$1$^* ist dem Spiel beigetreten"
 
-#: src/sgame/sg_combat.cpp:629
+#: src/sgame/sg_combat.cpp:627
 msgid "Your killer, $1$^*, had $2$ HP."
 msgstr "Dein Mörder, $1$^*, hatte $2$ HP."
 
-#: src/sgame/sg_combat.cpp:1213
+#: src/sgame/sg_combat.cpp:1211
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
 msgstr "$1$ ^3DEKONSTRUIERT^* von $2$"
 
-#: src/sgame/sg_combat.cpp:1214
+#: src/sgame/sg_combat.cpp:1212
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3ZERSTÖRT^* von $2$"
 
@@ -5410,19 +5453,19 @@ msgstr "Außerirdische gewinnen"
 msgid "Empty teams skip map time exceeded."
 msgstr "Leere Teams überspringen die Kartenzeit."
 
-#: src/sgame/sg_main.cpp:2248
+#: src/sgame/sg_main.cpp:2263
 msgid "The game has been paused. Please wait."
 msgstr "Das Spiel wurde pausiert. Bitte warten."
 
-#: src/sgame/sg_main.cpp:2252
+#: src/sgame/sg_main.cpp:2267
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Server: Das Spiel wird automatisch in $1$ Sekunde fortgesetzt"
 
-#: src/sgame/sg_main.cpp:2271
+#: src/sgame/sg_main.cpp:2286
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Server: Das Spiel wurde automatisch fortgesetzt (maximal $1$ Minuten)"
 
-#: src/sgame/sg_main.cpp:2274
+#: src/sgame/sg_main.cpp:2289
 msgid "The game has been unpaused!"
 msgstr "Das Spiel wurde fortgesetzt!"
 

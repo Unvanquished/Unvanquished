@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-09 23:06+0200\n"
+"POT-Creation-Date: 2026-05-10 21:10+0200\n"
 "PO-Revision-Date: 2025-06-06 09:40+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/unvanquished/"
@@ -608,7 +608,7 @@ msgstr "மேம்படுத்தல்கள்"
 msgid "Choose your starting equipment:"
 msgstr "உங்கள் தொடக்க உபகரணங்களைத் தேர்வுசெய்க:"
 
-#: ui/human_spawn.rml:45 ui/server_setup.rml:275
+#: ui/human_spawn.rml:45 ui/server_setup.rml:285
 msgid "SMG"
 msgstr "எச்.எம்.சி."
 
@@ -834,26 +834,26 @@ msgstr "டிகிரி"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:116
-#: ui/options_graphics.rml:126 ui/options_graphics.rml:302
-#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:68
+#: ui/options_graphics.rml:126 ui/options_graphics.rml:314
+#: ui/options_graphics.rml:441 ui/options_mouse.rml:21 ui/options_ui.rml:68
 #: ui/options_ui.rml:147 ui/options_ui.rml:177 ui/options_ui.rml:191
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "மீட்டமை"
 
-#: ui/options_fov.rml:40 ui/server_setup.rml:356
+#: ui/options_fov.rml:40 ui/server_setup.rml:366
 msgid "Mantis"
 msgstr "மன்டிச்"
 
-#: ui/options_fov.rml:48 ui/server_setup.rml:360
+#: ui/options_fov.rml:48 ui/server_setup.rml:370
 msgid "Marauder"
 msgstr "மராடர்"
 
-#: ui/options_fov.rml:56 ui/server_setup.rml:368
+#: ui/options_fov.rml:56 ui/server_setup.rml:378
 msgid "Dragoon"
 msgstr "பாதிப்புக்குள்ளான"
 
-#: ui/options_fov.rml:64 ui/server_setup.rml:376
+#: ui/options_fov.rml:64 ui/server_setup.rml:386
 msgid "Tyrant"
 msgstr "கொடுங்கோலன்"
 
@@ -899,6 +899,7 @@ msgid "Graphics"
 msgstr "கிராபிக்ச்"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
+#: ui/server_setup.rml:162
 msgid "Presets"
 msgstr "முன்னமைவுகள்"
 
@@ -910,8 +911,8 @@ msgstr "அல்ட்ரா"
 msgid "Everything enabled."
 msgstr "எல்லாம் செயல்படுத்தப்பட்டது."
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:290
-#: ui/options_graphics.rml:407 ui/options_graphics.rml:415
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:302
+#: ui/options_graphics.rml:419 ui/options_graphics.rml:427
 msgid "High"
 msgstr "உயர்ந்த"
 
@@ -927,8 +928,8 @@ msgstr "சராசரி"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:288
-#: ui/options_graphics.rml:408 ui/options_graphics.rml:417
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:300
+#: ui/options_graphics.rml:420 ui/options_graphics.rml:429
 msgid "Low"
 msgstr "குறைந்த"
 
@@ -973,7 +974,7 @@ msgid "Fullscreen"
 msgstr "முழு திரை"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:85
-#: ui/options_graphics.rml:418
+#: ui/options_graphics.rml:430
 msgid "Off"
 msgstr "அணை"
 
@@ -1025,10 +1026,10 @@ msgstr "வேகமாக தோராயமான எதிர்ப்பு 
 msgid "Smooth the edges using a fast but cheap filter, can blur some details."
 msgstr ""
 
-#: ui/options_graphics.rml:103 ui/options_graphics.rml:170
-#: ui/options_graphics.rml:234 ui/options_graphics.rml:273
-#: ui/options_graphics.rml:316 ui/options_graphics.rml:354
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:103 ui/options_graphics.rml:182
+#: ui/options_graphics.rml:246 ui/options_graphics.rml:285
+#: ui/options_graphics.rml:328 ui/options_graphics.rml:366
+#: ui/options_graphics.rml:394
 msgid "Apply now"
 msgstr "இப்பொழுது இடு"
 
@@ -1045,7 +1046,7 @@ msgid "World brightness level."
 msgstr ""
 
 #: ui/options_graphics.rml:115 ui/options_graphics.rml:125
-#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
+#: ui/options_graphics.rml:313 ui/options_graphics.rml:440
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "நடப்பு:"
@@ -1129,94 +1130,114 @@ msgstr "அரை லம்பேர்ட் லைட்டிங்"
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "மாதிரிகள் குறைவான இருட்டாக மாற்ற இயற்பியல் அல்லாத விளக்கு நுட்பம்."
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:163
+msgid "sRGB conversion accuracy"
+msgstr ""
+
+#: ui/options_graphics.rml:165
+msgid "Disabling accuracy makes color conversions faster but less accurate."
+msgstr ""
+
+#: ui/options_graphics.rml:169
+msgid "Detect"
+msgstr ""
+
+#: ui/options_graphics.rml:170
+msgid "Forced naive blend (cheap approximation)"
+msgstr ""
+
+#: ui/options_graphics.rml:172
+msgid "Blend regime"
+msgstr ""
+
+#: ui/options_graphics.rml:176
 msgid "Blobs"
 msgstr "குமிழ்கள்"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:176
 msgid "low"
 msgstr "குறைந்த"
 
-#: ui/options_graphics.rml:165 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:177 ui/options_graphics.rml:403
 #: ui/options_ui.rml:170
 msgid "None"
 msgstr "எதுவுமில்லை"
 
-#: ui/options_graphics.rml:167
+#: ui/options_graphics.rml:179
 msgid "Shadows"
 msgstr "நிழல்கள்"
 
-#: ui/options_graphics.rml:174
+#: ui/options_graphics.rml:186
 msgid "Textures"
 msgstr "கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:176 ui/options_graphics.rml:360
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:372
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "பொது"
 
-#: ui/options_graphics.rml:179 ui/options_graphics.rml:192
+#: ui/options_graphics.rml:191 ui/options_graphics.rml:204
 msgid "No limit"
 msgstr "வரம்பு இல்லை"
 
-#: ui/options_graphics.rml:180
+#: ui/options_graphics.rml:192
 msgid "(ultra)"
 msgstr "(அல்ட்ரா)"
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:193
 msgid "(high)"
 msgstr "(உயர்)"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:194
 msgid "(medium)"
 msgstr "(நடுத்தர)"
 
-#: ui/options_graphics.rml:183
+#: ui/options_graphics.rml:195
 msgid "(low)"
 msgstr "(குறைந்த)"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:196
 msgid "(lowest)"
 msgstr "(மிகக் குறைந்த)"
 
-#: ui/options_graphics.rml:186
+#: ui/options_graphics.rml:198
 msgid "Image size limit"
 msgstr "பட அளவு வரம்பு"
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:199
 msgid "Limit image size to save on memory."
 msgstr "நினைவகத்தில் சேமிக்க பட அளவைக் கட்டுப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:193
+#: ui/options_graphics.rml:205
 msgid "No smaller than screen"
 msgstr "திரையை விட சிறியதாக இல்லை"
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:206
 msgid "No larger than screen"
 msgstr "திரையை விட பெரியது இல்லை"
 
-#: ui/options_graphics.rml:196
+#: ui/options_graphics.rml:208
 msgid "Menu image size limit"
 msgstr "பட்டியல் பட அளவு வரம்பு"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:209
 msgid "Limit menu image size to save on memory."
 msgstr "நினைவகத்தில் சேமிக்க பட்டியல் பட அளவைக் கட்டுப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:214
 msgid "High-precision rendering"
 msgstr "உயர் துல்லியமான வழங்குதல்"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:215
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "உயர் துல்லியமான படப்புள்ளி இடையகங்களைப் பயன்படுத்தவும், இது வண்ணக் குழிவைக் குறைக்கிறது."
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:219
 msgid "Use bindless textures if possible"
 msgstr "முடிந்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்துங்கள்"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:221
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1224,17 +1245,17 @@ msgstr ""
 "வன்பொருள்/இயக்கி ஆதரித்தால் பிணையமற்ற அமைப்புகளைப் பயன்படுத்தவும். இது செயல்திறனை "
 "மேம்படுத்தக்கூடும்."
 
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:259
-#: ui/options_graphics.rml:283 ui/options_graphics.rml:369
-#: ui/options_graphics.rml:374 ui/options_graphics.rml:379
+#: ui/options_graphics.rml:221 ui/options_graphics.rml:271
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:381
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:391
 msgid "Experimental."
 msgstr "சோதனை."
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:224
 msgid "Mip-mapping"
 msgstr "மிப்-மேப்பிங்"
 
-#: ui/options_graphics.rml:213
+#: ui/options_graphics.rml:225
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1242,96 +1263,96 @@ msgstr ""
 "எம்ஐபி-மேப்பிங் குறைந்த தெளிவுத்திறன் கொண்ட அமைப்புகளைப் பயன்படுத்துவதன் மூலம் தொலைதூர "
 "மேற்பரப்புகளை சிறப்பாகக் காட்டுகிறது. இது பொதுவாக செயல்திறனை பாதிக்காது."
 
-#: ui/options_graphics.rml:220 ui/options_ui.rml:30
+#: ui/options_graphics.rml:232 ui/options_ui.rml:30
 #: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No"
 msgstr "இல்லை"
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:234
 msgid "Anisotropic mip-mapping"
 msgstr "அனிசோட்ரோபிக் எம்ஐபி-மேப்பிங்"
 
-#: ui/options_graphics.rml:223
+#: ui/options_graphics.rml:235
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "கோண மேற்பரப்புகளில் எம்ஐபி-வரைபடங்களின் சிறந்த விளக்கம்."
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "Trilinear"
 msgstr "மூநேர்கோடு"
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "better"
 msgstr "சிறந்தது"
 
-#: ui/options_graphics.rml:228
+#: ui/options_graphics.rml:240
 msgid "Bilinear"
 msgstr "பிலினியர்"
 
-#: ui/options_graphics.rml:230
+#: ui/options_graphics.rml:242
 msgid "Texture scaling filter"
 msgstr "அமைப்பு அளவிடுதல் வடிகட்டி"
 
-#: ui/options_graphics.rml:238 ui/options_graphics.rml:240
+#: ui/options_graphics.rml:250 ui/options_graphics.rml:252
 msgid "Materials"
 msgstr "பொருட்கள்"
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:254
 msgid "Sky"
 msgstr "வானம்"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:256
 msgid "Draw the sky."
 msgstr "வானத்தை வரையவும்."
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:259
 msgid "Normal mapping"
 msgstr "சாதாரண மேப்பிங்"
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:261
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "தட்டையான மேற்பரப்புகளில் கூடுதல் விளக்கு விவரங்களை உருவகப்படுத்துகிறது."
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:264
 msgid "Deluxe mapping"
 msgstr "டீலக்ச் மேப்பிங்"
 
-#: ui/options_graphics.rml:254
+#: ui/options_graphics.rml:266
 msgid "Light direction based on baked textures."
 msgstr "வேகவைத்த அமைப்புகளின் அடிப்படையில் ஒளி திசை."
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:269
 msgid "Relief mapping"
 msgstr "நிவாரண மேப்பிங்"
 
-#: ui/options_graphics.rml:259
+#: ui/options_graphics.rml:271
 msgid "Adds bumps on supported surfaces."
 msgstr "உதவி மேற்பரப்புகளில் புடைப்புகளைச் சேர்க்கிறது."
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:274
 msgid "Specular mapping"
 msgstr "ஏகப்பட்ட மேப்பிங்"
 
-#: ui/options_graphics.rml:264
+#: ui/options_graphics.rml:276
 msgid "Simulate light specularity."
 msgstr "ஒளி ஊகத்தை உருவகப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:267
+#: ui/options_graphics.rml:279
 msgid "Physical mapping"
 msgstr "உடல் வரைபடம்"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:281
 msgid "Material appearance based on physical approximations."
 msgstr "உடல் தோராயங்களின் அடிப்படையில் பொருள் தோற்றம்."
 
-#: ui/options_graphics.rml:277 ui/options_graphics.rml:279
+#: ui/options_graphics.rml:289 ui/options_graphics.rml:291
 msgid "Reflections"
 msgstr "பிரதிபலிப்புகள்"
 
-#: ui/options_graphics.rml:281
+#: ui/options_graphics.rml:293
 msgid "Static reflections"
 msgstr "நிலையான பிரதிபலிப்புகள்"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:295
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1339,23 +1360,23 @@ msgstr ""
 "ஆதரிக்கப்பட்ட மேற்பரப்புகளில் நிலையான கியூபேப் பிரதிபலிப்புகளைச் சேர்க்கிறது. சாதாரண, "
 "ஏகப்பட்ட மற்றும் டீலக்ச் மேப்பிங் தேவை. தற்போது உடல் மேப்பிங் மூலம் ஆதரிக்கப்படவில்லை."
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:299
 msgid "Very low"
 msgstr "மிகக் குறைவு"
 
-#: ui/options_graphics.rml:289 ui/options_graphics.rml:416
+#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
 msgid "Moderate"
 msgstr "மிதமான"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:303
 msgid "Very high"
 msgstr "மிக உயர்ந்த"
 
-#: ui/options_graphics.rml:293 ui/options_graphics.rml:410
+#: ui/options_graphics.rml:305 ui/options_graphics.rml:422
 msgid "Quality"
 msgstr "தகுதி"
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:306
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1363,96 +1384,96 @@ msgstr ""
 "நிலையான பிரதிபலிப்பு கியூபேப்சின் தகுதி. அதிக குணங்கள் நிறைய வட்டு இடத்தைப் "
 "பயன்படுத்தலாம்."
 
-#: ui/options_graphics.rml:297
+#: ui/options_graphics.rml:309
 msgid "Cubemap grid spacing"
 msgstr "க்யூப்மேப் கட்டம் இடைவெளி"
 
-#: ui/options_graphics.rml:307 ui/options_ui.rml:122
+#: ui/options_graphics.rml:319 ui/options_ui.rml:122
 msgid "Never"
 msgstr "ஒருபோதும்"
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:320
 msgid "Cache on disk"
 msgstr "வட்டில் கேச்"
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:321
 msgid "Always rebuild"
 msgstr "எப்போதும் மீண்டும் உருவாக்கவும்"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:323
 msgid "Static reflection cubemaps autobuild"
 msgstr "நிலையான பிரதிபலிப்பு கியூபேப்ச் தன்னியக்க கட்டை"
 
-#: ui/options_graphics.rml:312
+#: ui/options_graphics.rml:324
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "தானாகவே உருவாக்க/ஏற்ற/பிரதிபலிப்பு க்யூபேப்புகளை சேமிக்கவும்."
 
-#: ui/options_graphics.rml:320 ui/options_graphics.rml:322
+#: ui/options_graphics.rml:332 ui/options_graphics.rml:334
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "விளைவுகள்"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:336
 msgid "Bloom"
 msgstr "பூக்கும்"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:338
 msgid "Makes bright areas on your screen glow."
 msgstr "உங்கள் திரையில் பிரகாசமான பகுதிகளை ஒளிரச் செய்கிறது."
 
-#: ui/options_graphics.rml:329
+#: ui/options_graphics.rml:341
 msgid "Color grading"
 msgstr "வண்ண தகுதி"
 
-#: ui/options_graphics.rml:331
+#: ui/options_graphics.rml:343
 msgid "Alter colors to create specific ambiences."
 msgstr "குறிப்பிட்ட ஆத்மினங்களை உருவாக்க வண்ணங்களை மாற்றவும்."
 
-#: ui/options_graphics.rml:334
+#: ui/options_graphics.rml:346
 msgid "Heat-haze"
 msgstr "வெப்பம் கேள்விக்குரிய"
 
-#: ui/options_graphics.rml:336
+#: ui/options_graphics.rml:348
 msgid "Simulate air refraction in severe heat."
 msgstr "கடுமையான வெப்பத்தில் காற்று ஒளிவிலகல் உருவகப்படுத்தவும்."
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:351
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "திரை விண்வெளி சுற்றுப்புற மறுப்பு (SSAO)"
 
-#: ui/options_graphics.rml:341
+#: ui/options_graphics.rml:353
 msgid "Simulate dark corners."
 msgstr "இருண்ட மூலைகளை உருவகப்படுத்துங்கள்."
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:356
 msgid "Marks"
 msgstr "மதிப்பெண்கள்"
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:358
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "மேற்பரப்புகளில் மதிப்பெண்களை (புல்லட் துளைகள் அல்லது க்ரீப் போன்றவை) வரையவும்"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:361
 msgid "Particle physics"
 msgstr "துகள் இயற்பியல்"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:363
 msgid "Allow particles to bounce off surfaces."
 msgstr "துகள்கள் மேற்பரப்புகளைத் துடைக்க அனுமதிக்கவும்."
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:370
 msgid "Renderer"
 msgstr "ரெண்டரர்"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:375
 msgid "Read-only depth buffer"
 msgstr ""
 
-#: ui/options_graphics.rml:365 ui/options_graphics.rml:367
+#: ui/options_graphics.rml:377 ui/options_graphics.rml:379
 msgid "Material system"
 msgstr "பொருள் அமைப்பு"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:381
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1460,91 +1481,91 @@ msgstr ""
 "செயல்திறனை கணிசமாக மேம்படுத்தும் புதிய அமைப்பைப் பயன்படுத்தவும். சில ஓட்டுநர்கள் இதில் "
 "தோல்வியடையக்கூடும் (எ.கா. சி. மேசா மற்றும் ஏஎம்டி தனியுரிம ஓட்டுநர்கள்)."
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:384
 msgid "GPU frustum culling"
 msgstr "Finu freustum culling"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:386
 msgid "Cull surfaces that are out of view."
 msgstr "பார்வைக்கு வெளியே இருக்கும் குல் மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:389
 msgid "GPU occlusion culling"
 msgstr "சி.பீ.யூ மறைவு"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:391
 msgid "Cull hidden surfaces."
 msgstr "மறைக்கப்பட்ட மேற்பரப்புகள்."
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:398
 msgid "Gameplay"
 msgstr "விளையாட்டு"
 
-#: ui/options_graphics.rml:388
+#: ui/options_graphics.rml:400
 msgid "Building markers"
 msgstr "கட்டிட குறிப்பான்கள்"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:403
 msgid "disabled"
 msgstr "முடக்கப்பட்டது"
 
-#: ui/options_graphics.rml:392
+#: ui/options_graphics.rml:404
 msgid "All structures"
 msgstr "அனைத்து கட்டமைப்புகளும்"
 
-#: ui/options_graphics.rml:393
+#: ui/options_graphics.rml:405
 msgid "Support structures"
 msgstr "உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:406
 msgid "Offensive structures"
 msgstr "கெட்ட கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:407
 msgid "Alien structures"
 msgstr "அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:396
+#: ui/options_graphics.rml:408
 msgid "Human structures"
 msgstr "மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:397
+#: ui/options_graphics.rml:409
 msgid "Alien support structures"
 msgstr "அன்னிய உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:410
 msgid "Human support structures"
 msgstr "மனித உதவி கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:399
+#: ui/options_graphics.rml:411
 msgid "Offensive alien structures"
 msgstr "தாக்குதல் அன்னிய கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:412
 msgid "Offensive human structures"
 msgstr "தாக்குதல் மனித கட்டமைப்புகள்"
 
-#: ui/options_graphics.rml:402
+#: ui/options_graphics.rml:414
 msgid "Building ranges"
 msgstr "கட்டிட வரம்புகள்"
 
-#: ui/options_graphics.rml:404
+#: ui/options_graphics.rml:416
 msgid "Models"
 msgstr "மாதிரிகள்"
 
-#: ui/options_graphics.rml:412
+#: ui/options_graphics.rml:424
 msgid "Motion blur"
 msgstr "இயக்க மங்கலானது"
 
-#: ui/options_graphics.rml:420
+#: ui/options_graphics.rml:432
 msgid "Intensity"
 msgstr "தீவிரம்"
 
-#: ui/options_graphics.rml:421
+#: ui/options_graphics.rml:433
 msgid "Level of motion-blur."
 msgstr "மோசன்-ப்ளூரின் நிலை."
 
-#: ui/options_graphics.rml:424
+#: ui/options_graphics.rml:436
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "இயக்க-BLUR ஐ செயல்படுத்த குறைந்தபட்ச இயக்க விரைவு"
 
@@ -1695,7 +1716,7 @@ msgstr "குழு வாக்கு ஆம்:"
 msgid "Team vote No:"
 msgstr "குழு வாக்கு எண்:"
 
-#: ui/options_keys.rml:142 ui/server_setup.rml:322
+#: ui/options_keys.rml:142 ui/server_setup.rml:332
 msgid "Misc"
 msgstr "இதர"
 
@@ -2140,19 +2161,19 @@ msgstr "துப்பாக்கி"
 msgid "Pain Saw"
 msgstr "வலி பார்த்தேன்"
 
-#: ui/options_ui.rml:103 ui/server_setup.rml:283
+#: ui/options_ui.rml:103 ui/server_setup.rml:293
 msgid "Shotgun"
 msgstr "சாட்கன்"
 
-#: ui/options_ui.rml:104 ui/server_setup.rml:287
+#: ui/options_ui.rml:104 ui/server_setup.rml:297
 msgid "Lasgun"
 msgstr "லேடி"
 
-#: ui/options_ui.rml:105 ui/server_setup.rml:291
+#: ui/options_ui.rml:105 ui/server_setup.rml:301
 msgid "Mass Driver"
 msgstr "வெகுசன இயக்கி"
 
-#: ui/options_ui.rml:106 ui/server_setup.rml:295
+#: ui/options_ui.rml:106 ui/server_setup.rml:305
 msgid "Chaingun"
 msgstr "கார்தேச்"
 
@@ -2160,11 +2181,11 @@ msgstr "கார்தேச்"
 msgid "Flamer"
 msgstr "ஃபிளேமர்"
 
-#: ui/options_ui.rml:108 ui/server_setup.rml:303
+#: ui/options_ui.rml:108 ui/server_setup.rml:313
 msgid "Pulse Rifle"
 msgstr "துடிப்பு துப்பாக்கி"
 
-#: ui/options_ui.rml:109 ui/server_setup.rml:307
+#: ui/options_ui.rml:109 ui/server_setup.rml:317
 msgid "Lucifer Cannon"
 msgstr "லூசிபர் பீரங்கி"
 
@@ -2440,7 +2461,7 @@ msgstr "அரை ஆயுள் நேரம்"
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
 msgstr "வேகத்திற்கான நேரம் 50%குறைக்க. 0 இந்த நடத்தையை முடக்குகிறது."
 
-#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
+#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:194
 msgid "minutes"
 msgstr "நிமிடங்கள்"
 
@@ -2505,170 +2526,192 @@ msgid "Initial build points count"
 msgstr "ஆரம்ப உருவாக்க புள்ளிகள் எண்ணிக்கை"
 
 #: ui/server_setup.rml:164
+msgid "BP Vampire"
+msgstr ""
+
+#: ui/server_setup.rml:165
+msgid "Bleed build points from the enemy team by killing buildables."
+msgstr ""
+
+#: ui/server_setup.rml:168
+msgid "Mining"
+msgstr ""
+
+#: ui/server_setup.rml:169
+msgid ""
+"Increase build budget by building mining structures. BP returns slowly when "
+"a buildable is lost."
+msgstr ""
+
+#: ui/server_setup.rml:171
+msgid "Mining mode options"
+msgstr ""
+
+#: ui/server_setup.rml:174
 msgid "Miner bonus"
 msgstr "மைனர் போனச்"
 
-#: ui/server_setup.rml:165
+#: ui/server_setup.rml:175
 msgid "Build point budget per miner"
 msgstr "ஒரு சுரங்கத் தொழிலாளருக்கு புள்ளி பட்செட்டை உருவாக்குங்கள்"
 
-#: ui/server_setup.rml:172
+#: ui/server_setup.rml:182
 msgid "Initial regeneration speed"
 msgstr "ஆரம்ப மீளுருவாக்கம் விரைவு"
 
-#: ui/server_setup.rml:173
+#: ui/server_setup.rml:183
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr "பிபி மீட்கப்படும் ஆரம்ப விரைவு (நிமிடத்திற்கு பிபி)"
 
-#: ui/server_setup.rml:180
+#: ui/server_setup.rml:190
 msgid "Half regeneration time"
 msgstr "அரை மீளுருவாக்கம் நேரம்"
 
-#: ui/server_setup.rml:181
+#: ui/server_setup.rml:191
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr "பிபி மீட்பு இரண்டு மடங்கு மெதுவாக வருவதற்கு முன்பு ஒருவர் காத்திருப்பார்"
 
-#: ui/server_setup.rml:189
+#: ui/server_setup.rml:199
 msgid "Bots: General"
 msgstr "போட்ச்: பொது"
 
-#: ui/server_setup.rml:192
+#: ui/server_setup.rml:202
 msgid "Minimum bots per team"
 msgstr "ஒரு அணிக்கு குறைந்தபட்ச போட்கள்"
 
-#: ui/server_setup.rml:193
+#: ui/server_setup.rml:203
 msgid "Fill teams until they have enough players"
 msgstr "போதுமான வீரர்கள் இருக்கும் வரை அணிகளை நிரப்பவும்"
 
-#: ui/server_setup.rml:196
+#: ui/server_setup.rml:206
 msgid "bots"
 msgstr "போட்"
 
-#: ui/server_setup.rml:200
+#: ui/server_setup.rml:210
 msgid "Default skill level"
 msgstr "இயல்புநிலை திறன் நிலை"
 
-#: ui/server_setup.rml:201
+#: ui/server_setup.rml:211
 msgid "Only works for new bots."
 msgstr "புதிய போட்களுக்கு மட்டுமே வேலை செய்கிறது."
 
-#: ui/server_setup.rml:206
+#: ui/server_setup.rml:216
 msgid "Humanity"
 msgstr "மனிதநேயம்"
 
-#: ui/server_setup.rml:209
+#: ui/server_setup.rml:219
 msgid "Field of view"
 msgstr "பார்வை புலம்"
 
-#: ui/server_setup.rml:217
+#: ui/server_setup.rml:227
 msgid "Reaction time"
 msgstr "எதிர்வினை நேரம்"
 
-#: ui/server_setup.rml:224
+#: ui/server_setup.rml:234
 msgid "Behaviour"
 msgstr "நடத்தை"
 
-#: ui/server_setup.rml:227
+#: ui/server_setup.rml:237
 msgid "Attack structures"
 msgstr "தாக்குதல் கட்டமைப்புகள்"
 
-#: ui/server_setup.rml:229
+#: ui/server_setup.rml:239
 msgid "Cheating"
 msgstr "மோசடி"
 
-#: ui/server_setup.rml:232
+#: ui/server_setup.rml:242
 msgid "Infinite funds"
 msgstr "எல்லையற்ற நிதிகள்"
 
-#: ui/server_setup.rml:236
+#: ui/server_setup.rml:246
 msgid "Ignore momentum"
 msgstr "தருணத்தை புறக்கணிக்கவும்"
 
-#: ui/server_setup.rml:238
+#: ui/server_setup.rml:248
 msgid "Navmesh generation"
 msgstr "நவ்மேச் தலைமுறை"
 
-#: ui/server_setup.rml:241
+#: ui/server_setup.rml:251
 msgid "Generate navmeshes at load time"
 msgstr "சுமை நேரத்தில் நவ்மேச்களை உருவாக்குங்கள்"
 
-#: ui/server_setup.rml:245
+#: ui/server_setup.rml:255
 msgid "Number of worker threads"
 msgstr "தொழிலாளர் நூல்களின் எண்ணிக்கை"
 
-#: ui/server_setup.rml:253
+#: ui/server_setup.rml:263
 msgid "Bots: Humans"
 msgstr "போட்ச்: மனிதர்கள்"
 
-#: ui/server_setup.rml:254 ui/server_setup.rml:339
+#: ui/server_setup.rml:264 ui/server_setup.rml:349
 msgid "Overall"
 msgstr "ஒட்டுமொத்தமாக"
 
-#: ui/server_setup.rml:257
+#: ui/server_setup.rml:267
 msgid "Human bots purchase equipment"
 msgstr "மனித போட்கள் உபகரணங்களை வாங்குகின்றன"
 
-#: ui/server_setup.rml:261 ui/server_setup.rml:346
+#: ui/server_setup.rml:271 ui/server_setup.rml:356
 msgid "Aim speed modifier (higher is slower)"
 msgstr "AIM வேக மாற்றியமைப்பாளர் (அதிக அளவு மெதுவாக)"
 
-#: ui/server_setup.rml:267 ui/server_setup.rml:353
+#: ui/server_setup.rml:277 ui/server_setup.rml:363
 msgid "Individually"
 msgstr "தனித்தனியாக"
 
-#: ui/server_setup.rml:268
+#: ui/server_setup.rml:278
 msgid "Primary Weapons"
 msgstr "முதன்மை ஆயுதங்கள்"
 
-#: ui/server_setup.rml:271
+#: ui/server_setup.rml:281
 msgid "Construction Kit (repairs)"
 msgstr "கட்டுமான அறிவிலி (பழுதுபார்ப்பு)"
 
-#: ui/server_setup.rml:279
+#: ui/server_setup.rml:289
 msgid "Painsaw"
 msgstr "பின்சா"
 
-#: ui/server_setup.rml:299
+#: ui/server_setup.rml:309
 msgid "Flamethrower"
 msgstr "தீ எறிப்பான்"
 
-#: ui/server_setup.rml:309
+#: ui/server_setup.rml:319
 msgid "Armors"
 msgstr "கவசங்கள்"
 
-#: ui/server_setup.rml:312
+#: ui/server_setup.rml:322
 msgid "whether bots buy Light Armour"
 msgstr "போட்கள் ஒளி கவசத்தை வாங்குகின்றனவா"
 
-#: ui/server_setup.rml:316
+#: ui/server_setup.rml:326
 msgid "whether bots buy Medium Armour"
 msgstr "போட்கள் நடுத்தர கவசத்தை வாங்குகின்றனவா"
 
-#: ui/server_setup.rml:320
+#: ui/server_setup.rml:330
 msgid "whether bots buy the Battlesuit"
 msgstr "போட்கள் போர்க்களத்தை வாங்குகின்றனவா"
 
-#: ui/server_setup.rml:325
+#: ui/server_setup.rml:335
 msgid "Firebomb"
 msgstr "ஃபயர்பாம்ப்"
 
-#: ui/server_setup.rml:329
+#: ui/server_setup.rml:339
 msgid "Grenade"
 msgstr "கையெறி"
 
-#: ui/server_setup.rml:333
+#: ui/server_setup.rml:343
 msgid "Radar"
 msgstr "கதிரலைக் கும்பா"
 
-#: ui/server_setup.rml:342
+#: ui/server_setup.rml:352
 msgid "Alien bots morph"
 msgstr "ஏலியன் போட்ச் மார்ப்"
 
-#: ui/server_setup.rml:364
+#: ui/server_setup.rml:374
 msgid "Advanced Marauder"
 msgstr "மேம்பட்ட மராடர்"
 
-#: ui/server_setup.rml:372
+#: ui/server_setup.rml:382
 msgid "Advanced Dragoon"
 msgstr "மேம்பட்ட டிராகன்"
 
@@ -4373,65 +4416,65 @@ msgstr "பக்கவாட்டு"
 msgid "Flank, behind you!"
 msgstr "பக்கவாட்டு, உங்களுக்கு பின்னால்!"
 
-#: src/cgame/cg_rocket_draw.cpp:2629
+#: src/cgame/cg_rocket_draw.cpp:2630
 msgid "You are at the front of the spawn queue"
 msgstr "நீங்கள் ச்பான் வரிசையின் முன்னால் இருக்கிறீர்கள்"
 
-#: src/cgame/cg_rocket_draw.cpp:2633
+#: src/cgame/cg_rocket_draw.cpp:2634
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "ச்பான் வரிசையில் நீங்கள் %d நிலையில் இருக்கிறீர்கள்"
 
-#: src/cgame/cg_rocket_draw.cpp:2673
+#: src/cgame/cg_rocket_draw.cpp:2674
 msgid "There are no spawns remaining"
 msgstr "மீதமுள்ள ச்பான்ச் இல்லை"
 
-#: src/cgame/cg_rocket_draw.cpp:2677
+#: src/cgame/cg_rocket_draw.cpp:2678
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "%d ச்பான் மீதமுள்ளது"
 msgstr[1] "%d ச்பான்ச் மீதமுள்ளவை"
 
-#: src/cgame/cg_rocket_draw.cpp:3226
+#: src/cgame/cg_rocket_draw.cpp:3227
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "இணைப்புக்காக காத்திருக்கிறது…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3230
+#: src/cgame/cg_rocket_draw.cpp:3231
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "சவாலுக்காக காத்திருக்கிறது…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3234
+#: src/cgame/cg_rocket_draw.cpp:3235
 msgid "Awaiting gamestate…"
 msgstr "கேம்ச்டேட்டுக்காக காத்திருக்கிறது…"
 
-#: src/cgame/cg_rocket_draw.cpp:3335
+#: src/cgame/cg_rocket_draw.cpp:3336
 msgid "Say:"
 msgstr "சொல்லுங்கள்:"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3337
 msgid "Team Say:"
 msgstr "குழு கூறுகிறது:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3338
 msgid "Admin Say:"
 msgstr "நிர்வாகி சொல்லுங்கள்:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3339
 msgid "Command:"
 msgstr "கட்டளை:"
 
-#: src/cgame/cg_rocket_draw.cpp:3688
+#: src/cgame/cg_rocket_draw.cpp:3689
 msgid "FIGHT!"
 msgstr "சண்டை!"
 
-#: src/cgame/cg_rocket_draw.cpp:3782
+#: src/cgame/cg_rocket_draw.cpp:3783
 msgid "estimating"
 msgstr "மதிப்பீடு"
 
-#: src/cgame/cg_servercmds.cpp:437
+#: src/cgame/cg_servercmds.cpp:451
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -4439,11 +4482,11 @@ msgstr ""
 "ஏலியன் அணியில் அதிகமான வீரர்கள் உள்ளனர். இடங்கள் கிடைக்கும் வரை காத்திருங்கள் அல்லது மனித "
 "அணியில் சேரவும்."
 
-#: src/cgame/cg_servercmds.cpp:439
+#: src/cgame/cg_servercmds.cpp:453
 msgid "The alien team has too many players"
 msgstr "ஏலியன் அணியில் அதிகமான வீரர்கள் உள்ளனர்"
 
-#: src/cgame/cg_servercmds.cpp:443
+#: src/cgame/cg_servercmds.cpp:457
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -4451,27 +4494,27 @@ msgstr ""
 "மனித அணியில் அதிகமான வீரர்கள் உள்ளனர். இடங்கள் கிடைக்கும் வரை காத்திருங்கள் அல்லது அன்னிய "
 "அணியில் சேரவும்."
 
-#: src/cgame/cg_servercmds.cpp:445
+#: src/cgame/cg_servercmds.cpp:459
 msgid "The human team has too many players"
 msgstr "மனித அணியில் அதிகமான வீரர்கள் உள்ளனர்"
 
-#: src/cgame/cg_servercmds.cpp:449
+#: src/cgame/cg_servercmds.cpp:463
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr "அன்னிய அணி பூட்டப்பட்டுள்ளது. இந்த நேரத்தில் நீங்கள் வெளிநாட்டினருடன் சேர முடியாது."
 
-#: src/cgame/cg_servercmds.cpp:451
+#: src/cgame/cg_servercmds.cpp:465
 msgid "The alien team is locked"
 msgstr "அன்னிய அணி பூட்டப்பட்டுள்ளது"
 
-#: src/cgame/cg_servercmds.cpp:455
+#: src/cgame/cg_servercmds.cpp:469
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr "மனித அணி பூட்டப்பட்டுள்ளது. இந்த நேரத்தில் நீங்கள் மனிதர்களுடன் சேர முடியாது."
 
-#: src/cgame/cg_servercmds.cpp:457
+#: src/cgame/cg_servercmds.cpp:471
 msgid "The human team is locked"
 msgstr "மனித அணி பூட்டப்பட்டுள்ளது"
 
-#: src/cgame/cg_servercmds.cpp:461
+#: src/cgame/cg_servercmds.cpp:475
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -4479,24 +4522,24 @@ msgstr ""
 "விளையாடும் வாடிக்கையாளர்களின் அதிகபட்ச எண்ணிக்கை எட்டப்பட்டுள்ளது. இடங்கள் கிடைக்கும் வரை "
 "காத்திருங்கள்."
 
-#: src/cgame/cg_servercmds.cpp:463
+#: src/cgame/cg_servercmds.cpp:477
 msgid "No free player slots"
 msgstr "இலவச பிளேயர் இடங்கள் இல்லை"
 
-#: src/cgame/cg_servercmds.cpp:467
+#: src/cgame/cg_servercmds.cpp:481
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "ஒரு அணியில் சேருவதற்கு முன்பு சூடான நேரம் முடியும் வரை நீங்கள் காத்திருக்க வேண்டும்."
 
-#: src/cgame/cg_servercmds.cpp:469
+#: src/cgame/cg_servercmds.cpp:483
 msgid "You cannot join a team during warmup."
 msgstr "வெப்பமயமாதலின் போது நீங்கள் ஒரு அணியில் சேர முடியாது."
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:491
 msgid "Cheats are not enabled on this server"
 msgstr "இந்த சேவையகத்தில் ஏமாற்றுக்காரர்கள் இயக்கப்படவில்லை"
 
-#: src/cgame/cg_servercmds.cpp:481
+#: src/cgame/cg_servercmds.cpp:495
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -4504,27 +4547,27 @@ msgstr ""
 "இந்த சேவையகத்தில் ஏமாற்றுக்காரர்கள் இயக்கப்படவில்லை, எனவே நீங்கள் ஒரு குழுவில் இருக்கும்போது "
 "இந்த கட்டளையைப் பயன்படுத்தக்கூடாது"
 
-#: src/cgame/cg_servercmds.cpp:488
+#: src/cgame/cg_servercmds.cpp:502
 msgid "Join a team first"
 msgstr "முதலில் ஒரு அணியில் சேரவும்"
 
-#: src/cgame/cg_servercmds.cpp:494
+#: src/cgame/cg_servercmds.cpp:508
 msgid "You can only use this command when spectating"
 msgstr "நீங்கள் பார்க்கும்போது மட்டுமே இந்த கட்டளையைப் பயன்படுத்த முடியும்"
 
-#: src/cgame/cg_servercmds.cpp:499
+#: src/cgame/cg_servercmds.cpp:513
 msgid "Must be alien to use this command"
 msgstr "இந்த கட்டளையைப் பயன்படுத்த அந்நியராக இருக்க வேண்டும்"
 
-#: src/cgame/cg_servercmds.cpp:504
+#: src/cgame/cg_servercmds.cpp:518
 msgid "Must be human to use this command"
 msgstr "இந்த கட்டளையைப் பயன்படுத்த மனிதராக இருக்க வேண்டும்"
 
-#: src/cgame/cg_servercmds.cpp:509
+#: src/cgame/cg_servercmds.cpp:523
 msgid "Must be alive to use this command"
 msgstr "இந்த கட்டளையைப் பயன்படுத்த உயிருடன் இருக்க வேண்டும்"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:529
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -4532,11 +4575,11 @@ msgstr ""
 "இங்கே கட்ட இடமில்லை. கட்டமைப்பு ஒளிஊடுருவக்கூடிய பச்சை நிறமாக மாறும் வரை நகர்த்தவும், "
 "இது சரியான கட்டமைப்பைக் குறிக்கிறது."
 
-#: src/cgame/cg_servercmds.cpp:517
+#: src/cgame/cg_servercmds.cpp:531
 msgid "There is no room to build here"
 msgstr "இங்கே கட்ட இடமில்லை"
 
-#: src/cgame/cg_servercmds.cpp:521
+#: src/cgame/cg_servercmds.cpp:535
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -4544,15 +4587,15 @@ msgstr ""
 "இந்த மேற்பரப்பில் உருவாக்க முடியாது. மேற்பரப்பு மிகவும் செங்குத்தானது அல்லது கட்டமைக்க "
 "பொருத்தமற்றது. இந்த கட்டமைப்பிற்கு மற்றொரு தளத்தைத் தேர்வுசெய்க."
 
-#: src/cgame/cg_servercmds.cpp:524
+#: src/cgame/cg_servercmds.cpp:538
 msgid "Cannot build on this surface"
 msgstr "இந்த மேற்பரப்பில் உருவாக்க முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:529
+#: src/cgame/cg_servercmds.cpp:543
 msgid "You cannot build that structure"
 msgstr "நீங்கள் அந்த கட்டமைப்பை உருவாக்க முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:547
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -4560,11 +4603,11 @@ msgstr ""
 "இந்த நடவடிக்கை உங்கள் அணியின் கடைசி ச்பான் புள்ளியை அகற்றும், இது பெரும்பாலும் விரைவாக "
 "இழப்பை ஏற்படுத்துகிறது. மேலும் ச்பான்களை உருவாக்க முயற்சிக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:536
+#: src/cgame/cg_servercmds.cpp:550
 msgid "You may not deconstruct the last spawn"
 msgstr "கடைசி ச்பானை நீங்கள் மறுகட்டமைக்கக்கூடாது"
 
-#: src/cgame/cg_servercmds.cpp:540
+#: src/cgame/cg_servercmds.cpp:554
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -4572,27 +4615,27 @@ msgstr ""
 "முக்கிய அமைப்பு உடனடி அகற்றுதலுக்கு எதிராக பாதுகாக்கப்படுகிறது. அது "
 "குறிக்கப்படும்போது, அதை அங்கே கட்டுவதன் மூலம் அதை வேறு இடத்திற்கு நகர்த்தலாம்."
 
-#: src/cgame/cg_servercmds.cpp:543
+#: src/cgame/cg_servercmds.cpp:557
 msgid "You may not deconstruct this structure"
 msgstr "இந்த கட்டமைப்பை நீங்கள் மறுகட்டமைக்கக்கூடாது"
 
-#: src/cgame/cg_servercmds.cpp:547
+#: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled on the server for your team."
 msgstr "உங்கள் அணிக்கான சேவையகத்தில் கட்டிடம் முடக்கப்பட்டுள்ளது."
 
-#: src/cgame/cg_servercmds.cpp:548
+#: src/cgame/cg_servercmds.cpp:562
 msgid "Building has been disabled for your team"
 msgstr "உங்கள் அணிக்கு கட்டிடம் முடக்கப்பட்டுள்ளது"
 
-#: src/cgame/cg_servercmds.cpp:552
+#: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "நீங்கள் இனி கட்ட அனுமதிக்கப்படுவதில்லை."
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:567
 msgid "You are no longer permitted to build"
 msgstr "நீங்கள் இனி கட்ட அனுமதிக்கப்படுவதில்லை"
 
-#: src/cgame/cg_servercmds.cpp:557
+#: src/cgame/cg_servercmds.cpp:571
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4600,11 +4643,11 @@ msgstr ""
 "தோல்வியை ஒப்புக் கொள்ளவும், விளையாட்டை ஒப்புக்கொள்ளவும் உங்கள் குழு முடிவு செய்துள்ளது: "
 "இனி எதையும் கட்டுவதில் எந்த அர்த்தமும் இல்லை."
 
-#: src/cgame/cg_servercmds.cpp:559
+#: src/cgame/cg_servercmds.cpp:573
 msgid "Cannot build after admitting defeat"
 msgstr "தோல்வியை ஒப்புக் கொண்ட பிறகு உருவாக்க முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:577
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4612,44 +4655,44 @@ msgstr ""
 "மீதமுள்ள ஆதாரங்கள் இல்லை. மறுகட்டமைப்பிற்கு ஏற்கனவே உள்ள கட்டடங்களைக் குறிப்பதன் மூலம் "
 "வளங்களை விடுவிக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:579
 msgid "There are no resources remaining"
 msgstr "மீதமுள்ள ஆதாரங்கள் இல்லை"
 
-#: src/cgame/cg_servercmds.cpp:569
+#: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered."
 msgstr "இந்த கட்டமைக்கக்கூடியது இயக்கப்படவில்லை."
 
-#: src/cgame/cg_servercmds.cpp:570
+#: src/cgame/cg_servercmds.cpp:584
 msgid "This buildable is not powered"
 msgstr "இந்த கட்டமைக்கக்கூடியது இயக்கப்படவில்லை"
 
-#: src/cgame/cg_servercmds.cpp:574
+#: src/cgame/cg_servercmds.cpp:588
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
 msgstr "உலை இல்லை. வேறு எந்த கட்டமைப்பையும் வைப்பதற்கு முன்பு ஒரு உலை கட்டப்பட வேண்டும்."
 
-#: src/cgame/cg_servercmds.cpp:576
+#: src/cgame/cg_servercmds.cpp:590
 msgid "There is no reactor"
 msgstr "உலை இல்லை"
 
-#: src/cgame/cg_servercmds.cpp:580
+#: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "ஒரு உலை மட்டுமே இருக்க முடியும். நீங்கள் அதை நகர்த்த விரும்பினால் ஏற்கனவே இருக்கும் ஒன்றைக் "
 "குறிக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:582
+#: src/cgame/cg_servercmds.cpp:596
 msgid "There can only be one Reactor"
 msgstr "ஒரு உலை மட்டுமே இருக்க முடியும்"
 
-#: src/cgame/cg_servercmds.cpp:587
+#: src/cgame/cg_servercmds.cpp:601
 msgid "Your team cannot have any more drills"
 msgstr "உங்கள் குழுவில் மேலும் பயிற்சிகள் இருக்க முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:605
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4657,20 +4700,20 @@ msgstr ""
 "இதைச் சுமக்க உங்களுக்கு இடமில்லை. இந்த உருப்படியை வாங்குவதற்கு முன் முரண்பட்ட மேம்பாடுகளை "
 "விற்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:593
+#: src/cgame/cg_servercmds.cpp:607
 msgid "You have no room to carry this"
 msgstr "இதைச் சுமக்க உங்களுக்கு இடமில்லை"
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:611
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr "போதுமான பொருள். இந்த செயலைச் செய்ய உங்களுக்கு போதுமான வரவு இல்லை."
 
-#: src/cgame/cg_servercmds.cpp:599
+#: src/cgame/cg_servercmds.cpp:613
 msgid "Insufficient funds"
 msgstr "போதுமான பொருள்"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:617
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
@@ -4678,11 +4721,11 @@ msgstr ""
 "நீங்கள் ஏற்கனவே இந்த உருப்படியை வைத்திருக்கிறீர்கள். ஒரே வகையின் பல உருப்படிகளை எடுத்துச் "
 "செல்ல முடியாது."
 
-#: src/cgame/cg_servercmds.cpp:605
+#: src/cgame/cg_servercmds.cpp:619
 msgid "You already hold this item"
 msgstr "நீங்கள் ஏற்கனவே இந்த உருப்படியை வைத்திருக்கிறீர்கள்"
 
-#: src/cgame/cg_servercmds.cpp:609
+#: src/cgame/cg_servercmds.cpp:623
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4690,11 +4733,11 @@ msgstr ""
 "ஆயுதங்கள், மேம்பாடுகள் அல்லது வெடிமருந்துகளை வாங்க நீங்கள் இயங்கும் ஆயுதக் களஞ்சியத்திற்கு "
 "அருகில் இருக்க வேண்டும்."
 
-#: src/cgame/cg_servercmds.cpp:611
+#: src/cgame/cg_servercmds.cpp:625
 msgid "You must be near a powered Armoury"
 msgstr "நீங்கள் இயங்கும் ஆயுதக் களஞ்சியத்திற்கு அருகில் இருக்க வேண்டும்"
 
-#: src/cgame/cg_servercmds.cpp:615
+#: src/cgame/cg_servercmds.cpp:629
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4702,20 +4745,20 @@ msgstr ""
 "ஆற்றல் வெடிமருந்துகளை வாங்குவதற்கு நீங்கள் ஒரு உலை, ஒரு துரப்பணம் அல்லது இயங்கும் ஆயுதக் "
 "களஞ்சியத்திற்கு அருகில் இருக்க வேண்டும்."
 
-#: src/cgame/cg_servercmds.cpp:617
+#: src/cgame/cg_servercmds.cpp:631
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 "நீங்கள் ஒரு உலை, ஒரு துரப்பணம் அல்லது இயங்கும் ஆயுதக் களஞ்சியத்திற்கு அருகில் இருக்க வேண்டும்"
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:635
 msgid "There is not enough room here to change armour."
 msgstr "கவசத்தை மாற்ற இங்கு போதுமான இடம் இல்லை."
 
-#: src/cgame/cg_servercmds.cpp:622
+#: src/cgame/cg_servercmds.cpp:636
 msgid "Not enough room here to change armour."
 msgstr "கவசத்தை மாற்ற இங்கு போதுமான இடம் இல்லை."
 
-#: src/cgame/cg_servercmds.cpp:626
+#: src/cgame/cg_servercmds.cpp:640
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -4723,25 +4766,25 @@ msgstr ""
 "உங்கள் பில்ட் நேரங்குறிகருவி காலாவதியாகும் வரை ஆயுதங்களை வாங்கவோ விற்கவோ உங்களுக்கு "
 "இசைவு இல்லை."
 
-#: src/cgame/cg_servercmds.cpp:628
+#: src/cgame/cg_servercmds.cpp:642
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "உங்கள் உருவாக்க நேரங்குறிகருவி காலாவதியாகும் வரை நீங்கள் ஆயுதங்களை வாங்கவோ விற்கவோ "
 "முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:647
 msgid "You must be dead to use the class command"
 msgstr "வகுப்பு கட்டளையைப் பயன்படுத்த நீங்கள் இறந்திருக்க வேண்டும்"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:651
 msgid "Unknown starting item"
 msgstr "தெரியாத தொடக்க உருப்படி"
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:655
 msgid "Starting item not allowed"
 msgstr "தொடக்க உருப்படி அனுமதிக்கப்படவில்லை"
 
-#: src/cgame/cg_servercmds.cpp:647
+#: src/cgame/cg_servercmds.cpp:661
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4749,11 +4792,11 @@ msgstr ""
 "மிகைப்படுத்தல் இல்லை. வேறு எந்த கட்டமைப்பையும் வைப்பதற்கு முன்பு ஒரு மிகைப்படுத்தல் கட்டப்பட "
 "வேண்டும்."
 
-#: src/cgame/cg_servercmds.cpp:649 src/cgame/cg_servercmds.cpp:689
+#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
 msgid "There is no Overmind"
 msgstr "மிகைப்படுத்தல் இல்லை"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4761,15 +4804,15 @@ msgstr ""
 "ஒரு மிகைப்படுத்தல் மட்டுமே இருக்க முடியும். நீங்கள் அதை நகர்த்த விரும்பினால் ஏற்கனவே "
 "இருக்கும் ஒன்றை மறுகட்டமைக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:655
+#: src/cgame/cg_servercmds.cpp:669
 msgid "There can only be one Overmind"
 msgstr "ஒரு மிகைப்படுத்தல் மட்டுமே இருக்க முடியும்"
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:674
 msgid "Your team cannot have any more leeches"
 msgstr "உங்கள் குழுவில் மேலும் லீச்ச்கள் இருக்க முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:664
+#: src/cgame/cg_servercmds.cpp:678
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4777,11 +4820,11 @@ msgstr ""
 "ஓவர் மைண்ட் மேலும் எந்த கட்டமைப்புகளையும் கட்டுப்படுத்த முடியாது. மேலும் உருவாக்க இருக்கும் "
 "கட்டமைப்புகளை மறுகட்டமைக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:666
+#: src/cgame/cg_servercmds.cpp:680
 msgid "The Overmind cannot control any more structures"
 msgstr "ஓவர் மைண்ட் மேலும் எந்த கட்டமைப்புகளையும் கட்டுப்படுத்த முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:670
+#: src/cgame/cg_servercmds.cpp:684
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4789,11 +4832,11 @@ msgstr ""
 "இங்கே உருவாக இடமில்லை. சுவர்கள் அல்லது அருகிலுள்ள பிற பொருட்களிலிருந்து விலகி மீண்டும் "
 "முயற்சிக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:672
+#: src/cgame/cg_servercmds.cpp:686
 msgid "There is no room to evolve here"
 msgstr "இங்கே உருவாக இடமில்லை"
 
-#: src/cgame/cg_servercmds.cpp:676
+#: src/cgame/cg_servercmds.cpp:690
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4801,80 +4844,80 @@ msgstr ""
 "இந்த இடம் உருவாக எதிரிக்கு மிக அருகில் உள்ளது. எதிரியின் இருப்பிலிருந்து விலகி மீண்டும் "
 "முயற்சிக்கவும்."
 
-#: src/cgame/cg_servercmds.cpp:678
+#: src/cgame/cg_servercmds.cpp:692
 msgid "This location is too close to the enemy to evolve"
 msgstr "இந்த இடம் உருவாக எதிரிக்கு மிக அருகில் உள்ளது"
 
-#: src/cgame/cg_servercmds.cpp:682 src/cgame/cg_servercmds.cpp:683
+#: src/cgame/cg_servercmds.cpp:696 src/cgame/cg_servercmds.cpp:697
 msgid "The Overmind is too far away to devolve."
 msgstr "மிகைப்படுத்தல் வெகு தொலைவில் உள்ளது."
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:701
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "மிகைப்படுத்தல் இல்லை. மேம்படுத்த உங்களை அனுமதிக்க ஒரு மிகைப்படுத்தல் கட்டப்பட வேண்டும்."
 
-#: src/cgame/cg_servercmds.cpp:693
+#: src/cgame/cg_servercmds.cpp:707
 msgid "You cannot evolve until your build timer has expired."
 msgstr "உங்கள் உருவாக்க நேரங்குறிகருவி காலாவதியாகும் வரை நீங்கள் உருவாக முடியாது."
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:708
 msgid "You cannot evolve until your build timer expires"
 msgstr "உங்கள் உருவாக்க நேரங்குறிகருவி காலாவதியாகும் வரை நீங்கள் உருவாக முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:712
 msgid "Wait a second after attacking or evolving"
 msgstr "தாக்குதல் அல்லது உருவான பிறகு ஒரு நொடி காத்திருங்கள்"
 
-#: src/cgame/cg_servercmds.cpp:706
+#: src/cgame/cg_servercmds.cpp:720
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "நீங்கள் ஒரு %s ஆக உருவாக முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:711
+#: src/cgame/cg_servercmds.cpp:725
 msgid "You cannot evolve while wallwalking"
 msgstr "வால்விங் செய்யும் போது நீங்கள் உருவாக முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:729
 msgid "Unknown class"
 msgstr "தெரியாத வகுப்பு"
 
-#: src/cgame/cg_servercmds.cpp:719
+#: src/cgame/cg_servercmds.cpp:733
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "நீங்கள் ஒரு %s ஆக உருவாக முடியாது"
 
-#: src/cgame/cg_servercmds.cpp:724
+#: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s அனுமதிக்கப்படவில்லை"
 
-#: src/cgame/cg_servercmds.cpp:729
+#: src/cgame/cg_servercmds.cpp:743
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "%s இன்னும் திறக்கப்படவில்லை"
 
-#: src/cgame/cg_servercmds.cpp:734
+#: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "CGAME: பிழைத்திருத்தம்: அத்தகைய பட்டியல் இல்லை %d"
 
-#: src/cgame/cg_servercmds.cpp:837
+#: src/cgame/cg_servercmds.cpp:851
 msgid "^1*DEAD*^*"
 msgstr "^1*இறந்த*^*"
 
-#: src/cgame/cg_servercmds.cpp:898
+#: src/cgame/cg_servercmds.cpp:912
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sதனிப்பட்ட செய்தி இவரிடமிருந்து: ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:906
+#: src/cgame/cg_servercmds.cpp:920
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr "பதிலளிக்க, '/m %d [உங்கள் செய்தி]' அல்லது '/r [உங்கள் செய்தி]' <<"
 
-#: src/cgame/cg_servercmds.cpp:1377
+#: src/cgame/cg_servercmds.cpp:1390
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "தெரியாத கிளையன்ட் விளையாட்டு கட்டளை: %s"
@@ -5278,15 +5321,15 @@ msgstr "$ 1 $^* இணைக்கப்பட்டுள்ளது"
 msgid "$1$^* entered the game"
 msgstr "$ 1 $^* விளையாட்டில் நுழைந்தது"
 
-#: src/sgame/sg_combat.cpp:629
+#: src/sgame/sg_combat.cpp:627
 msgid "Your killer, $1$^*, had $2$ HP."
 msgstr "உங்கள் கொலையாளி, $ 1 $^*, $ 2 $ எச்பி இருந்தது."
 
-#: src/sgame/sg_combat.cpp:1213
+#: src/sgame/sg_combat.cpp:1211
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
 msgstr "$ 1 $ ^3deconstructed ^* by $ 2 $"
 
-#: src/sgame/sg_combat.cpp:1214
+#: src/sgame/sg_combat.cpp:1212
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$ 1 $ ^3destroyed ^* by $ 2 $"
 
@@ -5314,19 +5357,19 @@ msgstr "வேற்றுகிரகவாசிகள் செய் பெ�
 msgid "Empty teams skip map time exceeded."
 msgstr "வெற்று அணிகள் வரைபட நேரம் மீறியது."
 
-#: src/sgame/sg_main.cpp:2248
+#: src/sgame/sg_main.cpp:2263
 msgid "The game has been paused. Please wait."
 msgstr "விளையாட்டு இடைநிறுத்தப்பட்டுள்ளது. தயவுசெய்து காத்திருங்கள்."
 
-#: src/sgame/sg_main.cpp:2252
+#: src/sgame/sg_main.cpp:2267
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "சேவையகம்: விளையாட்டு $ 1 $ வினாடிகளில் தானாக முன்வரும்"
 
-#: src/sgame/sg_main.cpp:2271
+#: src/sgame/sg_main.cpp:2286
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "சேவையகம்: விளையாட்டு தானாகவே பொருந்தாது (அதிகபட்சம் $ 1 $ நிமிடங்கள்)"
 
-#: src/sgame/sg_main.cpp:2274
+#: src/sgame/sg_main.cpp:2289
 msgid "The game has been unpaused!"
 msgstr "விளையாட்டு பொருந்தாது!"
 

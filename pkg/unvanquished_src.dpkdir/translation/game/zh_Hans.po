@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-09 23:06+0200\n"
+"POT-Creation-Date: 2026-05-10 21:10+0200\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -562,7 +562,7 @@ msgstr "升级"
 msgid "Choose your starting equipment:"
 msgstr "选择你的开场装备:"
 
-#: ui/human_spawn.rml:45 ui/server_setup.rml:275
+#: ui/human_spawn.rml:45 ui/server_setup.rml:285
 msgid "SMG"
 msgstr "冲锋枪"
 
@@ -786,26 +786,26 @@ msgstr "度"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:116
-#: ui/options_graphics.rml:126 ui/options_graphics.rml:302
-#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:68
+#: ui/options_graphics.rml:126 ui/options_graphics.rml:314
+#: ui/options_graphics.rml:441 ui/options_mouse.rml:21 ui/options_ui.rml:68
 #: ui/options_ui.rml:147 ui/options_ui.rml:177 ui/options_ui.rml:191
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "重置"
 
-#: ui/options_fov.rml:40 ui/server_setup.rml:356
+#: ui/options_fov.rml:40 ui/server_setup.rml:366
 msgid "Mantis"
 msgstr "螳螂"
 
-#: ui/options_fov.rml:48 ui/server_setup.rml:360
+#: ui/options_fov.rml:48 ui/server_setup.rml:370
 msgid "Marauder"
 msgstr "狩猎者"
 
-#: ui/options_fov.rml:56 ui/server_setup.rml:368
+#: ui/options_fov.rml:56 ui/server_setup.rml:378
 msgid "Dragoon"
 msgstr "龙骑士"
 
-#: ui/options_fov.rml:64 ui/server_setup.rml:376
+#: ui/options_fov.rml:64 ui/server_setup.rml:386
 msgid "Tyrant"
 msgstr "暴君"
 
@@ -851,6 +851,7 @@ msgid "Graphics"
 msgstr "图像"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
+#: ui/server_setup.rml:162
 msgid "Presets"
 msgstr "预设"
 
@@ -862,8 +863,8 @@ msgstr "极高"
 msgid "Everything enabled."
 msgstr ""
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:290
-#: ui/options_graphics.rml:407 ui/options_graphics.rml:415
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:302
+#: ui/options_graphics.rml:419 ui/options_graphics.rml:427
 msgid "High"
 msgstr "高"
 
@@ -879,8 +880,8 @@ msgstr "中"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:288
-#: ui/options_graphics.rml:408 ui/options_graphics.rml:417
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:300
+#: ui/options_graphics.rml:420 ui/options_graphics.rml:429
 msgid "Low"
 msgstr "低"
 
@@ -923,7 +924,7 @@ msgid "Fullscreen"
 msgstr "全屏"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:85
-#: ui/options_graphics.rml:418
+#: ui/options_graphics.rml:430
 msgid "Off"
 msgstr "关"
 
@@ -974,10 +975,10 @@ msgstr "快速近似抗锯齿 (FXAA)"
 msgid "Smooth the edges using a fast but cheap filter, can blur some details."
 msgstr ""
 
-#: ui/options_graphics.rml:103 ui/options_graphics.rml:170
-#: ui/options_graphics.rml:234 ui/options_graphics.rml:273
-#: ui/options_graphics.rml:316 ui/options_graphics.rml:354
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:103 ui/options_graphics.rml:182
+#: ui/options_graphics.rml:246 ui/options_graphics.rml:285
+#: ui/options_graphics.rml:328 ui/options_graphics.rml:366
+#: ui/options_graphics.rml:394
 msgid "Apply now"
 msgstr "立即应用"
 
@@ -994,7 +995,7 @@ msgid "World brightness level."
 msgstr ""
 
 #: ui/options_graphics.rml:115 ui/options_graphics.rml:125
-#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
+#: ui/options_graphics.rml:313 ui/options_graphics.rml:440
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "当前:"
@@ -1076,109 +1077,129 @@ msgstr "半 Lambert 光照"
 msgid "Non-physical lighting technique to make models less dark."
 msgstr "非物理的光照方式，使模型不会过暗。"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:163
+msgid "sRGB conversion accuracy"
+msgstr ""
+
+#: ui/options_graphics.rml:165
+msgid "Disabling accuracy makes color conversions faster but less accurate."
+msgstr ""
+
+#: ui/options_graphics.rml:169
+msgid "Detect"
+msgstr ""
+
+#: ui/options_graphics.rml:170
+msgid "Forced naive blend (cheap approximation)"
+msgstr ""
+
+#: ui/options_graphics.rml:172
+msgid "Blend regime"
+msgstr ""
+
+#: ui/options_graphics.rml:176
 msgid "Blobs"
 msgstr "圆状"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:176
 msgid "low"
 msgstr "低质量"
 
-#: ui/options_graphics.rml:165 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:177 ui/options_graphics.rml:403
 #: ui/options_ui.rml:170
 msgid "None"
 msgstr "无"
 
-#: ui/options_graphics.rml:167
+#: ui/options_graphics.rml:179
 msgid "Shadows"
 msgstr "阴影"
 
-#: ui/options_graphics.rml:174
+#: ui/options_graphics.rml:186
 msgid "Textures"
 msgstr "贴图"
 
-#: ui/options_graphics.rml:176 ui/options_graphics.rml:360
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:372
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "通用"
 
-#: ui/options_graphics.rml:179 ui/options_graphics.rml:192
+#: ui/options_graphics.rml:191 ui/options_graphics.rml:204
 msgid "No limit"
 msgstr "无限制"
 
-#: ui/options_graphics.rml:180
+#: ui/options_graphics.rml:192
 msgid "(ultra)"
 msgstr "(超级)"
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:193
 msgid "(high)"
 msgstr "(高)"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:194
 msgid "(medium)"
 msgstr "(中)"
 
-#: ui/options_graphics.rml:183
+#: ui/options_graphics.rml:195
 msgid "(low)"
 msgstr "(低)"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:196
 msgid "(lowest)"
 msgstr "(最低)"
 
-#: ui/options_graphics.rml:186
+#: ui/options_graphics.rml:198
 msgid "Image size limit"
 msgstr "图像大小限制"
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:199
 msgid "Limit image size to save on memory."
 msgstr "限制图像大小以节省内存。"
 
-#: ui/options_graphics.rml:193
+#: ui/options_graphics.rml:205
 msgid "No smaller than screen"
 msgstr "大于屏幕大小"
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:206
 msgid "No larger than screen"
 msgstr "小于屏幕大小"
 
-#: ui/options_graphics.rml:196
+#: ui/options_graphics.rml:208
 msgid "Menu image size limit"
 msgstr "菜单图像大小限制"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:209
 msgid "Limit menu image size to save on memory."
 msgstr "限制菜单图像大小以节省内存。"
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:214
 msgid "High-precision rendering"
 msgstr "高精度渲染"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:215
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr "使用高精度像素缓冲，可以减少颜色分层。"
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:219
 msgid "Use bindless textures if possible"
 msgstr "尝试使用无绑定贴图"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:221
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr "若硬件或驱动支持，使用无绑定贴图。可能提升性能。"
 
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:259
-#: ui/options_graphics.rml:283 ui/options_graphics.rml:369
-#: ui/options_graphics.rml:374 ui/options_graphics.rml:379
+#: ui/options_graphics.rml:221 ui/options_graphics.rml:271
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:381
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:391
 msgid "Experimental."
 msgstr "实验性的。"
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:224
 msgid "Mip-mapping"
 msgstr "Mip-map"
 
-#: ui/options_graphics.rml:213
+#: ui/options_graphics.rml:225
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1186,96 +1207,96 @@ msgstr ""
 "Mip-map 通过为远处的平面使用低分辨率贴图以取得更好的视觉效果。这通常不影响性"
 "能。"
 
-#: ui/options_graphics.rml:220 ui/options_ui.rml:30
+#: ui/options_graphics.rml:232 ui/options_ui.rml:30
 #: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No"
 msgstr "无"
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:234
 msgid "Anisotropic mip-mapping"
 msgstr "各向异性 Mip-map"
 
-#: ui/options_graphics.rml:223
+#: ui/options_graphics.rml:235
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "对有角度的平面实现的更好的 Mip-map。"
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "Trilinear"
 msgstr "三线性"
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "better"
 msgstr "更好"
 
-#: ui/options_graphics.rml:228
+#: ui/options_graphics.rml:240
 msgid "Bilinear"
 msgstr "双线性"
 
-#: ui/options_graphics.rml:230
+#: ui/options_graphics.rml:242
 msgid "Texture scaling filter"
 msgstr "贴图缩放过滤"
 
-#: ui/options_graphics.rml:238 ui/options_graphics.rml:240
+#: ui/options_graphics.rml:250 ui/options_graphics.rml:252
 msgid "Materials"
 msgstr "材质"
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:254
 msgid "Sky"
 msgstr "天空"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:256
 msgid "Draw the sky."
 msgstr "绘制天空。"
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:259
 msgid "Normal mapping"
 msgstr "一般映射"
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:261
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "在平坦的平面上模拟更强的光照。"
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:264
 msgid "Deluxe mapping"
 msgstr "高级映射"
 
-#: ui/options_graphics.rml:254
+#: ui/options_graphics.rml:266
 msgid "Light direction based on baked textures."
 msgstr "基于处理后贴图的光照方向。"
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:269
 msgid "Relief mapping"
 msgstr "交替映射"
 
-#: ui/options_graphics.rml:259
+#: ui/options_graphics.rml:271
 msgid "Adds bumps on supported surfaces."
 msgstr "在有支撑的平面上添加突起。"
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:274
 msgid "Specular mapping"
 msgstr "镜面映射"
 
-#: ui/options_graphics.rml:264
+#: ui/options_graphics.rml:276
 msgid "Simulate light specularity."
 msgstr "模拟光的反射。"
 
-#: ui/options_graphics.rml:267
+#: ui/options_graphics.rml:279
 msgid "Physical mapping"
 msgstr "物理映射"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:281
 msgid "Material appearance based on physical approximations."
 msgstr "基于物理估量的材质外观。"
 
-#: ui/options_graphics.rml:277 ui/options_graphics.rml:279
+#: ui/options_graphics.rml:289 ui/options_graphics.rml:291
 msgid "Reflections"
 msgstr "倒影"
 
-#: ui/options_graphics.rml:281
+#: ui/options_graphics.rml:293
 msgid "Static reflections"
 msgstr "静态倒影"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:295
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1283,209 +1304,209 @@ msgstr ""
 "在支持的平面添加静态立方贴图倒影。需要一般、镜面与高级映射。目前不支持与物理"
 "映射同时使用。"
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:299
 msgid "Very low"
 msgstr "极低"
 
-#: ui/options_graphics.rml:289 ui/options_graphics.rml:416
+#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
 msgid "Moderate"
 msgstr "少量"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:303
 msgid "Very high"
 msgstr "极高"
 
-#: ui/options_graphics.rml:293 ui/options_graphics.rml:410
+#: ui/options_graphics.rml:305 ui/options_graphics.rml:422
 msgid "Quality"
 msgstr "质量"
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:306
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
 msgstr "静态倒影立方贴图的质量。较高的质量会占用很多磁盘空间。"
 
-#: ui/options_graphics.rml:297
+#: ui/options_graphics.rml:309
 msgid "Cubemap grid spacing"
 msgstr "立方贴图网格间隔"
 
-#: ui/options_graphics.rml:307 ui/options_ui.rml:122
+#: ui/options_graphics.rml:319 ui/options_ui.rml:122
 msgid "Never"
 msgstr "无准星"
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:320
 msgid "Cache on disk"
 msgstr "磁盘缓存"
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:321
 msgid "Always rebuild"
 msgstr "总是重构建"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:323
 msgid "Static reflection cubemaps autobuild"
 msgstr "重新构建静态倒影立方贴图"
 
-#: ui/options_graphics.rml:312
+#: ui/options_graphics.rml:324
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "自动重新构建、加载、保存静态倒影立方贴图。"
 
-#: ui/options_graphics.rml:320 ui/options_graphics.rml:322
+#: ui/options_graphics.rml:332 ui/options_graphics.rml:334
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "特效"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:336
 msgid "Bloom"
 msgstr "闪光"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:338
 msgid "Makes bright areas on your screen glow."
 msgstr "让屏幕上可见的光照发光。"
 
-#: ui/options_graphics.rml:329
+#: ui/options_graphics.rml:341
 msgid "Color grading"
 msgstr "颜色分级"
 
-#: ui/options_graphics.rml:331
+#: ui/options_graphics.rml:343
 msgid "Alter colors to create specific ambiences."
 msgstr "变更颜色以创造出特殊的环境效果。"
 
-#: ui/options_graphics.rml:334
+#: ui/options_graphics.rml:346
 msgid "Heat-haze"
 msgstr "热力波"
 
-#: ui/options_graphics.rml:336
+#: ui/options_graphics.rml:348
 msgid "Simulate air refraction in severe heat."
 msgstr "模拟高温环境下的空气折射。"
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:351
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "屏幕空间环境光遮蔽 (SSAO)"
 
-#: ui/options_graphics.rml:341
+#: ui/options_graphics.rml:353
 msgid "Simulate dark corners."
 msgstr "模拟阴暗的角落。"
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:356
 msgid "Marks"
 msgstr "印记"
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:358
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "在平面上绘制印记 (如弹孔和爪印)"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:361
 msgid "Particle physics"
 msgstr "粒子物理"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:363
 msgid "Allow particles to bounce off surfaces."
 msgstr "允许粒子在平面弹跳。"
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:370
 msgid "Renderer"
 msgstr "渲染器"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:375
 msgid "Read-only depth buffer"
 msgstr ""
 
-#: ui/options_graphics.rml:365 ui/options_graphics.rml:367
+#: ui/options_graphics.rml:377 ui/options_graphics.rml:379
 msgid "Material system"
 msgstr "物质系统"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:381
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
 msgstr ""
 "使用能够极度增强性能的系统。一些驱动可能不支持 (如 Mesa 和 AMD 专有驱动) 。"
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:384
 msgid "GPU frustum culling"
 msgstr "GPU 视锥体剔除"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:386
 msgid "Cull surfaces that are out of view."
 msgstr "剔除不在视野内的平面。"
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:389
 msgid "GPU occlusion culling"
 msgstr "GPU 遮挡剔除"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:391
 msgid "Cull hidden surfaces."
 msgstr "剔除隐藏的平面。"
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:398
 msgid "Gameplay"
 msgstr "游戏"
 
-#: ui/options_graphics.rml:388
+#: ui/options_graphics.rml:400
 msgid "Building markers"
 msgstr "建筑标识"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:403
 msgid "disabled"
 msgstr "禁用"
 
-#: ui/options_graphics.rml:392
+#: ui/options_graphics.rml:404
 msgid "All structures"
 msgstr "所有设施"
 
-#: ui/options_graphics.rml:393
+#: ui/options_graphics.rml:405
 msgid "Support structures"
 msgstr "支援设施"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:406
 msgid "Offensive structures"
 msgstr "攻击设施"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:407
 msgid "Alien structures"
 msgstr "异形设施"
 
-#: ui/options_graphics.rml:396
+#: ui/options_graphics.rml:408
 msgid "Human structures"
 msgstr "人类设施"
 
-#: ui/options_graphics.rml:397
+#: ui/options_graphics.rml:409
 msgid "Alien support structures"
 msgstr "异形支援设施"
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:410
 msgid "Human support structures"
 msgstr "人类支援设施"
 
-#: ui/options_graphics.rml:399
+#: ui/options_graphics.rml:411
 msgid "Offensive alien structures"
 msgstr "异形攻击设施"
 
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:412
 msgid "Offensive human structures"
 msgstr "人类攻击设施"
 
-#: ui/options_graphics.rml:402
+#: ui/options_graphics.rml:414
 msgid "Building ranges"
 msgstr "建筑范围"
 
-#: ui/options_graphics.rml:404
+#: ui/options_graphics.rml:416
 msgid "Models"
 msgstr "模型"
 
-#: ui/options_graphics.rml:412
+#: ui/options_graphics.rml:424
 msgid "Motion blur"
 msgstr "动态模糊"
 
-#: ui/options_graphics.rml:420
+#: ui/options_graphics.rml:432
 msgid "Intensity"
 msgstr "密集度"
 
-#: ui/options_graphics.rml:421
+#: ui/options_graphics.rml:433
 msgid "Level of motion-blur."
 msgstr "动态模糊等级。"
 
-#: ui/options_graphics.rml:424
+#: ui/options_graphics.rml:436
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "激活动态模糊的最小移动速度"
 
@@ -1632,7 +1653,7 @@ msgstr "为阵营投赞成票:"
 msgid "Team vote No:"
 msgstr "为阵营投反对票:"
 
-#: ui/options_keys.rml:142 ui/server_setup.rml:322
+#: ui/options_keys.rml:142 ui/server_setup.rml:332
 msgid "Misc"
 msgstr "杂项"
 
@@ -2068,19 +2089,19 @@ msgstr "步枪"
 msgid "Pain Saw"
 msgstr "痛苦电锯"
 
-#: ui/options_ui.rml:103 ui/server_setup.rml:283
+#: ui/options_ui.rml:103 ui/server_setup.rml:293
 msgid "Shotgun"
 msgstr "霰弹枪"
 
-#: ui/options_ui.rml:104 ui/server_setup.rml:287
+#: ui/options_ui.rml:104 ui/server_setup.rml:297
 msgid "Lasgun"
 msgstr "激光枪"
 
-#: ui/options_ui.rml:105 ui/server_setup.rml:291
+#: ui/options_ui.rml:105 ui/server_setup.rml:301
 msgid "Mass Driver"
 msgstr "质量驱动器"
 
-#: ui/options_ui.rml:106 ui/server_setup.rml:295
+#: ui/options_ui.rml:106 ui/server_setup.rml:305
 msgid "Chaingun"
 msgstr "链式机枪"
 
@@ -2088,11 +2109,11 @@ msgstr "链式机枪"
 msgid "Flamer"
 msgstr "喷火器"
 
-#: ui/options_ui.rml:108 ui/server_setup.rml:303
+#: ui/options_ui.rml:108 ui/server_setup.rml:313
 msgid "Pulse Rifle"
 msgstr "脉冲步枪"
 
-#: ui/options_ui.rml:109 ui/server_setup.rml:307
+#: ui/options_ui.rml:109 ui/server_setup.rml:317
 msgid "Lucifer Cannon"
 msgstr "星神炮"
 
@@ -2367,7 +2388,7 @@ msgstr "半衰期"
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
 msgstr "每隔一段半衰期，势力减少 50%。填 0 禁用此特性。"
 
-#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
+#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:194
 msgid "minutes"
 msgstr "分钟"
 
@@ -2432,170 +2453,192 @@ msgid "Initial build points count"
 msgstr "开局拥有的建筑点"
 
 #: ui/server_setup.rml:164
+msgid "BP Vampire"
+msgstr ""
+
+#: ui/server_setup.rml:165
+msgid "Bleed build points from the enemy team by killing buildables."
+msgstr ""
+
+#: ui/server_setup.rml:168
+msgid "Mining"
+msgstr ""
+
+#: ui/server_setup.rml:169
+msgid ""
+"Increase build budget by building mining structures. BP returns slowly when "
+"a buildable is lost."
+msgstr ""
+
+#: ui/server_setup.rml:171
+msgid "Mining mode options"
+msgstr ""
+
+#: ui/server_setup.rml:174
 msgid "Miner bonus"
 msgstr "挖掘奖励"
 
-#: ui/server_setup.rml:165
+#: ui/server_setup.rml:175
 msgid "Build point budget per miner"
 msgstr "每台挖掘设备可提供的建筑点"
 
-#: ui/server_setup.rml:172
+#: ui/server_setup.rml:182
 msgid "Initial regeneration speed"
 msgstr "初始恢复速度"
 
-#: ui/server_setup.rml:173
+#: ui/server_setup.rml:183
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr "恢复损失建筑点的初始速度 (每分钟)"
 
-#: ui/server_setup.rml:180
+#: ui/server_setup.rml:190
 msgid "Half regeneration time"
 msgstr "恢复半衰期"
 
-#: ui/server_setup.rml:181
+#: ui/server_setup.rml:191
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr "建筑点恢复速度减半周期"
 
-#: ui/server_setup.rml:189
+#: ui/server_setup.rml:199
 msgid "Bots: General"
 msgstr ""
 
-#: ui/server_setup.rml:192
+#: ui/server_setup.rml:202
 msgid "Minimum bots per team"
 msgstr "最少玩家"
 
-#: ui/server_setup.rml:193
+#: ui/server_setup.rml:203
 msgid "Fill teams until they have enough players"
 msgstr "当玩家不足时，添加足够的人机"
 
-#: ui/server_setup.rml:196
+#: ui/server_setup.rml:206
 msgid "bots"
 msgstr "人机"
 
-#: ui/server_setup.rml:200
+#: ui/server_setup.rml:210
 msgid "Default skill level"
 msgstr "默认水平"
 
-#: ui/server_setup.rml:201
+#: ui/server_setup.rml:211
 msgid "Only works for new bots."
 msgstr "只对新加入的人机有效。"
 
-#: ui/server_setup.rml:206
+#: ui/server_setup.rml:216
 msgid "Humanity"
 msgstr ""
 
-#: ui/server_setup.rml:209
+#: ui/server_setup.rml:219
 msgid "Field of view"
 msgstr ""
 
-#: ui/server_setup.rml:217
+#: ui/server_setup.rml:227
 msgid "Reaction time"
 msgstr ""
 
-#: ui/server_setup.rml:224
+#: ui/server_setup.rml:234
 msgid "Behaviour"
 msgstr ""
 
-#: ui/server_setup.rml:227
+#: ui/server_setup.rml:237
 msgid "Attack structures"
 msgstr ""
 
-#: ui/server_setup.rml:229
+#: ui/server_setup.rml:239
 msgid "Cheating"
 msgstr ""
 
-#: ui/server_setup.rml:232
+#: ui/server_setup.rml:242
 msgid "Infinite funds"
 msgstr ""
 
-#: ui/server_setup.rml:236
+#: ui/server_setup.rml:246
 msgid "Ignore momentum"
 msgstr ""
 
-#: ui/server_setup.rml:238
+#: ui/server_setup.rml:248
 msgid "Navmesh generation"
 msgstr ""
 
-#: ui/server_setup.rml:241
+#: ui/server_setup.rml:251
 msgid "Generate navmeshes at load time"
 msgstr ""
 
-#: ui/server_setup.rml:245
+#: ui/server_setup.rml:255
 msgid "Number of worker threads"
 msgstr ""
 
-#: ui/server_setup.rml:253
+#: ui/server_setup.rml:263
 msgid "Bots: Humans"
 msgstr ""
 
-#: ui/server_setup.rml:254 ui/server_setup.rml:339
+#: ui/server_setup.rml:264 ui/server_setup.rml:349
 msgid "Overall"
 msgstr ""
 
-#: ui/server_setup.rml:257
+#: ui/server_setup.rml:267
 msgid "Human bots purchase equipment"
 msgstr ""
 
-#: ui/server_setup.rml:261 ui/server_setup.rml:346
+#: ui/server_setup.rml:271 ui/server_setup.rml:356
 msgid "Aim speed modifier (higher is slower)"
 msgstr ""
 
-#: ui/server_setup.rml:267 ui/server_setup.rml:353
+#: ui/server_setup.rml:277 ui/server_setup.rml:363
 msgid "Individually"
 msgstr ""
 
-#: ui/server_setup.rml:268
+#: ui/server_setup.rml:278
 msgid "Primary Weapons"
 msgstr ""
 
-#: ui/server_setup.rml:271
+#: ui/server_setup.rml:281
 msgid "Construction Kit (repairs)"
 msgstr ""
 
-#: ui/server_setup.rml:279
+#: ui/server_setup.rml:289
 msgid "Painsaw"
 msgstr ""
 
-#: ui/server_setup.rml:299
+#: ui/server_setup.rml:309
 msgid "Flamethrower"
 msgstr ""
 
-#: ui/server_setup.rml:309
+#: ui/server_setup.rml:319
 msgid "Armors"
 msgstr ""
 
-#: ui/server_setup.rml:312
+#: ui/server_setup.rml:322
 msgid "whether bots buy Light Armour"
 msgstr ""
 
-#: ui/server_setup.rml:316
+#: ui/server_setup.rml:326
 msgid "whether bots buy Medium Armour"
 msgstr ""
 
-#: ui/server_setup.rml:320
+#: ui/server_setup.rml:330
 msgid "whether bots buy the Battlesuit"
 msgstr ""
 
-#: ui/server_setup.rml:325
+#: ui/server_setup.rml:335
 msgid "Firebomb"
 msgstr ""
 
-#: ui/server_setup.rml:329
+#: ui/server_setup.rml:339
 msgid "Grenade"
 msgstr ""
 
-#: ui/server_setup.rml:333
+#: ui/server_setup.rml:343
 msgid "Radar"
 msgstr ""
 
-#: ui/server_setup.rml:342
+#: ui/server_setup.rml:352
 msgid "Alien bots morph"
 msgstr ""
 
-#: ui/server_setup.rml:364
+#: ui/server_setup.rml:374
 msgid "Advanced Marauder"
 msgstr ""
 
-#: ui/server_setup.rml:372
+#: ui/server_setup.rml:382
 msgid "Advanced Dragoon"
 msgstr ""
 
@@ -4282,460 +4325,460 @@ msgstr ""
 msgid "Flank, behind you!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2629
+#: src/cgame/cg_rocket_draw.cpp:2630
 msgid "You are at the front of the spawn queue"
 msgstr "你即将重生"
 
-#: src/cgame/cg_rocket_draw.cpp:2633
+#: src/cgame/cg_rocket_draw.cpp:2634
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "你会在 %d 位玩家之后重生"
 
-#: src/cgame/cg_rocket_draw.cpp:2673
+#: src/cgame/cg_rocket_draw.cpp:2674
 msgid "There are no spawns remaining"
 msgstr "没有剩余的重生点了"
 
-#: src/cgame/cg_rocket_draw.cpp:2677
+#: src/cgame/cg_rocket_draw.cpp:2678
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "还剩 %d 个重生点"
 
-#: src/cgame/cg_rocket_draw.cpp:3226
+#: src/cgame/cg_rocket_draw.cpp:3227
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "等待连接…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3230
+#: src/cgame/cg_rocket_draw.cpp:3231
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "等待验证…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3234
+#: src/cgame/cg_rocket_draw.cpp:3235
 msgid "Awaiting gamestate…"
 msgstr "接收游戏状态…"
 
-#: src/cgame/cg_rocket_draw.cpp:3335
+#: src/cgame/cg_rocket_draw.cpp:3336
 msgid "Say:"
 msgstr "发言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3337
 msgid "Team Say:"
 msgstr "阵营发言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3338
 msgid "Admin Say:"
 msgstr "管理员发言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3339
 msgid "Command:"
 msgstr "指令:"
 
-#: src/cgame/cg_rocket_draw.cpp:3688
+#: src/cgame/cg_rocket_draw.cpp:3689
 msgid "FIGHT!"
 msgstr "开始战斗！"
 
-#: src/cgame/cg_rocket_draw.cpp:3782
+#: src/cgame/cg_rocket_draw.cpp:3783
 msgid "estimating"
 msgstr "大约"
 
-#: src/cgame/cg_servercmds.cpp:437
+#: src/cgame/cg_servercmds.cpp:451
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr "异形阵营玩家过多。请等待玩家数量平衡，或加入人类阵营。"
 
-#: src/cgame/cg_servercmds.cpp:439
+#: src/cgame/cg_servercmds.cpp:453
 msgid "The alien team has too many players"
 msgstr "异形阵营玩家过多"
 
-#: src/cgame/cg_servercmds.cpp:443
+#: src/cgame/cg_servercmds.cpp:457
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr "人类阵营玩家过多。请等待玩家数量平衡，或加入异形阵营。"
 
-#: src/cgame/cg_servercmds.cpp:445
+#: src/cgame/cg_servercmds.cpp:459
 msgid "The human team has too many players"
 msgstr "人类阵营玩家过多"
 
-#: src/cgame/cg_servercmds.cpp:449
+#: src/cgame/cg_servercmds.cpp:463
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr "异形阵营被锁定。目前不能加入。"
 
-#: src/cgame/cg_servercmds.cpp:451
+#: src/cgame/cg_servercmds.cpp:465
 msgid "The alien team is locked"
 msgstr "异形阵营被锁定"
 
-#: src/cgame/cg_servercmds.cpp:455
+#: src/cgame/cg_servercmds.cpp:469
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr "人类阵营被锁定。目前不能加入。"
 
-#: src/cgame/cg_servercmds.cpp:457
+#: src/cgame/cg_servercmds.cpp:471
 msgid "The human team is locked"
 msgstr "人类阵营被锁定"
 
-#: src/cgame/cg_servercmds.cpp:461
+#: src/cgame/cg_servercmds.cpp:475
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr "服务器已满。请等待玩家位置空余。"
 
-#: src/cgame/cg_servercmds.cpp:463
+#: src/cgame/cg_servercmds.cpp:477
 msgid "No free player slots"
 msgstr "没有空余的玩家位置"
 
-#: src/cgame/cg_servercmds.cpp:467
+#: src/cgame/cg_servercmds.cpp:481
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr "请在热身结束后加入阵营。"
 
-#: src/cgame/cg_servercmds.cpp:469
+#: src/cgame/cg_servercmds.cpp:483
 msgid "You cannot join a team during warmup."
 msgstr "在热身时不允许加入阵营。"
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:491
 msgid "Cheats are not enabled on this server"
 msgstr "此服务器未启用作弊"
 
-#: src/cgame/cg_servercmds.cpp:481
+#: src/cgame/cg_servercmds.cpp:495
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
 msgstr "此服务器未启用作弊，在参与游戏时不可使用此指令"
 
-#: src/cgame/cg_servercmds.cpp:488
+#: src/cgame/cg_servercmds.cpp:502
 msgid "Join a team first"
 msgstr "请先加入阵营"
 
-#: src/cgame/cg_servercmds.cpp:494
+#: src/cgame/cg_servercmds.cpp:508
 msgid "You can only use this command when spectating"
 msgstr "只能在旁观时使用此指令"
 
-#: src/cgame/cg_servercmds.cpp:499
+#: src/cgame/cg_servercmds.cpp:513
 msgid "Must be alien to use this command"
 msgstr "异形才能使用此指令"
 
-#: src/cgame/cg_servercmds.cpp:504
+#: src/cgame/cg_servercmds.cpp:518
 msgid "Must be human to use this command"
 msgstr "人类才能使用此指令"
 
-#: src/cgame/cg_servercmds.cpp:509
+#: src/cgame/cg_servercmds.cpp:523
 msgid "Must be alive to use this command"
 msgstr "只能在存活时使用此指令"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:529
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
 msgstr "这里没有建造空间。当建造预览为绿色时，代表有空间建造。"
 
-#: src/cgame/cg_servercmds.cpp:517
+#: src/cgame/cg_servercmds.cpp:531
 msgid "There is no room to build here"
 msgstr "这里没有建造空间"
 
-#: src/cgame/cg_servercmds.cpp:521
+#: src/cgame/cg_servercmds.cpp:535
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
 msgstr "不能在此平面建造。这里太陡峭，或不适宜建造。请另寻建造地点。"
 
-#: src/cgame/cg_servercmds.cpp:524
+#: src/cgame/cg_servercmds.cpp:538
 msgid "Cannot build on this surface"
 msgstr "不能在此平面建造"
 
-#: src/cgame/cg_servercmds.cpp:529
+#: src/cgame/cg_servercmds.cpp:543
 msgid "You cannot build that structure"
 msgstr "你不可以建造此设施"
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:547
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
 msgstr "这会拆除我方唯一的重生点，通常会导致游戏很快失败。请先建造更多重生点。"
 
-#: src/cgame/cg_servercmds.cpp:536
+#: src/cgame/cg_servercmds.cpp:550
 msgid "You may not deconstruct the last spawn"
 msgstr "不可以拆除最后的重生点"
 
-#: src/cgame/cg_servercmds.cpp:540
+#: src/cgame/cg_servercmds.cpp:554
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
 msgstr "不能直接拆除主要设施。标记主要设施后，可以在别处建造以移动之。"
 
-#: src/cgame/cg_servercmds.cpp:543
+#: src/cgame/cg_servercmds.cpp:557
 msgid "You may not deconstruct this structure"
 msgstr "不可以拆除此设施"
 
-#: src/cgame/cg_servercmds.cpp:547
+#: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled on the server for your team."
 msgstr "我方建造能力被服务器关闭。"
 
-#: src/cgame/cg_servercmds.cpp:548
+#: src/cgame/cg_servercmds.cpp:562
 msgid "Building has been disabled for your team"
 msgstr "我方建造能力被关闭"
 
-#: src/cgame/cg_servercmds.cpp:552
+#: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "你不再有建造的许可。"
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:567
 msgid "You are no longer permitted to build"
 msgstr "你不再有建造的许可"
 
-#: src/cgame/cg_servercmds.cpp:557
+#: src/cgame/cg_servercmds.cpp:571
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr "我方已认输败退: 已经没有建造设施的必要了。"
 
-#: src/cgame/cg_servercmds.cpp:559
+#: src/cgame/cg_servercmds.cpp:573
 msgid "Cannot build after admitting defeat"
 msgstr "认输后不可建造"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:577
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
 msgstr "没有空余的资源了。可将现有的设施标记拆除，腾出一些资源。"
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:579
 msgid "There are no resources remaining"
 msgstr "没有空余资源"
 
-#: src/cgame/cg_servercmds.cpp:569
+#: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered."
 msgstr "此设施无能源供应。"
 
-#: src/cgame/cg_servercmds.cpp:570
+#: src/cgame/cg_servercmds.cpp:584
 msgid "This buildable is not powered"
 msgstr "此设施无能源供应"
 
-#: src/cgame/cg_servercmds.cpp:574
+#: src/cgame/cg_servercmds.cpp:588
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
 msgstr "反应机不存在。需要先建造反应机才能建造其他设施。"
 
-#: src/cgame/cg_servercmds.cpp:576
+#: src/cgame/cg_servercmds.cpp:590
 msgid "There is no reactor"
 msgstr "反应机不存在"
 
-#: src/cgame/cg_servercmds.cpp:580
+#: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr "只能有一台反应机。若需移动现有的反应机，请先标记之。"
 
-#: src/cgame/cg_servercmds.cpp:582
+#: src/cgame/cg_servercmds.cpp:596
 msgid "There can only be one Reactor"
 msgstr "只能有一台反应机"
 
-#: src/cgame/cg_servercmds.cpp:587
+#: src/cgame/cg_servercmds.cpp:601
 msgid "Your team cannot have any more drills"
 msgstr "我方钻井数已达上限"
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:605
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
 msgstr "背包空间不足。请卖掉冲突的升级，再购买此物品。"
 
-#: src/cgame/cg_servercmds.cpp:593
+#: src/cgame/cg_servercmds.cpp:607
 msgid "You have no room to carry this"
 msgstr "背包空间不足"
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:611
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr "点数不足。你的点数不足以支持此操作。"
 
-#: src/cgame/cg_servercmds.cpp:599
+#: src/cgame/cg_servercmds.cpp:613
 msgid "Insufficient funds"
 msgstr "点数不足"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:617
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr "你已持有此物品。不可以持有多件同样的物品。"
 
-#: src/cgame/cg_servercmds.cpp:605
+#: src/cgame/cg_servercmds.cpp:619
 msgid "You already hold this item"
 msgstr "你已持有此物品"
 
-#: src/cgame/cg_servercmds.cpp:609
+#: src/cgame/cg_servercmds.cpp:623
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
 msgstr "必须在武器中心旁购买武器、升级和弹药。"
 
-#: src/cgame/cg_servercmds.cpp:611
+#: src/cgame/cg_servercmds.cpp:625
 msgid "You must be near a powered Armoury"
 msgstr "必须在武器中心旁"
 
-#: src/cgame/cg_servercmds.cpp:615
+#: src/cgame/cg_servercmds.cpp:629
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
 msgstr "必须在反应机、钻井或供能的武器中心旁购买能量弹药。"
 
-#: src/cgame/cg_servercmds.cpp:617
+#: src/cgame/cg_servercmds.cpp:631
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr "必须在反应机、钻井或供能的武器中心旁"
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:635
 msgid "There is not enough room here to change armour."
 msgstr "此处空间不足，不能更换盔甲。"
 
-#: src/cgame/cg_servercmds.cpp:622
+#: src/cgame/cg_servercmds.cpp:636
 msgid "Not enough room here to change armour."
 msgstr "空间不足，不能更换盔甲。"
 
-#: src/cgame/cg_servercmds.cpp:626
+#: src/cgame/cg_servercmds.cpp:640
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr "在建造计时完成后，方可更换武器。"
 
-#: src/cgame/cg_servercmds.cpp:628
+#: src/cgame/cg_servercmds.cpp:642
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr "在建造计时完成后才能更换武器"
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:647
 msgid "You must be dead to use the class command"
 msgstr "必须在死亡时才能使用此指令"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:651
 msgid "Unknown starting item"
 msgstr "未知的起始物品"
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:655
 msgid "Starting item not allowed"
 msgstr "不允许携带起始物品"
 
-#: src/cgame/cg_servercmds.cpp:647
+#: src/cgame/cg_servercmds.cpp:661
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr "主脑不存在。必须首先建造主脑，才能建造其他设施。"
 
-#: src/cgame/cg_servercmds.cpp:649 src/cgame/cg_servercmds.cpp:689
+#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
 msgid "There is no Overmind"
 msgstr "主脑不存在"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr "只能有一只主脑。若需要移动主脑，请标记现有的主脑，再建造以移动之。"
 
-#: src/cgame/cg_servercmds.cpp:655
+#: src/cgame/cg_servercmds.cpp:669
 msgid "There can only be one Overmind"
 msgstr "只能有一只主脑"
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:674
 msgid "Your team cannot have any more leeches"
 msgstr "蛭的建造数已达上限"
 
-#: src/cgame/cg_servercmds.cpp:664
+#: src/cgame/cg_servercmds.cpp:678
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr "主脑不能控制更多设施。请先拆除一些现有的设施，再建造新设施。"
 
-#: src/cgame/cg_servercmds.cpp:666
+#: src/cgame/cg_servercmds.cpp:680
 msgid "The Overmind cannot control any more structures"
 msgstr "主脑不能控制更多设施"
 
-#: src/cgame/cg_servercmds.cpp:670
+#: src/cgame/cg_servercmds.cpp:684
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr "这里没有进化的空间。请离墙壁和物件远一些，再试着进化。"
 
-#: src/cgame/cg_servercmds.cpp:672
+#: src/cgame/cg_servercmds.cpp:686
 msgid "There is no room to evolve here"
 msgstr "这里没有进化的空间"
 
-#: src/cgame/cg_servercmds.cpp:676
+#: src/cgame/cg_servercmds.cpp:690
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr "这里离敌人太近。离开敌人的视线，再试着进化。"
 
-#: src/cgame/cg_servercmds.cpp:678
+#: src/cgame/cg_servercmds.cpp:692
 msgid "This location is too close to the enemy to evolve"
 msgstr "这里离敌人太近"
 
-#: src/cgame/cg_servercmds.cpp:682 src/cgame/cg_servercmds.cpp:683
+#: src/cgame/cg_servercmds.cpp:696 src/cgame/cg_servercmds.cpp:697
 msgid "The Overmind is too far away to devolve."
 msgstr "主脑离得太远，不能退化。"
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:701
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr "主脑不存在。建造主脑之后才能升级。"
 
-#: src/cgame/cg_servercmds.cpp:693
+#: src/cgame/cg_servercmds.cpp:707
 msgid "You cannot evolve until your build timer has expired."
 msgstr "在建造计时完成后才能进化。"
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:708
 msgid "You cannot evolve until your build timer expires"
 msgstr "在建造计时完成后才能进化"
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:712
 msgid "Wait a second after attacking or evolving"
 msgstr "在攻击或进化之后，请稍等片刻"
 
-#: src/cgame/cg_servercmds.cpp:706
+#: src/cgame/cg_servercmds.cpp:720
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "你不能进化成为%s"
 
-#: src/cgame/cg_servercmds.cpp:711
+#: src/cgame/cg_servercmds.cpp:725
 msgid "You cannot evolve while wallwalking"
 msgstr "不能在爬墙时进化"
 
-#: src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:729
 msgid "Unknown class"
 msgstr "未知的类"
 
-#: src/cgame/cg_servercmds.cpp:719
+#: src/cgame/cg_servercmds.cpp:733
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "你不能以%s的形态生成"
 
-#: src/cgame/cg_servercmds.cpp:724
+#: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s不可用"
 
-#: src/cgame/cg_servercmds.cpp:729
+#: src/cgame/cg_servercmds.cpp:743
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "%s尚未解锁"
 
-#: src/cgame/cg_servercmds.cpp:734
+#: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "客户端游戏 (cgame): 调试: 此菜单不存在: %d"
 
-#: src/cgame/cg_servercmds.cpp:837
+#: src/cgame/cg_servercmds.cpp:851
 msgid "^1*DEAD*^*"
 msgstr "^1*死亡*^*"
 
-#: src/cgame/cg_servercmds.cpp:898
+#: src/cgame/cg_servercmds.cpp:912
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%s来自 ^7%s 的私密消息"
 
-#: src/cgame/cg_servercmds.cpp:906
+#: src/cgame/cg_servercmds.cpp:920
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:1377
+#: src/cgame/cg_servercmds.cpp:1390
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "未知的客户端游戏指令: %s"
@@ -5136,15 +5179,15 @@ msgstr "$1$^* 已连接"
 msgid "$1$^* entered the game"
 msgstr "$1$^* 加入了游戏"
 
-#: src/sgame/sg_combat.cpp:629
+#: src/sgame/sg_combat.cpp:627
 msgid "Your killer, $1$^*, had $2$ HP."
 msgstr "你的对手 $1$^* 剩余血量 $2$。"
 
-#: src/sgame/sg_combat.cpp:1213
+#: src/sgame/sg_combat.cpp:1211
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
 msgstr "$2$^3 拆除了^* $1$"
 
-#: src/sgame/sg_combat.cpp:1214
+#: src/sgame/sg_combat.cpp:1212
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$2$^3 摧毁了^* $1$"
 
@@ -5172,19 +5215,19 @@ msgstr "异形获胜"
 msgid "Empty teams skip map time exceeded."
 msgstr "指定时间内无活跃玩家，跳过此地图。"
 
-#: src/sgame/sg_main.cpp:2248
+#: src/sgame/sg_main.cpp:2263
 msgid "The game has been paused. Please wait."
 msgstr "游戏已暂停。请等候。"
 
-#: src/sgame/sg_main.cpp:2252
+#: src/sgame/sg_main.cpp:2267
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "服务器: 游戏将在 $1$ 秒后继续"
 
-#: src/sgame/sg_main.cpp:2271
+#: src/sgame/sg_main.cpp:2286
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "服务器: 游戏继续 (至多暂停 $1$ 分钟)"
 
-#: src/sgame/sg_main.cpp:2274
+#: src/sgame/sg_main.cpp:2289
 msgid "The game has been unpaused!"
 msgstr "游戏继续！"
 

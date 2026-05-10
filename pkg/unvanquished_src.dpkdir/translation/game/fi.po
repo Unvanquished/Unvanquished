@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-09 23:06+0200\n"
+"POT-Creation-Date: 2026-05-10 21:10+0200\n"
 "PO-Revision-Date: 2026-03-21 22:05+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -613,7 +613,7 @@ msgstr "Päivitykset"
 msgid "Choose your starting equipment:"
 msgstr "Valitse aloitusvälineesi:"
 
-#: ui/human_spawn.rml:45 ui/server_setup.rml:275
+#: ui/human_spawn.rml:45 ui/server_setup.rml:285
 msgid "SMG"
 msgstr "Konepistooli"
 
@@ -840,26 +840,26 @@ msgstr "astetta"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:116
-#: ui/options_graphics.rml:126 ui/options_graphics.rml:302
-#: ui/options_graphics.rml:429 ui/options_mouse.rml:21 ui/options_ui.rml:68
+#: ui/options_graphics.rml:126 ui/options_graphics.rml:314
+#: ui/options_graphics.rml:441 ui/options_mouse.rml:21 ui/options_ui.rml:68
 #: ui/options_ui.rml:147 ui/options_ui.rml:177 ui/options_ui.rml:191
 #: ui/server_setup.rml:73
 msgid "reset"
 msgstr "palauta oletusarvo"
 
-#: ui/options_fov.rml:40 ui/server_setup.rml:356
+#: ui/options_fov.rml:40 ui/server_setup.rml:366
 msgid "Mantis"
 msgstr "Mantis"
 
-#: ui/options_fov.rml:48 ui/server_setup.rml:360
+#: ui/options_fov.rml:48 ui/server_setup.rml:370
 msgid "Marauder"
 msgstr "Marauder"
 
-#: ui/options_fov.rml:56 ui/server_setup.rml:368
+#: ui/options_fov.rml:56 ui/server_setup.rml:378
 msgid "Dragoon"
 msgstr "Dragoon"
 
-#: ui/options_fov.rml:64 ui/server_setup.rml:376
+#: ui/options_fov.rml:64 ui/server_setup.rml:386
 msgid "Tyrant"
 msgstr "Tyrant"
 
@@ -905,6 +905,7 @@ msgid "Graphics"
 msgstr "Grafiikka"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
+#: ui/server_setup.rml:162
 msgid "Presets"
 msgstr "Esiasetukset"
 
@@ -916,8 +917,8 @@ msgstr "Ultra"
 msgid "Everything enabled."
 msgstr "Kaikki ominaisuudet käytössä."
 
-#: ui/options_graphics.rml:31 ui/options_graphics.rml:290
-#: ui/options_graphics.rml:407 ui/options_graphics.rml:415
+#: ui/options_graphics.rml:31 ui/options_graphics.rml:302
+#: ui/options_graphics.rml:419 ui/options_graphics.rml:427
 msgid "High"
 msgstr "Korkea"
 
@@ -933,8 +934,8 @@ msgstr "Keskiverto"
 msgid "Dynamic lights, surface details, good textures…"
 msgstr "Dynaamiset valot, pintayksityiskohdat, hyvät tekstuurit…"
 
-#: ui/options_graphics.rml:39 ui/options_graphics.rml:288
-#: ui/options_graphics.rml:408 ui/options_graphics.rml:417
+#: ui/options_graphics.rml:39 ui/options_graphics.rml:300
+#: ui/options_graphics.rml:420 ui/options_graphics.rml:429
 msgid "Low"
 msgstr "Matala"
 
@@ -980,7 +981,7 @@ msgid "Fullscreen"
 msgstr "Kokonäyttötila"
 
 #: ui/options_graphics.rml:69 ui/options_graphics.rml:85
-#: ui/options_graphics.rml:418
+#: ui/options_graphics.rml:430
 msgid "Off"
 msgstr "Pois"
 
@@ -1036,10 +1037,10 @@ msgstr ""
 "Pehmennä reunoja nopealla mutta halvalla filtterillä, voi sumentaa joitakin "
 "yksityiskohtia."
 
-#: ui/options_graphics.rml:103 ui/options_graphics.rml:170
-#: ui/options_graphics.rml:234 ui/options_graphics.rml:273
-#: ui/options_graphics.rml:316 ui/options_graphics.rml:354
-#: ui/options_graphics.rml:382
+#: ui/options_graphics.rml:103 ui/options_graphics.rml:182
+#: ui/options_graphics.rml:246 ui/options_graphics.rml:285
+#: ui/options_graphics.rml:328 ui/options_graphics.rml:366
+#: ui/options_graphics.rml:394
 msgid "Apply now"
 msgstr "Käytä heti"
 
@@ -1056,7 +1057,7 @@ msgid "World brightness level."
 msgstr "Ympäristön kirkkaustaso."
 
 #: ui/options_graphics.rml:115 ui/options_graphics.rml:125
-#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
+#: ui/options_graphics.rml:313 ui/options_graphics.rml:440
 #: ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Nykyinen:"
@@ -1144,95 +1145,115 @@ msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 "Ei‐fyysinen valaisutekniikka, jolla tehdään kohteista vähemmän hämäriä."
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:163
+msgid "sRGB conversion accuracy"
+msgstr ""
+
+#: ui/options_graphics.rml:165
+msgid "Disabling accuracy makes color conversions faster but less accurate."
+msgstr ""
+
+#: ui/options_graphics.rml:169
+msgid "Detect"
+msgstr ""
+
+#: ui/options_graphics.rml:170
+msgid "Forced naive blend (cheap approximation)"
+msgstr ""
+
+#: ui/options_graphics.rml:172
+msgid "Blend regime"
+msgstr ""
+
+#: ui/options_graphics.rml:176
 msgid "Blobs"
 msgstr "Möykyt"
 
-#: ui/options_graphics.rml:164
+#: ui/options_graphics.rml:176
 msgid "low"
 msgstr "alhainen"
 
-#: ui/options_graphics.rml:165 ui/options_graphics.rml:391
+#: ui/options_graphics.rml:177 ui/options_graphics.rml:403
 #: ui/options_ui.rml:170
 msgid "None"
 msgstr "Ei mikään"
 
-#: ui/options_graphics.rml:167
+#: ui/options_graphics.rml:179
 msgid "Shadows"
 msgstr "Varjot"
 
-#: ui/options_graphics.rml:174
+#: ui/options_graphics.rml:186
 msgid "Textures"
 msgstr "Tekstuurit"
 
-#: ui/options_graphics.rml:176 ui/options_graphics.rml:360
+#: ui/options_graphics.rml:188 ui/options_graphics.rml:372
 #: ui/server_setup.rml:13
 msgid "General"
 msgstr "Yleinen"
 
-#: ui/options_graphics.rml:179 ui/options_graphics.rml:192
+#: ui/options_graphics.rml:191 ui/options_graphics.rml:204
 msgid "No limit"
 msgstr "Ei rajaa"
 
-#: ui/options_graphics.rml:180
+#: ui/options_graphics.rml:192
 msgid "(ultra)"
 msgstr "(ultra)"
 
-#: ui/options_graphics.rml:181
+#: ui/options_graphics.rml:193
 msgid "(high)"
 msgstr "(korkea)"
 
-#: ui/options_graphics.rml:182
+#: ui/options_graphics.rml:194
 msgid "(medium)"
 msgstr "(keskitaso)"
 
-#: ui/options_graphics.rml:183
+#: ui/options_graphics.rml:195
 msgid "(low)"
 msgstr "(matala)"
 
-#: ui/options_graphics.rml:184
+#: ui/options_graphics.rml:196
 msgid "(lowest)"
 msgstr "(matalin)"
 
-#: ui/options_graphics.rml:186
+#: ui/options_graphics.rml:198
 msgid "Image size limit"
 msgstr "Kuvan koon raja"
 
-#: ui/options_graphics.rml:187
+#: ui/options_graphics.rml:199
 msgid "Limit image size to save on memory."
 msgstr "Rajoita kuvan kokoa muistin säästämiseksi."
 
-#: ui/options_graphics.rml:193
+#: ui/options_graphics.rml:205
 msgid "No smaller than screen"
 msgstr "Ei kuvaruutua pienempi"
 
-#: ui/options_graphics.rml:194
+#: ui/options_graphics.rml:206
 msgid "No larger than screen"
 msgstr "Ei kuvaruutua suurempi"
 
-#: ui/options_graphics.rml:196
+#: ui/options_graphics.rml:208
 msgid "Menu image size limit"
 msgstr "Valikon kuvan koon raja"
 
-#: ui/options_graphics.rml:197
+#: ui/options_graphics.rml:209
 msgid "Limit menu image size to save on memory."
 msgstr "Rajoita valikon kuvan kokoa muistin säästämiseksi."
 
-#: ui/options_graphics.rml:202
+#: ui/options_graphics.rml:214
 msgid "High-precision rendering"
 msgstr "Korkeatarkkuuksinen renderöinti"
 
-#: ui/options_graphics.rml:203
+#: ui/options_graphics.rml:215
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
 "Käytä korkeatarkkuuksisia pikselipuskureita, jotka vähentävät värin "
 "raidoittumista."
 
-#: ui/options_graphics.rml:207
+#: ui/options_graphics.rml:219
 msgid "Use bindless textures if possible"
 msgstr "Käytä sitoutumattomia tekstuureja jos mahdollista"
 
-#: ui/options_graphics.rml:209
+#: ui/options_graphics.rml:221
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
@@ -1240,17 +1261,17 @@ msgstr ""
 "Käytä sitoutumattomia tekstuureja jos laitteisto/ajuri tukee niitä. Tämä voi "
 "parantaa suorituskykyä."
 
-#: ui/options_graphics.rml:209 ui/options_graphics.rml:259
-#: ui/options_graphics.rml:283 ui/options_graphics.rml:369
-#: ui/options_graphics.rml:374 ui/options_graphics.rml:379
+#: ui/options_graphics.rml:221 ui/options_graphics.rml:271
+#: ui/options_graphics.rml:295 ui/options_graphics.rml:381
+#: ui/options_graphics.rml:386 ui/options_graphics.rml:391
 msgid "Experimental."
 msgstr "Kokeellinen."
 
-#: ui/options_graphics.rml:212
+#: ui/options_graphics.rml:224
 msgid "Mip-mapping"
 msgstr "Mip‐kartoitus"
 
-#: ui/options_graphics.rml:213
+#: ui/options_graphics.rml:225
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1259,96 +1280,96 @@ msgstr ""
 "matalempiresoluutioisia tekstuureja niissä. Tämä yleensä ei vaikuta "
 "suorituskykyyn."
 
-#: ui/options_graphics.rml:220 ui/options_ui.rml:30
+#: ui/options_graphics.rml:232 ui/options_ui.rml:30
 #: src/cgame/cg_rocket_datasource.cpp:1551
 msgid "No"
 msgstr "Ei"
 
-#: ui/options_graphics.rml:222
+#: ui/options_graphics.rml:234
 msgid "Anisotropic mip-mapping"
 msgstr "Anisotrooppinen mip-kartoitus"
 
-#: ui/options_graphics.rml:223
+#: ui/options_graphics.rml:235
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Parempi mip-karttojen tulkinta kaltevilla pinnoilla."
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "Trilinear"
 msgstr "Trilineaarinen"
 
-#: ui/options_graphics.rml:227
+#: ui/options_graphics.rml:239
 msgid "better"
 msgstr "parempi"
 
-#: ui/options_graphics.rml:228
+#: ui/options_graphics.rml:240
 msgid "Bilinear"
 msgstr "Bilineaarinen"
 
-#: ui/options_graphics.rml:230
+#: ui/options_graphics.rml:242
 msgid "Texture scaling filter"
 msgstr "Tekstuurien skaalaussuodatin"
 
-#: ui/options_graphics.rml:238 ui/options_graphics.rml:240
+#: ui/options_graphics.rml:250 ui/options_graphics.rml:252
 msgid "Materials"
 msgstr "Materiaalit"
 
-#: ui/options_graphics.rml:242
+#: ui/options_graphics.rml:254
 msgid "Sky"
 msgstr "Taivas"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:256
 msgid "Draw the sky."
 msgstr "Näytä taivas."
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:259
 msgid "Normal mapping"
 msgstr "Normaalikartoitus"
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:261
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simuloi ylimääräistä valaisudetaljia tasaisilla pinnoilla."
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:264
 msgid "Deluxe mapping"
 msgstr "Deluxe‐kartoitus"
 
-#: ui/options_graphics.rml:254
+#: ui/options_graphics.rml:266
 msgid "Light direction based on baked textures."
 msgstr "Valon suuntaus perustuen valmisteltuihin tekstuureihin."
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:269
 msgid "Relief mapping"
 msgstr "Kohokartoitus"
 
-#: ui/options_graphics.rml:259
+#: ui/options_graphics.rml:271
 msgid "Adds bumps on supported surfaces."
 msgstr "Lisää kohoumia yhteensopiviin pintoihin."
 
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:274
 msgid "Specular mapping"
 msgstr "Peilikartoitus"
 
-#: ui/options_graphics.rml:264
+#: ui/options_graphics.rml:276
 msgid "Simulate light specularity."
 msgstr "Simuloi valon heijastumista."
 
-#: ui/options_graphics.rml:267
+#: ui/options_graphics.rml:279
 msgid "Physical mapping"
 msgstr "Fyysinen kartoitus"
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:281
 msgid "Material appearance based on physical approximations."
 msgstr "Materiaalinen ulkonäkö perustuen fyysisiin arviointeihin."
 
-#: ui/options_graphics.rml:277 ui/options_graphics.rml:279
+#: ui/options_graphics.rml:289 ui/options_graphics.rml:291
 msgid "Reflections"
 msgstr "Heijastukset"
 
-#: ui/options_graphics.rml:281
+#: ui/options_graphics.rml:293
 msgid "Static reflections"
 msgstr "Kiinteät heijastukset"
 
-#: ui/options_graphics.rml:283
+#: ui/options_graphics.rml:295
 msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
@@ -1357,23 +1378,23 @@ msgstr ""
 "normaali-, spekulaari-, ja deluxe-kartoituksen. Tällä hetkellä "
 "epäyhteensopiva fyysisen kartoituksen kanssa."
 
-#: ui/options_graphics.rml:287
+#: ui/options_graphics.rml:299
 msgid "Very low"
 msgstr "Hyvin alhainen"
 
-#: ui/options_graphics.rml:289 ui/options_graphics.rml:416
+#: ui/options_graphics.rml:301 ui/options_graphics.rml:428
 msgid "Moderate"
 msgstr "Kohtalainen"
 
-#: ui/options_graphics.rml:291
+#: ui/options_graphics.rml:303
 msgid "Very high"
 msgstr "Hyvin korkea"
 
-#: ui/options_graphics.rml:293 ui/options_graphics.rml:410
+#: ui/options_graphics.rml:305 ui/options_graphics.rml:422
 msgid "Quality"
 msgstr "Laatu"
 
-#: ui/options_graphics.rml:294
+#: ui/options_graphics.rml:306
 msgid ""
 "Quality of static reflection cubemaps. Higher qualities may use up a lot of "
 "disk space."
@@ -1381,96 +1402,96 @@ msgstr ""
 "Kiinteiden heijastuskuutiokarttojen laatu. Korkeammat laadut voivat käyttää "
 "paljon levytilaa."
 
-#: ui/options_graphics.rml:297
+#: ui/options_graphics.rml:309
 msgid "Cubemap grid spacing"
 msgstr "Kuutiokartan ristikkoväli"
 
-#: ui/options_graphics.rml:307 ui/options_ui.rml:122
+#: ui/options_graphics.rml:319 ui/options_ui.rml:122
 msgid "Never"
 msgstr "Ei koskaan"
 
-#: ui/options_graphics.rml:308
+#: ui/options_graphics.rml:320
 msgid "Cache on disk"
 msgstr "Tallenna välimuisti"
 
-#: ui/options_graphics.rml:309
+#: ui/options_graphics.rml:321
 msgid "Always rebuild"
 msgstr "Rakenna aina uudelleen"
 
-#: ui/options_graphics.rml:311
+#: ui/options_graphics.rml:323
 msgid "Static reflection cubemaps autobuild"
 msgstr "Kiinteiden heijastuksien kuutiokarttojen automaattirakennus"
 
-#: ui/options_graphics.rml:312
+#: ui/options_graphics.rml:324
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr "Rakenna/lataa/tallenna heijastuksien kuutiokartat automaattisesti."
 
-#: ui/options_graphics.rml:320 ui/options_graphics.rml:322
+#: ui/options_graphics.rml:332 ui/options_graphics.rml:334
 #: ui/options_sound.rml:13
 msgid "Effects"
 msgstr "Tehosteet"
 
-#: ui/options_graphics.rml:324
+#: ui/options_graphics.rml:336
 msgid "Bloom"
 msgstr "Hohka"
 
-#: ui/options_graphics.rml:326
+#: ui/options_graphics.rml:338
 msgid "Makes bright areas on your screen glow."
 msgstr "Saa kirkkaat alueet ruudullasi loistamaan."
 
-#: ui/options_graphics.rml:329
+#: ui/options_graphics.rml:341
 msgid "Color grading"
 msgstr "Värin tasapainotus"
 
-#: ui/options_graphics.rml:331
+#: ui/options_graphics.rml:343
 msgid "Alter colors to create specific ambiences."
 msgstr "Muuta värejä tiettyjen ambienssien luontia varten."
 
-#: ui/options_graphics.rml:334
+#: ui/options_graphics.rml:346
 msgid "Heat-haze"
 msgstr "Kuumuuden väreily"
 
-#: ui/options_graphics.rml:336
+#: ui/options_graphics.rml:348
 msgid "Simulate air refraction in severe heat."
 msgstr "Simuloi ilman laajenemista kuumuuden äärellä."
 
-#: ui/options_graphics.rml:339
+#: ui/options_graphics.rml:351
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Screen space ambient occlusion (SSAO)"
 
-#: ui/options_graphics.rml:341
+#: ui/options_graphics.rml:353
 msgid "Simulate dark corners."
 msgstr "Simuloi pimeitä kulmia."
 
-#: ui/options_graphics.rml:344
+#: ui/options_graphics.rml:356
 msgid "Marks"
 msgstr "Jäljet"
 
-#: ui/options_graphics.rml:346
+#: ui/options_graphics.rml:358
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr "Tee jälkiä (kuten luodinreikiä tai rihmastoa) pintoihin"
 
-#: ui/options_graphics.rml:349
+#: ui/options_graphics.rml:361
 msgid "Particle physics"
 msgstr "Partikkelifysiikka"
 
-#: ui/options_graphics.rml:351
+#: ui/options_graphics.rml:363
 msgid "Allow particles to bounce off surfaces."
 msgstr "Anna partikkelien kimmota pinnoista."
 
-#: ui/options_graphics.rml:358
+#: ui/options_graphics.rml:370
 msgid "Renderer"
 msgstr "Renderöijä"
 
-#: ui/options_graphics.rml:363
+#: ui/options_graphics.rml:375
 msgid "Read-only depth buffer"
 msgstr "Vain luku -syvyyspuskuri"
 
-#: ui/options_graphics.rml:365 ui/options_graphics.rml:367
+#: ui/options_graphics.rml:377 ui/options_graphics.rml:379
 msgid "Material system"
 msgstr "Materiaalijärjestelmä"
 
-#: ui/options_graphics.rml:369
+#: ui/options_graphics.rml:381
 msgid ""
 "Use a new system that significantly improves performance. Some drivers may "
 "fail with this on (e. g. Mesa and AMD proprietary drivers)."
@@ -1479,91 +1500,91 @@ msgstr ""
 "ajurit voivat epäonnistua tätä käyttäessä (esim. Mesa ja AMD:n "
 "proprietaariajurit)."
 
-#: ui/options_graphics.rml:372
+#: ui/options_graphics.rml:384
 msgid "GPU frustum culling"
 msgstr "Katkaistun kartion mukaan karsinta GPU:lla"
 
-#: ui/options_graphics.rml:374
+#: ui/options_graphics.rml:386
 msgid "Cull surfaces that are out of view."
 msgstr "Karsi pinnat, jotka ovat näkökentän ulkopuolella."
 
-#: ui/options_graphics.rml:377
+#: ui/options_graphics.rml:389
 msgid "GPU occlusion culling"
 msgstr "Okkluusiokarsinta GPU:lla"
 
-#: ui/options_graphics.rml:379
+#: ui/options_graphics.rml:391
 msgid "Cull hidden surfaces."
 msgstr "Karsi piilotetut pinnat."
 
-#: ui/options_graphics.rml:386
+#: ui/options_graphics.rml:398
 msgid "Gameplay"
 msgstr "Pelaaminen"
 
-#: ui/options_graphics.rml:388
+#: ui/options_graphics.rml:400
 msgid "Building markers"
 msgstr "Rakennelmien merkinnät"
 
-#: ui/options_graphics.rml:391
+#: ui/options_graphics.rml:403
 msgid "disabled"
 msgstr "pois käytöstä"
 
-#: ui/options_graphics.rml:392
+#: ui/options_graphics.rml:404
 msgid "All structures"
 msgstr "Kaikki rakennelmat"
 
-#: ui/options_graphics.rml:393
+#: ui/options_graphics.rml:405
 msgid "Support structures"
 msgstr "Tukirakennelmat"
 
-#: ui/options_graphics.rml:394
+#: ui/options_graphics.rml:406
 msgid "Offensive structures"
 msgstr "Hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:395
+#: ui/options_graphics.rml:407
 msgid "Alien structures"
 msgstr "Alienien rakennelmat"
 
-#: ui/options_graphics.rml:396
+#: ui/options_graphics.rml:408
 msgid "Human structures"
 msgstr "Ihmisten rakennelmat"
 
-#: ui/options_graphics.rml:397
+#: ui/options_graphics.rml:409
 msgid "Alien support structures"
 msgstr "Alienien tukirakennelmat"
 
-#: ui/options_graphics.rml:398
+#: ui/options_graphics.rml:410
 msgid "Human support structures"
 msgstr "Ihmisten tukirakennelmat"
 
-#: ui/options_graphics.rml:399
+#: ui/options_graphics.rml:411
 msgid "Offensive alien structures"
 msgstr "Alienien hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:400
+#: ui/options_graphics.rml:412
 msgid "Offensive human structures"
 msgstr "Ihmisten hyökkäysrakennelmat"
 
-#: ui/options_graphics.rml:402
+#: ui/options_graphics.rml:414
 msgid "Building ranges"
 msgstr "Rakennelmien vaikutusetäisyydet"
 
-#: ui/options_graphics.rml:404
+#: ui/options_graphics.rml:416
 msgid "Models"
 msgstr "Mallit"
 
-#: ui/options_graphics.rml:412
+#: ui/options_graphics.rml:424
 msgid "Motion blur"
 msgstr "Vauhtisokeus"
 
-#: ui/options_graphics.rml:420
+#: ui/options_graphics.rml:432
 msgid "Intensity"
 msgstr "Vahvuus"
 
-#: ui/options_graphics.rml:421
+#: ui/options_graphics.rml:433
 msgid "Level of motion-blur."
 msgstr "Vauhtisokeuden taso."
 
-#: ui/options_graphics.rml:424
+#: ui/options_graphics.rml:436
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Pienin liikkumisnopeus vauhtisokeuden aktivoitumiselle"
 
@@ -1714,7 +1735,7 @@ msgstr "Joukkueäänestä Kyllä:"
 msgid "Team vote No:"
 msgstr "Joukkueäänestä Ei:"
 
-#: ui/options_keys.rml:142 ui/server_setup.rml:322
+#: ui/options_keys.rml:142 ui/server_setup.rml:332
 msgid "Misc"
 msgstr "Sekalaiset"
 
@@ -2159,19 +2180,19 @@ msgstr "Kivääri"
 msgid "Pain Saw"
 msgstr "Murjurisaha"
 
-#: ui/options_ui.rml:103 ui/server_setup.rml:283
+#: ui/options_ui.rml:103 ui/server_setup.rml:293
 msgid "Shotgun"
 msgstr "Haulikko"
 
-#: ui/options_ui.rml:104 ui/server_setup.rml:287
+#: ui/options_ui.rml:104 ui/server_setup.rml:297
 msgid "Lasgun"
 msgstr "Laserpyssy"
 
-#: ui/options_ui.rml:105 ui/server_setup.rml:291
+#: ui/options_ui.rml:105 ui/server_setup.rml:301
 msgid "Mass Driver"
 msgstr "Massalinko"
 
-#: ui/options_ui.rml:106 ui/server_setup.rml:295
+#: ui/options_ui.rml:106 ui/server_setup.rml:305
 msgid "Chaingun"
 msgstr "Konekivääri"
 
@@ -2179,11 +2200,11 @@ msgstr "Konekivääri"
 msgid "Flamer"
 msgstr "Liekitin"
 
-#: ui/options_ui.rml:108 ui/server_setup.rml:303
+#: ui/options_ui.rml:108 ui/server_setup.rml:313
 msgid "Pulse Rifle"
 msgstr "Pulssikivääri"
 
-#: ui/options_ui.rml:109 ui/server_setup.rml:307
+#: ui/options_ui.rml:109 ui/server_setup.rml:317
 msgid "Lucifer Cannon"
 msgstr "Lucifer-tykki"
 
@@ -2466,7 +2487,7 @@ msgstr "Puoliintumisaika"
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
 msgstr "Aika, joka vauhdilla kestää pudota 50%. Arvolla 0 vauhti ei puoliinnu."
 
-#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
+#: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:194
 msgid "minutes"
 msgstr "minuuttia"
 
@@ -2531,170 +2552,192 @@ msgid "Initial build points count"
 msgstr "Alustava rakentelupisteiden määrä"
 
 #: ui/server_setup.rml:164
+msgid "BP Vampire"
+msgstr ""
+
+#: ui/server_setup.rml:165
+msgid "Bleed build points from the enemy team by killing buildables."
+msgstr ""
+
+#: ui/server_setup.rml:168
+msgid "Mining"
+msgstr ""
+
+#: ui/server_setup.rml:169
+msgid ""
+"Increase build budget by building mining structures. BP returns slowly when "
+"a buildable is lost."
+msgstr ""
+
+#: ui/server_setup.rml:171
+msgid "Mining mode options"
+msgstr ""
+
+#: ui/server_setup.rml:174
 msgid "Miner bonus"
 msgstr "Louhijabonus"
 
-#: ui/server_setup.rml:165
+#: ui/server_setup.rml:175
 msgid "Build point budget per miner"
 msgstr "Rakentelupistebudjetti louhijaa kohden"
 
-#: ui/server_setup.rml:172
+#: ui/server_setup.rml:182
 msgid "Initial regeneration speed"
 msgstr "Alustava palautumisnopeus"
 
-#: ui/server_setup.rml:173
+#: ui/server_setup.rml:183
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr "Nopeus, jolla RP:t palautuvat alussa (RP/min)"
 
-#: ui/server_setup.rml:180
+#: ui/server_setup.rml:190
 msgid "Half regeneration time"
 msgstr "Palautumisnopeuden puoliintumisaika"
 
-#: ui/server_setup.rml:181
+#: ui/server_setup.rml:191
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr "Aika RP:iden palautumisen muuttumiseen kaksi kertaa hitaammaksi"
 
-#: ui/server_setup.rml:189
+#: ui/server_setup.rml:199
 msgid "Bots: General"
 msgstr "Botit: Yleinen"
 
-#: ui/server_setup.rml:192
+#: ui/server_setup.rml:202
 msgid "Minimum bots per team"
 msgstr "Joukkueen bottien minimi"
 
-#: ui/server_setup.rml:193
+#: ui/server_setup.rml:203
 msgid "Fill teams until they have enough players"
 msgstr "Täytä joukkueet, kunnes niissä on riittävästi pelaajia"
 
-#: ui/server_setup.rml:196
+#: ui/server_setup.rml:206
 msgid "bots"
 msgstr "bottia"
 
-#: ui/server_setup.rml:200
+#: ui/server_setup.rml:210
 msgid "Default skill level"
 msgstr "Oletusvaikeustaso"
 
-#: ui/server_setup.rml:201
+#: ui/server_setup.rml:211
 msgid "Only works for new bots."
 msgstr "Toimii vain uusille boteille."
 
-#: ui/server_setup.rml:206
+#: ui/server_setup.rml:216
 msgid "Humanity"
 msgstr "Inhimillisyys"
 
-#: ui/server_setup.rml:209
+#: ui/server_setup.rml:219
 msgid "Field of view"
 msgstr "Näkökenttä"
 
-#: ui/server_setup.rml:217
+#: ui/server_setup.rml:227
 msgid "Reaction time"
 msgstr "Reaktioaika"
 
-#: ui/server_setup.rml:224
+#: ui/server_setup.rml:234
 msgid "Behaviour"
 msgstr "Käyttäytyminen"
 
-#: ui/server_setup.rml:227
+#: ui/server_setup.rml:237
 msgid "Attack structures"
 msgstr "Hyökkää rakennelmiin"
 
-#: ui/server_setup.rml:229
+#: ui/server_setup.rml:239
 msgid "Cheating"
 msgstr "Huijaaminen"
 
-#: ui/server_setup.rml:232
+#: ui/server_setup.rml:242
 msgid "Infinite funds"
 msgstr "Loputtomat varat"
 
-#: ui/server_setup.rml:236
+#: ui/server_setup.rml:246
 msgid "Ignore momentum"
 msgstr "Ohita vauhti"
 
-#: ui/server_setup.rml:238
+#: ui/server_setup.rml:248
 msgid "Navmesh generation"
 msgstr "Kulkuverkon muodostus"
 
-#: ui/server_setup.rml:241
+#: ui/server_setup.rml:251
 msgid "Generate navmeshes at load time"
 msgstr "Luo kulkuverkot kenttää ladatessa"
 
-#: ui/server_setup.rml:245
+#: ui/server_setup.rml:255
 msgid "Number of worker threads"
 msgstr "Työsäikeiden määrä"
 
-#: ui/server_setup.rml:253
+#: ui/server_setup.rml:263
 msgid "Bots: Humans"
 msgstr "Botit: Ihmiset"
 
-#: ui/server_setup.rml:254 ui/server_setup.rml:339
+#: ui/server_setup.rml:264 ui/server_setup.rml:349
 msgid "Overall"
 msgstr "Yleiset"
 
-#: ui/server_setup.rml:257
+#: ui/server_setup.rml:267
 msgid "Human bots purchase equipment"
 msgstr "Ihmisbotit ostavat varusteita"
 
-#: ui/server_setup.rml:261 ui/server_setup.rml:346
+#: ui/server_setup.rml:271 ui/server_setup.rml:356
 msgid "Aim speed modifier (higher is slower)"
 msgstr "Tähtäysnopeuden muunnin (suurempi on hitaampi)"
 
-#: ui/server_setup.rml:267 ui/server_setup.rml:353
+#: ui/server_setup.rml:277 ui/server_setup.rml:363
 msgid "Individually"
 msgstr "Yksittäiset"
 
-#: ui/server_setup.rml:268
+#: ui/server_setup.rml:278
 msgid "Primary Weapons"
 msgstr "Pääaseet"
 
-#: ui/server_setup.rml:271
+#: ui/server_setup.rml:281
 msgid "Construction Kit (repairs)"
 msgstr "Rakennuspakki (korjaukset)"
 
-#: ui/server_setup.rml:279
+#: ui/server_setup.rml:289
 msgid "Painsaw"
 msgstr "Murjurisaha"
 
-#: ui/server_setup.rml:299
+#: ui/server_setup.rml:309
 msgid "Flamethrower"
 msgstr "Liekinheitin"
 
-#: ui/server_setup.rml:309
+#: ui/server_setup.rml:319
 msgid "Armors"
 msgstr "Panssarit"
 
-#: ui/server_setup.rml:312
+#: ui/server_setup.rml:322
 msgid "whether bots buy Light Armour"
 msgstr "botit ostaa Kevyen Panssarin"
 
-#: ui/server_setup.rml:316
+#: ui/server_setup.rml:326
 msgid "whether bots buy Medium Armour"
 msgstr "botit ostaa Keskiraskaan Panssarin"
 
-#: ui/server_setup.rml:320
+#: ui/server_setup.rml:330
 msgid "whether bots buy the Battlesuit"
 msgstr "botit ostaa Taistelupuvun"
 
-#: ui/server_setup.rml:325
+#: ui/server_setup.rml:335
 msgid "Firebomb"
 msgstr "Palopommi"
 
-#: ui/server_setup.rml:329
+#: ui/server_setup.rml:339
 msgid "Grenade"
 msgstr "Kranaatti"
 
-#: ui/server_setup.rml:333
+#: ui/server_setup.rml:343
 msgid "Radar"
 msgstr "Tutka"
 
-#: ui/server_setup.rml:342
+#: ui/server_setup.rml:352
 msgid "Alien bots morph"
 msgstr "Alienibotit muuttuvat"
 
-#: ui/server_setup.rml:364
+#: ui/server_setup.rml:374
 msgid "Advanced Marauder"
 msgstr "Edistynyt Marauder"
 
-#: ui/server_setup.rml:372
+#: ui/server_setup.rml:382
 msgid "Advanced Dragoon"
 msgstr "Edistynyt Dragoon"
 
@@ -4395,65 +4438,65 @@ msgstr "Sivusta"
 msgid "Flank, behind you!"
 msgstr "Sivustalta, takanasi!"
 
-#: src/cgame/cg_rocket_draw.cpp:2629
+#: src/cgame/cg_rocket_draw.cpp:2630
 msgid "You are at the front of the spawn queue"
 msgstr "Olet tukijoukkojonon kärjessä"
 
-#: src/cgame/cg_rocket_draw.cpp:2633
+#: src/cgame/cg_rocket_draw.cpp:2634
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Olet sijalla %d tukijoukkojonossa"
 
-#: src/cgame/cg_rocket_draw.cpp:2673
+#: src/cgame/cg_rocket_draw.cpp:2674
 msgid "There are no spawns remaining"
 msgstr "Tukijoukkorakennelmia ei ole"
 
-#: src/cgame/cg_rocket_draw.cpp:2677
+#: src/cgame/cg_rocket_draw.cpp:2678
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Tukijoukkorakennelmia on %d kappale"
 msgstr[1] "Tukijoukkorakennelmia on %d kappaletta"
 
-#: src/cgame/cg_rocket_draw.cpp:3226
+#: src/cgame/cg_rocket_draw.cpp:3227
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Odotetaan yhteyttä…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3230
+#: src/cgame/cg_rocket_draw.cpp:3231
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Odotetaan varmistusta…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3234
+#: src/cgame/cg_rocket_draw.cpp:3235
 msgid "Awaiting gamestate…"
 msgstr "Odotetaan pelitilannetta…"
 
-#: src/cgame/cg_rocket_draw.cpp:3335
+#: src/cgame/cg_rocket_draw.cpp:3336
 msgid "Say:"
 msgstr "Sano:"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3337
 msgid "Team Say:"
 msgstr "Kerro joukkueelle:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3338
 msgid "Admin Say:"
 msgstr "Kerro valvojille:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3339
 msgid "Command:"
 msgstr "Komento:"
 
-#: src/cgame/cg_rocket_draw.cpp:3688
+#: src/cgame/cg_rocket_draw.cpp:3689
 msgid "FIGHT!"
 msgstr "TAISTELE!"
 
-#: src/cgame/cg_rocket_draw.cpp:3782
+#: src/cgame/cg_rocket_draw.cpp:3783
 msgid "estimating"
 msgstr "arvioidaan"
 
-#: src/cgame/cg_servercmds.cpp:437
+#: src/cgame/cg_servercmds.cpp:451
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -4461,11 +4504,11 @@ msgstr ""
 "Alienien joukkueessa on liikaa pelaajia. Odotathan kunnes paikkoja vapautuu "
 "tai liity ihmisten joukkueeseen."
 
-#: src/cgame/cg_servercmds.cpp:439
+#: src/cgame/cg_servercmds.cpp:453
 msgid "The alien team has too many players"
 msgstr "Alienien joukkueessa on liikaa pelaajia"
 
-#: src/cgame/cg_servercmds.cpp:443
+#: src/cgame/cg_servercmds.cpp:457
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -4473,52 +4516,52 @@ msgstr ""
 "Ihmisten joukkueessa on liikaa pelaajia. Odotathan kunnes paikkoja vapautuu "
 "tai liity alienien joukkueeseen."
 
-#: src/cgame/cg_servercmds.cpp:445
+#: src/cgame/cg_servercmds.cpp:459
 msgid "The human team has too many players"
 msgstr "Ihmisten joukkueessa on liikaa pelaajia"
 
-#: src/cgame/cg_servercmds.cpp:449
+#: src/cgame/cg_servercmds.cpp:463
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr "Alienien joukkue on lukittu. Et voi liittyä alieneihin juuri nyt."
 
-#: src/cgame/cg_servercmds.cpp:451
+#: src/cgame/cg_servercmds.cpp:465
 msgid "The alien team is locked"
 msgstr "Alienien joukkue on lukittu"
 
-#: src/cgame/cg_servercmds.cpp:455
+#: src/cgame/cg_servercmds.cpp:469
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr "Ihmisten joukkue on lukittu. Et voi liittyä ihmisiin juuri nyt."
 
-#: src/cgame/cg_servercmds.cpp:457
+#: src/cgame/cg_servercmds.cpp:471
 msgid "The human team is locked"
 msgstr "Ihmisten joukkue on lukittu"
 
-#: src/cgame/cg_servercmds.cpp:461
+#: src/cgame/cg_servercmds.cpp:475
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
 "Pelaajapaikkojen maksimimäärä on täynnä. Odotathan paikkojen vapautumista."
 
-#: src/cgame/cg_servercmds.cpp:463
+#: src/cgame/cg_servercmds.cpp:477
 msgid "No free player slots"
 msgstr "Ei vapaita pelaajapaikkoja"
 
-#: src/cgame/cg_servercmds.cpp:467
+#: src/cgame/cg_servercmds.cpp:481
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Sinun täytyy odottaa, että lämmittelyaika päättyy ennen joukkueeseen "
 "liittymistä."
 
-#: src/cgame/cg_servercmds.cpp:469
+#: src/cgame/cg_servercmds.cpp:483
 msgid "You cannot join a team during warmup."
 msgstr "Et voi liittyä joukkueeseen lämmittelyajalla."
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:491
 msgid "Cheats are not enabled on this server"
 msgstr "Huijaustoiminnot eivät ole käytössä tällä palvelimella"
 
-#: src/cgame/cg_servercmds.cpp:481
+#: src/cgame/cg_servercmds.cpp:495
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -4526,27 +4569,27 @@ msgstr ""
 "Huijaustoiminnot eivät ole käytössä tällä palvelimella, joten et voi käyttää "
 "tätä komentoa, kun olet joukkueessa"
 
-#: src/cgame/cg_servercmds.cpp:488
+#: src/cgame/cg_servercmds.cpp:502
 msgid "Join a team first"
 msgstr "Liity ensin joukkueeseen"
 
-#: src/cgame/cg_servercmds.cpp:494
+#: src/cgame/cg_servercmds.cpp:508
 msgid "You can only use this command when spectating"
 msgstr "Voit käyttää tätä komentoa vain katsojana"
 
-#: src/cgame/cg_servercmds.cpp:499
+#: src/cgame/cg_servercmds.cpp:513
 msgid "Must be alien to use this command"
 msgstr "Täytyy kuulua alieneihin käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:504
+#: src/cgame/cg_servercmds.cpp:518
 msgid "Must be human to use this command"
 msgstr "Täytyy kuulua ihmisiin käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:509
+#: src/cgame/cg_servercmds.cpp:523
 msgid "Must be alive to use this command"
 msgstr "Täytyy olla elossa käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:529
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -4554,11 +4597,11 @@ msgstr ""
 "Tässä ei ole tilaa rakennelmalle. Liiku, kunnes kuvajainen muuttuu vihreäksi "
 "merkiten sopivaa rakennuspaikkaa."
 
-#: src/cgame/cg_servercmds.cpp:517
+#: src/cgame/cg_servercmds.cpp:531
 msgid "There is no room to build here"
 msgstr "Tässä ei ole tilaa rakennelmalle"
 
-#: src/cgame/cg_servercmds.cpp:521
+#: src/cgame/cg_servercmds.cpp:535
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -4566,15 +4609,15 @@ msgstr ""
 "Ei voi rakentaa tälle pinnalle. Pinta on liian jyrkkä taikka sopimaton "
 "rakennelmille. Valitse toinen paikka rakennelmalle."
 
-#: src/cgame/cg_servercmds.cpp:524
+#: src/cgame/cg_servercmds.cpp:538
 msgid "Cannot build on this surface"
 msgstr "Ei voi rakentaa tälle pinnalle"
 
-#: src/cgame/cg_servercmds.cpp:529
+#: src/cgame/cg_servercmds.cpp:543
 msgid "You cannot build that structure"
 msgstr "Et voi tehdä tuota rakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:547
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -4582,11 +4625,11 @@ msgstr ""
 "Tämä toimi poistaisi joukkueesi viimeisen tukijoukkopisteen, joka usein "
 "nopeasti johtaa häviöön. Yritä tehdä enemmän tukijoukkorakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:536
+#: src/cgame/cg_servercmds.cpp:550
 msgid "You may not deconstruct the last spawn"
 msgstr "Et voi purkaa viimeistä tukijoukkorakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:540
+#: src/cgame/cg_servercmds.cpp:554
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -4594,27 +4637,27 @@ msgstr ""
 "Päärakennelma on suojattu välittömältä poistamiselta. Sitä voi siirtää ensin "
 "merkkaamalla, sitten rakentamalla sen toiseen paikkaan."
 
-#: src/cgame/cg_servercmds.cpp:543
+#: src/cgame/cg_servercmds.cpp:557
 msgid "You may not deconstruct this structure"
 msgstr "Et voi purkaa tätä rakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:547
+#: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled on the server for your team."
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä palvelimen kautta."
 
-#: src/cgame/cg_servercmds.cpp:548
+#: src/cgame/cg_servercmds.cpp:562
 msgid "Building has been disabled for your team"
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä"
 
-#: src/cgame/cg_servercmds.cpp:552
+#: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "Sinulla ei enää ole lupaa rakentaa."
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:567
 msgid "You are no longer permitted to build"
 msgstr "Sinulla ei enää ole lupaa rakentaa"
 
-#: src/cgame/cg_servercmds.cpp:557
+#: src/cgame/cg_servercmds.cpp:571
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4622,11 +4665,11 @@ msgstr ""
 "Joukkueesi on päättänyt myöntää tappion ja luovuttaa pelin; Rakentelusta ei "
 "ole hyötyä tässä vaiheessa."
 
-#: src/cgame/cg_servercmds.cpp:559
+#: src/cgame/cg_servercmds.cpp:573
 msgid "Cannot build after admitting defeat"
 msgstr "Ei voi rakentaa tappion myöntämisen jälkeen"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:577
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4634,19 +4677,19 @@ msgstr ""
 "Resursseja ei ole jäjellä. Vapauta resursseja merkkaamalla nykyisiä "
 "rakennelmia korvattaviksi."
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:579
 msgid "There are no resources remaining"
 msgstr "Resursseja ei ole jäljellä"
 
-#: src/cgame/cg_servercmds.cpp:569
+#: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered."
 msgstr "Tähän rakennelmaan ei tule voimaa."
 
-#: src/cgame/cg_servercmds.cpp:570
+#: src/cgame/cg_servercmds.cpp:584
 msgid "This buildable is not powered"
 msgstr "Tähän rakennelmaan ei tule voimaa"
 
-#: src/cgame/cg_servercmds.cpp:574
+#: src/cgame/cg_servercmds.cpp:588
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -4654,26 +4697,26 @@ msgstr ""
 "Reaktoria ei ole. Reaktori täytyy rakentaa ennen kuin voit asettaa mitään "
 "muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:576
+#: src/cgame/cg_servercmds.cpp:590
 msgid "There is no reactor"
 msgstr "Reaktoria ei ole"
 
-#: src/cgame/cg_servercmds.cpp:580
+#: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Reaktoreita voi olla vain yksi. Merkkaa nykyinen reaktori jos aiot siirtää "
 "sitä."
 
-#: src/cgame/cg_servercmds.cpp:582
+#: src/cgame/cg_servercmds.cpp:596
 msgid "There can only be one Reactor"
 msgstr "Reaktoreita voi olla vain yksi"
 
-#: src/cgame/cg_servercmds.cpp:587
+#: src/cgame/cg_servercmds.cpp:601
 msgid "Your team cannot have any more drills"
 msgstr "Joukkueellasi ei voi olla enempää poria"
 
-#: src/cgame/cg_servercmds.cpp:591
+#: src/cgame/cg_servercmds.cpp:605
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4681,32 +4724,32 @@ msgstr ""
 "Sinulla ei ole tilaa tämän kantamiseen. Myythän ristiriitaiset päivitykset "
 "ennen tämän ostamista."
 
-#: src/cgame/cg_servercmds.cpp:593
+#: src/cgame/cg_servercmds.cpp:607
 msgid "You have no room to carry this"
 msgstr "Sinulla ei ole tilaa tämän kantamiseen"
 
-#: src/cgame/cg_servercmds.cpp:597
+#: src/cgame/cg_servercmds.cpp:611
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 "Rahat eivät riitä. Sinulla ei ole tarpeeksi krediittejä tämän toiminnon "
 "suorittamiseen."
 
-#: src/cgame/cg_servercmds.cpp:599
+#: src/cgame/cg_servercmds.cpp:613
 msgid "Insufficient funds"
 msgstr "Riittämättömät varat"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:617
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr "Sinulla on jo tämä esine. Et voi kantaa useampaa samanlaista esinettä."
 
-#: src/cgame/cg_servercmds.cpp:605
+#: src/cgame/cg_servercmds.cpp:619
 msgid "You already hold this item"
 msgstr "Sinulla on jo tämä esine"
 
-#: src/cgame/cg_servercmds.cpp:609
+#: src/cgame/cg_servercmds.cpp:623
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4714,11 +4757,11 @@ msgstr ""
 "Sinun täytyy olla käynnissäolevalla asevarikolla ostaaksesi aseita, "
 "päivityksiä tai ammuksia."
 
-#: src/cgame/cg_servercmds.cpp:611
+#: src/cgame/cg_servercmds.cpp:625
 msgid "You must be near a powered Armoury"
 msgstr "Sinun täytyy olla käynnissäolevalla asevarikolla"
 
-#: src/cgame/cg_servercmds.cpp:615
+#: src/cgame/cg_servercmds.cpp:629
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4726,43 +4769,43 @@ msgstr ""
 "Sinun täytyy olla reaktorilla, poralla tai käynnissäolevalla asevarikolla "
 "ostaaksesi energia-ammuksia."
 
-#: src/cgame/cg_servercmds.cpp:617
+#: src/cgame/cg_servercmds.cpp:631
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 "Sinun täytyy olla reaktorilla, poralla tai käynnissäolevalla asevarikolla"
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:635
 msgid "There is not enough room here to change armour."
 msgstr "Panssaripuvun vaihtamiseen ei ole täällä tilaa."
 
-#: src/cgame/cg_servercmds.cpp:622
+#: src/cgame/cg_servercmds.cpp:636
 msgid "Not enough room here to change armour."
 msgstr "Ei riittävästi tilaa täällä panssaripuvun vaihtoon."
 
-#: src/cgame/cg_servercmds.cpp:626
+#: src/cgame/cg_servercmds.cpp:640
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 "Et saa ostaa tai myydä aseita ennen kuin rakennusajastimesi on nollilla."
 
-#: src/cgame/cg_servercmds.cpp:628
+#: src/cgame/cg_servercmds.cpp:642
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr "Et voi ostaa tai myydä aseita ennen kuin rakennusajastimesi nollaantuu"
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:647
 msgid "You must be dead to use the class command"
 msgstr "Sinun täytyy olla kuollut käyttääksesi luokkakomentoa"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:651
 msgid "Unknown starting item"
 msgstr "Tuntematon aloitusesine"
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:655
 msgid "Starting item not allowed"
 msgstr "Aloitusesine ei sallittu"
 
-#: src/cgame/cg_servercmds.cpp:647
+#: src/cgame/cg_servercmds.cpp:661
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4770,11 +4813,11 @@ msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa ennen kuin voit asettaa "
 "mitään muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:649 src/cgame/cg_servercmds.cpp:689
+#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
 msgid "There is no Overmind"
 msgstr "Ylihallitsijaa ei ole"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4782,15 +4825,15 @@ msgstr ""
 "Ylihallitsijoita voi olla vain yksi. Merkkaa nykyinen ylihallitsija jos aiot "
 "siirtää sitä."
 
-#: src/cgame/cg_servercmds.cpp:655
+#: src/cgame/cg_servercmds.cpp:669
 msgid "There can only be one Overmind"
 msgstr "Ylihallitsijoita voi olla vain yksi"
 
-#: src/cgame/cg_servercmds.cpp:660
+#: src/cgame/cg_servercmds.cpp:674
 msgid "Your team cannot have any more leeches"
 msgstr "Joukkueellasi ei voi olla enempää loisia"
 
-#: src/cgame/cg_servercmds.cpp:664
+#: src/cgame/cg_servercmds.cpp:678
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4798,11 +4841,11 @@ msgstr ""
 "Ylihallitsija ei voi hallita enempää rakennelmia. Merkkaa nykyisiä "
 "rakennelmia korvattavaksi rakentaaksesi uusia."
 
-#: src/cgame/cg_servercmds.cpp:666
+#: src/cgame/cg_servercmds.cpp:680
 msgid "The Overmind cannot control any more structures"
 msgstr "Ylihallitsija ei voi hallita enempää rakennelmia"
 
-#: src/cgame/cg_servercmds.cpp:670
+#: src/cgame/cg_servercmds.cpp:684
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4810,11 +4853,11 @@ msgstr ""
 "Täällä ei ole tilaa kehittyä. Siirry kauemmaksi seinistä tai läheisistä "
 "esineistä ja yritä uudelleen."
 
-#: src/cgame/cg_servercmds.cpp:672
+#: src/cgame/cg_servercmds.cpp:686
 msgid "There is no room to evolve here"
 msgstr "Täällä ei ole tilaa kehittyä"
 
-#: src/cgame/cg_servercmds.cpp:676
+#: src/cgame/cg_servercmds.cpp:690
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4822,80 +4865,80 @@ msgstr ""
 "Tämä paikka on liian lähellä vihollista kehittymiseen. Siirry kauemmas "
 "vihollisista ja yritä uudelleen."
 
-#: src/cgame/cg_servercmds.cpp:678
+#: src/cgame/cg_servercmds.cpp:692
 msgid "This location is too close to the enemy to evolve"
 msgstr "Tämä paikka on liian lähellä vihollista kehittymiseen"
 
-#: src/cgame/cg_servercmds.cpp:682 src/cgame/cg_servercmds.cpp:683
+#: src/cgame/cg_servercmds.cpp:696 src/cgame/cg_servercmds.cpp:697
 msgid "The Overmind is too far away to devolve."
 msgstr "Ylihallitsija on liian kaukana alkeellistumiseen."
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:701
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa jotta voit päivittyä."
 
-#: src/cgame/cg_servercmds.cpp:693
+#: src/cgame/cg_servercmds.cpp:707
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Et voi kehittyä ennen kuin rakennusajastimesi on nollilla."
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:708
 msgid "You cannot evolve until your build timer expires"
 msgstr "Et voi kehittyä ennen kuin rakennusajastimesi nollaantuu"
 
-#: src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:712
 msgid "Wait a second after attacking or evolving"
 msgstr "Odota sekunti hyökkäämisen tai kehittymisen jälkeen"
 
-#: src/cgame/cg_servercmds.cpp:706
+#: src/cgame/cg_servercmds.cpp:720
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Et voi kehittyä %siksi"
 
-#: src/cgame/cg_servercmds.cpp:711
+#: src/cgame/cg_servercmds.cpp:725
 msgid "You cannot evolve while wallwalking"
 msgstr "Et voi kehittyä seinilläkävellessäsi"
 
-#: src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:729
 msgid "Unknown class"
 msgstr "Tuntematon luokka"
 
-#: src/cgame/cg_servercmds.cpp:719
+#: src/cgame/cg_servercmds.cpp:733
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Et voi aloittaa %sina"
 
-#: src/cgame/cg_servercmds.cpp:724
+#: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s ei ole sallittu"
 
-#: src/cgame/cg_servercmds.cpp:729
+#: src/cgame/cg_servercmds.cpp:743
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "%s ei ole vielä avautunut käyttöön"
 
-#: src/cgame/cg_servercmds.cpp:734
+#: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame: debug: ei valikkoa %d"
 
-#: src/cgame/cg_servercmds.cpp:837
+#: src/cgame/cg_servercmds.cpp:851
 msgid "^1*DEAD*^*"
 msgstr "^1*KUOLLUT*^*"
 
-#: src/cgame/cg_servercmds.cpp:898
+#: src/cgame/cg_servercmds.cpp:912
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sYksityisviesti pelaajalta ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:906
+#: src/cgame/cg_servercmds.cpp:920
 #, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ">> vastaa sanomalla: '/m %d [viestisi]' tai '/r [viestisi]' <<"
 
-#: src/cgame/cg_servercmds.cpp:1377
+#: src/cgame/cg_servercmds.cpp:1390
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Tuntematon pelaajan pelikomento: %s"
@@ -5297,15 +5340,15 @@ msgstr "$1$^* yhdisti"
 msgid "$1$^* entered the game"
 msgstr "$1$^* saapui peliin"
 
-#: src/sgame/sg_combat.cpp:629
+#: src/sgame/sg_combat.cpp:627
 msgid "Your killer, $1$^*, had $2$ HP."
 msgstr "Tappajallasi, $1$^*, oli $2$ HP."
 
-#: src/sgame/sg_combat.cpp:1213
+#: src/sgame/sg_combat.cpp:1211
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
 msgstr "$2$ ^3PURKI RAKENNELMAN^* $1$"
 
-#: src/sgame/sg_combat.cpp:1214
+#: src/sgame/sg_combat.cpp:1212
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$2$ ^3TUHOSI RAKENNELMAN^* $1$"
 
@@ -5333,21 +5376,21 @@ msgstr "Alienit voitti"
 msgid "Empty teams skip map time exceeded."
 msgstr "Kentän ohitus tyhjillä joukkueilla -aikaraja ylitetty."
 
-#: src/sgame/sg_main.cpp:2248
+#: src/sgame/sg_main.cpp:2263
 msgid "The game has been paused. Please wait."
 msgstr "Erä on keskeytetty. Ole hyvä ja odota."
 
-#: src/sgame/sg_main.cpp:2252
+#: src/sgame/sg_main.cpp:2267
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Palvelin: Erä jatkuu automaattisesti $1$ sekunnin kuluttua"
 
-#: src/sgame/sg_main.cpp:2271
+#: src/sgame/sg_main.cpp:2286
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 "Palvelin: Erä on laitettu jatkumaan automaattisesti ($1$ minuutin "
 "taukorajoitus)"
 
-#: src/sgame/sg_main.cpp:2274
+#: src/sgame/sg_main.cpp:2289
 msgid "The game has been unpaused!"
 msgstr "Erä jatkuu!"
 
