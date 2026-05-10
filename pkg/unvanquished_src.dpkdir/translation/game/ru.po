@@ -2569,7 +2569,7 @@ msgstr "BP-вампиризм"
 
 #: ui/server_setup.rml:165
 msgid "Bleed build points from the enemy team by killing buildables."
-msgstr ""
+msgstr "Выкачивать очки строительства у вражеской команды, уничтожая постройки."
 "Выкачивать очки строительства у вражеской команды, уничтожая постройки."
 
 #: ui/server_setup.rml:168
