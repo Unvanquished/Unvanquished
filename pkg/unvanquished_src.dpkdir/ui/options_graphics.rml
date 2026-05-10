@@ -162,12 +162,12 @@
 				<row>
 					<h3><translate>sRGB conversion accuracy</translate></h3>
 					<input cvar="r_accurateSRGB" type="checkbox" />
-					<p><translate>Disabling accuracy makes color conversions faster but less accurate.</translate></p>
+					<p><translate>Disabling accuracy makes color conversions faster but less precise.</translate></p>
 				</row>
 				<row>
 					<select cvar="r_forceBlendRegime" style="width:20em;">
 						<option value="0"><translate>Detect</translate></option>
-						<option value="1"><translate>Forced naive blend (cheap approximation)</translate></option>
+						<option value="1"><translate>Forced naive blend (approximation)</translate></option>
 					</select>
 					<h3><translate>Blend regime</translate></h3>
 				</row>
