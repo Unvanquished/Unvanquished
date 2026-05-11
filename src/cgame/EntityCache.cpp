@@ -221,6 +221,9 @@ void SyncEntityCacheToEngine() {
 }
 
 void SyncEntityCacheFromEngine() {
+	// Make it process entity updates so we will be querying against the latest entities
+	cmdBuffer.TryFlush();
+
 	std::vector<LerpTagUpdate> lerpTagUpdates;
 	lerpTagUpdates.reserve( attachmentUpdates.size() );
 
