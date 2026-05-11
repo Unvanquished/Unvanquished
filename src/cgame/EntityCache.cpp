@@ -160,7 +160,7 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
 
 	if ( ents.size() + frameCount > cent->refEntitiesCount ) {
 		uint16_t newOffset = entityCache.Alloc( ents.size() + frameCount );
-		std::copy_n( entities + cent->refEntitiesOffset, cent->refEntitiesCount, entities + newOffset );
+		std::copy_n( entities + cent->refEntitiesOffset, frameCount, entities + newOffset );
 		entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, true );
 		cent->refEntitiesOffset = newOffset;
 		cent->refEntitiesCount = ents.size() + frameCount;
