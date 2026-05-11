@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:43+0200\n"
-"PO-Revision-Date: 2026-05-04 20:09+0000\n"
-"Last-Translator: niv41 <niv41.trabajando@proton.me>\n"
+"PO-Revision-Date: 2026-05-12 14:11+0000\n"
+"Last-Translator: Luciano Balducchi <openarena.arg@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.5-dev\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -1026,6 +1026,7 @@ msgstr ""
 #: ui/options_graphics.rml:80
 msgid "Multisample anti-aliasing is preferred when both are enabled."
 msgstr ""
+"Se prefiere el modo de suavizado MSAA en caso de que ambos estén activos."
 
 #: ui/options_graphics.rml:92
 msgid "Multisample anti-aliasing (MSAA)"
@@ -1036,6 +1037,8 @@ msgid ""
 "Render at higher precision at the boundaries of surfaces for crisp edges. "
 "This is a resource-intensive option."
 msgstr ""
+"Renderiza con alta precisión en los límites de las superficies para "
+"conseguir bordes suaves. Esta opción consume muchos recursos."
 
 #: ui/options_graphics.rml:98
 msgid "Fast approximate anti-aliasing (FXAA)"
@@ -1044,6 +1047,8 @@ msgstr "FXAA"
 #: ui/options_graphics.rml:99
 msgid "Smooth the edges using a fast but cheap filter, can blur some details."
 msgstr ""
+"Suaviza los bordes utilizando un filtro rápido pero barato, puede borronear "
+"algunos detalles."
 
 #: ui/options_graphics.rml:103 ui/options_graphics.rml:182
 #: ui/options_graphics.rml:246 ui/options_graphics.rml:285
@@ -1062,7 +1067,7 @@ msgstr "Exposición"
 
 #: ui/options_graphics.rml:112
 msgid "World brightness level."
-msgstr ""
+msgstr "Nivel de brillo del mundo."
 
 #: ui/options_graphics.rml:115 ui/options_graphics.rml:125
 #: ui/options_graphics.rml:313 ui/options_graphics.rml:440
@@ -1084,11 +1089,11 @@ msgstr "Obsoleto."
 
 #: ui/options_graphics.rml:122
 msgid "Consider resetting and using exposure instead."
-msgstr ""
+msgstr "Considera reiniciar y utilizar en su lugar la exposición."
 
 #: ui/options_graphics.rml:129 ui/options_graphics.rml:133
 msgid "Tone mapping"
-msgstr ""
+msgstr "Mapeado de tonos"
 
 #: ui/options_graphics.rml:130
 msgid "Manage dynamic range to alleviate washed-out or too-dark areas."
@@ -1153,23 +1158,25 @@ msgstr "Método de iluminación no físico para hacer modelos menos oscuros."
 
 #: ui/options_graphics.rml:163
 msgid "sRGB conversion accuracy"
-msgstr ""
+msgstr "Precisión de conversión sRGB"
 
 #: ui/options_graphics.rml:165
 msgid "Disabling accuracy makes color conversions faster but less precise."
 msgstr ""
+"Desactivar la precisión acelera la conversión de color a costa de una "
+"precisión menor."
 
 #: ui/options_graphics.rml:169
 msgid "Detect"
-msgstr ""
+msgstr "Detectar"
 
 #: ui/options_graphics.rml:170
 msgid "Forced naive blend (approximation)"
-msgstr ""
+msgstr "Forzar mezclado ingenuo (aproximado)"
 
 #: ui/options_graphics.rml:172
 msgid "Blend regime"
-msgstr ""
+msgstr "Régimen de mezclado"
 
 #: ui/options_graphics.rml:176
 msgid "Blobs"
@@ -1257,13 +1264,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:219
 msgid "Use bindless textures if possible"
-msgstr ""
+msgstr "Utilizar texturas desvinculadas en lo posible"
 
 #: ui/options_graphics.rml:221
 msgid ""
 "Use bindless textures if supported by hardware/driver. This might improve "
 "performance."
 msgstr ""
+"Utiliza texturas desvinculadas (bindless) si el sistema las soporta. Esto "
+"puede ayudar al rendimiento."
 
 #: ui/options_graphics.rml:221 ui/options_graphics.rml:271
 #: ui/options_graphics.rml:295 ui/options_graphics.rml:381
