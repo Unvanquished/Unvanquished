@@ -6524,7 +6524,7 @@ bool G_admin_bot( gentity_t *ent )
 			const std::string& teamStr = args.Argv( 3 );
 			team = BG_PlayableTeamFromString( teamStr.c_str() );
 		}
-		for ( int i = 0; i < MAX_CLIENTS; ++i )
+		for ( int i = 0; i < level.maxclients; ++i )
 		{
 			if ( team != TEAM_NONE && G_Team( &g_entities[ i ] ) != team )
 			{
