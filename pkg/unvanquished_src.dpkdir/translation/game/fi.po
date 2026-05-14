@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:43+0200\n"
-"PO-Revision-Date: 2026-03-21 22:05+0000\n"
+"PO-Revision-Date: 2026-05-15 14:11+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 2026.5.dev0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -1147,23 +1147,25 @@ msgstr ""
 
 #: ui/options_graphics.rml:163
 msgid "sRGB conversion accuracy"
-msgstr ""
+msgstr "sRGB-muunnoksen tarkkuus"
 
 #: ui/options_graphics.rml:165
 msgid "Disabling accuracy makes color conversions faster but less precise."
 msgstr ""
+"Tarkkuuden käytöstä poistaminen nopeuttaa värimuunnoksia vähentäen "
+"täsmällisyyttä."
 
 #: ui/options_graphics.rml:169
 msgid "Detect"
-msgstr ""
+msgstr "Tunnista"
 
 #: ui/options_graphics.rml:170
 msgid "Forced naive blend (approximation)"
-msgstr ""
+msgstr "Pakotettu naiivi sekoitus (likiarvo)"
 
 #: ui/options_graphics.rml:172
 msgid "Blend regime"
-msgstr ""
+msgstr "Sekoituskaava"
 
 #: ui/options_graphics.rml:176
 msgid "Blobs"
@@ -2553,25 +2555,27 @@ msgstr "Alustava rakentelupisteiden määrä"
 
 #: ui/server_setup.rml:164
 msgid "BP Vampire"
-msgstr ""
+msgstr "RP Vampyyri"
 
 #: ui/server_setup.rml:165
 msgid "Bleed build points from the enemy team by killing buildables."
-msgstr ""
+msgstr "Kerää rakennuspisteitä viholliselta tuhoamalla rakennelmia."
 
 #: ui/server_setup.rml:168
 msgid "Mining"
-msgstr ""
+msgstr "Louhinta"
 
 #: ui/server_setup.rml:169
 msgid ""
 "Increase build budget by building mining structures. BP returns slowly when "
 "a buildable is lost."
 msgstr ""
+"Kerää rakennuspisteitä tekemällä louhintarakennelmia. RP:t palaavat "
+"vähitellen menetetystä rakennelmasta."
 
 #: ui/server_setup.rml:171
 msgid "Mining mode options"
-msgstr ""
+msgstr "Louhintatavan asetukset"
 
 #: ui/server_setup.rml:174
 msgid "Miner bonus"
