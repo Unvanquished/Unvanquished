@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:43+0200\n"
-"PO-Revision-Date: 2026-04-19 17:10+0000\n"
-"Last-Translator: XblateX <blate@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2026-05-18 20:11+0000\n"
+"Last-Translator: nukcat <unclearcat@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/uk/>\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 "X-POOTLE-MTIME: 1377273168.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -63,11 +63,12 @@ msgstr "Повернутися до вибору команди"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr "Вас заблоковано"
+msgstr "Вас було заблоковано"
 
 #: ui/banned.rml:61
+#, fuzzy
 msgid "Banned by:"
-msgstr ""
+msgstr "Заблоковано користувачем:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
@@ -75,7 +76,7 @@ msgstr "Тривалість:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr "Привід:"
+msgstr "Причина:"
 
 #: ui/banned.rml:65
 msgid "Close"
@@ -161,7 +162,7 @@ msgstr "Гаразд"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Посібник з ігрового процессу"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
@@ -250,6 +251,9 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Люди купляють та продають зброю в [armoury] арсеналі, переконайтеся що вона "
+"збудована! Використайте збиральний набір щоб побудувати арсенал у випадку "
+"його відсутньості."
 
 #: ui/help_gameplay.rml:62
 msgid "Powering buildables"
@@ -323,40 +327,54 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
+"Будівництво, знищення структур та вбивство ворогів приносить вашій команді "
+"новий ресурс під назвою моментум. Якщо ви накопите достатнью кількість "
+"моментуму, нова зброя, структури та класи будуть відкриті."
 
 #: ui/help_gameplay.rml:95
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
+"Моментум зменшуєтсья експоненціально через час, тому якщо ви бездійствуєте "
+"ваша команда буде втрачати доступ до нових предметів. Існуючі покращення "
+"залишуться робочими."
 
 #: ui/help_gameplay.rml:99
 msgid "Wildfire"
-msgstr ""
+msgstr "Пожежа"
 
 #: ui/help_gameplay.rml:102
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"Споруди Чужих можуть загоратися тоді, коли вони отримують шкоду від [flamer] "
+"вогнемету або [firebomb] вогняної бомби."
 
 #: ui/help_gameplay.rml:105
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Якщо структури розташовані занадто близько, вогінь може перейти до їх "
+"невдалих сусідів."
 
 #: ui/help_gameplay.rml:108
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
+"Малий [fire] вогінь може потухнути за деякий час, але группа підпалених "
+"структур буде палати достатньо довго для великого хаосу."
 
 #: ui/help_gameplay.rml:111
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
+"Плююча атака Просунутого Ґрейнджер може бути використана проти вогню або для "
+"сповільнення непроханих гостів!"
 
 #: ui/help_gameplay.rml:115
 msgid "Under attack"
@@ -370,17 +388,17 @@ msgid ""
 "owning team."
 msgstr ""
 "Реактор [reactor] та Надрозум [overmind] надсилатимуть попередження команді, "
-"коли їхній запас здоров’я становитиме 75 %, 50 % та 25 %, а також у разі "
-"їхнього знищення. Знищення інших споруд спричинятиме появу попереджень \"під "
+"коли їхній запас здоров’я становитиме 75%, 50% та 25%, а також у разі їх "
+"знищення. Знищення інших споруд спричинятиме появу попереджень \"під "
 "атакою\" для команди-власника."
 
 #: ui/help_gameplay.rml:122
 msgid "Healing"
-msgstr ""
+msgstr "Лікування"
 
 #: ui/help_gameplay.rml:125
 msgid "Dying feeds the enemy, you may want to save your life!"
-msgstr ""
+msgstr "Смерть кормить ворога, краще збережіть ваше життя!"
 
 #: ui/help_gameplay.rml:129
 msgid ""
@@ -389,6 +407,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
+"Чужі лікуються повільно де б вони не були, але вони лікуються швидше в "
+"групах та біля будівель Чужих. Будівництво вперед може бути вирішальним! "
+"Лікування у будь якому вигляді буде також впливати на відновлення снарядів "
+"[advdragoon] Просунутих Драгунів."
 
 #: ui/help_gameplay.rml:133
 msgid ""
@@ -396,6 +418,9 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
+"Підсилювач дає швидке лікування для близьких Чужих, відкрийте та побудуйте "
+"її якомога швидше. Підсилювач також дає вам отруту щоб зробити ваші атаки "
+"більш смертельними."
 
 #: ui/help_gameplay.rml:136
 msgid ""
@@ -403,6 +428,9 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
+"Стоячи на середній відстані від [overmind] надрозуму або [egg] личинок також "
+"буде трохи підшвидшувати лікування, хоч і не так швидко як слиз. Це може "
+"полегшити захист баз."
 
 #: ui/help_gameplay.rml:139
 msgid ""
