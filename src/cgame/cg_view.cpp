@@ -1861,7 +1861,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	/* Cache invalidation for predictedPlayerEntity must be done here
 	to avoid allocating increasingly large amounts of entities to it during teleports */
 	centity_t* playerEnt = &cg.predictedPlayerEntity;
-
+	int predictedPlayerPreviousFrameCount = playerEnt->refEntitiesFrameCount;
 	playerEnt->refEntitiesFrameCount = 0;
 
 	// build the render lists
@@ -1872,14 +1872,14 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 		CG_AddMarkPolys();
 	}
 
-	const uint8_t lastFrameCount = playerEnt->refEntitiesFrameCount;
-
-	if ( playerEnt->refEntitiesCount > lastFrameCount ) {
-		entityCache.Free( playerEnt->refEntitiesOffset + lastFrameCount, playerEnt->refEntitiesCount - lastFrameCount, true );
-		playerEnt->refEntitiesCount = lastFrameCount;
-	}
-
 	CG_AddViewWeapon( &cg.predictedPlayerState );
+
+	// Remove old predicted player ref entities but without shrinking the allocation
+	if ( playerEnt->refEntitiesFrameCount < predictedPlayerPreviousFrameCount )
+	{
+		entityCache.Deactivate( playerEnt->refEntitiesOffset + playerEnt->refEntitiesFrameCount,
+		                        predictedPlayerPreviousFrameCount - playerEnt->refEntitiesFrameCount );
+	}
 
 	SyncEntityCacheToEngine();
 	SyncEntityCacheFromEngine();

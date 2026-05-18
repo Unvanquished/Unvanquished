@@ -348,10 +348,15 @@ void EntityCache::Free( const uint32_t offset, const uint32_t count, const bool 
 	block &= ~mask;
 
 	if ( update ) {
-		for ( refEntity_t* ent = entities + offset; ent < entities + offset + count; ent++ ) {
-			ent->active = false;
-			entityUpdates.push_back( EntityUpdate{ *ent, ( uint16_t ) ( ent - entities ) } );
-		}
+		Deactivate( offset, count );
+	}
+}
+
+void EntityCache::Deactivate( uint32_t offset, uint32_t count )
+{
+	for ( refEntity_t* ent = entities + offset; count--; ent++ ) {
+		ent->active = false;
+		entityUpdates.push_back( EntityUpdate{ *ent, ( uint16_t ) ( ent - entities ) } );
 	}
 }
 

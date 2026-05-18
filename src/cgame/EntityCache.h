@@ -62,6 +62,7 @@ class EntityCache {
 	public:
 	uint32_t Alloc( const uint32_t count );
 	void Free( const uint32_t offset, const uint32_t count, const bool update );
+	void Deactivate( uint32_t offset, uint32_t count );
 
 	void Clear();
 
