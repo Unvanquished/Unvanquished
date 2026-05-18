@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:43+0200\n"
-"PO-Revision-Date: 2026-05-18 20:11+0000\n"
+"PO-Revision-Date: 2026-05-19 21:11+0000\n"
 "Last-Translator: nukcat <unclearcat@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/uk/>\n"
@@ -66,7 +66,6 @@ msgid "You have been banned"
 msgstr "Вас було заблоковано"
 
 #: ui/banned.rml:61
-#, fuzzy
 msgid "Banned by:"
 msgstr "Заблоковано користувачем:"
 
@@ -257,7 +256,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:62
 msgid "Powering buildables"
-msgstr ""
+msgstr "Енергетичні споруди"
 
 #: ui/help_gameplay.rml:65
 msgid ""
@@ -267,6 +266,12 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
+"Для створення структури потрібні очок будівництва. Ваша команда почне з "
+"невеликої кількістью очок будівництва, але якщо ви захочите розмістити "
+"більше будівль у певній зоні, ви можете побудувати [leech] видобувну "
+"структуру щоб збільшити доступню енергію та забезпечити більшою кількістью "
+"очок будівництва. Майте на увазі те що ви втратите очки будівництва якщо "
+"видобувні структури знищені."
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -275,6 +280,10 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
+"Коли ви використовуєте більше ОБ (Очок Будівництва) ніж викопні споруди "
+"([leech] П'явка, [drill] Бур) здатні вам дати (поточні ОБ + ОБ які ви "
+"відновите через час), деякі споруди відключаться, поки інші будуть мати "
+"достатньо енергії щоб залишатись функціонуючими."
 
 #: ui/help_gameplay.rml:69
 msgid ""
@@ -282,10 +291,13 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
+"Призовні структури ([egg] яйця та [telenode] телевузли), викопні споруди "
+"(п'явка та дриль) та унікальні структури ([overmind] надрозум та [reactor] "
+"реактор) НЕ уражені впливу відсутньості ОБ."
 
 #: ui/help_gameplay.rml:73
 msgid "Mining structures"
-msgstr ""
+msgstr "Видобувні структури"
 
 #: ui/help_gameplay.rml:76
 msgid ""
@@ -293,12 +305,17 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
+"Очки будівництва отримуються через дві видобувні структури: людська [drill] "
+"дриль та [leech] п'явка чужих. Ці дві структури мають бути розподілени для "
+"еффективності."
 
 #: ui/help_gameplay.rml:79
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
+"Не будуйте видобувні структури занадто близько до одне одного або вони "
+"будуть конкурувати з одне одним і зрештою витрачати будівничі ресурси!"
 
 #: ui/help_gameplay.rml:82
 msgid ""
