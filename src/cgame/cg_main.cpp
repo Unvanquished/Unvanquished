@@ -1350,6 +1350,12 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	CG_InitClasses();
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
+	// Human predicted player entity has stuff added from 2 different places. Reallocation
+	// when ref entities have already been added doesn't work, so allocate the
+	// maximum space beforehand
+	cg.predictedPlayerEntity.refEntitiesOffset = entityCache.Alloc( 64 );
+	cg.predictedPlayerEntity.refEntitiesCount = 64;
+
 	CG_UpdateLoadingStep( LOAD_HUDS );
 	CG_Rocket_LoadHuds();
 	CG_LoadBeaconsConfig();
