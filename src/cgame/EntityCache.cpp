@@ -159,7 +159,17 @@ void AddRefEntities( centity_t* cent, std::vector<refEntity_t>& ents ) {
 
 	if ( ents.size() + frameCount > cent->refEntitiesCount ) {
 		uint16_t newOffset = entityCache.Alloc( ents.size() + frameCount );
-		std::copy_n( entities + cent->refEntitiesOffset, frameCount, entities + newOffset );
+
+		if ( frameCount > 0 ) {
+			Log::Warn( "EntityCache: entity %d had to move its ref entity array", cent - cg_entities );
+			// This doesn't work in general because stuff referencing the entity id's will end up wrong
+			// The entityAttachment field within the same array could be fixed easily, but LerpTag
+			// queries cannot so just don't do it
+
+			// Halfheartedly attempt to move the array
+			std::copy_n( entities + cent->refEntitiesOffset, frameCount, entities + newOffset );
+		}
+
 		entityCache.Free( cent->refEntitiesOffset, cent->refEntitiesCount, true );
 		cent->refEntitiesOffset = newOffset;
 		cent->refEntitiesCount = ents.size() + frameCount;
