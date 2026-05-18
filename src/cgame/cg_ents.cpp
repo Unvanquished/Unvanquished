@@ -1278,11 +1278,10 @@ void CG_AddPacketEntities()
 
 		cent->valid = true;
 
-		cent->refEntitiesFrame ^= 1;
-		cent->refEntitiesFrameCount[cent->refEntitiesFrame] = 0;
+		cent->refEntitiesFrameCount = 0;
 		CG_AddCEntity( cent );
 
-		const uint8_t lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
+		const uint8_t lastFrameCount = cent->refEntitiesFrameCount;
 
 		if ( cent->refEntitiesCount > lastFrameCount ) {
 			entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
