@@ -769,8 +769,7 @@ struct centity_t
 	uint16_t refEntitiesOffset        = 0;
 	uint8_t  refEntitiesCount         = 0;
 
-	uint8_t  refEntitiesFrame         = 0; // toggles between 0 and 1
-	uint8_t  refEntitiesFrameCount[2] { 0, 0 }; // number of ref entities associated with this centity_t
+	uint8_t  refEntitiesFrameCount; // number of ref entities associated with this centity_t
 
 	bool       extrapolated; // false if origin / angles is an interpolation
 	vec3_t         rawOrigin;

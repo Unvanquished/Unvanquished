@@ -423,7 +423,7 @@ void CG_SetAttachmentTag( attachment_t *a, centity_t* centity, const uint16_t en
 	}
 
 	a->centity = centity;
-	a->entity = entity + centity->refEntitiesFrameCount[centity->refEntitiesFrame];
+	a->entity = entity + centity->refEntitiesFrameCount;
 	a->model = model;
 	a->tagName = tagName;
 	a->tagValid = true;

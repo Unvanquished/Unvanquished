@@ -1862,8 +1862,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	to avoid allocating increasingly large amounts of entities to it during teleports */
 	centity_t* playerEnt = &cg.predictedPlayerEntity;
 
-	playerEnt->refEntitiesFrame ^= 1;
-	playerEnt->refEntitiesFrameCount[playerEnt->refEntitiesFrame] = 0;
+	playerEnt->refEntitiesFrameCount = 0;
 
 	// build the render lists
 	if ( !cg.hyperspace )
@@ -1873,7 +1872,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 		CG_AddMarkPolys();
 	}
 
-	const uint8_t lastFrameCount = playerEnt->refEntitiesFrameCount[playerEnt->refEntitiesFrame];
+	const uint8_t lastFrameCount = playerEnt->refEntitiesFrameCount;
 
 	if ( playerEnt->refEntitiesCount > lastFrameCount ) {
 		entityCache.Free( playerEnt->refEntitiesOffset + lastFrameCount, playerEnt->refEntitiesCount - lastFrameCount, true );
