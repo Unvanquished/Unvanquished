@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-10 23:43+0200\n"
-"PO-Revision-Date: 2026-05-12 14:11+0000\n"
-"Last-Translator: Luciano Balducchi <openarena.arg@gmail.com>\n"
+"PO-Revision-Date: 2026-05-22 22:11+0000\n"
+"Last-Translator: niv41 <niv41.trabajando@proton.me>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -73,7 +73,7 @@ msgstr "Duración:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr "Motivo: "
+msgstr "Motivo:"
 
 #: ui/banned.rml:65
 msgid "Close"
@@ -89,7 +89,7 @@ msgstr "Motivo"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "Votación"
+msgstr "Votar"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:36
 msgid "Fill with bots"
