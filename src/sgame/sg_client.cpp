@@ -1313,6 +1313,7 @@ void ClientBegin( int clientNum )
 		trap_UnlinkEntity( ent );
 	}
 
+	G_SendClientPmoveParams(clientNum);
 	G_InitGentity( ent );
 
 	// Create a basic client entity, will be replaced by a more specific one later.
