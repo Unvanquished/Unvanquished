@@ -1169,9 +1169,9 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 	        i != WP_BLASTER )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
+		Info_SetValueForKey( buf, "name", _( BG_Weapon( i )->humanName ), false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), false );
-		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, false );
+		Info_SetValueForKey( buf, "description", _( BG_Weapon( i )->info ), false );
 		Info_SetValueForKey( buf, "icon", va( "$handle/%d", cg_weapons[i].ammoIcon ), false);
 		Info_SetValueForKey( buf, "availability", WeaponAvailability( i ).c_str(), false );
 		Info_SetValueForKey( buf, "cmdName", BG_Weapon( i )->name, false );
@@ -1235,9 +1235,9 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 	        i != UP_MEDKIT )
 	{
 		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
+		Info_SetValueForKey( buf, "name", _( BG_Upgrade( i )->humanName ), false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), false );
-		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
+		Info_SetValueForKey( buf, "description", _( BG_Upgrade( i )->info ), false );
 		Info_SetValueForKey( buf, "availability", UpgradeAvailability( upgrade_t(i) ).c_str(), false );
 		Info_SetValueForKey( buf, "cmdName", BG_Upgrade( i )->name, false );
 		Info_SetValueForKey( buf, "icon", va( "$handle/%d", cg_upgrades[ i ].upgradeIcon ), false );
@@ -1362,8 +1362,8 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 				price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->health ) * DEVOLVE_RETURN_FRACTION;
 			}
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-			Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
-			Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
+			Info_SetValueForKey( buf, "name", _( BG_ClassModelConfig( i )->humanName ), false );
+			Info_SetValueForKey( buf, "description", _( BG_Class( i )->info ), false );
 			Info_SetValueForKey( buf, "availability", EvolveAvailability( class_t(i) ).c_str(), false );
 			Info_SetValueForKey( buf, "icon", BG_Class( i )->icon, false );
 			Info_SetValueForKey( buf, "cmdName", BG_Class( i )->name, false );
@@ -1425,9 +1425,9 @@ static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, cha
 			buf[ 0 ] = '\0';
 
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
+			Info_SetValueForKey( buf, "name", _( BG_Buildable( i )->humanName ), false );
 			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
-			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
+			Info_SetValueForKey( buf, "description", _( BG_Buildable( i )->info ), false );
 			Info_SetValueForKey( buf, "icon", BG_Buildable( i )->icon, false );
 			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
 			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
