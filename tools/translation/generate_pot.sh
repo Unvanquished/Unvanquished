@@ -42,6 +42,12 @@ generate_game_pot () (
 		| xargs -I'{}' \
 			"${script_dir}/generate_rml_pot.py" '{}' \
 			>> "${temp_pot_file}"
+
+		find -type f -name '*.attr.cfg' \
+		| sort \
+		| xargs -I'{}' \
+			"${script_dir}/generate_attr_pot.py" '{}' \
+			>> "${temp_pot_file}"
 	)
 
 	"${script_dir}/generate_gender_pot.pl" \
