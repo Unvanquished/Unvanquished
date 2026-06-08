@@ -2,7 +2,7 @@
 
 # ===========================================================================
 #
-# Copyright (c) 2024-2026 Unvanquished Developers
+# Copyright (c) 2026 Unvanquished Developers
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,28 +26,33 @@
 
 set -u -e -o pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-repo_dir="$(realpath "${script_dir}/../..")"
-dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
-pot_dir="${dpk_dir}/translation"
+short_po_diff () {
+	git diff --unified=0 --no-prefix -- "${1}" \
+	| sed '/^diff --git/d;/^index /d;/^--- /d;/^\+\+\+ /d;/^@@ /d' \
+	| grep -vE '^[-+]"POT-Creation-Date: '
+}
 
-. "${script_dir}/translation.conf"
+error () {
+	echo "ERROR: ${1}" >&2
+	false
+}
 
-cd "${pot_dir}"
+if [ -z "${1:-}" ]
+then
+	error 'missing file'
+fi
 
-for name in "${translations[@]}"
-do
-	pot_file="${pot_dir}/${name}.pot"
+if ! [ -f "${1}" ]
+then
+	error "not a file: ${1}"
+fi
 
-	if [ -f "${pot_file}" -a -d "${name}" ]
+# Denoise the diff only if the file is already tracked by Git.
+if git ls-files --error-unmatch "${1}" >/dev/null 2>&1
+then
+	# Revert the file if only the POT date changed.
+	if [ -z "$(short_po_diff "${1}")" ]
 	then
-		find "${name}" -type f -name '*.po' -print0 \
-		| xargs -0 -r -I'{}' -P"$(nproc)" \
-			msgmerge --no-fuzzy-matching -o {} {} "${pot_file}"
-
-		for po_file in $(find "${name}" -type f -name '*.po')
-		do
-			"${script_dir}/denoise_po_diff.sh" "${po_file}"
-		done
+		git checkout "${1}" >/dev/null 2>&1
 	fi
-done
+fi
