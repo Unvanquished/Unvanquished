@@ -87,4 +87,6 @@ do
 	mkdir -p "${pot_dir}"
 
 	mv "${temp_pot_file}" "${pot_file}"
+
+	"${script_dir}/denoise_po_diff.sh" "${pot_file}"
 done
