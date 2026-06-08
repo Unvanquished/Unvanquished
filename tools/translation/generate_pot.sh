@@ -24,11 +24,38 @@
 #
 # ===========================================================================
 
+known_options=('data_dir')
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 . "${script_dir}/common.sh"
 
 parse_args "${@}"
 set_paths
+
+generate_data_pot () (
+	if [ -z "${option_data_dir:-}" ]
+	then
+		error "missing data directory"
+	fi
+
+	if [ ! -d "${option_data_dir}" ]
+	then
+		error "not a directory: ${option_data_dir}"
+	fi
+
+	for pak_dir in $(find "${option_data_dir}/pkg" -type d -name 'map-*.dpkdir')
+	do
+	(
+		cd "${pak_dir}"
+
+		find maps -type f -name '*.map' \
+		| sort \
+		| xargs -I{} \
+			"${script_dir}/generate_map_pot.py" {} \
+			>> "${temp_pot_file}"
+	)
+	done
+)
 
 generate_game_pot () (
 	(
