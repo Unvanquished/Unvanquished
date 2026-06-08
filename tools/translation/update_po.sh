@@ -2,7 +2,7 @@
 
 # ===========================================================================
 #
-# Copyright (c) 2024 Unvanquished Developers
+# Copyright (c) 2024-2026 Unvanquished Developers
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -35,17 +35,14 @@ pot_dir="${dpk_dir}/translation"
 
 cd "${pot_dir}"
 
-for name in 'game' 'commands'
+for name in "${translations[@]}"
 do
-	if eval "\${${name}}"
-	then
-		pot_file="${pot_dir}/${name}.pot"
+	pot_file="${pot_dir}/${name}.pot"
 
-		if [ -f "${pot_file}" -a -d "${name}" ]
-		then
-			find "${name}" -type f -name '*.po' -print0 \
-			| xargs -0 -r -I'{}' -P"$(nproc)" \
-				msgmerge --no-fuzzy-matching -o {} {} "${pot_file}"
-		fi
+	if [ -f "${pot_file}" -a -d "${name}" ]
+	then
+		find "${name}" -type f -name '*.po' -print0 \
+		| xargs -0 -r -I'{}' -P"$(nproc)" \
+			msgmerge --no-fuzzy-matching -o {} {} "${pot_file}"
 	fi
 done
