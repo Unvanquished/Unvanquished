@@ -24,14 +24,11 @@
 #
 # ===========================================================================
 
-set -u -e -o pipefail
-
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-repo_dir="$(realpath "${script_dir}/../..")"
-dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
-pot_dir="${dpk_dir}/translation"
+. "${script_dir}/common.sh"
 
-. "${script_dir}/translation.conf"
+parse_args "${@}"
+set_paths
 
 generate_game_pot () (
 	(

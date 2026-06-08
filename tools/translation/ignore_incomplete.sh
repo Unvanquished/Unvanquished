@@ -24,14 +24,11 @@
 #
 # ===========================================================================
 
-set -u -e -o pipefail
-
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-repo_dir="$(realpath "${script_dir}/../..")"
-dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
-pot_dir="${dpk_dir}/translation"
+. "${script_dir}/common.sh"
 
-. "${script_dir}/translation.conf"
+parse_args "${@}"
+set_paths
 
 action_file="${dpk_dir}/.urcheon/action/build.txt"
 action_list="$(grep -v -E '^ignore translation/' "${action_file}")"
@@ -39,8 +36,10 @@ echo "${action_list}" > "${action_file}"
 
 cd "${pot_dir}"
 
-for name in "${translations[@]}"
+for pot_file in $(find . -maxdepth 1 -type f -name '*.pot')
 do
+	name="$(basename "${pot_file}" .pot)"
+
 	for po_file in $(find "${name}" -name '*.po' | sort)
 	do
 		lang="$(echo "${po_file}" | cut -f2 -d'/' | cut -f1 -d'.')"
