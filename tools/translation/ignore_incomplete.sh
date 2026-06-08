@@ -40,6 +40,11 @@ for pot_file in $(find . -maxdepth 1 -type f -name '*.pot')
 do
 	name="$(basename "${pot_file}" .pot)"
 
+	if [ ! -d "${name}" ]
+	then
+		continue
+	fi
+
 	for po_file in $(find "${name}" -name '*.po' | sort)
 	do
 		lang="$(echo "${po_file}" | cut -f2 -d'/' | cut -f1 -d'.')"
