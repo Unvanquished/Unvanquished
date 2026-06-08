@@ -76,18 +76,15 @@ generate_commands_pot () (
 
 cd "${repo_dir}"
 
-for name in 'game' 'commands'
+for name in "${translations[@]}"
 do
-	if eval "\${${name}}"
-	then
-		temp_pot_file="$(mktemp)"
+	temp_pot_file="$(mktemp)"
 
-		"generate_${name}_pot"
+	"generate_${name}_pot"
 
-		pot_file="${pot_dir}/${name}.pot"
+	pot_file="${pot_dir}/${name}.pot"
 
-		mkdir -p "${pot_dir}"
+	mkdir -p "${pot_dir}"
 
-		mv "${temp_pot_file}" "${pot_file}"
-	fi
+	mv "${temp_pot_file}" "${pot_file}"
 done
