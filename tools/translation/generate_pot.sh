@@ -53,8 +53,19 @@ generate_data_pot () (
 		| xargs -I{} \
 			"${script_dir}/generate_map_pot.py" {} \
 			>> "${temp_pot_file}"
+
+		find meta -type f -name '*.arena' \
+		| sort \
+		| xargs -I{} \
+			"${script_dir}/generate_arena_pot.py" {} \
+			>> "${temp_pot_file}"
 	)
 	done
+
+	# HACK: Let xgettext reprocess the file to deduplicate comments.
+	echo '' | xgettext --from-code=UTF-8 \
+		-j -o "${temp_pot_file}" \
+		-f -
 )
 
 generate_game_pot () (
