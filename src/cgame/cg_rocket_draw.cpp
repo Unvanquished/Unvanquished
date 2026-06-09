@@ -1316,7 +1316,7 @@ public:
 			? CS_LOCATIONS + locent->currentState.generic1
 			: CS_LOCATIONS;
 
-		SetInnerRML( Rocket_QuakeToRML( CG_ConfigString( cs_index ) ) );
+		SetInnerRML( Rocket_QuakeToRML( _( CG_ConfigString( cs_index ) ) ) );
 	}
 
 private:
