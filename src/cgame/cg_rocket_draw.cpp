@@ -3711,7 +3711,7 @@ static void CG_Rocket_DrawLevelAuthors()
 
 static void CG_Rocket_DrawLevelName()
 {
-	Rocket_SetInnerQuake( cg.mapLongName );
+	Rocket_SetInnerQuake( _( cg.mapLongName.c_str() ) );
 }
 
 static void CG_Rocket_DrawMOTD()
