@@ -280,6 +280,7 @@ void Trans_Init()
 	trans_manager.set_filesystem( Util::make_unique<DaemonFileSystem>() );
 
 	trans_manager.add_directory( "translation/game" );
+	trans_manager.add_directory( "translation/data" );
 
 	langs = trans_manager.get_languages();
 
