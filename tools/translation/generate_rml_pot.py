@@ -24,11 +24,10 @@
 #
 # ===========================================================================
 
-import os.path
-
-exec(open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "pot_printer.py")).read())
-
 import re
+import sys
+
+import pot_printer
 
 def process(translation_dict, rml_content, filename, is_debug):
     line = 1
@@ -72,4 +71,4 @@ def process(translation_dict, rml_content, filename, is_debug):
 
     return errors
 
-run()
+pot_printer.run(process)
