@@ -77,7 +77,7 @@ msgstr ""
         translatable_string = translatable_string.replace("\"", "\\\"")
         print()
         print("#: " + " ".join(filenames))
-        print("msgid \"" + r"\\n\"\n\"".join(translatable_string.split("\n")) + "\"")
+        print("msgid \"" + "\\n\"\n\"".join(translatable_string.split("\n")) + "\"")
         print("msgstr \"\"")
 
     if errors > 0:
