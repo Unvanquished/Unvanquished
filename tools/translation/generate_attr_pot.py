@@ -24,11 +24,13 @@
 #
 # ===========================================================================
 
+import re
 import sys
 
 import pot_printer
 
 def process(translation_dict, content, filename, is_debug):
+    offset = 0
     line = 1
     errors = 0
 
@@ -37,119 +39,16 @@ def process(translation_dict, content, filename, is_debug):
         nonlocal errors
         errors += 1
 
-    def debug(msg):
-        if is_debug:
-            print(f"Debug in file {filename} on line {line}: {msg}", file=sys.stderr)
-
-    first_slash = False
-    in_comment = False
-    in_key = False
-    in_value = False
-    in_string = False
-    key = ""
-    value = ""
-    string = ""
-
-    for character in content:
-        if character == '\n':
-            line += 1
-
-            if in_comment:
-                in_comment = False
-
-            if in_string:
-                string += " "
-                continue
-
-            if in_key:
-                debug(f"{key}")
-                in_key = False
-                key=""
-
-            if in_value:
-                debug(f"{key}={value}")
-                in_value = False
-                key = ""
-                value = ""
-
-            continue
-
-        if in_comment:
-            continue
-
-        if character == '"':
-            if not key:
-                error("'\"' in key")
-                continue
-
-            if in_key:
-                error("'\"' in key")
-                continue
-
-            if in_value:
-                error("'\"' in value")
-                continue
-
-            if in_string:
-                debug(f"{key}=\"{string}\"")
-
-                if key in ["humanName", "description"]:
-                    if string != "null":
-                        translation_dict[string].append(f"{filename}:{line}")
-
-                in_string = False
-                key = ""
-                string = ""
-            else:
-                in_string = True
-
-            continue
-
-        if in_string:
-            string += character
-            continue
-
-        if character in [' ', '\t']:
-            if first_slash:
-                first_slash = False
-
-            if in_key:
-                in_key = False
-
-            if in_value:
-                debug(f"{key}={value}")
-                in_value = False
-                key = ""
-                value = ""
-
-            continue
-
-        if character == '/':
-            if first_slash:
-                first_slash = False
-                in_comment = True
-            else:
-                first_slash = True
-
-            continue
-
-        if in_key:
-            key += character
-            continue
-
-        if in_value:
-            value += character
-            continue
-
-        if not key:
-            in_key = True
-            key += character
-            continue
-
-        if not value:
-            in_value = True
-            value += character
-            continue
+    for m in re.finditer(r'\b(description|humanName)\s*"([^"]+)"', content, re.IGNORECASE):
+        line += content.count("\n", offset, m.start(2))
+        offset = m.start(2) # beginning of string
+        string = m.group(2)
+        if string.endswith("\\"):
+            # There is a wacky COM_Parse semantic where the \" escape sequence is also a toggle switch
+            # that toggles whether a double quote ends the string. Not bothering to emulate this
+            error(r"""'\"' encountered: COM_Parse 'string-in-string' parsing not implemented""")
+        elif string != "null":
+            translation_dict[string].append(f"{filename}:{line}")
 
     return errors
 
