@@ -30,6 +30,9 @@ obj-*-*-*/
 nacl_helper_bootstrap*
 nacl_loader*
 
+# Python
+__pycache__/
+
 # pk3s, dpks
 *.pk3
 *.dpk
