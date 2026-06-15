@@ -1368,7 +1368,7 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 			Info_SetValueForKey( buf, "icon", BG_Class( i )->icon, false );
 			Info_SetValueForKey( buf, "cmdName", BG_Class( i )->name, false );
 			if (price >= 0.0f) {
-				Info_SetValueForKey( buf, "price", va( "Price: %.1f", price / CREDITS_PER_EVO ), false );
+				Info_SetValueForKey( buf, "price", va( "%.1f", price / CREDITS_PER_EVO ), false );
 			}
 			else
 			{
