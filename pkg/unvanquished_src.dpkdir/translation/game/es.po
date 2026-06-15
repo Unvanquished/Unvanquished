@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-10 23:43+0200\n"
+"POT-Creation-Date: 2026-06-15 23:39+0200\n"
 "PO-Revision-Date: 2026-05-22 22:11+0000\n"
 "Last-Translator: niv41 <niv41.trabajando@proton.me>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
@@ -624,10 +624,11 @@ msgid "Choose your starting equipment:"
 msgstr "Elige tu equipamiento inicial:"
 
 #: ui/human_spawn.rml:45 ui/server_setup.rml:285
+#: configs/weapon/rifle.attr.cfg:1
 msgid "SMG"
 msgstr "SMG"
 
-#: ui/human_spawn.rml:46
+#: ui/human_spawn.rml:46 configs/weapon/ckit.attr.cfg:1
 msgid "Construction Kit"
 msgstr "Kit de Construcción"
 
@@ -2173,7 +2174,7 @@ msgstr "AVISO: La previsualización solo funciona dentro del juego."
 msgid "Weapon"
 msgstr "Arma"
 
-#: ui/options_ui.rml:100
+#: ui/options_ui.rml:100 configs/weapon/blaster.attr.cfg:1
 msgid "Blaster"
 msgstr "Blaster"
 
@@ -2186,18 +2187,21 @@ msgid "Pain Saw"
 msgstr "Motosierra Eléctrica"
 
 #: ui/options_ui.rml:103 ui/server_setup.rml:293
+#: configs/weapon/shotgun.attr.cfg:1
 msgid "Shotgun"
 msgstr "Escopeta"
 
-#: ui/options_ui.rml:104 ui/server_setup.rml:297
+#: ui/options_ui.rml:104 ui/server_setup.rml:297 configs/weapon/lgun.attr.cfg:1
 msgid "Lasgun"
 msgstr ""
 
 #: ui/options_ui.rml:105 ui/server_setup.rml:301
+#: configs/weapon/mdriver.attr.cfg:1
 msgid "Mass Driver"
 msgstr "Mass Driver"
 
 #: ui/options_ui.rml:106 ui/server_setup.rml:305
+#: configs/weapon/chaingun.attr.cfg:1
 msgid "Chaingun"
 msgstr "Chaingun"
 
@@ -2206,10 +2210,12 @@ msgid "Flamer"
 msgstr "Lanzallamas"
 
 #: ui/options_ui.rml:108 ui/server_setup.rml:313
+#: configs/weapon/prifle.attr.cfg:1
 msgid "Pulse Rifle"
 msgstr "Rifle de Pulso"
 
 #: ui/options_ui.rml:109 ui/server_setup.rml:317
+#: configs/weapon/lcannon.attr.cfg:1
 msgid "Lucifer Cannon"
 msgstr "Cañon Lucifer"
 
@@ -2693,11 +2699,11 @@ msgstr ""
 msgid "Construction Kit (repairs)"
 msgstr ""
 
-#: ui/server_setup.rml:289
+#: ui/server_setup.rml:289 configs/weapon/psaw.attr.cfg:1
 msgid "Painsaw"
 msgstr ""
 
-#: ui/server_setup.rml:309
+#: ui/server_setup.rml:309 configs/weapon/flamer.attr.cfg:1
 msgid "Flamethrower"
 msgstr ""
 
@@ -2717,15 +2723,15 @@ msgstr ""
 msgid "whether bots buy the Battlesuit"
 msgstr ""
 
-#: ui/server_setup.rml:335
+#: ui/server_setup.rml:335 configs/upgrades/firebomb.attr.cfg:2
 msgid "Firebomb"
 msgstr ""
 
-#: ui/server_setup.rml:339
+#: ui/server_setup.rml:339 configs/upgrades/gren.attr.cfg:2
 msgid "Grenade"
 msgstr "Granada"
 
-#: ui/server_setup.rml:343
+#: ui/server_setup.rml:343 configs/upgrades/radar.attr.cfg:2
 msgid "Radar"
 msgstr ""
 
@@ -2780,6 +2786,417 @@ msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
 "Cierra este menú y haz clic en cualquier lugar para unirte a un equipo y "
 "empezar a jugar!"
+
+#: configs/buildables/acid_tube.attr.cfg:2
+msgid "Acid Tube"
+msgstr "Tubo Ácido"
+
+#: configs/buildables/acid_tube.attr.cfg:3
+msgid ""
+"Alien base defense.\n"
+"Sprays corrosive gas on approaching humans.\n"
+"Most effective in groups or in conjunction with a trapper."
+msgstr ""
+
+#: configs/buildables/arm.attr.cfg:2
+msgid "Armoury"
+msgstr "Armería"
+
+#: configs/buildables/arm.attr.cfg:3
+msgid ""
+"Human upgrade structure.\n"
+"Provides equipment for sale to the human team.\n"
+"Required in order to access more advanced weapons and items."
+msgstr ""
+
+#: configs/buildables/barricade.attr.cfg:2
+msgid "Barricade"
+msgstr "Barricada"
+
+#: configs/buildables/barricade.attr.cfg:3
+msgid ""
+"Living alien wall.\n"
+"Absorbs large amounts of damage and obstructs movement.\n"
+"Can shrink to allow aliens to pass over it."
+msgstr ""
+
+#: configs/buildables/booster.attr.cfg:2
+msgid "Booster"
+msgstr "Booster"
+
+#: configs/buildables/booster.attr.cfg:3
+msgid ""
+"Alien support structure.\n"
+"Provides a healing aura to regenerate aliens surrounding it.\n"
+"Contact with the booster provides temporary poison to alien attacks."
+msgstr ""
+
+#: configs/buildables/drill.attr.cfg:2
+msgid "Drill"
+msgstr ""
+
+#: configs/buildables/drill.attr.cfg:3
+msgid ""
+"Human extraction structure.\n"
+"Generates build points for human expansion.\n"
+"Must be spaced out for optimal extraction."
+msgstr ""
+
+#: configs/buildables/eggpod.attr.cfg:2
+msgid "Egg"
+msgstr "Huevo"
+
+#: configs/buildables/eggpod.attr.cfg:3
+msgid ""
+"Alien spawning structure.\n"
+"Building more will reduce the spawn queue.\n"
+"If all are destroyed, new aliens cannot spawn."
+msgstr ""
+
+#: configs/buildables/hive.attr.cfg:2
+msgid "Hive"
+msgstr "Colmena"
+
+#: configs/buildables/hive.attr.cfg:3
+msgid ""
+"Alien defense structure.\n"
+"Launches a swarm of angry, buzzing aliens.\n"
+"The swarm will chase and severely damage approaching humans."
+msgstr ""
+
+#: configs/buildables/leech.attr.cfg:2
+msgid "Leech"
+msgstr ""
+
+#: configs/buildables/leech.attr.cfg:3
+msgid ""
+"Alien extraction structure.\n"
+"Generates build points for alien expansion.\n"
+"Must be spaced out for optimal extraction."
+msgstr ""
+
+#: configs/buildables/medistat.attr.cfg:2
+msgid "Medistation"
+msgstr "Estación médica"
+
+#: configs/buildables/medistat.attr.cfg:3
+msgid ""
+"Human support structure.\n"
+"Heals the health and stamina of one human standing on it.\n"
+"Provides medkits to be used in the field."
+msgstr ""
+
+#: configs/buildables/mgturret.attr.cfg:2 configs/weapon/mgturret.attr.cfg:1
+msgid "Machinegun Turret"
+msgstr "Torreta Ametralladora"
+
+#: configs/buildables/mgturret.attr.cfg:3
+msgid ""
+"Automated defense structure.\n"
+"Deals reliable damage at close range with an automated machine gun."
+msgstr ""
+
+#: configs/buildables/overmind.attr.cfg:2
+msgid "Overmind"
+msgstr "Overmind"
+
+#: configs/buildables/overmind.attr.cfg:3
+msgid ""
+"Crucial alien structure.\n"
+"Allows for upgrades to be purchased and structures to be built.\n"
+"Destruction slows the alien advance."
+msgstr ""
+
+#: configs/buildables/reactor.attr.cfg:2
+msgid "Reactor"
+msgstr "Reactor"
+
+#: configs/buildables/reactor.attr.cfg:3
+msgid ""
+"Crucial human structure.\n"
+"Allows for upgrades to be purchased and structures to be built.\n"
+"Destruction slows the human advance."
+msgstr ""
+
+#: configs/buildables/rocketpod.attr.cfg:2 configs/weapon/rocketpod.attr.cfg:1
+msgid "Rocket Pod"
+msgstr ""
+
+#: configs/buildables/rocketpod.attr.cfg:3
+msgid ""
+"Automated defense structure.\n"
+"Shoots tracking missiles that deal high damage at a large range.\n"
+"Won't shoot if it could damage itself or humans and their equipment."
+msgstr ""
+
+#: configs/buildables/spiker.attr.cfg:2
+msgid "Spiker"
+msgstr ""
+
+#: configs/buildables/spiker.attr.cfg:3
+msgid ""
+"Alien base defense.\n"
+"Ejects a burst of spikes at approaching enemies.\n"
+"Will weigh the risk of hurting friendly units against the odds of hurting "
+"enemies."
+msgstr ""
+
+#: configs/buildables/telenode.attr.cfg:2
+msgid "Telenode"
+msgstr "Telenodo"
+
+#: configs/buildables/telenode.attr.cfg:3
+msgid ""
+"Human spawning structure.\n"
+"Building more will reduce the spawn queue.\n"
+"If all are destroyed, new humans cannot spawn."
+msgstr ""
+
+#: configs/buildables/trapper.attr.cfg:2
+msgid "Trapper"
+msgstr "Trampa"
+
+#: configs/buildables/trapper.attr.cfg:3
+msgid ""
+"Alien defense structure.\n"
+"Does not deal damage, but traps humans with a sticky blob.\n"
+"Must be built on walls or ceilings for full effect."
+msgstr ""
+
+#: configs/classes/builder.attr.cfg:1
+msgid ""
+"Alien construction form.\n"
+"Capable of spawning alien base structures.\n"
+"Has a weak biting attack."
+msgstr ""
+
+#: configs/classes/builderupg.attr.cfg:1
+msgid ""
+"Alien construction form.\n"
+"Much like the base granger, but can now walk on walls.\n"
+"Possesses a weak spit blob for ranged attacks,\n"
+"which can slow down enemies or extinguish fires.\n"
+"Extinguishing fires is rewarded by credits."
+msgstr ""
+
+#: configs/classes/level0.attr.cfg:1
+msgid ""
+"Basic alien form.\n"
+"Can silently sneak up on humans and walk on walls.\n"
+"Automatically bites opponents when in range."
+msgstr ""
+
+#: configs/classes/level1.attr.cfg:1
+msgid ""
+"Alien scout form.\n"
+"Can silently sneak up on humans and walk on walls.\n"
+"Able to pounce on opponents from a distance."
+msgstr ""
+
+#: configs/classes/level2.attr.cfg:1
+msgid ""
+"Leaping assault form.\n"
+"Capable of jumping off walls, allowing it to build up speed.\n"
+"Able to attack rapidly with claws and teeth."
+msgstr ""
+
+#: configs/classes/level2upg.attr.cfg:1
+msgid ""
+"Leaping assault form.\n"
+"Possesses the same abilities as the base form.\n"
+"Can now use a wide-area electroshock attack."
+msgstr ""
+
+#: configs/classes/level3.attr.cfg:1
+msgid ""
+"Heavy assault form.\n"
+"Can take and deal heavy damage.\n"
+"Has a pounce ability, allowing it to leap into opponents or away from danger."
+msgstr ""
+
+#: configs/classes/level3upg.attr.cfg:1
+msgid ""
+"Heavy assault form.\n"
+"Possesses the same abilities as the base form.\n"
+"Can now launch an explosive barb projectile."
+msgstr ""
+
+#: configs/classes/level4.attr.cfg:1
+msgid ""
+"Walking alien tank.\n"
+"Possesses powerful melee attacks with its scythe arms.\n"
+"Can power up a trample to charge in and out of battle."
+msgstr ""
+
+#: configs/upgrades/bsuit.attr.cfg:2
+msgid "Battlesuit"
+msgstr "Traje de Batalla"
+
+#: configs/upgrades/bsuit.attr.cfg:3
+msgid ""
+"Powered human exoskeleton.\n"
+"Highly effective at absorbing all forms of damage."
+msgstr ""
+
+#: configs/upgrades/firebomb.attr.cfg:3
+msgid ""
+"Incendiary grenade.\n"
+"Spreads flames over a wide area.\n"
+"Harmful to teammates."
+msgstr ""
+
+#: configs/upgrades/gren.attr.cfg:3
+msgid ""
+"Fragmentation grenade.\n"
+"Deals heavy splash damage in a wide radius.\n"
+"Harmful to teammates."
+msgstr ""
+
+#: configs/upgrades/jetpack.attr.cfg:2
+msgid "Jet Pack"
+msgstr "Jet Pack"
+
+#: configs/upgrades/jetpack.attr.cfg:3
+msgid ""
+"Back-mounted propulsion system.\n"
+"Allows powered flight across expanses and up shafts.\n"
+"Requires fuel, which gradually regenerates while grounded."
+msgstr ""
+
+#: configs/upgrades/larmour.attr.cfg:2
+msgid "Light Armour"
+msgstr "Armadura Liviana"
+
+#: configs/upgrades/larmour.attr.cfg:3
+msgid ""
+"Light combat armour.\n"
+"Provides moderate protection from alien attacks.\n"
+"Increases survivability."
+msgstr ""
+
+#: configs/upgrades/marmour.attr.cfg:2
+msgid "Medium Armour"
+msgstr ""
+
+#: configs/upgrades/marmour.attr.cfg:3
+msgid ""
+"Medium combat armour.\n"
+"Provides heavier protection against alien attacks.\n"
+"Good tradeoff of protection and mobility."
+msgstr ""
+
+#: configs/upgrades/medkit.attr.cfg:2
+msgid "Medkit"
+msgstr "Kit de medicína"
+
+#: configs/upgrades/radar.attr.cfg:3
+msgid ""
+"Scanning tool.\n"
+"Indicates presence of nearby friends and foes."
+msgstr ""
+
+#: configs/weapon/abuild.attr.cfg:1
+msgid "Alien build weapon"
+msgstr ""
+
+#: configs/weapon/abuildupg.attr.cfg:1
+msgid "Alien build weapon2"
+msgstr ""
+
+#: configs/weapon/chaingun.attr.cfg:2
+msgid ""
+"Rapid-fire assault weapon.\n"
+"Large ammo belt allows for heavy sustained fire.\n"
+"High spread, rapidly loses effectiveness at range.\n"
+"Less recoil when equiped with a battlesuit."
+msgstr ""
+
+#: configs/weapon/ckit.attr.cfg:2
+msgid ""
+"Base construction tool.\n"
+"Deals no damage, but can repair structures.\n"
+"Requires a brief delay between buildings."
+msgstr ""
+
+#: configs/weapon/flamer.attr.cfg:2
+msgid ""
+"Close-range suppression weapon.\n"
+"Flames adhere to surfaces and structures, dealing damage.\n"
+"Incinerates smaller aliens, highly effective in vents."
+msgstr ""
+
+#: configs/weapon/lcannon.attr.cfg:2
+msgid ""
+"Heavy energy artillery.\n"
+"Primary charges up a massive shot, secondary a quick blast.\n"
+"Annihilates larger aliens and their base structures."
+msgstr ""
+
+#: configs/weapon/level0.attr.cfg:1 configs/weapon/level2.attr.cfg:1
+msgid "Bite"
+msgstr ""
+
+#: configs/weapon/level1.attr.cfg:1
+msgid "Claws"
+msgstr ""
+
+#: configs/weapon/level2upg.attr.cfg:1
+msgid "Zap"
+msgstr ""
+
+#: configs/weapon/level3.attr.cfg:1
+msgid "Pounce"
+msgstr ""
+
+#: configs/weapon/level3upg.attr.cfg:1
+msgid "Pounce (upgrade)"
+msgstr ""
+
+#: configs/weapon/level4.attr.cfg:1
+msgid "Charge"
+msgstr ""
+
+#: configs/weapon/lgun.attr.cfg:2
+msgid ""
+"Long-range energy weapon.\n"
+"Fires rapid shots with moderate damage and no recoil.\n"
+"Can be recharged at human power structures."
+msgstr ""
+
+#: configs/weapon/mdriver.attr.cfg:2
+msgid ""
+"Clip-based sniping weapon.\n"
+"Secondary activates a targeting scope.\n"
+"Deals heavy damage at long distances."
+msgstr ""
+
+#: configs/weapon/prifle.attr.cfg:2
+msgid ""
+"Clip-based energy weapon.\n"
+"Rapidly shreds through aliens of all sizes.\n"
+"Can be recharged at human power structures."
+msgstr ""
+
+#: configs/weapon/psaw.attr.cfg:2
+msgid ""
+"Human energy saw.\n"
+"Deals massive damage at close range.\n"
+"Shreds through stationary targets."
+msgstr ""
+
+#: configs/weapon/rifle.attr.cfg:2
+msgid ""
+"Basic infantry weapon.\n"
+"Generally effective against most alien forms.\n"
+"Clip-based, requires a slow reload."
+msgstr ""
+
+#: configs/weapon/shotgun.attr.cfg:2
+msgid ""
+"Clip-based combat shotgun.\n"
+"Deals heavy damage per shot.\n"
+"High spread, rapidly loses effectiveness at range."
+msgstr ""
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
@@ -9484,9 +9901,6 @@ msgstr "humanos"
 #~ msgid "Hold down and release %s to trample\n"
 #~ msgstr "Mantene presionado y solta %s para embestir\n"
 
-#~ msgid "Egg"
-#~ msgstr "Huevo"
-
 #~ msgid ""
 #~ "The most basic alien structure. It allows aliens to spawn and protect the "
 #~ "Overmind. Without any of these, the Overmind is left nearly defenseless "
@@ -9495,9 +9909,6 @@ msgstr "humanos"
 #~ "La estructura alienigena más básica. Permite a los aliens engendrarse y "
 #~ "protejer a la Mente Maestra. Sin ninguno de éstos, la Mente Maestra queda "
 #~ "casi indefensa y la derrota es inminente."
-
-#~ msgid "Overmind"
-#~ msgstr "Overmind"
 
 #~ msgid ""
 #~ "A collective consciousness that controls all the alien structures in its "
@@ -9508,9 +9919,6 @@ msgstr "humanos"
 #~ "alcance. Se debe proteger a cualquier costo, ya que su muerte dejará  a "
 #~ "todas las estructuras alien en peligro. "
 
-#~ msgid "Barricade"
-#~ msgstr "Barricada"
-
 #~ msgid ""
 #~ "Used to obstruct corridors and doorways, hindering humans from "
 #~ "threatening the spawns and Overmind. Barricades will shrink to allow "
@@ -9519,9 +9927,6 @@ msgstr "humanos"
 #~ "Usada para obstruir corredores y puertas, previniendo que los humanos "
 #~ "amenazen los huevos y la Mente Maestra. Sin embargo las Barricadas se "
 #~ "encojerán para permitir a los alienigenas pasar por encima de ellas."
-
-#~ msgid "Acid Tube"
-#~ msgstr "Tubo Ácido"
 
 #~ msgid ""
 #~ "Ejects lethal poisonous acid at an approaching human. These are highly "
@@ -9532,9 +9937,6 @@ msgstr "humanos"
 #~ "altamente efectivos cuando se utilizan con un atrapador para mantener "
 #~ "quieta a la victima."
 
-#~ msgid "Trapper"
-#~ msgstr "Trampa"
-
 #~ msgid ""
 #~ "Fires a blob of adhesive spit at any non-alien in its line of sight. This "
 #~ "hinders their movement, making them an easy target for other defensive "
@@ -9543,9 +9945,6 @@ msgstr "humanos"
 #~ "Dispara una masa pegajosa a cualquier humano a su alcance. Inmovilizandoy "
 #~ "transformando al mismo en un blanco facíl praa cualquier alien o "
 #~ "estructura"
-
-#~ msgid "Booster"
-#~ msgstr "Booster"
 
 #~ msgid ""
 #~ "Laces the attacks of any alien that touches it with a poison that will "
@@ -9557,18 +9956,12 @@ msgstr "humanos"
 #~ "Booster tambienincrementa la velocidad de regeneración de los aliens "
 #~ "cercanos."
 
-#~ msgid "Hive"
-#~ msgstr "Colmena"
-
 #~ msgid ""
 #~ "Houses millions of tiny insectoid aliens. When a human approaches this "
 #~ "structure, the insectoids attack."
 #~ msgstr ""
 #~ "Posee millones de pequeños alienigenas insectoides. Cuando un humano se "
 #~ "aproxima a la estructura, los insectoides atacan."
-
-#~ msgid "Telenode"
-#~ msgstr "Telenodo"
 
 #~ msgid ""
 #~ "The most basic human structure. It provides a means for humans to enter "
@@ -9578,9 +9971,6 @@ msgstr "humanos"
 #~ "Una estructura humana básica. Provee a los humanos un medio para entrar "
 #~ "alcampo de batalla. Sin nninguno de ellos los humanos no pueden entrar y "
 #~ "laderrota es inminente"
-
-#~ msgid "Machinegun Turret"
-#~ msgstr "Torreta Ametralladora"
 
 #~ msgid ""
 #~ "Automated base defense that is effective against large targets but slow "
@@ -9602,9 +9992,6 @@ msgstr "humanos"
 #~ "instantaneamente y siempre acierta en el blanco. Es efectiva contra los "
 #~ "alienigenas más pequeños y para consolidar una defensa básica."
 
-#~ msgid "Armoury"
-#~ msgstr "Armería"
-
 #~ msgid ""
 #~ "An essential part of the human base, providing a means to upgrade the "
 #~ "basic human equipment. A range of upgrades and weapons are available for "
@@ -9625,9 +10012,6 @@ msgstr "humanos"
 #~ "humanas. Cada Computadora Defensiva construida incrementa moderadamente "
 #~ "la tasa de reparación."
 
-#~ msgid "Medistation"
-#~ msgstr "Estación médica"
-
 #~ msgid ""
 #~ "A structure that automatically restores the health and stamina of any "
 #~ "human that stands on it. It may only be used by one person at a time. "
@@ -9636,9 +10020,6 @@ msgstr "humanos"
 #~ "Una estructura que restaura automáticamente la salud y la fuerza de "
 #~ "cualquier humanoque se pare en ella. Solo puede ser utilizado por una "
 #~ "persona a la vez. Esta estructura"
-
-#~ msgid "Reactor"
-#~ msgstr "Reactor"
 
 #~ msgid ""
 #~ "All structures except the telenode rely on a reactor to operate. The "
@@ -9822,9 +10203,6 @@ msgstr "humanos"
 #~ "energía y defensas básicas. A medida que los humanos avanzan de nivel, "
 #~ "más estructuraspasan a estar disponibles."
 
-#~ msgid "Light Armour"
-#~ msgstr "Armadura Liviana"
-
 #~ msgid ""
 #~ "Protective armour that helps to defend against light alien melee attacks."
 #~ msgstr ""
@@ -9842,9 +10220,6 @@ msgstr "humanos"
 #~ "Además de protegerte la cabeza, el casco provee un escanerque indica la "
 #~ "presencia de estructuras, humanos y aliens hostilesen tu cercanía."
 
-#~ msgid "Medkit"
-#~ msgstr "Kit de medicína"
-
 #~ msgid "Battery Pack"
 #~ msgstr "Pack de Baterias"
 
@@ -9855,18 +10230,12 @@ msgstr "humanos"
 #~ "Pack de baterias que permite incrementar en un 25% la carga de las armas "
 #~ "de energía"
 
-#~ msgid "Jet Pack"
-#~ msgstr "Jet Pack"
-
 #~ msgid ""
 #~ "Back-mounted jet pack that enables the user to fly to remote locations. "
 #~ "It is very useful against alien spawns in hard to reach spots."
 #~ msgstr ""
 #~ "Jet pack que permite al portador volar a regiones remotas. Es muy útil "
 #~ "contralos spawn aliens instalados en áreas dificiles de alcanzar."
-
-#~ msgid "Battlesuit"
-#~ msgstr "Traje de Batalla"
 
 #~ msgid ""
 #~ "A full body armour that is highly effective at repelling alien attacks. "
