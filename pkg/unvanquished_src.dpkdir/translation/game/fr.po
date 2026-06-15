@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-16 00:29+0200\n"
-"PO-Revision-Date: 2026-05-10 21:54+0000\n"
+"PO-Revision-Date: 2026-06-15 22:29+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -2847,6 +2847,9 @@ msgid ""
 "Sprays corrosive gas on approaching humans.\n"
 "Most effective in groups or in conjunction with a trapper."
 msgstr ""
+"Défense de base extraterrestre.\n"
+"Diffuse un gaz corrosif sur les humains qui s'approchent.\n"
+"Plus efficace groupés ou en combinaison avec un trapper."
 
 #: configs/buildables/arm.attr.cfg:2
 msgid "Armoury"
@@ -2858,6 +2861,9 @@ msgid ""
 "Provides equipment for sale to the human team.\n"
 "Required in order to access more advanced weapons and items."
 msgstr ""
+"Structure d'amélioration humaine.\n"
+"Fournit des équipements à vendre à l'équipe humaine.\n"
+"Requis pour accéder à des armes et des objets plus avancés."
 
 #: configs/buildables/barricade.attr.cfg:2
 msgid "Barricade"
@@ -2869,6 +2875,9 @@ msgid ""
 "Absorbs large amounts of damage and obstructs movement.\n"
 "Can shrink to allow aliens to pass over it."
 msgstr ""
+"Mur extraterrestre vivant.\n"
+"Absorbe d'importants dégâts et entrave les déplacements.\n"
+"Peut rétrécir pour laisser passer les extraterrestres au dessus de lui."
 
 #: configs/buildables/booster.attr.cfg:2
 msgid "Booster"
@@ -2880,10 +2889,15 @@ msgid ""
 "Provides a healing aura to regenerate aliens surrounding it.\n"
 "Contact with the booster provides temporary poison to alien attacks."
 msgstr ""
+"Structure de soutien extraterrestre.\n"
+"Dégage une aura de guérison qui régénère les extraterrestres qui "
+"l'entourent.\n"
+"Le contact avec le booster ajoute aux attaques extraterrestres un poison "
+"temporaire."
 
 #: configs/buildables/drill.attr.cfg:2
 msgid "Drill"
-msgstr ""
+msgstr "Drill"
 
 #: configs/buildables/drill.attr.cfg:3
 msgid ""
@@ -2891,6 +2905,9 @@ msgid ""
 "Generates build points for human expansion.\n"
 "Must be spaced out for optimal extraction."
 msgstr ""
+"Structure d'extraction humaine.\n"
+"Génère des points de construction pour l'expansion humaine.\n"
+"Doit être espacée pour une extraction optimale."
 
 #: configs/buildables/eggpod.attr.cfg:2
 msgid "Egg"
@@ -2902,6 +2919,10 @@ msgid ""
 "Building more will reduce the spawn queue.\n"
 "If all are destroyed, new aliens cannot spawn."
 msgstr ""
+"Structure d’apparition d'extraterrestres.\n"
+"En en construisant davantage, vous réduirez la file d'attente de "
+"réapparition.\n"
+"Si toutes sont détruites, aucun nouvel extraterrestre ne peut apparaître."
 
 #: configs/buildables/hive.attr.cfg:2
 msgid "Hive"
@@ -2913,10 +2934,14 @@ msgid ""
 "Launches a swarm of angry, buzzing aliens.\n"
 "The swarm will chase and severely damage approaching humans."
 msgstr ""
+"Structure de défense extraterrestre.\n"
+"Lance un essaim d'extraterrestres furieux et bourdonnants.\n"
+"L'essaim poursuivra les humains qui s'approchent et leur infligera de graves "
+"dommages."
 
 #: configs/buildables/leech.attr.cfg:2
 msgid "Leech"
-msgstr ""
+msgstr "Leech"
 
 #: configs/buildables/leech.attr.cfg:3
 msgid ""
@@ -2924,6 +2949,9 @@ msgid ""
 "Generates build points for alien expansion.\n"
 "Must be spaced out for optimal extraction."
 msgstr ""
+"Structure d'extraction extraterrestre.\n"
+"Génère des points de construction pour l'expansion extraterrestre.\n"
+"Doit être espacée pour une extraction optimale."
 
 #: configs/buildables/medistat.attr.cfg:2
 msgid "Medistation"
@@ -2935,6 +2963,9 @@ msgid ""
 "Heals the health and stamina of one human standing on it.\n"
 "Provides medkits to be used in the field."
 msgstr ""
+"Structure de soutien pour les humains.\n"
+"Restaure la santé et l'endurance d'un humain qui se tient dessus.\n"
+"Fournit des trousses de secours à utiliser sur le terrain."
 
 #: configs/buildables/mgturret.attr.cfg:2 configs/weapon/mgturret.attr.cfg:1
 msgid "Machinegun Turret"
@@ -2945,6 +2976,9 @@ msgid ""
 "Automated defense structure.\n"
 "Deals reliable damage at close range with an automated machine gun."
 msgstr ""
+"Structure de défense automatisée.\n"
+"Inflige des dégâts importants à courte portée grâce à une mitrailleuse "
+"automatisée."
 
 #: configs/buildables/overmind.attr.cfg:2
 msgid "Overmind"
@@ -2956,6 +2990,9 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the alien advance."
 msgstr ""
+"Structure extraterrestre essentielle.\n"
+"Permet d'acheter des améliorations et de construire des structures.\n"
+"Sa destruction ralentit l'avancée des extraterrestres."
 
 #: configs/buildables/reactor.attr.cfg:2
 msgid "Reactor"
@@ -2967,10 +3004,13 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the human advance."
 msgstr ""
+"Structure humaine essentielle.\n"
+"Permet d'acheter des améliorations et de construire des structures.\n"
+"Sa destruction ralentit l'avancée des humains."
 
 #: configs/buildables/rocketpod.attr.cfg:2 configs/weapon/rocketpod.attr.cfg:1
 msgid "Rocket Pod"
-msgstr ""
+msgstr "Nacelle à roquette"
 
 #: configs/buildables/rocketpod.attr.cfg:3
 msgid ""
@@ -2978,10 +3018,15 @@ msgid ""
 "Shoots tracking missiles that deal high damage at a large range.\n"
 "Won't shoot if it could damage itself or humans and their equipment."
 msgstr ""
+"Structure de défense automatisée.\n"
+"Tire des missiles à tête chercheuse infligeant d'importants dégâts à longue "
+"portée.\n"
+"Ne tire pas si cela risque de l'endommager elle-même ou de blesser des "
+"humains et leur équipement."
 
 #: configs/buildables/spiker.attr.cfg:2
 msgid "Spiker"
-msgstr ""
+msgstr "Spiker"
 
 #: configs/buildables/spiker.attr.cfg:3
 msgid ""
@@ -2990,6 +3035,10 @@ msgid ""
 "Will weigh the risk of hurting friendly units against the odds of hurting "
 "enemies."
 msgstr ""
+"Défense de la base extraterrestre.\n"
+"Lance une rafale de pointes sur les ennemis qui s'approchent.\n"
+"Évalue le risque de blesser des unités amies par rapport aux chances de "
+"toucher les ennemis."
 
 #: configs/buildables/telenode.attr.cfg:2
 msgid "Telenode"
@@ -3001,6 +3050,10 @@ msgid ""
 "Building more will reduce the spawn queue.\n"
 "If all are destroyed, new humans cannot spawn."
 msgstr ""
+"Structure d’apparition des humains.\n"
+"En en construisant davantage, vous réduirez la file d'attente de "
+"réapparition.\n"
+"Si toutes sont détruites, aucun nouvel humain ne peut apparaître."
 
 #: configs/buildables/trapper.attr.cfg:2
 msgid "Trapper"
@@ -3012,6 +3065,11 @@ msgid ""
 "Does not deal damage, but traps humans with a sticky blob.\n"
 "Must be built on walls or ceilings for full effect."
 msgstr ""
+"Structure de défense extraterrestre.\n"
+"Elle n'inflige pas de dégâts, mais piège les humains à l'aide d'un blob "
+"collant.\n"
+"Elle doit être construite sur les murs ou les plafonds pour être pleinement "
+"efficace."
 
 #: configs/classes/builder.attr.cfg:1
 msgid ""
@@ -3019,6 +3077,9 @@ msgid ""
 "Capable of spawning alien base structures.\n"
 "Has a weak biting attack."
 msgstr ""
+"Forme de construction extraterrestre.\n"
+"Capable de générer des structures de base extraterrestres.\n"
+"Possède une attaque de morsure peu puissante."
 
 #: configs/classes/builderupg.attr.cfg:1
 msgid ""
@@ -3028,6 +3089,12 @@ msgid ""
 "which can slow down enemies or extinguish fires.\n"
 "Extinguishing fires is rewarded by credits."
 msgstr ""
+"Forme de construction extraterrestre.\n"
+"Très similaire au granger de base, mais peut désormais marcher sur les "
+"murs.\n"
+"Dispose d'une crachat faible pour les attaques à distance,\n"
+"qui peut ralentir les ennemis ou éteindre les incendies.\n"
+"L'extinction des incendies est récompensée par des crédits."
 
 #: configs/classes/level0.attr.cfg:1
 msgid ""
@@ -3035,6 +3102,10 @@ msgid ""
 "Can silently sneak up on humans and walk on walls.\n"
 "Automatically bites opponents when in range."
 msgstr ""
+"Forme extraterrestre de base.\n"
+"Peut s'approcher furtivement des humains sans faire de bruit et marcher sur "
+"les murs.\n"
+"Mord automatiquement ses adversaires lorsqu'il est à portée."
 
 #: configs/classes/level1.attr.cfg:1
 msgid ""
@@ -3042,6 +3113,10 @@ msgid ""
 "Can silently sneak up on humans and walk on walls.\n"
 "Able to pounce on opponents from a distance."
 msgstr ""
+"Forme d'éclaireur extraterrestre.\n"
+"Peut s'approcher furtivement des humains sans faire de bruit et marcher sur "
+"les murs.\n"
+"Capable de bondir sur ses adversaires à distance."
 
 #: configs/classes/level2.attr.cfg:1
 msgid ""
@@ -3049,6 +3124,9 @@ msgid ""
 "Capable of jumping off walls, allowing it to build up speed.\n"
 "Able to attack rapidly with claws and teeth."
 msgstr ""
+"Forme d'attaque bondissante.\n"
+"Capable de rebondir sur les murs, lui permettant d’accumuler de la vitesse.\n"
+"Capable d'attaquer rapidement avec ses griffes et ses dents."
 
 #: configs/classes/level2upg.attr.cfg:1
 msgid ""
@@ -3056,6 +3134,9 @@ msgid ""
 "Possesses the same abilities as the base form.\n"
 "Can now use a wide-area electroshock attack."
 msgstr ""
+"Forme d'assaut bondissante.\n"
+"Possède les mêmes capacités que la forme de base.\n"
+"Peut désormais utiliser une attaque par électrochoc à large zone."
 
 #: configs/classes/level3.attr.cfg:1
 msgid ""
@@ -3063,6 +3144,10 @@ msgid ""
 "Can take and deal heavy damage.\n"
 "Has a pounce ability, allowing it to leap into opponents or away from danger."
 msgstr ""
+"Forme d’attaque massive.\n"
+"Capable d'encaisser et d'infliger des dégâts importants.\n"
+"Dispose d'une capacité de bond, lui permettant de se jeter sur ses "
+"adversaires ou de s'éloigner du danger."
 
 #: configs/classes/level3upg.attr.cfg:1
 msgid ""
@@ -3070,6 +3155,9 @@ msgid ""
 "Possesses the same abilities as the base form.\n"
 "Can now launch an explosive barb projectile."
 msgstr ""
+"Forme d'attaque massive.\n"
+"Possède les mêmes capacités que la forme de base.\n"
+"Peut désormais lancer un projectile explosif à pique."
 
 #: configs/classes/level4.attr.cfg:1
 msgid ""
@@ -3077,6 +3165,11 @@ msgid ""
 "Possesses powerful melee attacks with its scythe arms.\n"
 "Can power up a trample to charge in and out of battle."
 msgstr ""
+"Un tank ambulant extraterrestre.\n"
+"Dispose de puissantes attaques au corps à corps grâce à ses bras en forme de "
+"faux. \n"
+"Peut se lancer dans une attaque de piétinement pour charger et se retirer du "
+"combat."
 
 #: configs/upgrades/bsuit.attr.cfg:2
 msgid "Battlesuit"
@@ -3087,6 +3180,8 @@ msgid ""
 "Powered human exoskeleton.\n"
 "Highly effective at absorbing all forms of damage."
 msgstr ""
+"Exosquelette humain motorisé.\n"
+"Très efficace pour absorber toutes les formes de dommages."
 
 #: configs/upgrades/firebomb.attr.cfg:3
 msgid ""
@@ -3094,6 +3189,9 @@ msgid ""
 "Spreads flames over a wide area.\n"
 "Harmful to teammates."
 msgstr ""
+"Grenade incendiaire.\n"
+"Propage les flammes sur une vaste zone.\n"
+"Dangereuse pour les coéquipiers."
 
 #: configs/upgrades/gren.attr.cfg:3
 msgid ""
@@ -3101,6 +3199,9 @@ msgid ""
 "Deals heavy splash damage in a wide radius.\n"
 "Harmful to teammates."
 msgstr ""
+"Grenade à fragmentation.\n"
+"Inflige d'importants dégâts de zone sur un large rayon.\n"
+"Peut blesser les coéquipiers."
 
 #: configs/upgrades/jetpack.attr.cfg:2
 msgid "Jet Pack"
@@ -3112,6 +3213,11 @@ msgid ""
 "Allows powered flight across expanses and up shafts.\n"
 "Requires fuel, which gradually regenerates while grounded."
 msgstr ""
+"Système de propulsion dorsal.\n"
+"Permet de voler à l'aide d'un moteur au-dessus des vastes étendues et de "
+"remonter les puits.\n"
+"Nécessite du carburant, qui se régénère progressivement lorsque l'appareil "
+"est au sol."
 
 #: configs/upgrades/larmour.attr.cfg:2
 msgid "Light Armour"
@@ -3123,10 +3229,13 @@ msgid ""
 "Provides moderate protection from alien attacks.\n"
 "Increases survivability."
 msgstr ""
+"Armure de combat légère.\n"
+"Offre une protection modérée contre les attaques extraterrestres.\n"
+"Améliore la capacité de survie."
 
 #: configs/upgrades/marmour.attr.cfg:2
 msgid "Medium Armour"
-msgstr ""
+msgstr "Armure moyenne"
 
 #: configs/upgrades/marmour.attr.cfg:3
 msgid ""
@@ -3134,6 +3243,9 @@ msgid ""
 "Provides heavier protection against alien attacks.\n"
 "Good tradeoff of protection and mobility."
 msgstr ""
+"Armure de combat moyenne.\n"
+"Offre une protection renforcée contre les attaques extraterrestres.\n"
+"Bon compromis entre protection et mobilité."
 
 #: configs/upgrades/medkit.attr.cfg:2
 msgid "Medkit"
@@ -3144,6 +3256,8 @@ msgid ""
 "Scanning tool.\n"
 "Indicates presence of nearby friends and foes."
 msgstr ""
+"Outil de détection. \n"
+"Indique la présence d'amis et d'ennemis à proximité."
 
 #: configs/weapon/abuild.attr.cfg:1 configs/weapon/abuildupg.attr.cfg:1
 msgid "Alien build weapon"
