@@ -36,39 +36,94 @@ echo "${action_list}" > "${action_file}"
 
 cd "${pot_dir}"
 
+compute_percentage () {
+	local name="${1}"; shift
+	local lang="${1}"; shift
+
+	local po_file="${name}/${lang}.po"
+
+	local po_entries="$(sed 'N;s/ ""\n"/ "/g;P;D;' "${po_file}" | grep -E '^msgid "|^msgstr "')"
+
+	count_source="$(echo "${po_entries}" | grep -c -E '^msgid "' || true)"
+	count_translation="$(echo "${po_entries}" | grep -c -E '^msgstr "' || true)"
+	count_empty_source="$(echo "${po_entries}" | grep -c -E '^msgid ""' || true)"
+	count_empty_translation="$(echo "${po_entries}" | grep -c -E '^msgstr ""' || true)"
+
+	total_source="$((${count_source} - ${count_empty_source}))"
+	total_translation="$((${count_translation} - ${count_empty_translation}))"
+
+	percentage="$((${total_translation} * 100 / ${total_source}))"
+}
+
+print_percentage () {
+	local name="${1}"; shift
+	local lang="${1}"; shift
+	local state="${1}"; shift
+
+	printf '%s/%s\t%+3s%%,\tsources: %s (%s-%s),\ttranslations: %-4s (%s-%s),\t%s\n' \
+		"${name}" "${lang}:" "${percentage}" \
+		"${total_source}" "${count_source}" "${count_empty_source}" \
+		"${total_translation}" "${count_translation}" "${count_empty_translation}" \
+		"${state}"
+}
+
+lang_list=()
 for pot_file in $(find . -maxdepth 1 -type f -name '*.pot')
 do
 	name="$(basename "${pot_file}" .pot)"
 
-	if [ ! -d "${name}" ]
+	for po_file in $(find "${name}" -name '*.po' | sort)
+	do
+		lang="$(echo "${po_file}" | cut -f2 -d'/' | cut -f1 -d'.')"
+		lang_list+=("${lang}")
+	done
+done
+
+lang_list=($(echo "${lang_list[@]}" | tr ' ' '\n' | sort -u))
+
+main_name='game'
+
+for lang in "${lang_list[@]}"
+do
+	main_po_file="${main_name}/${lang}.po"
+
+	if [ ! -f "${main_po_file}" ]
 	then
 		continue
 	fi
 
-	for po_file in $(find "${name}" -name '*.po' | sort)
+	compute_percentage "${main_name}" "${lang}"
+	main_percentage="${percentage}"
+
+	for pot_file in $(find . -maxdepth 1 -type f -name '*.pot')
 	do
-		lang="$(echo "${po_file}" | cut -f2 -d'/' | cut -f1 -d'.')"
+		name="$(basename "${pot_file}" .pot)"
 
-		po_entries="$(sed 'N;s/ ""\n"/ "/g;P;D;' "${po_file}" | grep -E '^msgid "|^msgstr "')"
+		if [ ! -d "${name}" ]
+		then
+			continue
+		fi
 
-		count_source="$(echo "${po_entries}" | grep -c -E '^msgid "' || true)"
-		count_translation="$(echo "${po_entries}" | grep -c -E '^msgstr "' || true)"
-		count_empty_source="$(echo "${po_entries}" | grep -c -E '^msgid ""' || true)"
-		count_empty_translation="$(echo "${po_entries}" | grep -c -E '^msgstr ""' || true)"
+		po_file="${name}/${lang}.po"
 
-		total_source="$((${count_source} - ${count_empty_source}))"
-		total_translation="$((${count_translation} - ${count_empty_translation}))"
+		if [ ! -f "${po_file}" ]
+		then
+			continue
+		fi
 
-		percentage="$((${total_translation} * 100 / ${total_source}))"
+		if [ "${main_percentage}" -lt 50 ]
+		then
+			state='ignored'
+		else
+			state='packaged'
+		fi
 
-		if [ "${percentage}" -lt 50 ]
+		compute_percentage "${name}" "${lang}"
+		print_percentage "${name}" "${lang}" "${state}"
+
+		if [ "${state}" = 'ignored' ]
 		then
 			printf 'ignore translation/%s\n' "${po_file}" >> "${action_file}"
 		fi
-
-		printf '%s/%s\t%+3s%%,\tsources: %s (%s-%s),\ttranslations: %-4s (%s-%s)\n' \
-			"${name}" "${lang}:" "${percentage}" \
-			"${total_source}" "${count_source}" "${count_empty_source}" \
-			"${total_translation}" "${count_translation}" "${count_empty_translation}"
 	done
 done | column -t -s $'\t' -o ' '
