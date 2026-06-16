@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-16 00:29+0200\n"
-"PO-Revision-Date: 2026-05-10 21:34+0000\n"
+"PO-Revision-Date: 2026-06-16 08:10+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -2807,7 +2807,7 @@ msgstr ""
 
 #: configs/buildables/acid_tube.attr.cfg:2
 msgid "Acid Tube"
-msgstr ""
+msgstr "Кислотная туба"
 
 #: configs/buildables/acid_tube.attr.cfg:3
 msgid ""
@@ -2815,10 +2815,13 @@ msgid ""
 "Sprays corrosive gas on approaching humans.\n"
 "Most effective in groups or in conjunction with a trapper."
 msgstr ""
+"Оборона базы пришельцев.\n"
+"Распыляет едкий газ на приближающихся людей.\n"
+"Наиболее эффективна в группах или вместе с ловушкой."
 
 #: configs/buildables/arm.attr.cfg:2
 msgid "Armoury"
-msgstr ""
+msgstr "Арсенал"
 
 #: configs/buildables/arm.attr.cfg:3
 msgid ""
@@ -2826,10 +2829,13 @@ msgid ""
 "Provides equipment for sale to the human team.\n"
 "Required in order to access more advanced weapons and items."
 msgstr ""
+"Структура улучшений людей.\n"
+"Предоставляет снаряжение для покупки команде людей.\n"
+"Необходима для доступа к более продвинутому оружию и предметам."
 
 #: configs/buildables/barricade.attr.cfg:2
 msgid "Barricade"
-msgstr ""
+msgstr "Баррикада"
 
 #: configs/buildables/barricade.attr.cfg:3
 msgid ""
@@ -2837,10 +2843,13 @@ msgid ""
 "Absorbs large amounts of damage and obstructs movement.\n"
 "Can shrink to allow aliens to pass over it."
 msgstr ""
+"Живая стена пришельцев.\n"
+"Поглощает большие объёмы урона и препятствует передвижению.\n"
+"Может сжиматься, позволяя пришельцам проходить над ней."
 
 #: configs/buildables/booster.attr.cfg:2
 msgid "Booster"
-msgstr ""
+msgstr "Усилитель"
 
 #: configs/buildables/booster.attr.cfg:3
 msgid ""
@@ -2848,10 +2857,13 @@ msgid ""
 "Provides a healing aura to regenerate aliens surrounding it.\n"
 "Contact with the booster provides temporary poison to alien attacks."
 msgstr ""
+"Структура поддержки пришельцев.\n"
+"Обеспечивает лечащую ауру для регенерации окружающих пришельцев.\n"
+"Контакт с усилителем даёт временное отравление атакам пришельцев."
 
 #: configs/buildables/drill.attr.cfg:2
 msgid "Drill"
-msgstr ""
+msgstr "Буровая установка"
 
 #: configs/buildables/drill.attr.cfg:3
 msgid ""
@@ -2859,10 +2871,13 @@ msgid ""
 "Generates build points for human expansion.\n"
 "Must be spaced out for optimal extraction."
 msgstr ""
+"Добывающая структура людей.\n"
+"Генерирует очки строительства для расширения людей.\n"
+"Должна быть разнесена для оптимальной добычи."
 
 #: configs/buildables/eggpod.attr.cfg:2
 msgid "Egg"
-msgstr ""
+msgstr "Яйцо"
 
 #: configs/buildables/eggpod.attr.cfg:3
 msgid ""
@@ -2870,10 +2885,13 @@ msgid ""
 "Building more will reduce the spawn queue.\n"
 "If all are destroyed, new aliens cannot spawn."
 msgstr ""
+"Структура возрождения пришельцев.\n"
+"Постройка большего количества сокращает очередь возрождения.\n"
+"Если все яйца уничтожены, новые пришельцы не могут появиться."
 
 #: configs/buildables/hive.attr.cfg:2
 msgid "Hive"
-msgstr ""
+msgstr "Улей"
 
 #: configs/buildables/hive.attr.cfg:3
 msgid ""
@@ -2881,10 +2899,13 @@ msgid ""
 "Launches a swarm of angry, buzzing aliens.\n"
 "The swarm will chase and severely damage approaching humans."
 msgstr ""
+"Оборонная структура пришельцев.\n"
+"Запускает рой злых, жужжащих пришельцев.\n"
+"Рой будет преследовать и наносить серьёзный урон приближающимся людям."
 
 #: configs/buildables/leech.attr.cfg:2
 msgid "Leech"
-msgstr ""
+msgstr "Пиявка"
 
 #: configs/buildables/leech.attr.cfg:3
 msgid ""
@@ -2892,10 +2913,13 @@ msgid ""
 "Generates build points for alien expansion.\n"
 "Must be spaced out for optimal extraction."
 msgstr ""
+"Добывающая структура пришельцев.\n"
+"Генерирует очки строительства для расширения пришельцев.\n"
+"Должна быть разнесена для оптимальной добычи."
 
 #: configs/buildables/medistat.attr.cfg:2
 msgid "Medistation"
-msgstr ""
+msgstr "Медицинская станция"
 
 #: configs/buildables/medistat.attr.cfg:3
 msgid ""
@@ -2903,20 +2927,25 @@ msgid ""
 "Heals the health and stamina of one human standing on it.\n"
 "Provides medkits to be used in the field."
 msgstr ""
+"Структура поддержки людей.\n"
+"Восстанавливает здоровье и выносливость одному человеку, стоящему на ней.\n"
+"Предоставляет аптечки для использования в полевых условиях."
 
 #: configs/buildables/mgturret.attr.cfg:2 configs/weapon/mgturret.attr.cfg:1
 msgid "Machinegun Turret"
-msgstr ""
+msgstr "Турель с пулемётом"
 
 #: configs/buildables/mgturret.attr.cfg:3
 msgid ""
 "Automated defense structure.\n"
 "Deals reliable damage at close range with an automated machine gun."
 msgstr ""
+"Автоматическая оборонительная структура.\n"
+"Наносит надёжный урон на близкой дистанции из автоматического пулемёта."
 
 #: configs/buildables/overmind.attr.cfg:2
 msgid "Overmind"
-msgstr ""
+msgstr "Сверхразум"
 
 #: configs/buildables/overmind.attr.cfg:3
 msgid ""
@@ -2924,10 +2953,13 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the alien advance."
 msgstr ""
+"Ключевая структура пришельцев.\n"
+"Позволяет покупать улучшения и строить структуры.\n"
+"Разрушение замедляет продвижение пришельцев."
 
 #: configs/buildables/reactor.attr.cfg:2
 msgid "Reactor"
-msgstr ""
+msgstr "Реактор"
 
 #: configs/buildables/reactor.attr.cfg:3
 msgid ""
@@ -2935,10 +2967,13 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the human advance."
 msgstr ""
+"Ключевая структура людей.\n"
+"Позволяет покупать улучшения и строить структуры.\n"
+"Разрушение замедляет продвижение людей."
 
 #: configs/buildables/rocketpod.attr.cfg:2 configs/weapon/rocketpod.attr.cfg:1
 msgid "Rocket Pod"
-msgstr ""
+msgstr "Ракетная установка"
 
 #: configs/buildables/rocketpod.attr.cfg:3
 msgid ""
@@ -2946,10 +2981,14 @@ msgid ""
 "Shoots tracking missiles that deal high damage at a large range.\n"
 "Won't shoot if it could damage itself or humans and their equipment."
 msgstr ""
+"Автоматическая оборонительная структура.\n"
+"Выпускает самонаводящиеся ракеты, наносящие большой урон на большом "
+"расстоянии.\n"
+"Не будет стрелять, если может повредить себя, людей или их оборудование."
 
 #: configs/buildables/spiker.attr.cfg:2
 msgid "Spiker"
-msgstr ""
+msgstr "Шипомёт"
 
 #: configs/buildables/spiker.attr.cfg:3
 msgid ""
@@ -2958,10 +2997,13 @@ msgid ""
 "Will weigh the risk of hurting friendly units against the odds of hurting "
 "enemies."
 msgstr ""
+"Оборона базы пришельцев.\n"
+"Выстреливает залп шипов по приближающимся врагам.\n"
+"Оценивает риск нанесения урона союзникам против вероятности поражения врагов."
 
 #: configs/buildables/telenode.attr.cfg:2
 msgid "Telenode"
-msgstr ""
+msgstr "Телеузел"
 
 #: configs/buildables/telenode.attr.cfg:3
 msgid ""
@@ -2969,10 +3011,13 @@ msgid ""
 "Building more will reduce the spawn queue.\n"
 "If all are destroyed, new humans cannot spawn."
 msgstr ""
+"Структура возрождения людей.\n"
+"Постройка большего количества сокращает очередь возрождения.\n"
+"Если все телеузлы уничтожены, новые люди не могут появиться."
 
 #: configs/buildables/trapper.attr.cfg:2
 msgid "Trapper"
-msgstr ""
+msgstr "Ловушка"
 
 #: configs/buildables/trapper.attr.cfg:3
 msgid ""
@@ -2980,6 +3025,9 @@ msgid ""
 "Does not deal damage, but traps humans with a sticky blob.\n"
 "Must be built on walls or ceilings for full effect."
 msgstr ""
+"Оборонная структура пришельцев.\n"
+"Не наносит урона, но ловит людей липким сгустком.\n"
+"Для полного эффекта должна строиться на стенах или потолках."
 
 #: configs/classes/builder.attr.cfg:1
 msgid ""
@@ -2987,6 +3035,9 @@ msgid ""
 "Capable of spawning alien base structures.\n"
 "Has a weak biting attack."
 msgstr ""
+"Строительная форма пришельцев.\n"
+"Способна создавать структуры базы пришельцев.\n"
+"Обладает слабой атакой укусом."
 
 #: configs/classes/builderupg.attr.cfg:1
 msgid ""
@@ -2996,6 +3047,11 @@ msgid ""
 "which can slow down enemies or extinguish fires.\n"
 "Extinguishing fires is rewarded by credits."
 msgstr ""
+"Строительная форма пришельцев.\n"
+"Во многом похожа на базового строителя, но теперь может ходить по стенам.\n"
+"Обладает слабым плевком для атак на расстоянии,\n"
+"который может замедлять врагов или тушить пожары.\n"
+"Тушение пожаров вознаграждается кредитами."
 
 #: configs/classes/level0.attr.cfg:1
 msgid ""
@@ -3003,6 +3059,9 @@ msgid ""
 "Can silently sneak up on humans and walk on walls.\n"
 "Automatically bites opponents when in range."
 msgstr ""
+"Базовая форма пришельца.\n"
+"Может бесшумно подкрадываться к людям и ходить по стенам.\n"
+"Автоматически кусает противников, оказавшихся в пределах досягаемости."
 
 #: configs/classes/level1.attr.cfg:1
 msgid ""
@@ -3010,6 +3069,9 @@ msgid ""
 "Can silently sneak up on humans and walk on walls.\n"
 "Able to pounce on opponents from a distance."
 msgstr ""
+"Разведывательная форма пришельца.\n"
+"Может бесшумно подкрадываться к людям и ходить по стенам.\n"
+"Способна прыгать на противников с расстояния."
 
 #: configs/classes/level2.attr.cfg:1
 msgid ""
@@ -3017,6 +3079,9 @@ msgid ""
 "Capable of jumping off walls, allowing it to build up speed.\n"
 "Able to attack rapidly with claws and teeth."
 msgstr ""
+"Прыгающая штурмовая форма.\n"
+"Способна отталкиваться от стен, набирая скорость.\n"
+"Может быстро атаковать когтями и зубами."
 
 #: configs/classes/level2upg.attr.cfg:1
 msgid ""
@@ -3024,6 +3089,9 @@ msgid ""
 "Possesses the same abilities as the base form.\n"
 "Can now use a wide-area electroshock attack."
 msgstr ""
+"Прыгающая штурмовая форма.\n"
+"Обладает теми же способностями, что и базовая форма.\n"
+"Теперь может использовать широкомасштабную электрошоковую атаку."
 
 #: configs/classes/level3.attr.cfg:1
 msgid ""
@@ -3031,6 +3099,10 @@ msgid ""
 "Can take and deal heavy damage.\n"
 "Has a pounce ability, allowing it to leap into opponents or away from danger."
 msgstr ""
+"Тяжёлая штурмовая форма.\n"
+"Может выдерживать и наносить тяжёлый урон.\n"
+"Обладает способностью прыжка, позволяющей врезаться в противников или "
+"уклоняться от опасности."
 
 #: configs/classes/level3upg.attr.cfg:1
 msgid ""
@@ -3038,6 +3110,9 @@ msgid ""
 "Possesses the same abilities as the base form.\n"
 "Can now launch an explosive barb projectile."
 msgstr ""
+"Тяжёлая штурмовая форма.\n"
+"Обладает теми же способностями, что и базовая форма.\n"
+"Теперь может запускать взрывающийся шип-снаряд."
 
 #: configs/classes/level4.attr.cfg:1
 msgid ""
@@ -3045,16 +3120,21 @@ msgid ""
 "Possesses powerful melee attacks with its scythe arms.\n"
 "Can power up a trample to charge in and out of battle."
 msgstr ""
+"Ходячий танк пришельцев.\n"
+"Обладает мощными атаками ближнего боя руками-косами.\n"
+"Может заряжать таран, чтобы врываться в бой и выходить из него."
 
 #: configs/upgrades/bsuit.attr.cfg:2
 msgid "Battlesuit"
-msgstr ""
+msgstr "Боевой костюм"
 
 #: configs/upgrades/bsuit.attr.cfg:3
 msgid ""
 "Powered human exoskeleton.\n"
 "Highly effective at absorbing all forms of damage."
 msgstr ""
+"Силовой экзоскелет людей.\n"
+"Чрезвычайно эффективен при поглощении всех видов урона."
 
 #: configs/upgrades/firebomb.attr.cfg:3
 msgid ""
@@ -3062,6 +3142,9 @@ msgid ""
 "Spreads flames over a wide area.\n"
 "Harmful to teammates."
 msgstr ""
+"Зажигательная граната.\n"
+"Распространяет пламя на большой площади.\n"
+"Наносит урон союзникам."
 
 #: configs/upgrades/gren.attr.cfg:3
 msgid ""
@@ -3069,10 +3152,13 @@ msgid ""
 "Deals heavy splash damage in a wide radius.\n"
 "Harmful to teammates."
 msgstr ""
+"Осколочная граната.\n"
+"Наносит тяжёлый урон по площади в большом радиусе.\n"
+"Наносит урон союзникам."
 
 #: configs/upgrades/jetpack.attr.cfg:2
 msgid "Jet Pack"
-msgstr ""
+msgstr "Реактивный ранец"
 
 #: configs/upgrades/jetpack.attr.cfg:3
 msgid ""
@@ -3080,10 +3166,13 @@ msgid ""
 "Allows powered flight across expanses and up shafts.\n"
 "Requires fuel, which gradually regenerates while grounded."
 msgstr ""
+"Спинная двигательная система.\n"
+"Позволяет совершать полёты на большие расстояния и вверх по шахтам.\n"
+"Требует топлива, которое постепенно восстанавливается на земле."
 
 #: configs/upgrades/larmour.attr.cfg:2
 msgid "Light Armour"
-msgstr ""
+msgstr "Лёгкая броня"
 
 #: configs/upgrades/larmour.attr.cfg:3
 msgid ""
@@ -3091,10 +3180,13 @@ msgid ""
 "Provides moderate protection from alien attacks.\n"
 "Increases survivability."
 msgstr ""
+"Лёгкий боевой доспех.\n"
+"Обеспечивает умеренную защиту от атак пришельцев.\n"
+"Повышает выживаемость."
 
 #: configs/upgrades/marmour.attr.cfg:2
 msgid "Medium Armour"
-msgstr ""
+msgstr "Средняя броня"
 
 #: configs/upgrades/marmour.attr.cfg:3
 msgid ""
@@ -3102,20 +3194,25 @@ msgid ""
 "Provides heavier protection against alien attacks.\n"
 "Good tradeoff of protection and mobility."
 msgstr ""
+"Средний боевой доспех.\n"
+"Обеспечивает более тяжёлую защиту от атак пришельцев.\n"
+"Хороший компромисс между защитой и мобильностью."
 
 #: configs/upgrades/medkit.attr.cfg:2
 msgid "Medkit"
-msgstr ""
+msgstr "Аптечка"
 
 #: configs/upgrades/radar.attr.cfg:3
 msgid ""
 "Scanning tool.\n"
 "Indicates presence of nearby friends and foes."
 msgstr ""
+"Инструмент сканирования.\n"
+"Указывает на присутствие поблизости друзей и врагов."
 
 #: configs/weapon/abuild.attr.cfg:1 configs/weapon/abuildupg.attr.cfg:1
 msgid "Alien build weapon"
-msgstr ""
+msgstr "Строительное оружие пришельцев"
 
 #: configs/weapon/chaingun.attr.cfg:2
 msgid ""
@@ -3124,6 +3221,10 @@ msgid ""
 "High spread, rapidly loses effectiveness at range.\n"
 "Less recoil when equiped with a battlesuit."
 msgstr ""
+"Скорострельное штурмовое оружие.\n"
+"Большая лента боеприпасов позволяет вести интенсивный непрерывный огонь.\n"
+"Большое рассеивание, быстро теряет эффективность на дистанции.\n"
+"Меньше отдачи при использовании с боевым костюмом."
 
 #: configs/weapon/ckit.attr.cfg:2
 msgid ""
@@ -3131,6 +3232,9 @@ msgid ""
 "Deals no damage, but can repair structures.\n"
 "Requires a brief delay between buildings."
 msgstr ""
+"Базовый строительный инструмент.\n"
+"Не наносит урона, но может ремонтировать структуры.\n"
+"Требуется небольшая задержка между постройками."
 
 #: configs/weapon/flamer.attr.cfg:2
 msgid ""
@@ -3138,6 +3242,9 @@ msgid ""
 "Flames adhere to surfaces and structures, dealing damage.\n"
 "Incinerates smaller aliens, highly effective in vents."
 msgstr ""
+"Оружие подавления на короткой дистанции.\n"
+"Пламя прилипает к поверхностям и структурам, нанося урон.\n"
+"Сжигает мелких пришельцев, чрезвычайно эффективно в вентиляционных шахтах."
 
 #: configs/weapon/lcannon.attr.cfg:2
 msgid ""
@@ -3145,30 +3252,33 @@ msgid ""
 "Primary charges up a massive shot, secondary a quick blast.\n"
 "Annihilates larger aliens and their base structures."
 msgstr ""
+"Тяжёлая энергетическая артиллерия.\n"
+"Основной режим заряжает мощный выстрел, дополнительный — быстрый залп.\n"
+"Уничтожает крупных пришельцев и их структуры базы."
 
 #: configs/weapon/level0.attr.cfg:1 configs/weapon/level2.attr.cfg:1
 msgid "Bite"
-msgstr ""
+msgstr "Укус"
 
 #: configs/weapon/level1.attr.cfg:1
 msgid "Claws"
-msgstr ""
+msgstr "Когти"
 
 #: configs/weapon/level2upg.attr.cfg:1
 msgid "Zap"
-msgstr ""
+msgstr "Разряд"
 
 #: configs/weapon/level3.attr.cfg:1
 msgid "Pounce"
-msgstr ""
+msgstr "Наскок"
 
 #: configs/weapon/level3upg.attr.cfg:1
 msgid "Pounce (upgrade)"
-msgstr ""
+msgstr "Наскок (улучшенный)"
 
 #: configs/weapon/level4.attr.cfg:1
 msgid "Charge"
-msgstr ""
+msgstr "Таран"
 
 #: configs/weapon/lgun.attr.cfg:2
 msgid ""
@@ -3176,6 +3286,9 @@ msgid ""
 "Fires rapid shots with moderate damage and no recoil.\n"
 "Can be recharged at human power structures."
 msgstr ""
+"Дальнобойное энергетическое оружие.\n"
+"Ведёт скорострельный огонь со средним уроном и без отдачи.\n"
+"Может перезаряжаться на силовых структурах людей."
 
 #: configs/weapon/mdriver.attr.cfg:2
 msgid ""
@@ -3183,6 +3296,9 @@ msgid ""
 "Secondary activates a targeting scope.\n"
 "Deals heavy damage at long distances."
 msgstr ""
+"Снайперское оружие с магазинным питанием.\n"
+"Дополнительный режим активирует прицел.\n"
+"Наносит тяжёлый урон на больших расстояниях."
 
 #: configs/weapon/prifle.attr.cfg:2
 msgid ""
@@ -3190,6 +3306,9 @@ msgid ""
 "Rapidly shreds through aliens of all sizes.\n"
 "Can be recharged at human power structures."
 msgstr ""
+"Энергетическое оружие с магазинным питанием.\n"
+"Быстро уничтожает пришельцев всех размеров.\n"
+"Может перезаряжаться на силовых структурах людей."
 
 #: configs/weapon/psaw.attr.cfg:2
 msgid ""
@@ -3197,6 +3316,9 @@ msgid ""
 "Deals massive damage at close range.\n"
 "Shreds through stationary targets."
 msgstr ""
+"Энергетическая пила людей.\n"
+"Наносит колоссальный урон на близкой дистанции.\n"
+"Разрезает неподвижные цели."
 
 #: configs/weapon/rifle.attr.cfg:2
 msgid ""
@@ -3204,6 +3326,9 @@ msgid ""
 "Generally effective against most alien forms.\n"
 "Clip-based, requires a slow reload."
 msgstr ""
+"Базовое пехотное оружие.\n"
+"Как правило, эффективно против большинства форм пришельцев.\n"
+"Магазинное питание, требует медленной перезарядки."
 
 #: configs/weapon/shotgun.attr.cfg:2
 msgid ""
@@ -3211,6 +3336,9 @@ msgid ""
 "Deals heavy damage per shot.\n"
 "High spread, rapidly loses effectiveness at range."
 msgstr ""
+"Боевой дробовик с магазинным питанием.\n"
+"Наносит тяжёлый урон за выстрел.\n"
+"Большое рассеивание, быстро теряет эффективность на дистанции."
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
