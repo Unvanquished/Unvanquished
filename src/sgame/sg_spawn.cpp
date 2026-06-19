@@ -535,9 +535,23 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 			return false;
 		}
 
-		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
+		switch( buildable )
 		{
-			spawnedEntity->s.angles[ YAW ] = AngleNormalize360( spawnedEntity->s.angles[ YAW ] + 180.0f );
+			case BA_A_LEECH:
+			case BA_H_DRILL:
+				// Do not spawn any miner if no miner is allowed.
+				if ( !g_maxMiners.Get() )
+				{
+					return false;
+				}
+				break;
+			case BA_A_SPAWN:
+			case BA_H_SPAWN:
+				// Compatibility with Tremulous, eggs and nodes were reversed.
+				spawnedEntity->s.angles[ YAW ] = AngleNormalize360( spawnedEntity->s.angles[ YAW ] + 180.0f );
+				break;
+			default:
+				break;
 		}
 
 		G_SpawnBuildable( spawnedEntity, buildable );
