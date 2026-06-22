@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-16 00:29+0200\n"
-"PO-Revision-Date: 2025-10-01 14:01+0000\n"
-"Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
+"PO-Revision-Date: 2026-06-23 07:01+0000\n"
+"Last-Translator: DJGummikuh <djgummikuh@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 "X-POOTLE-MTIME: 1398345746.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -924,7 +924,7 @@ msgstr "Hoch"
 
 #: ui/options_graphics.rml:32
 msgid "Special effects, large textures…"
-msgstr ""
+msgstr "Spezialeffekte, große Texturen, …"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -932,7 +932,7 @@ msgstr "Mittel"
 
 #: ui/options_graphics.rml:36
 msgid "Dynamic lights, surface details, good textures…"
-msgstr ""
+msgstr "Dynamische Beleuchtung, Oberflächendetails, gute Texturen, …"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:300
 #: ui/options_graphics.rml:420 ui/options_graphics.rml:429
@@ -1011,7 +1011,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:77
 msgid "Anti-aliasing"
-msgstr ""
+msgstr "Anti-Aliasing"
 
 #: ui/options_graphics.rml:80
 msgid "Multisample anti-aliasing is preferred when both are enabled."
@@ -2879,7 +2879,7 @@ msgstr ""
 
 #: configs/buildables/medistat.attr.cfg:2
 msgid "Medistation"
-msgstr "Heilstation"
+msgstr "Medizinschrank"
 
 #: configs/buildables/medistat.attr.cfg:3
 msgid ""
@@ -2887,6 +2887,9 @@ msgid ""
 "Heals the health and stamina of one human standing on it.\n"
 "Provides medkits to be used in the field."
 msgstr ""
+"Menschliche Unterstützungsstruktur.\n"
+"Regeneriert die Gesundheit und Ausdauer eines auf ihr stehenden Menschen.\n"
+"Stellt Medkits für den Feldeinsatz bereit."
 
 #: configs/buildables/mgturret.attr.cfg:2 configs/weapon/mgturret.attr.cfg:1
 msgid "Machinegun Turret"
@@ -2897,6 +2900,8 @@ msgid ""
 "Automated defense structure.\n"
 "Deals reliable damage at close range with an automated machine gun."
 msgstr ""
+"Automatische Verteidigungsstruktur.\n"
+"Verursacht mit seinem Maschinengewehr zuverlässig Schaden auf kurze Distanz."
 
 #: configs/buildables/overmind.attr.cfg:2
 msgid "Overmind"
@@ -2908,6 +2913,9 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the alien advance."
 msgstr ""
+"Zentrale Struktur der Aliens.\n"
+"Ermöglicht den Kauf von Upgrades und das Bauen anderer Strukturen.\n"
+"Seine Zerstörung verlangsamt den Vormarsch der Aliens."
 
 #: configs/buildables/reactor.attr.cfg:2
 msgid "Reactor"
@@ -2919,10 +2927,13 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the human advance."
 msgstr ""
+"Zentrale Struktur der Menschen..\n"
+"Ermöglicht den Kauf von Upgrades und das Bauen anderer Strukturen.\n"
+"Seine Zerstörung verlangsamt den menschlichen Vormarsch."
 
 #: configs/buildables/rocketpod.attr.cfg:2 configs/weapon/rocketpod.attr.cfg:1
 msgid "Rocket Pod"
-msgstr ""
+msgstr "Raketenturm"
 
 #: configs/buildables/rocketpod.attr.cfg:3
 msgid ""
@@ -2930,6 +2941,10 @@ msgid ""
 "Shoots tracking missiles that deal high damage at a large range.\n"
 "Won't shoot if it could damage itself or humans and their equipment."
 msgstr ""
+"Automatische Verteidigungsstruktur.\n"
+"Schießt zielsuchende Raketen mit hohem Schaden auf große Entfernung.\n"
+"Das Feuer wird unterdrückt, wenn Menschen oder ihre Ausrüstung getroffen "
+"werden könnten."
 
 #: configs/buildables/spiker.attr.cfg:2
 msgid "Spiker"
