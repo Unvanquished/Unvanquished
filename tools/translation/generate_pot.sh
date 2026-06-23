@@ -50,7 +50,7 @@ generate_game_pot () (
 			>> "${temp_pot_file}"
 	)
 
-	"${script_dir}/generate_gender_pot.pl" \
+	"${script_dir}/generate_gender_pot.py" \
 		'src/cgame/cg_event.cpp' \
 		>> "${temp_pot_file}"
 
