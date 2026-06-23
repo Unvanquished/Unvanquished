@@ -82,7 +82,7 @@ static AIValue_t AIBoxToken( const pc_token_stripped_t *token, bool negative = f
 // functions that are used to provide values to the behavior tree in condition nodes
 static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != nullptr );
+	return AIBoxInt( self->botMind->closestDamagedBuilding.goal.getTargetedEntity() != nullptr );
 }
 
 static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
@@ -92,7 +92,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->bestEnemy.ent != nullptr );
+	return AIBoxInt( self->botMind->bestEnemy.goal.getTargetedEntity() != nullptr );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
@@ -210,7 +210,7 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
+	botGoalAndDistance_t ent = AIEntityToGoal( self, e );
 
 	return AIBoxFloat( ent.distance );
 }
@@ -250,14 +250,14 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t e = AIEntityToGentity( self ,et );
+	botGoalAndDistance_t e = AIEntityToGoal( self ,et );
 
-	if ( !e.ent )
+	if ( !e.goal.getTargetedEntity() )
 	{
 		return AIBoxInt( false );
 	}
 
-	target = e.ent;
+	target = e.goal.getTargetedEntity();
 
 	return AIBoxInt( BotTargetInAttackRange( self, target ) );
 }
@@ -266,18 +266,18 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t e = AIEntityToGentity( self, et );
+	botGoalAndDistance_t e = AIEntityToGoal( self, et );
 
-	if ( !e.ent )
+	if ( !e.goal.getTargetedEntity() )
 	{
 		return AIBoxInt( false );
 	}
 
-	target = e.ent;
+	target = e.goal.getTargetedEntity();
 
 	if ( BotTargetIsVisible( self, target, MASK_OPAQUE ) )
 	{
-		if ( BotEntityIsValidTarget( e.ent ) )
+		if ( BotEntityIsValidTarget( e.goal.getTargetedEntity() ) )
 		{
 			self->botMind->enemyLastSeen = level.time;
 		}
@@ -295,17 +295,17 @@ static AIValue_t matchTime( gentity_t*, const AIValue_t* )
 static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t ed = AIEntityToGentity( self, e );
+	botGoalAndDistance_t ed = AIEntityToGoal( self, e );
 
 	if ( e == E_GOAL )
 	{
 		return AIBoxInt( self->botMind->nav().directPathToGoal );
 	}
 
-	if ( ed.ent )
+	if ( ed.goal.getTargetedEntity() )
 	{
 		botTarget_t target;
-		target = ed.ent;
+		target = ed.goal.getTargetedEntity();
 		return AIBoxInt( BotPathIsWalkable( self, target ) );
 	}
 
@@ -413,11 +413,11 @@ static AIValue_t cvar( gentity_t*, const AIValue_t *params )
 static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t et = AIEntityToGentity( self, e );
+	botGoalAndDistance_t et = AIEntityToGoal( self, e );
 
-	if ( Entities::HasHealthComponent( et.ent ) )
+	if ( Entities::HasHealthComponent( et.goal.getTargetedEntity() ) )
 	{
-		return AIBoxFloat( Entities::HealthFraction( et.ent ) );
+		return AIBoxFloat( Entities::HealthFraction( et.goal.getTargetedEntity() ) );
 	}
 
 	return AIBoxFloat( 0.f );
@@ -1580,6 +1580,7 @@ static void SetBehaviorTreeDefines()
 	D( E_FRIENDLYBUILDING );
 	D( E_ENEMYBUILDING );
 	D( E_SELF );
+	D( E_USERPOS );
 
 	// add player classes
 	D( PCL_NONE );
