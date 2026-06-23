@@ -1,5 +1,4 @@
-#! /usr/bin/perl -w
-
+#!/usr/bin/env python3
 # ===========================================================================
 #
 # Copyright (c) 2012 Unvanquished Developers
@@ -24,50 +23,35 @@
 #
 # ===========================================================================
 
-no locale;
-use strict;
-use warnings;
+import re
+import sys
 
-my %context;
-my $text;
-my $line;
-my $linenum=1;
-my $key;
+def main():
+    if len(sys.argv) < 2:
+        print(f"{sys.argv[0]} <source file with gender context>")
+        sys.exit(1)
 
-if (!$ARGV[0])
-{
-	print "$0 <source file with gender context>\n";
-	exit 1;
-}
+    source_file = sys.argv[1]
+    context = {}
 
-open SOURCE, '<'.$ARGV[0] or die "$!\n";
-while (defined ($line = <SOURCE>))
-{
-	if ($line =~ /G_\((.*?)\)/)
-	{
-		$context{ $linenum } = $1;
-	}
+    try:
+        with open(source_file, 'r') as f:
+            for linenum, line in enumerate(f, start=1):
+                match = re.search(r'G_\((.*?)\)', line)
+                if match:
+                    context[linenum] = match.group(1)
+    except OSError as e:
+        print(e)
+        sys.exit(1)
 
-	$linenum++;
-}
+    print()
 
-close SOURCE;
+    for key in sorted(context.keys()):
+        for gender in ("male", "female", "neuter"):
+            print(f"#: {source_file}:{key}")
+            print(f'msgctxt "{gender}"')
+            print(f"msgid {context[key]}")
+            print('msgstr ""\n')
 
-print "\n";
-foreach $key ( sort {$a <=> $b} keys %context )
-{
-	print "\#: " . $ARGV[0] . ":$key\n";
-	print "msgctxt \"male\"\n";
-	print "msgid $context{$key}\n";
-	print "msgstr \"\"\n\n";
-
-	print "\#: " . $ARGV[0] . ":$key\n";
-	print "msgctxt \"female\"\n";
-	print "msgid $context{$key}\n";
-	print "msgstr \"\"\n\n";
-
-	print "\#: " . $ARGV[0] . ":$key\n";
-	print "msgctxt \"neuter\"\n";
-	print "msgid $context{$key}\n";
-	print "msgstr \"\"\n\n";
-}
+if __name__ == "__main__":
+    main()
