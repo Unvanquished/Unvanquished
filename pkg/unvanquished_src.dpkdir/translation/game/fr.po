@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-16 00:29+0200\n"
-"PO-Revision-Date: 2026-06-15 22:29+0000\n"
+"PO-Revision-Date: 2026-06-15 23:08+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -3261,7 +3261,7 @@ msgstr ""
 
 #: configs/weapon/abuild.attr.cfg:1 configs/weapon/abuildupg.attr.cfg:1
 msgid "Alien build weapon"
-msgstr ""
+msgstr "Arme de construction extraterrestre"
 
 #: configs/weapon/chaingun.attr.cfg:2
 msgid ""
@@ -3270,6 +3270,10 @@ msgid ""
 "High spread, rapidly loses effectiveness at range.\n"
 "Less recoil when equiped with a battlesuit."
 msgstr ""
+"Arme d'assaut à cadence de tir rapide.\n"
+"Sa grande cartouchière permet un tir soutenu et intense.\n"
+"Large dispersion, perd rapidement de son efficacité à longue distance.\n"
+"Recul réduit lorsqu'elle est utilisée avec une armure de combat."
 
 #: configs/weapon/ckit.attr.cfg:2
 msgid ""
@@ -3277,6 +3281,9 @@ msgid ""
 "Deals no damage, but can repair structures.\n"
 "Requires a brief delay between buildings."
 msgstr ""
+"Outil de construction de base.\n"
+"N'inflige aucun dégât, mais permet de réparer les structures.\n"
+"Nécessite un court délai entre chaque construction."
 
 #: configs/weapon/flamer.attr.cfg:2
 msgid ""
@@ -3284,6 +3291,10 @@ msgid ""
 "Flames adhere to surfaces and structures, dealing damage.\n"
 "Incinerates smaller aliens, highly effective in vents."
 msgstr ""
+"Arme de neutralisation à courte portée.\n"
+"Les flammes adhèrent aux surfaces et aux structures, infligeant des dégâts.\n"
+"Incinère les petits extraterrestres, très efficace dans les conduits "
+"d'aération."
 
 #: configs/weapon/lcannon.attr.cfg:2
 msgid ""
@@ -3291,30 +3302,33 @@ msgid ""
 "Primary charges up a massive shot, secondary a quick blast.\n"
 "Annihilates larger aliens and their base structures."
 msgstr ""
+"Artillerie à haute énergie.\n"
+"Le tir primaire charge un tir massif, le secondaire un coup bref.\n"
+"Anéantit les grands extraterrestres et leurs structures de base."
 
 #: configs/weapon/level0.attr.cfg:1 configs/weapon/level2.attr.cfg:1
 msgid "Bite"
-msgstr ""
+msgstr "Morsure"
 
 #: configs/weapon/level1.attr.cfg:1
 msgid "Claws"
-msgstr ""
+msgstr "Griffes"
 
 #: configs/weapon/level2upg.attr.cfg:1
 msgid "Zap"
-msgstr ""
+msgstr "Zap"
 
 #: configs/weapon/level3.attr.cfg:1
 msgid "Pounce"
-msgstr ""
+msgstr "Bond"
 
 #: configs/weapon/level3upg.attr.cfg:1
 msgid "Pounce (upgrade)"
-msgstr ""
+msgstr "Bond (amélioration)"
 
 #: configs/weapon/level4.attr.cfg:1
 msgid "Charge"
-msgstr ""
+msgstr "Charge"
 
 #: configs/weapon/lgun.attr.cfg:2
 msgid ""
@@ -3322,6 +3336,9 @@ msgid ""
 "Fires rapid shots with moderate damage and no recoil.\n"
 "Can be recharged at human power structures."
 msgstr ""
+"Arme énergétique à longue portée.\n"
+"Tire en rafale avec des dégâts modérés et aucun recul.\n"
+"Peut être rechargée dans les structures de puissance humaines."
 
 #: configs/weapon/mdriver.attr.cfg:2
 msgid ""
@@ -3329,6 +3346,9 @@ msgid ""
 "Secondary activates a targeting scope.\n"
 "Deals heavy damage at long distances."
 msgstr ""
+"Arme de précision à chargeur.\n"
+"L’action secondaire active une lunette de visée.\n"
+"Inflige d'importants dégâts à longue distance."
 
 #: configs/weapon/prifle.attr.cfg:2
 msgid ""
@@ -3336,6 +3356,9 @@ msgid ""
 "Rapidly shreds through aliens of all sizes.\n"
 "Can be recharged at human power structures."
 msgstr ""
+"Arme énergétique à chargeur.\n"
+"Déchiquette rapidement les extraterrestres de toutes tailles.\n"
+"Peut être rechargée dans les structures de puissance humaines."
 
 #: configs/weapon/psaw.attr.cfg:2
 msgid ""
@@ -3343,6 +3366,9 @@ msgid ""
 "Deals massive damage at close range.\n"
 "Shreds through stationary targets."
 msgstr ""
+"Scie énergétique humaine.\n"
+"Inflige des dégâts massifs à courte portée.\n"
+"Déchiquette les cibles stationnaires."
 
 #: configs/weapon/rifle.attr.cfg:2
 msgid ""
@@ -3350,6 +3376,9 @@ msgid ""
 "Generally effective against most alien forms.\n"
 "Clip-based, requires a slow reload."
 msgstr ""
+"Arme de base de l'infanterie.\n"
+"Généralement efficace contre la plupart des formes extraterrestres.\n"
+"Utilise des chargeurs, requiert un rechargement lent."
 
 #: configs/weapon/shotgun.attr.cfg:2
 msgid ""
@@ -3357,6 +3386,9 @@ msgid ""
 "Deals heavy damage per shot.\n"
 "High spread, rapidly loses effectiveness at range."
 msgstr ""
+"Fusil à pompe à chargeur.\n"
+"Inflige de lourds dégâts à chaque tir.\n"
+"Large dispersion, perd rapidement de son efficacité à distance."
 
 #: src/cgame/cg_event.cpp:282
 msgctxt "male"
