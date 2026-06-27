@@ -25,25 +25,50 @@ pr:
 
 strategy:
   matrix:
-    Linux GCC Native DLL:
+    Linux GCC amd64 exe:
+      VM_IMAGE: 'ubuntu-22.04'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build'
+      CMAKE_OPTIONS: '-G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=1 -DBUILD_GAME_NACL=0'
+      BUILDER_OPTIONS: '-j$(nproc) -k 10'
+    Linux GCC amd64 dll:
       VM_IMAGE: 'ubuntu-22.04'
       INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build'
       CMAKE_OPTIONS: '-G Ninja -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(nproc) -k 10'
-    Linux Clang Native DLL:
+    Linux Clang amd64 dll:
       VM_IMAGE: 'ubuntu-22.04'
       INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build'
       CMAKE_OPTIONS: '-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(nproc) -k 10'
-    Linux NaCl:
+    Linux Saigo amd64 nexe:
       VM_IMAGE: 'ubuntu-22.04'
       INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build'
-      CMAKE_OPTIONS: '-G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1'
+      CMAKE_OPTIONS: '-G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1 -DBUILD_GAME_NACL_TARGETS=amd64'
       BUILDER_OPTIONS: '-j$(nproc) -k 10'
-    Mac:
+    Linux Saigo i686 nexe:
+      VM_IMAGE: 'ubuntu-22.04'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build'
+      CMAKE_OPTIONS: '-G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1 -DBUILD_GAME_NACL_TARGETS=i686'
+      BUILDER_OPTIONS: '-j$(nproc) -k 10'
+    Linux Saigo armhf nexe:
+      VM_IMAGE: 'ubuntu-22.04'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build'
+      CMAKE_OPTIONS: '-G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1 -DBUILD_GAME_NACL_TARGETS=armhf'
+      BUILDER_OPTIONS: '-j$(nproc) -k 10'
+    macOS AppleClang amd64 dll:
       VM_IMAGE: 'macOS-14'
       INSTALL_DEPS: 'python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt'
-      CMAKE_OPTIONS: '-DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 -DPREFER_EXTERNAL_LIBS=OFF -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+      BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
+    macOS AppleClang arm64 dll:
+      VM_IMAGE: 'macOS-14'
+      INSTALL_DEPS: 'python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt'
+      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.7 -DPREFER_EXTERNAL_LIBS=OFF -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+      BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
+    macOS Saigo amd64 nexe:
+      VM_IMAGE: 'macOS-14'
+      INSTALL_DEPS: 'python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt'
+      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 -DPREFER_EXTERNAL_LIBS=OFF -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1 -DDBUILD_GAME_NACL_TARGETS=amd64'
       BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
 
 pool:
