@@ -93,13 +93,15 @@ namespace {
 struct PairsHelper
 {
 	size_t cur;
-	std::function<int( lua_State* L, size_t index )> next_func;
+	std::function<int( lua_State* L, size_t& index )> next_func;
 };
 
 int next( lua_State* L )
 {
 	PairsHelper* self = static_cast<PairsHelper*>( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
-	return self->next_func( L, self->cur++ );
+	int ret = self->next_func( L, self->cur );
+	self->cur++;
+	return ret;
 }
 
 int destroy( lua_State* L )
@@ -110,7 +112,7 @@ int destroy( lua_State* L )
 
 }  // namespace
 
-int CreatePairsHelper( lua_State* L, std::function<int( lua_State* L, size_t index )> next_func )
+int CreatePairsHelper( lua_State* L, std::function<int( lua_State* L, size_t& index )> next_func )
 {
 	void* storage = lua_newuserdata( L, sizeof( PairsHelper ) );
 	if ( luaL_newmetatable( L, "Shared::Lua::PairsHelper" ) )
