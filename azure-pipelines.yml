@@ -43,12 +43,12 @@ strategy:
     Mac amd64:
       VM_IMAGE: 'macOS-14'
       INSTALL_DEPS: 'python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt'
-      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 -DPREFER_EXTERNAL_LIBS=OFF -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
     Mac arm64:
       VM_IMAGE: 'macOS-14'
       INSTALL_DEPS: 'python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt'
-      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.7 -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+      CMAKE_OPTIONS: '-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.7 -DPREFER_EXTERNAL_LIBS=OFF -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
 
 pool:
