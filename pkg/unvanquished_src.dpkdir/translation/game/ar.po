@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-16 00:29+0200\n"
-"PO-Revision-Date: 2024-12-08 11:14+0000\n"
-"Last-Translator: lee-00 <xfz-op@outlook.com>\n"
+"PO-Revision-Date: 2026-07-06 08:28+0000\n"
+"Last-Translator: Saad AIT YAHIA <saadaityahiasaw789@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -53,35 +53,35 @@ msgstr "جرانجر"
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr "الدريتش نوع قتال صامت اما الجرانجرس نوع البناة الفضائي."
+msgstr "الدريتشز هي شكل هجومي خفي، والجرانجرز هي شكل البناء الفضائي."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "العودة لأختيار الفرق"
+msgstr "العودة إلى اختيار الفريق"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "تم حظرك"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "تم حظرك من قبل:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "مدة:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr ""
+msgstr "سبب:"
 
 #: ui/banned.rml:65
 msgid "Close"
-msgstr ""
+msgstr "غلق"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "ضع تصويت للتعادل"
+msgstr "أعلن عن تصويت للتعادل"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -97,7 +97,7 @@ msgstr "املأ بلاعبين روبوتات"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "كم عدد اللاعبين (المستخدمين والروبوتات) الذين يجب أن تضمهم الفرق؟"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -106,7 +106,7 @@ msgstr "الفريقين"
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:99
 msgid "Aliens"
-msgstr "الفضائين"
+msgstr "كائنات فضائية"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
@@ -159,7 +159,7 @@ msgstr "حسنا"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "دليل اللعب"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
