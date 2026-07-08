@@ -196,6 +196,7 @@ endif()
 
 if (BUILD_SGAME)
     include(tools/cbse/CBSE.cmake)
+	list(APPEND GAME_NACL_VM_INHERITED_OPTIONS "CBSE_PYTHON_PATH")
 
     # Avoid generating CBSE in the NaCl subproject.
     if (FORK EQUAL 2)
