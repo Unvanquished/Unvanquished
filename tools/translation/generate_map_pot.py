@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env python3
 
 # ===========================================================================
 #
@@ -24,33 +24,47 @@
 #
 # ===========================================================================
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-. "${script_dir}/common.sh"
+import re
+import subprocess
+import sys
 
-erase_date () {
-	sed '/^"POT-Creation-Date:/d'
-}
+import pot_printer
 
-is_modified_file () {
-	diff -q <(git show "HEAD:./${1}" | erase_date) <(erase_date < "${1}") >/dev/null 2>&1
-}
+def load(filename):
+    return subprocess.run(
+        ["esquirel", "map", "--input-map", filename, "--list-strings"],
+        capture_output=True, text=True).stdout.strip()
 
-if [ -z "${1:-}" ]
-then
-	error 'missing file'
-fi
+def process(translation_dict, content, filename, is_debug):
+    line = 0
+    errors = 0
 
-if ! [ -f "${1}" ]
-then
-	error "not a file: ${1}"
-fi
+    def error(msg):
+        print(f"Error in file {filename}#strings on line {line}: {msg}", file=sys.stderr)
+        nonlocal errors
+        errors += 1
 
-# Denoise the diff only if the file is already tracked by Git.
-if git ls-files --error-unmatch "${1}" >/dev/null 2>&1
-then
-	# Revert the file if only the POT date changed.
-	if is_modified_file "${1}"
-	then
-		git checkout "${1}" >/dev/null 2>&1
-	fi
-fi
+    def debug(msg):
+        if is_debug:
+            print(f"Debug in file {filename}#strings on line {line}: {msg}", file=sys.stderr)
+
+    lines = str(content).split('\n')
+
+    pattern = re.compile("(?P<num>[0-9]*): (?P<string>.*)")
+
+    for entry in lines:
+        line += 1
+
+        match = pattern.match(entry)
+        if not match:
+            error(f"malformed input: {entry}")
+            continue
+
+        num = match.group("num")
+        string = match.group("string")
+        debug(f"{num}: {string}")
+        translation_dict[string].append(f"{filename}:{num}")
+
+    return errors
+
+pot_printer.run(process, load=load)
