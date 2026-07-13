@@ -1,0 +1,80 @@
+﻿---
+BasedOnStyle: Google
+AccessModifierOffset: -1
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine:    Empty
+BraceWrapping:
+  AfterCaseLabel:  false
+  AfterClass:      true
+  AfterControlStatement: true
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterObjCDeclaration: true
+  AfterStruct:     true
+  AfterUnion:      true
+  AfterExternBlock: true
+  BeforeCatch:     true
+  BeforeElse:      true
+  BeforeLambdaBody: true
+  BeforeWhile:     true
+  IndentBraces:    false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+ColumnLimit: 100
+PointerAlignment: Right
+SpacesInParentheses: true
+SpacesInSquareBrackets: true
+TabWidth: 4
+UseTab: AlignWithSpaces
+CommentPragmas:  '^ keep:'
+IncludeCategories:
+  - Regex:           '.*_public\.h'
+    Priority:        1
+    SortPriority:    1
+    CaseSensitive:   false
+  - Regex:           '.*_local\.h'
+    Priority:        1
+    SortPriority:    2
+    CaseSensitive:   false
+  - Regex:           '.*rocket\.h'
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<ext/.*\.h>'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '.*'
+    Priority:        3
+    SortPriority:    0
+    CaseSensitive:   false
+StatementMacros:
+  - GETTER
+  - SETTER
+  - SETTER2
+  - GETTER2
+  - ExecFunc
+  - GET_FUNC2
+  - GET_FUNC
+  - SET_FUNC
+  - LUASGAMETYPEDEFINE
+IndentWrappedFunctionNames: true
+ContinuationIndentWidth: 4
+QualifierAlignment: Left
+SeparateDefinitionBlocks: Always
+ShortNamespaceLines: 0
+AlignArrayOfStructures: Left
+ObjCBlockIndentWidth: 4
+IndentWidth: 4
+...
