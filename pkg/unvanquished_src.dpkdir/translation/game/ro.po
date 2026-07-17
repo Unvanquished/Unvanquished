@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-16 00:29+0200\n"
+"POT-Creation-Date: 2026-07-17 16:59+0200\n"
 "PO-Revision-Date: 2024-12-19 10:00+0000\n"
 "Last-Translator: Bogdan Mințoi <mintoi.bogdan@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/unvanquished/"
@@ -24,8 +24,8 @@ msgstr ""
 msgid "Build"
 msgstr "Construiește"
 
-#: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:217
-#: ui/human_buy.rml:233
+#: ui/alien_build.rml:133 ui/alien_evo.rml:147 ui/human_build.rml:133
+#: ui/human_buy.rml:217 ui/human_buy.rml:233
 msgid "Price:"
 msgstr "Preț:"
 
@@ -33,7 +33,7 @@ msgstr "Preț:"
 msgid "Evolve"
 msgstr "Evoluează"
 
-#: ui/alien_evo.rml:150 ui/hud_alien.rml:235
+#: ui/alien_evo.rml:147 ui/hud_alien.rml:235
 msgid "morph points"
 msgstr "puncte de metamorfoză"
 
