@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-17 16:59+0200\n"
-"PO-Revision-Date: 2023-06-19 16:52+0000\n"
-"Last-Translator: Coconut <c0c0nut@protonmail.com>\n"
+"PO-Revision-Date: 2026-07-23 00:01+0000\n"
+"Last-Translator: Anna Hegedüs <hegedusanna1227@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/hu/>\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -30,7 +30,7 @@ msgstr "Ár:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Fejlesztés"
 
 #: ui/alien_evo.rml:147 ui/hud_alien.rml:235
 msgid "morph points"
@@ -60,27 +60,27 @@ msgstr "Vissza a csapat kiválasztásához"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Kitiltottak"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "Kitiltva általa:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Időtartama:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr ""
+msgstr "Ok:"
 
 #: ui/banned.rml:65
 msgid "Close"
-msgstr ""
+msgstr "Bezárás"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Szavazás kezdeményezése döntetlenről"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -92,11 +92,11 @@ msgstr "Szavazás indítás"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:36
 msgid "Fill with bots"
-msgstr ""
+msgstr "Feltöltés botokkal"
 
 #: ui/callvote_fillbots.rml:9
 msgid "How many players (users and bots) should teams have?"
-msgstr ""
+msgstr "Hány játékos (felhasználók és botok) legyen egy csapatban?"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -105,12 +105,12 @@ msgstr "Mindkét csapat"
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:99
 msgid "Aliens"
-msgstr ""
+msgstr "Űrlények"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "Emberek"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
@@ -123,63 +123,67 @@ msgstr "Mennyiség"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:37
 msgid "Change map"
-msgstr ""
+msgstr "Térkép változtatás"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Szavazás: change nextmap"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Szavazás: jelenlegi térkép kiválasztása"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Jelenlegi térkép kiválasztása (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Módszer"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:63
 msgid "Map"
-msgstr ""
+msgstr "Térkép"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Művelet végrehajtása"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Hiba!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Rendben"
 
 #: ui/help_gameplay.rml:20
 msgid "Gameplay Guide"
-msgstr ""
+msgstr "Játékmeneti útmutató"
 
 #: ui/help_gameplay.rml:25 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Üdvözöllek"
 
 #: ui/help_gameplay.rml:28
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"Ebben a részben a sikeres játékossá váláshoz szükséges főbb játékmeneti "
+"elemek összefoglalóját találod."
 
 #: ui/help_gameplay.rml:31
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "További részleteket találsz a honlapunkon és más közösségi felületeken!"
 
 #: ui/help_gameplay.rml:33
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Beszélgess más játékosokkal és fejlesztőkkel Libera.chat IRC-n, Matrix-on "
+"vagy Discord-on: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
