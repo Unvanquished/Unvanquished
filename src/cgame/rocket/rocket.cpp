@@ -629,7 +629,16 @@ Rml::String Rocket_QuakeToRML( Str::StringRef in, bool emoticons )
 					spanHasContent = true;
 					out.append( spanstr );
 				}
-				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				if ( emoticon->codePoint != 0 )
+				{
+					out.append( "<icon>" );
+					out.append( Q_UTF8_Encode( emoticon->codePoint ) );
+					out.append( "</icon> " );
+				}
+				else
+				{
+					out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				}
 				while ( iter != parser.end() && *iter->RawToken().begin() != ']' )
 				{
 					++iter;
