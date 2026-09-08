@@ -6,8 +6,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-17 16:59+0200\n"
-"PO-Revision-Date: 2025-04-20 02:10+0000\n"
-"Last-Translator: Robert Wolniak <robert.wolniak@szkod.ovh>\n"
+"PO-Revision-Date: 2026-09-09 16:51+0000\n"
+"Last-Translator: Przemysław Waleczny "
+"<undastyle@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pl/>\n"
 "Language: pl\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.11.1-dev\n"
+"X-Generator: Weblate 2026.9.1\n"
 "X-POOTLE-MTIME: 1375081810.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -62,15 +63,15 @@ msgstr "Powrót do wyboru drużyny"
 
 #: ui/banned.rml:60
 msgid "You have been banned"
-msgstr ""
+msgstr "Zostałeś zbanowany"
 
 #: ui/banned.rml:61
 msgid "Banned by:"
-msgstr ""
+msgstr "Zbanowano przez:"
 
 #: ui/banned.rml:62
 msgid "Duration:"
-msgstr ""
+msgstr "Długość:"
 
 #: ui/banned.rml:63
 msgid "Reason:"
@@ -925,7 +926,7 @@ msgstr "Najwyższe"
 
 #: ui/options_graphics.rml:28
 msgid "Everything enabled."
-msgstr ""
+msgstr "Wszystko włączone."
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:302
 #: ui/options_graphics.rml:419 ui/options_graphics.rml:427
@@ -934,7 +935,7 @@ msgstr "Wysokie"
 
 #: ui/options_graphics.rml:32
 msgid "Special effects, large textures…"
-msgstr ""
+msgstr "Efekty specjalne, duże tekstury…"
 
 #: ui/options_graphics.rml:35
 msgid "Medium"
@@ -942,7 +943,7 @@ msgstr "Średnia"
 
 #: ui/options_graphics.rml:36
 msgid "Dynamic lights, surface details, good textures…"
-msgstr ""
+msgstr "Dynamiczne oświetlenie, detale powierzchni, dobre tekstury…"
 
 #: ui/options_graphics.rml:39 ui/options_graphics.rml:300
 #: ui/options_graphics.rml:420 ui/options_graphics.rml:429
@@ -951,13 +952,15 @@ msgstr "Niskie"
 
 #: ui/options_graphics.rml:40
 msgid "The fastest preset that doesn't make the game look ugly."
-msgstr ""
+msgstr "Najszybszy profil ustawień przy którym gra nie wygląda brzydko."
 
 #: ui/options_graphics.rml:43
 msgid ""
 "When looking for optimizations, try the low preset first. When the low "
 "preset runs properly, the lowest preset is not faster."
 msgstr ""
+"Dążąc do optymalizacji wypróbuj najpierw niski profil ustawień. Gdy gra "
+"działa poprawnie na tym profilu nie ma potrzeby zmniejszania grafiki dalej."
 
 #: ui/options_graphics.rml:46
 msgid "Lowest"
@@ -965,11 +968,11 @@ msgstr "Najniższe"
 
 #: ui/options_graphics.rml:47
 msgid "Ugly textures and geometry, no sky, no particle bounce…"
-msgstr ""
+msgstr "Brzydkie tekstury i geometria, brak nieba, brak odbicia cząsteczek…"
 
 #: ui/options_graphics.rml:48
 msgid "Only meant for very slow devices, as a last resort."
-msgstr ""
+msgstr "Z myślą jedynie o najsłabszych urzadzeniach, jako ostatnia możliwość."
 
 #: ui/options_graphics.rml:51 ui/options_graphics.rml:53
 msgid "Video"
