@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-17 16:59+0200\n"
-"PO-Revision-Date: 2026-06-15 23:08+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2026-09-20 22:51+0000\n"
+"Last-Translator: ZobBillZeButt <joelekiffeur@yahoo.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -33,7 +33,7 @@ msgstr "Évoluer"
 
 #: ui/alien_evo.rml:147 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "pts de mutation"
+msgstr "points de mutation"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -73,7 +73,7 @@ msgstr "Durée :"
 
 #: ui/banned.rml:63
 msgid "Reason:"
-msgstr "Motif :"
+msgstr "Motif :"
 
 #: ui/banned.rml:65
 msgid "Close"
@@ -184,8 +184,8 @@ msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Discutez avec la communautée sur les serveurs IRC, Matrix ou Discord Libera."
-"Chat : <web dest=\"chat\" />"
+"Discutez avec la communauté sur les serveurs IRC, Matrix ou Discord "
+"Libera.Chat : <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:34
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
@@ -400,11 +400,12 @@ msgstr ""
 "un plus grand chaos."
 
 #: ui/help_gameplay.rml:111
+#, fuzzy
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
-"L’attaque crachat du granger avancé [advgranger] peut être utilisée pour "
+"L’attaque par crachat du granger avancé [advgranger] peut être utilisée pour "
 "éteindre les incendies ou ralentir les intrus !"
 
 #: ui/help_gameplay.rml:115
@@ -571,13 +572,14 @@ msgstr ""
 "très rapides."
 
 #: ui/help_gameplay.rml:184
+#, fuzzy
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
-"Les extraterrestres peuvent désévoluer près de l'overmind, et le crachat de "
-"granger avancé peut faire des choses intéressantes, essayez-le sur le feu ou "
-"les humains !"
+"Les extraterrestres peuvent inverser leur propre évolution près de "
+"l'overmind, et le crachat de granger avancé peut faire des choses "
+"intéressantes, essayez-le sur le feu ou les humains !"
 
 #: ui/hud_basics.rml:196
 msgid "Game"
@@ -596,8 +598,9 @@ msgid "ms"
 msgstr "ms"
 
 #: ui/hud_bp.rml:29
+#, fuzzy
 msgid "build points"
-msgstr "pts de constr"
+msgstr "points de construction"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -801,7 +804,7 @@ msgstr "Supprimer tous les bots"
 
 #: ui/options_democracy.rml:18
 msgid "Global vote:"
-msgstr "Vote global :"
+msgstr "Vote global :"
 
 #: ui/options_democracy.rml:20 ui/options_democracy.rml:29
 msgid "yes"
@@ -817,7 +820,7 @@ msgstr "non"
 
 #: ui/options_democracy.rml:27
 msgid "Team vote:"
-msgstr "Vote d’équipe :"
+msgstr "Vote d’équipe :"
 
 #: ui/options_democracy.rml:35
 msgid "Kick bots"
@@ -1045,11 +1048,12 @@ msgid "Multisample anti-aliasing (MSAA)"
 msgstr "Anticrénelage multi-échantillons (MSAA)"
 
 #: ui/options_graphics.rml:93
+#, fuzzy
 msgid ""
 "Render at higher precision at the boundaries of surfaces for crisp edges. "
 "This is a resource-intensive option."
 msgstr ""
-"Fait le rendu en plus haute précision aux bords des surfaces pour des "
+"Effectue le rendu en plus haute précision aux bords des surfaces pour des "
 "contours nets. Cette option est gourmande en ressource."
 
 #: ui/options_graphics.rml:98
@@ -1960,9 +1964,10 @@ msgid "First-person weapons"
 msgstr "Armes à la première personne"
 
 #: ui/options_movements_cosmetic.rml:45
+#, fuzzy
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr ""
-"Montrez des modèles de pistolet, de pince, de main et de mandibule à la "
+"Montrez des modèles d'armes à feu, de pinces, de mains et de mandibules à la "
 "première personne."
 
 #: ui/options_movements_cosmetic.rml:48
@@ -1970,8 +1975,9 @@ msgid "Left-handed mode"
 msgstr "Mode gaucher"
 
 #: ui/options_movements_cosmetic.rml:50
+#, fuzzy
 msgid "Mirror first-person gun models."
-msgstr "Réflexion des modèles d'armes à la première personne."
+msgstr "Réflexion des modèles d'armes à feu à la première personne."
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
@@ -1990,6 +1996,7 @@ msgid "Your name visible to others."
 msgstr "Votre nom est visible par tous."
 
 #: ui/options_player.rml:26
+#, fuzzy
 msgid "Colour codes and symbols"
 msgstr "Code-couleurs et symboles"
 
@@ -2118,8 +2125,9 @@ msgid "24 Hour"
 msgstr "24 heures"
 
 #: ui/options_ui.rml:34
+#, fuzzy
 msgid "Show the time in real-life."
-msgstr "Afficher l'heure dans la vraie vie."
+msgstr "Afficher l'heure en temps réel."
 
 #: ui/options_ui.rml:37
 msgid "Game-time clock"
@@ -2147,7 +2155,7 @@ msgstr "Auto-vidage de l’entrée de discussion"
 
 #: ui/options_ui.rml:49
 msgid "Clear chat field when closed."
-msgstr "Vider l’entrée de discussion à la fermeture."
+msgstr "Effacer le champ de discussion à la fermeture."
 
 #: ui/options_ui.rml:53
 msgid "Show ping"
@@ -2207,6 +2215,7 @@ msgid "Weapon"
 msgstr "Arme"
 
 #: ui/options_ui.rml:100 configs/weapon/blaster.attr.cfg:1
+#, fuzzy
 msgid "Blaster"
 msgstr "Pistolaser"
 
@@ -2215,6 +2224,7 @@ msgid "Rifle"
 msgstr "Mitraillette"
 
 #: ui/options_ui.rml:102
+#, fuzzy
 msgid "Pain Saw"
 msgstr "Scie endolorissante"
 
@@ -2604,9 +2614,10 @@ msgid "BP Vampire"
 msgstr "Vampire BP"
 
 #: ui/server_setup.rml:165
+#, fuzzy
 msgid "Bleed build points from the enemy team by killing buildables."
 msgstr ""
-"Saigner les points de constructions de l’équipe ennemie en détruisant des "
+"Drainer les points de constructions de l’équipe ennemie en détruisant des "
 "constructions."
 
 #: ui/server_setup.rml:168
@@ -2644,9 +2655,10 @@ msgstr "Vitesse initiale de récupération de points de construction par minute"
 
 #: ui/server_setup.rml:190
 msgid "Half regeneration time"
-msgstr "Temps de régénération à moitié"
+msgstr "Temps de demi-régénération"
 
 #: ui/server_setup.rml:191
+#, fuzzy
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
 "La durée d'attente avant que la récupération de points de constructions ne "
@@ -2775,7 +2787,7 @@ msgstr "Si les bots achètent une combinaison de combat"
 
 #: ui/server_setup.rml:335 configs/upgrades/firebomb.attr.cfg:2
 msgid "Firebomb"
-msgstr "Grenade incendière"
+msgstr "Grenade incendiaire"
 
 #: ui/server_setup.rml:339 configs/upgrades/gren.attr.cfg:2
 msgid "Grenade"
@@ -2786,8 +2798,9 @@ msgid "Radar"
 msgstr "Radar"
 
 #: ui/server_setup.rml:352
+#, fuzzy
 msgid "Alien bots morph"
-msgstr "Les bots aliens se transforment"
+msgstr "Les bots extraterrestres se transforment"
 
 #: ui/server_setup.rml:374
 msgid "Advanced Marauder"
@@ -4917,7 +4930,7 @@ msgstr "Aiguisage des griffes extraterrestres…"
 
 #: src/cgame/cg_main.cpp:502
 msgid "Overloading lucifer cannons…"
-msgstr "Surcharge des canons lucifer…"
+msgstr "Surcharge des canons Lucifer…"
 
 #: src/cgame/cg_main.cpp:506
 msgid "Unwrapping jetpacks…"
@@ -5320,15 +5333,15 @@ msgid ""
 "buildables for deconstruction."
 msgstr ""
 "Il n'y a plus de ressources restantes. Libérez des ressources en marquant "
-"des constructions existances pour une démolition."
+"des constructions existantes pour une démolition."
 
 #: src/cgame/cg_servercmds.cpp:579
 msgid "There are no resources remaining"
-msgstr "Il ne reste plus de rescources"
+msgstr "Il ne reste plus de ressources"
 
 #: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered."
-msgstr "Cette structure n'est pas alimenté."
+msgstr "Cette structure n'est pas alimentéee."
 
 #: src/cgame/cg_servercmds.cpp:584
 msgid "This buildable is not powered"
@@ -5350,7 +5363,7 @@ msgstr "Il n'y a pas de réacteur"
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
-"Il ne peut y avoir qu'un seul Réacteur. Marquez celui existant si vous "
+"Il ne peut y avoir qu'un seul réacteur. Marquez celui existant si vous "
 "souhaitez le déplacer."
 
 #: src/cgame/cg_servercmds.cpp:596
@@ -5367,7 +5380,7 @@ msgid ""
 "purchasing this item."
 msgstr ""
 "Vous n’avez pas la place pour porter cela. Veuillez vendre les objets qui "
-"gènent avant d’acheter cet objet."
+"gênent avant d’acheter cet objet."
 
 #: src/cgame/cg_servercmds.cpp:607
 msgid "You have no room to carry this"
@@ -5432,18 +5445,20 @@ msgstr "Pas assez de place ici pour changer d'armure."
 
 # Adapté au contexte car « timer » se traduit difficilement.
 #: src/cgame/cg_servercmds.cpp:640
+#, fuzzy
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 "Vous n'êtes pas autorisé à acheter ou à vendre des armes tant que votre "
-"minuterie de construction n'est pas terminée."
+"compte à rebours de construction n'a pas expiré."
 
 #: src/cgame/cg_servercmds.cpp:642
+#, fuzzy
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
-"Vous ne pouvez pas acheter ou vendre des armes tant que votre minuterie de "
-"construction n'est pas terminée"
+"Vous ne pouvez pas acheter ou vendre des armes tant que votre compte à "
+"rebours de construction n'est pas terminée"
 
 # Quelque soit la langue, le nom de la commande à taper est toujours le même.
 #: src/cgame/cg_servercmds.cpp:647
@@ -5523,6 +5538,7 @@ msgid "This location is too close to the enemy to evolve"
 msgstr "Cet endroit est trop proche de l’ennemi pour évoluer"
 
 #: src/cgame/cg_servercmds.cpp:696 src/cgame/cg_servercmds.cpp:697
+#, fuzzy
 msgid "The Overmind is too far away to devolve."
 msgstr "L'Overmind est trop loin pour désévoluer."
 
@@ -5593,10 +5609,10 @@ msgid "%sPrivate message from: ^7%s"
 msgstr "%sMessage privé de : ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:920
-#, c-format
+#, c-format, fuzzy
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
-">> pour répondre, disez '/m %d [votre message] ' ou '/r [votre message]' <<"
+">> pour répondre, dites '/m %d [votre message] ' ou '/r [votre message]' <<"
 
 #: src/cgame/cg_servercmds.cpp:1390
 #, c-format
@@ -5677,7 +5693,7 @@ msgstr "SHIFT-ECHAP"
 
 #: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
-msgstr "ECHAP"
+msgstr "ÉCHAP"
 
 #: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:377
 #, c-format
@@ -6052,15 +6068,16 @@ msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
 
 #: src/sgame/sg_main.cpp:2286
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
-msgstr "Serveur : La pause à été automatiquement anulée ($1$ minutes max)"
+msgstr "Serveur : La pause à été automatiquement annulée ($1$ minutes max)"
 
 #: src/sgame/sg_main.cpp:2289
 msgid "The game has been unpaused!"
 msgstr "Le jeu reprends !"
 
 #: src/sgame/sg_spawn_mover.cpp:1076
+#, fuzzy
 msgid "^1This door is locked!"
-msgstr "^1Cette porte est bloquée !"
+msgstr "^1Cette porte est verrouillée !"
 
 #: src/sgame/sg_svcmds.cpp:539
 msgid "Alien team has admitted defeat"
@@ -6141,8 +6158,9 @@ msgstr "$1$ : il n'y a aucun robot actif"
 
 #: src/sgame/sg_votes.cpp:349 src/sgame/sg_votes.cpp:371
 #: src/sgame/sg_votes.cpp:393
+#, fuzzy
 msgid "$1$: number must be non-negative and smaller than $2$"
-msgstr "$1$ : le nombre doit ne dois pas être négatif et inférieur à $2$"
+msgstr "$1$ : le nombre doit non-négatif et inférieur à $2$"
 
 #: src/sgame/sg_votes.cpp:358
 #, c-format
