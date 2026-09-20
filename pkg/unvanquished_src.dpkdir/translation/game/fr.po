@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-17 16:59+0200\n"
 "PO-Revision-Date: 2026-09-20 22:51+0000\n"
-"Last-Translator: ZobBillZeButt <joelekiffeur@yahoo.fr>\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -572,13 +572,12 @@ msgstr ""
 "très rapides."
 
 #: ui/help_gameplay.rml:184
-#, fuzzy
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
 "Les extraterrestres peuvent inverser leur propre évolution près de "
-"l'overmind, et le crachat de granger avancé peut faire des choses "
+"l’overmind, et le crachat de granger avancé peut faire des choses "
 "intéressantes, essayez-le sur le feu ou les humains !"
 
 #: ui/hud_basics.rml:196
@@ -598,7 +597,6 @@ msgid "ms"
 msgstr "ms"
 
 #: ui/hud_bp.rml:29
-#, fuzzy
 msgid "build points"
 msgstr "points de construction"
 
@@ -1048,7 +1046,6 @@ msgid "Multisample anti-aliasing (MSAA)"
 msgstr "Anticrénelage multi-échantillons (MSAA)"
 
 #: ui/options_graphics.rml:93
-#, fuzzy
 msgid ""
 "Render at higher precision at the boundaries of surfaces for crisp edges. "
 "This is a resource-intensive option."
@@ -1964,7 +1961,6 @@ msgid "First-person weapons"
 msgstr "Armes à la première personne"
 
 #: ui/options_movements_cosmetic.rml:45
-#, fuzzy
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr ""
 "Montrez des modèles d'armes à feu, de pinces, de mains et de mandibules à la "
@@ -1975,9 +1971,8 @@ msgid "Left-handed mode"
 msgstr "Mode gaucher"
 
 #: ui/options_movements_cosmetic.rml:50
-#, fuzzy
 msgid "Mirror first-person gun models."
-msgstr "Réflexion des modèles d'armes à feu à la première personne."
+msgstr "Symétrise les modèles d'armes à feu à la première personne."
 
 #: ui/options_player.rml:18
 msgid "Player Setup"
@@ -1996,9 +1991,8 @@ msgid "Your name visible to others."
 msgstr "Votre nom est visible par tous."
 
 #: ui/options_player.rml:26
-#, fuzzy
 msgid "Colour codes and symbols"
-msgstr "Code-couleurs et symboles"
+msgstr "Code couleurs et symboles"
 
 #: ui/options_player.rml:29
 msgid ""
@@ -2125,7 +2119,6 @@ msgid "24 Hour"
 msgstr "24 heures"
 
 #: ui/options_ui.rml:34
-#, fuzzy
 msgid "Show the time in real-life."
 msgstr "Afficher l'heure en temps réel."
 
@@ -2614,7 +2607,6 @@ msgid "BP Vampire"
 msgstr "Vampire BP"
 
 #: ui/server_setup.rml:165
-#, fuzzy
 msgid "Bleed build points from the enemy team by killing buildables."
 msgstr ""
 "Drainer les points de constructions de l’équipe ennemie en détruisant des "
@@ -2658,11 +2650,10 @@ msgid "Half regeneration time"
 msgstr "Temps de demi-régénération"
 
 #: ui/server_setup.rml:191
-#, fuzzy
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
-"La durée d'attente avant que la récupération de points de constructions ne "
-"devienne deux fois plus lente"
+"La durée d'attente qu’il faut attendre avant que les points de constructions "
+"ne deviennent deux fois plus lents"
 
 #: ui/server_setup.rml:199
 msgid "Bots: General"
@@ -5445,7 +5436,6 @@ msgstr "Pas assez de place ici pour changer d'armure."
 
 # Adapté au contexte car « timer » se traduit difficilement.
 #: src/cgame/cg_servercmds.cpp:640
-#, fuzzy
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -5454,11 +5444,10 @@ msgstr ""
 "compte à rebours de construction n'a pas expiré."
 
 #: src/cgame/cg_servercmds.cpp:642
-#, fuzzy
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Vous ne pouvez pas acheter ou vendre des armes tant que votre compte à "
-"rebours de construction n'est pas terminée"
+"rebours de construction n'est pas terminé"
 
 # Quelque soit la langue, le nom de la commande à taper est toujours le même.
 #: src/cgame/cg_servercmds.cpp:647
@@ -5538,9 +5527,8 @@ msgid "This location is too close to the enemy to evolve"
 msgstr "Cet endroit est trop proche de l’ennemi pour évoluer"
 
 #: src/cgame/cg_servercmds.cpp:696 src/cgame/cg_servercmds.cpp:697
-#, fuzzy
 msgid "The Overmind is too far away to devolve."
-msgstr "L'Overmind est trop loin pour désévoluer."
+msgstr "L’Overmind est trop loin pour désévoluer."
 
 #: src/cgame/cg_servercmds.cpp:701
 msgid ""
@@ -5609,7 +5597,7 @@ msgid "%sPrivate message from: ^7%s"
 msgstr "%sMessage privé de : ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:920
-#, c-format, fuzzy
+#, c-format
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
 ">> pour répondre, dites '/m %d [votre message] ' ou '/r [votre message]' <<"
@@ -6158,9 +6146,8 @@ msgstr "$1$ : il n'y a aucun robot actif"
 
 #: src/sgame/sg_votes.cpp:349 src/sgame/sg_votes.cpp:371
 #: src/sgame/sg_votes.cpp:393
-#, fuzzy
 msgid "$1$: number must be non-negative and smaller than $2$"
-msgstr "$1$ : le nombre doit non-négatif et inférieur à $2$"
+msgstr "$1$ : le nombre doit être non-négatif et inférieur à $2$"
 
 #: src/sgame/sg_votes.cpp:358
 #, c-format
