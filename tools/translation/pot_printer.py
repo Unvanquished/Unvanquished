@@ -29,6 +29,9 @@ import collections
 import datetime
 import sys
 
+# windows git bash compatibility - 'invalid multibyte sequence' error without this line
+sys.stdout.reconfigure(encoding="utf-8")
+
 def load(filename):
     file = open(filename, "r", encoding="utf-8")
     content = file.read()
