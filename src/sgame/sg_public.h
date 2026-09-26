@@ -86,6 +86,7 @@ bool              G_DeconstructDead( gentity_t *buildable );
 void              G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent );
 bool              G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
+void              G_SendBuildableMenuReasons( gentity_t *ent );
 bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void              G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool force);
 void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation);

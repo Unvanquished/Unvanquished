@@ -1277,6 +1277,9 @@ struct cg_t
 	float                   healthCrossFade;
 	int                     nearUsableBuildable;
 
+	// reasons buildables are unavailable in the build menu, as reported by the server
+	itemBuildError_t        buildableMenuReasons[ BA_NUM_BUILDABLES ];
+
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
 	sayType_t               sayType;

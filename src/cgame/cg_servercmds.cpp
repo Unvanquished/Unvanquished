@@ -1260,6 +1260,26 @@ static void CG_AdminChat_f()
 
 /*
 =================
+CG_BuildMenuReasons_f
+
+The server reports why each buildable cannot be built, for use in the build menus.
+=================
+*/
+static void CG_BuildMenuReasons_f()
+{
+	int argc = trap_Argc();
+	int arg = 1;
+
+	for ( int i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++, arg++ )
+	{
+		cg.buildableMenuReasons[ i ] = ( arg < argc )
+			? static_cast<itemBuildError_t>( atoi( CG_Argv( arg ) ) )
+			: IBE_NONE;
+	}
+}
+
+/*
+=================
 CG_ServerMenu_f
 =================
 */
@@ -1337,6 +1357,7 @@ static void CG_GameCmds_f()
 static const consoleCommand_t svcommands[] =
 {	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
+	{ "buildmenureasons", CG_BuildMenuReasons_f   },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },

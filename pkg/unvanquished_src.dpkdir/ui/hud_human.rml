@@ -156,8 +156,23 @@
 				image-color: #aaffffff;
 			}
 			health.health,
-			health_cross {
+			health_cross,
+			medkit {
 				color: #ff6562ff;
+			}
+			medkit {
+				position: absolute;
+				right: -3.2em;
+				top: 0;
+				width: 3em;
+				height: 100%;
+				white-space: nowrap;
+			}
+			medkit img {
+				width: 1.35em;
+				height: 1.35em;
+				vertical-align: middle;
+				image-color: #ff6562ff;
 			}
 			health_cross {
 				top: -42%;
@@ -208,18 +223,23 @@
 			}
 
 			usable_buildable {
-				width: 1.5em;
+				width: 16em;
 				position: absolute;
 				bottom: 20%;
-				color: #aaffffff;
 				margin-left: auto;
 				margin-right: auto;
+				text-align: center;
 			}
 
 			usable_buildable img {
 				display: inline;
 				width: 1.5em;
 				height: 1.5em;
+			}
+
+			usable_buildable keybind {
+				display: inline;
+				margin-top: 0.5em;
 			}
 
 			inventory {
@@ -273,9 +293,12 @@
 				<img class="sprint" src="/ui/assets/human/sprint"/>
 				<progress src="stamina" />
 			</stamina>
-			<div class="health"><health_cross class="health"/>
-			<health class="health" />
-			<progress class="health" src="health" /></div>
+			<div class="health">
+				<health_cross class="health"/>
+				<health class="health" />
+				<progress class="health" src="health" />
+				<medkit />
+			</div>
 		</div>
 		<div id="momentum">
 			<unlocked_items/>
@@ -283,7 +306,8 @@
 		</div>
 		<div id="items">
 			<usable_buildable>
-				<img src="/ui/assets/neutral/use" />
+				<img src="/ui/assets/neutral/use" /><br />
+				<keybind class="keycap" cmd="+activate" team="humans" />
 			</usable_buildable>
 			<inventory />
 		</div>

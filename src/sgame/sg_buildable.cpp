@@ -1205,6 +1205,24 @@ static void SetBuildableMarkedLinkState( bool link )
 	}
 }
 
+/**
+ * @brief Number of alive miners owned by a team.
+ */
+static int G_CountMiners( team_t team )
+{
+	int miners = 0;
+
+	ForEntities<MiningComponent>( [&]( Entity& entity, MiningComponent& )
+	{
+		if ( Entities::IsAlive( entity ) && G_Team( entity.oldEnt ) == team )
+		{
+			miners++;
+		}
+	});
+
+	return miners;
+}
+
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distance*/, //TODO
                              vec3_t origin, vec3_t normal, int *groundEntNum )
 {
@@ -1373,21 +1391,105 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	int max_miners = g_maxMiners.Get();
 	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) )
 	{
-		int miners = 0;
-		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& )
-		{
-			if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
-			{
-				miners++;
-			}
-		});
-		if ( miners >= max_miners )
+		if ( G_CountMiners( G_Team( ent ) ) >= max_miners )
 		{
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 		}
 	}
 
 	return reason;
+}
+
+/**
+ * @brief Reason a buildable is unavailable from the build menu.
+ * @return IBE_NONE if the buildable is not obviously unavailable.
+ */
+static itemBuildError_t G_BuildableMenuReason( team_t team, buildable_t buildable )
+{
+	if ( BG_Buildable( buildable )->team != team )
+	{
+		return IBE_NONE;
+	}
+
+	// Check level permissions
+	if ( ( team == TEAM_ALIENS && !g_alienAllowBuilding.Get() ) ||
+	     ( team == TEAM_HUMANS && !g_humanAllowBuilding.Get() ) )
+	{
+		return IBE_DISABLED;
+	}
+
+	// Check for main structure
+	if ( buildable != BA_A_OVERMIND && buildable != BA_H_REACTOR )
+	{
+		if ( team == TEAM_ALIENS && !G_ActiveOvermind() )
+		{
+			return IBE_NOOVERMIND;
+		}
+
+		if ( team == TEAM_HUMANS && !G_ActiveReactor() )
+		{
+			return IBE_NOREACTOR;
+		}
+	}
+
+	// Can we only have one of these?
+	if ( BG_Buildable( buildable )->uniqueTest )
+	{
+		gentity_t *existing = FindBuildable( buildable );
+
+		if ( existing && !existing->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
+		{
+			switch ( buildable )
+			{
+				case BA_A_OVERMIND:
+					return IBE_ONEOVERMIND;
+
+				case BA_H_REACTOR:
+					return IBE_ONEREACTOR;
+
+				default:
+					Sys::Error( "No reason for denying build of %d", buildable );
+					break;
+			}
+		}
+	}
+
+	// Check for miner limit, like G_CanBuild does
+	int max_miners = g_maxMiners.Get();
+	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) &&
+	     G_CountMiners( team ) >= max_miners )
+	{
+		return team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
+	}
+
+	return IBE_NONE;
+}
+
+/**
+ * @brief Send the per-buildable build menu unavailability reasons to a client.
+ */
+void G_SendBuildableMenuReasons( gentity_t *ent )
+{
+	if ( !ent->client )
+	{
+		return;
+	}
+
+	std::string reasons;
+
+	for ( buildable_t buildable = static_cast<buildable_t>( BA_NONE + 1 );
+	      buildable < BA_NUM_BUILDABLES;
+	      buildable = static_cast<buildable_t>( buildable + 1 ) )
+	{
+		if ( !reasons.empty() )
+		{
+			reasons += ' ';
+		}
+
+		reasons += std::to_string( G_BuildableMenuReason( G_Team( ent ), buildable ) );
+	}
+
+	trap_SendServerCommand( ent->num(), va( "buildmenureasons %s", reasons.c_str() ) );
 }
 
 /** Sets shared buildable entity parameters. */

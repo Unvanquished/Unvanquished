@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 16:59+0200\n"
+"POT-Creation-Date: 2026-09-26 20:55+0100\n"
 "PO-Revision-Date: 2024-10-26 08:37+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
@@ -19,11 +19,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.8.2-dev\n"
 
-#: ui/alien_build.rml:126 ui/human_build.rml:127
+#: ui/alien_build.rml:132 ui/human_build.rml:133
 msgid "Build"
 msgstr "建造"
 
-#: ui/alien_build.rml:133 ui/alien_evo.rml:147 ui/human_build.rml:133
+#: ui/alien_build.rml:139 ui/alien_evo.rml:147 ui/human_build.rml:139
 #: ui/human_buy.rml:217 ui/human_buy.rml:233
 msgid "Price:"
 msgstr "價格:"
@@ -372,9 +372,9 @@ msgstr "遭受攻擊"
 #: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
-"team when at 75% health, at 50% health, at 25% health and when destroyed."
-"Destroying other buildings will trigger “under attack” warnings for the "
-"owning team."
+"team when at 75% health, at 50% health, at 25% health and when "
+"destroyed.Destroying other buildings will trigger “under attack” warnings "
+"for the owning team."
 msgstr ""
 "[reactor]〔反應機〕和 [overmind]〔主腦〕會在剩餘 75%、50%、25% 生命值以及被摧"
 "毀時分別發出警告。其他設施被摧毀時會提示己方陣營正「遭受攻擊」。"
@@ -526,11 +526,7 @@ msgstr "fps"
 msgid "ms"
 msgstr "ms"
 
-#: ui/hud_bp.rml:29
-msgid "build points"
-msgstr "建築點"
-
-#: ui/hud_human.rml:268
+#: ui/hud_human.rml:288
 msgid "Credits"
 msgstr "點數"
 
@@ -716,6 +712,34 @@ msgstr "測試版"
 msgid "Fields of view"
 msgstr "視場角"
 
+#: ui/options.rml:11
+msgid "Player"
+msgstr "玩家"
+
+#: ui/options.rml:13 ui/options_movements_cosmetic.rml:7
+msgid "Movement and Cosmetic"
+msgstr "動作與特效"
+
+#: ui/options.rml:15 ui/options_graphics.rml:20
+msgid "Graphics"
+msgstr "影像"
+
+#: ui/options.rml:17 ui/options_keys.rml:7
+msgid "Key bindings"
+msgstr "按鍵繫結"
+
+#: ui/options.rml:19 ui/options_mouse.rml:7
+msgid "Mouse and Aiming"
+msgstr "滑鼠與瞄準"
+
+#: ui/options.rml:21 ui/options_sound.rml:7
+msgid "Sound"
+msgstr "音效"
+
+#: ui/options.rml:23
+msgid "User interface and HUD"
+msgstr "用家介面與 HUD"
+
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
 msgstr "新增一個異形電腦玩家"
@@ -827,7 +851,7 @@ msgid "Mild"
 msgstr "較小"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1557
 msgid "Default"
 msgstr "預設"
 
@@ -846,10 +870,6 @@ msgstr "鏡頭翻轉"
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
 msgstr "螺旋移動"
-
-#: ui/options_graphics.rml:20 ui/options.rml:15
-msgid "Graphics"
-msgstr "影像"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 #: ui/server_setup.rml:162
@@ -1209,7 +1229,7 @@ msgstr ""
 "能。"
 
 #: ui/options_graphics.rml:232 ui/options_ui.rml:30
-#: src/cgame/cg_rocket_datasource.cpp:1551
+#: src/cgame/cg_rocket_datasource.cpp:1594
 msgid "No"
 msgstr "無"
 
@@ -1511,10 +1531,6 @@ msgstr "動態模糊等級。"
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "啟用動態模糊的最小移動速度"
 
-#: ui/options_keys.rml:7 ui/options.rml:17
-msgid "Key bindings"
-msgstr "按鍵繫結"
-
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
 msgstr "按 Esc 以取消按鍵繫結。"
@@ -1724,10 +1740,6 @@ msgstr "滑鼠視角:"
 msgid "Centerview:"
 msgstr "中心視角:"
 
-#: ui/options_mouse.rml:7 ui/options.rml:19
-msgid "Mouse and Aiming"
-msgstr "滑鼠與瞄準"
-
 #: ui/options_mouse.rml:9
 msgid "Y axis"
 msgstr "Y 軸"
@@ -1771,10 +1783,6 @@ msgstr "環形選單捕捉滑鼠"
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr "環形選單可接受滑鼠輸入 (裝備選單除外)"
-
-#: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
-msgid "Movement and Cosmetic"
-msgstr "動作與特效"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -1923,18 +1931,6 @@ msgstr "僅顯示團隊聊天"
 #: ui/options_player.rml:224
 msgid "Show obituaries"
 msgstr "顯示死亡訊息"
-
-#: ui/options.rml:11
-msgid "Player"
-msgstr "玩家"
-
-#: ui/options.rml:21 ui/options_sound.rml:7
-msgid "Sound"
-msgstr "音效"
-
-#: ui/options.rml:23
-msgid "User interface and HUD"
-msgstr "用家介面與 HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
@@ -3091,1391 +3087,1406 @@ msgid ""
 "High spread, rapidly loses effectiveness at range."
 msgstr ""
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "male"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*跌倒在地"
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "female"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*跌倒在地"
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*跌倒在地"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*被壓扁了"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*被壓扁了"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*被壓扁了"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "male"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*無法呼吸"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "female"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*無法呼吸"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*無法呼吸"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "male"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*被熔化了"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "female"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*被熔化了"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "neuter"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*被熔化了"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*蘸了一下熔岩"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*蘸了一下熔岩"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*蘸了一下熔岩"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*迷失了自我"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*迷失了自我"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*迷失了自我"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*被爆炸吞噬"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*被爆炸吞噬"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*被爆炸吞噬"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*被酸性物質腐蝕"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*被酸性物質腐蝕"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*被酸性物質腐蝕"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*被炮臺擊殺"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*被炮臺擊殺"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*被炮臺擊殺"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*被炮臺擊殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*被炮臺擊殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*被炮臺擊殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s%s ^*被火箭擊中"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s%s ^*被火箭擊中"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s%s ^*被火箭擊中"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*被火箭擊中；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*被火箭擊中；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*被火箭擊中；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*被酸管腐化"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*被酸管腐化"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*被酸管腐化"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*被酸管腐化；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*被酸管腐化；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*被酸管腐化；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*被刺頭刺滿了孔"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*被刺頭刺滿了孔"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*被刺頭刺滿了孔"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*被刺頭刺滿了孔；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*被刺頭刺滿了孔；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*被刺頭刺滿了孔；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*被主腦鞭笞"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*被主腦鞭笞"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*被主腦鞭笞"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*被主腦鞭笞；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*被主腦鞭笞；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*被主腦鞭笞；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*被反應機烤焦"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*被反應機烤焦"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*被反應機烤焦"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*被反應機烤焦；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*被反應機烤焦；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*被反應機烤焦；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*沒能逃離守衛者"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*沒能逃離守衛者"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*沒能逃離守衛者"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*沒能逃離守衛者；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*沒能逃離守衛者；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*沒能逃離守衛者；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*被蟲群吞噬"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*被蟲群吞噬"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*被蟲群吞噬"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*被蟲群吞噬；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*被蟲群吞噬；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*被蟲群吞噬；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "male"
 msgid "%s%s ^*saw the light"
 msgstr "%s%s ^*看到了光"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "female"
 msgid "%s%s ^*saw the light"
 msgstr "%s%s ^*看到了光"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
 msgstr "%s%s ^*看到了光"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*看到了光；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*看到了光；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*看到了光；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 鋸了"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 鋸了"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 鋸了"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 鋸了；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 鋸了；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 鋸了；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 衝擊"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 衝擊"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 衝擊"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 衝擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 衝擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 衝擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 壓扁"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 壓扁"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 壓扁"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 壓扁；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 壓扁；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 壓扁；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 擊殺"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 擊殺"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 擊殺"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 擊殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 擊殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 擊殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 狙擊"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 狙擊"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 狙擊"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 狙擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 狙擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 狙擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 的雷射切割"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 的雷射切割"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 的雷射切割"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的雷射切割；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的雷射切割；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的雷射切割；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的烈焰煎烤；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*被烤得酥脆"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*被烤得酥脆"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*被烤得酥脆"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*被 %s%s%s^* 的火焰點燃"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*被 %s%s%s^* 的火焰點燃"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*被 %s%s%s^* 的火焰點燃"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的火焰點燃；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的火焰點燃；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的火焰點燃；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:467
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
 msgstr "%s%s ^*被點燃了"
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:467
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
 msgstr "%s%s ^*被點燃了"
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:467
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
 msgstr "%s%s ^*被點燃了"
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅"
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅"
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅"
-
-#: src/cgame/cg_event.cpp:444
-msgctxt "male"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:444
-msgctxt "female"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:444
-msgctxt "neuter"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:448
-msgctxt "male"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
-
-#: src/cgame/cg_event.cpp:448
-msgctxt "female"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
-
-#: src/cgame/cg_event.cpp:448
-msgctxt "neuter"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
-
-#: src/cgame/cg_event.cpp:449
-msgctxt "male"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:449
-msgctxt "female"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:449
-msgctxt "neuter"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:450
-msgctxt "male"
-msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*遭到輻照"
-
-#: src/cgame/cg_event.cpp:450
-msgctxt "female"
-msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*遭到輻照"
-
-#: src/cgame/cg_event.cpp:450
-msgctxt "neuter"
-msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*遭到輻照"
-
-#: src/cgame/cg_event.cpp:454
-msgctxt "male"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了"
-
-#: src/cgame/cg_event.cpp:454
-msgctxt "female"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了"
-
-#: src/cgame/cg_event.cpp:454
-msgctxt "neuter"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了"
-
-#: src/cgame/cg_event.cpp:455
-msgctxt "male"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:455
-msgctxt "female"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:455
-msgctxt "neuter"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:456
-msgctxt "male"
-msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*爆炸了"
-
-#: src/cgame/cg_event.cpp:456
-msgctxt "female"
-msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*爆炸了"
-
-#: src/cgame/cg_event.cpp:456
-msgctxt "neuter"
-msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*爆炸了"
-
-#: src/cgame/cg_event.cpp:460
-msgctxt "male"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒"
-
-#: src/cgame/cg_event.cpp:460
-msgctxt "female"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒"
-
-#: src/cgame/cg_event.cpp:460
-msgctxt "neuter"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒"
-
-#: src/cgame/cg_event.cpp:461
-msgctxt "male"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:461
-msgctxt "female"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:461
-msgctxt "neuter"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:462
-msgctxt "male"
-msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*燒成了灰"
-
-#: src/cgame/cg_event.cpp:462
-msgctxt "female"
-msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*燒成了灰"
-
-#: src/cgame/cg_event.cpp:462
-msgctxt "neuter"
-msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*燒成了灰"
-
-#: src/cgame/cg_event.cpp:466
-msgctxt "male"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬"
-
-#: src/cgame/cg_event.cpp:466
-msgctxt "female"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬"
-
-#: src/cgame/cg_event.cpp:466
-msgctxt "neuter"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬"
-
-#: src/cgame/cg_event.cpp:467
-msgctxt "male"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:467
-msgctxt "female"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:467
-msgctxt "neuter"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬；%s%s%s^* 助攻"
-
-#: src/cgame/cg_event.cpp:471
-msgctxt "male"
-msgid "%s%s ^*was bitten by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 咬了"
-
-#: src/cgame/cg_event.cpp:471
-msgctxt "female"
-msgid "%s%s ^*was bitten by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 咬了"
-
-#: src/cgame/cg_event.cpp:471
-msgctxt "neuter"
-msgid "%s%s ^*was bitten by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 咬了"
 
 #: src/cgame/cg_event.cpp:472
+msgctxt "male"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:472
+msgctxt "female"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:472
+msgctxt "neuter"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:476
+msgctxt "male"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
+
+#: src/cgame/cg_event.cpp:476
+msgctxt "female"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
+
+#: src/cgame/cg_event.cpp:476
+msgctxt "neuter"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
+
+#: src/cgame/cg_event.cpp:477
+msgctxt "male"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:477
+msgctxt "female"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:477
+msgctxt "neuter"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:478
+msgctxt "male"
+msgid "%s%s ^*was irradiated"
+msgstr "%s%s ^*遭到輻照"
+
+#: src/cgame/cg_event.cpp:478
+msgctxt "female"
+msgid "%s%s ^*was irradiated"
+msgstr "%s%s ^*遭到輻照"
+
+#: src/cgame/cg_event.cpp:478
+msgctxt "neuter"
+msgid "%s%s ^*was irradiated"
+msgstr "%s%s ^*遭到輻照"
+
+#: src/cgame/cg_event.cpp:482
+msgctxt "male"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
+msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了"
+
+#: src/cgame/cg_event.cpp:482
+msgctxt "female"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
+msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了"
+
+#: src/cgame/cg_event.cpp:482
+msgctxt "neuter"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
+msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了"
+
+#: src/cgame/cg_event.cpp:483
+msgctxt "male"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:483
+msgctxt "female"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:483
+msgctxt "neuter"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的手雷炸飛了；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:484
+msgctxt "male"
+msgid "%s%s ^*was blown up"
+msgstr "%s%s ^*爆炸了"
+
+#: src/cgame/cg_event.cpp:484
+msgctxt "female"
+msgid "%s%s ^*was blown up"
+msgstr "%s%s ^*爆炸了"
+
+#: src/cgame/cg_event.cpp:484
+msgctxt "neuter"
+msgid "%s%s ^*was blown up"
+msgstr "%s%s ^*爆炸了"
+
+#: src/cgame/cg_event.cpp:488
+msgctxt "male"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
+msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒"
+
+#: src/cgame/cg_event.cpp:488
+msgctxt "female"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
+msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒"
+
+#: src/cgame/cg_event.cpp:488
+msgctxt "neuter"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
+msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒"
+
+#: src/cgame/cg_event.cpp:489
+msgctxt "male"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:489
+msgctxt "female"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:489
+msgctxt "neuter"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s^* 的火榴彈焚燒；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:490
+msgctxt "male"
+msgid "%s%s ^*was incinerated"
+msgstr "%s%s ^*燒成了灰"
+
+#: src/cgame/cg_event.cpp:490
+msgctxt "female"
+msgid "%s%s ^*was incinerated"
+msgstr "%s%s ^*燒成了灰"
+
+#: src/cgame/cg_event.cpp:490
+msgctxt "neuter"
+msgid "%s%s ^*was incinerated"
+msgstr "%s%s ^*燒成了灰"
+
+#: src/cgame/cg_event.cpp:494
+msgctxt "male"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
+msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬"
+
+#: src/cgame/cg_event.cpp:494
+msgctxt "female"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
+msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬"
+
+#: src/cgame/cg_event.cpp:494
+msgctxt "neuter"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
+msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬"
+
+#: src/cgame/cg_event.cpp:495
+msgctxt "male"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:495
+msgctxt "female"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:495
+msgctxt "neuter"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
+msgstr "%s%s ^*被 %s%s%s 的守衛者慢慢啃咬；%s%s%s^* 助攻"
+
+#: src/cgame/cg_event.cpp:499
+msgctxt "male"
+msgid "%s%s ^*was bitten by %s%s%s"
+msgstr "%s%s ^*被 %s%s%s^* 咬了"
+
+#: src/cgame/cg_event.cpp:499
+msgctxt "female"
+msgid "%s%s ^*was bitten by %s%s%s"
+msgstr "%s%s ^*被 %s%s%s^* 咬了"
+
+#: src/cgame/cg_event.cpp:499
+msgctxt "neuter"
+msgid "%s%s ^*was bitten by %s%s%s"
+msgstr "%s%s ^*被 %s%s%s^* 咬了"
+
+#: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 咬了；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 咬了；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^* 被 %s%s%s^* 咬了；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:496
+#: src/cgame/cg_event.cpp:524
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺"
 
-#: src/cgame/cg_event.cpp:496
+#: src/cgame/cg_event.cpp:524
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺"
 
-#: src/cgame/cg_event.cpp:496
+#: src/cgame/cg_event.cpp:524
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺"
 
-#: src/cgame/cg_event.cpp:497
+#: src/cgame/cg_event.cpp:525
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:497
+#: src/cgame/cg_event.cpp:525
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:497
+#: src/cgame/cg_event.cpp:525
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:529
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插"
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:529
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插"
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:529
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插"
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:530
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:530
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:530
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:503
+#: src/cgame/cg_event.cpp:531
 msgctxt "male"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*被刺穿了"
 
-#: src/cgame/cg_event.cpp:503
+#: src/cgame/cg_event.cpp:531
 msgctxt "female"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*被刺穿了"
 
-#: src/cgame/cg_event.cpp:503
+#: src/cgame/cg_event.cpp:531
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*被刺穿了"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:535
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:535
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:535
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊"
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:536
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:536
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:536
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:512
+#: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*"
 
-#: src/cgame/cg_event.cpp:512
+#: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*"
 
-#: src/cgame/cg_event.cpp:512
+#: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*"
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:541
 msgctxt "male"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:541
 msgctxt "female"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:541
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:518
+#: src/cgame/cg_event.cpp:546
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*被 %s%s%s^* 的重量壓垮"
 
-#: src/cgame/cg_event.cpp:518
+#: src/cgame/cg_event.cpp:546
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*被 %s%s%s^* 的重量壓垮"
 
-#: src/cgame/cg_event.cpp:518
+#: src/cgame/cg_event.cpp:546
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*被 %s%s%s^* 的重量壓垮"
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:547
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的重量壓垮；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:547
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的重量壓垮；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:547
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*被 %s%s%s^* 的重量壓垮；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:523
+#: src/cgame/cg_event.cpp:551
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*本該用醫療包緩解 %s%s%s^* 的毒"
 
-#: src/cgame/cg_event.cpp:523
+#: src/cgame/cg_event.cpp:551
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*本該用醫療包緩解 %s%s%s^* 的毒"
 
-#: src/cgame/cg_event.cpp:523
+#: src/cgame/cg_event.cpp:551
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*本該用醫療包緩解 %s%s%s^* 的毒"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr "%s%s ^*本該用醫療包緩解 %s%s%s^* 的毒；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr "%s%s ^*本該用醫療包緩解 %s%s%s^* 的毒；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr "%s%s ^*本該用醫療包緩解 %s%s%s^* 的毒；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*試圖闖入 %s%s%s^* 的個人空間"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*試圖闖入 %s%s%s^* 的個人空間"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*試圖闖入 %s%s%s^* 的個人空間"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*失落在虛空"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*失落在虛空"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*失落在虛空"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*感受到 %s%s%s^* 的權威"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*感受到 %s%s%s^* 的權威"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*感受到 %s%s%s^* 的權威"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*感受到 %s%s%s^* 的權威；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*感受到 %s%s%s^* 的權威；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*感受到 %s%s%s^* 的權威；%s%s%s^* 助攻"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 殺死了"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 殺死了"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 殺死了"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 和 %s%s%s^* 殺死了"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 和 %s%s%s^* 殺死了"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*被 %s%s%s^* 和 %s%s%s^* 殺死了"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*自殺了"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*自殺了"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*自殺了"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:647
+msgctxt "male"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:647
+msgctxt "female"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:647
+msgctxt "neuter"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:650
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr "%s%s^* 死亡"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:650
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr "%s%s^* 死亡"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:650
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr "%s%s^* 死亡"
@@ -4485,37 +4496,37 @@ msgstr "%s%s^* 死亡"
 msgid "Listed %2d clients"
 msgstr "列出了 %2d 個客戶端"
 
-#: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
+#: src/cgame/cg_event.cpp:272 src/cgame/cg_event.cpp:637
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "你殺死了^1隊友^* %s"
 
-#: src/cgame/cg_event.cpp:1218
+#: src/cgame/cg_event.cpp:1289
 msgid "The Overmind is under attack!"
 msgstr "主腦正遭受攻擊！"
 
-#: src/cgame/cg_event.cpp:1225
+#: src/cgame/cg_event.cpp:1296
 msgid "The reactor is under attack!"
 msgstr "反應機整遭受攻擊！"
 
-#: src/cgame/cg_event.cpp:1240
+#: src/cgame/cg_event.cpp:1311
 msgid "The Overmind is dying!"
 msgstr "主腦即將死亡！"
 
-#: src/cgame/cg_event.cpp:1246
+#: src/cgame/cg_event.cpp:1317
 msgid "The reactor is going down!"
 msgstr "反應機即將損壞！"
 
-#: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
+#: src/cgame/cg_event.cpp:1334 src/cgame/cg_event.cpp:1350
 msgid "Our base is under attack!"
 msgstr "我方基地遭受攻擊！"
 
-#: src/cgame/cg_event.cpp:1269
+#: src/cgame/cg_event.cpp:1340
 #, c-format
 msgid "%s under attack – %s"
 msgstr "%s 遭受攻擊——%s"
 
-#: src/cgame/cg_event.cpp:1273
+#: src/cgame/cg_event.cpp:1344
 #, c-format
 msgid "%s under attack"
 msgstr "%s 遭受攻擊"
@@ -4667,131 +4678,173 @@ msgstr "自定義: %dx%d"
 msgid "Same as screen (%dx%d)"
 msgstr "與螢幕相同 (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1399
+msgid "This buildable is disabled on this server"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1404 src/cgame/cg_servercmds.cpp:743
+#, c-format
+msgid "The %s has not been unlocked yet"
+msgstr "%s尚未解鎖"
+
+#: src/cgame/cg_rocket_datasource.cpp:1410 src/cgame/cg_servercmds.cpp:562
+msgid "Building has been disabled for your team"
+msgstr "我方建造能力被關閉"
+
+#: src/cgame/cg_rocket_datasource.cpp:1413 src/cgame/cg_servercmds.cpp:663
+#: src/cgame/cg_servercmds.cpp:703
+msgid "There is no Overmind"
+msgstr "主腦不存在"
+
+#: src/cgame/cg_rocket_datasource.cpp:1416 src/cgame/cg_servercmds.cpp:669
+msgid "There can only be one Overmind"
+msgstr "只能有一隻主腦"
+
+#: src/cgame/cg_rocket_datasource.cpp:1419 src/cgame/cg_servercmds.cpp:590
+msgid "There is no reactor"
+msgstr "反應機不存在"
+
+#: src/cgame/cg_rocket_datasource.cpp:1422 src/cgame/cg_servercmds.cpp:596
+msgid "There can only be one Reactor"
+msgstr "只能有一臺反應機"
+
+#: src/cgame/cg_rocket_datasource.cpp:1425 src/cgame/cg_servercmds.cpp:674
+msgid "Your team cannot have any more leeches"
+msgstr "蛭的建造數已達上限"
+
+#: src/cgame/cg_rocket_datasource.cpp:1428 src/cgame/cg_servercmds.cpp:601
+msgid "Your team cannot have any more drills"
+msgstr "我方鑽井數已達上限"
+
+#: src/cgame/cg_rocket_datasource.cpp:1436
+msgid "Not enough build points"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1557
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1558
+#: src/cgame/cg_rocket_datasource.cpp:1591
 msgid "Defend"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1558
 msgid "The bots stay in the base."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1516
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1559
+#: src/cgame/cg_rocket_datasource.cpp:1592
 msgid "Attack"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1516
+#: src/cgame/cg_rocket_datasource.cpp:1559
 msgid "The bots attack the enemy base."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1517
+#: src/cgame/cg_rocket_datasource.cpp:1560
 msgid "Stay Here"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1517
+#: src/cgame/cg_rocket_datasource.cpp:1560
 msgid "The bots stay where you are currently."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1518
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1561
+#: src/cgame/cg_rocket_datasource.cpp:1593
 msgid "Follow"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1518
+#: src/cgame/cg_rocket_datasource.cpp:1561
 msgid "The bots follow you wherever you go."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1591
 msgid "Defend our base!!"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1592
 msgid "Attack!"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1593
 msgid "Follow me!"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1551
+#: src/cgame/cg_rocket_datasource.cpp:1594
 msgid "No."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1552
+#: src/cgame/cg_rocket_datasource.cpp:1595
 msgid "Yes"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1552
+#: src/cgame/cg_rocket_datasource.cpp:1595
 msgid "Yes."
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1553
+#: src/cgame/cg_rocket_datasource.cpp:1596
 msgid "Flank"
 msgstr ""
 
-#: src/cgame/cg_rocket_datasource.cpp:1553
+#: src/cgame/cg_rocket_datasource.cpp:1596
 msgid "Flank, behind you!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2630
+#: src/cgame/cg_rocket_draw.cpp:2669
 msgid "You are at the front of the spawn queue"
 msgstr "你即將重生"
 
-#: src/cgame/cg_rocket_draw.cpp:2634
+#: src/cgame/cg_rocket_draw.cpp:2673
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "你會在 %d 位玩家之後重生"
 
-#: src/cgame/cg_rocket_draw.cpp:2674
+#: src/cgame/cg_rocket_draw.cpp:2713
 msgid "There are no spawns remaining"
 msgstr "沒有剩餘的重生點了"
 
-#: src/cgame/cg_rocket_draw.cpp:2678
+#: src/cgame/cg_rocket_draw.cpp:2717
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "還剩 %d 個重生點"
 
-#: src/cgame/cg_rocket_draw.cpp:3227
+#: src/cgame/cg_rocket_draw.cpp:3292
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "等待連線…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3231
+#: src/cgame/cg_rocket_draw.cpp:3296
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "等待驗證…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3235
+#: src/cgame/cg_rocket_draw.cpp:3300
 msgid "Awaiting gamestate…"
 msgstr "接收遊戲狀態…"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3401
 msgid "Say:"
 msgstr "發言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3402
 msgid "Team Say:"
 msgstr "陣營發言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3403
 msgid "Admin Say:"
 msgstr "管理員發言:"
 
-#: src/cgame/cg_rocket_draw.cpp:3339
+#: src/cgame/cg_rocket_draw.cpp:3404
 msgid "Command:"
 msgstr "指令:"
 
-#: src/cgame/cg_rocket_draw.cpp:3689
+#: src/cgame/cg_rocket_draw.cpp:3754
 msgid "FIGHT!"
 msgstr "開始戰鬥！"
 
-#: src/cgame/cg_rocket_draw.cpp:3783
+#: src/cgame/cg_rocket_draw.cpp:3848
 msgid "estimating"
 msgstr "大約"
 
@@ -4927,10 +4980,6 @@ msgstr "不可以拆除此設施"
 msgid "Building has been disabled on the server for your team."
 msgstr "我方建造能力被伺服器關閉。"
 
-#: src/cgame/cg_servercmds.cpp:562
-msgid "Building has been disabled for your team"
-msgstr "我方建造能力被關閉"
-
 #: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "你不再有建造的許可。"
@@ -4973,22 +5022,10 @@ msgid ""
 "be placed."
 msgstr "反應機不存在。需要先建造反應機才能建造其他設施。"
 
-#: src/cgame/cg_servercmds.cpp:590
-msgid "There is no reactor"
-msgstr "反應機不存在"
-
 #: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr "只能有一臺反應機。若需移動現有的反應機，請先標記之。"
-
-#: src/cgame/cg_servercmds.cpp:596
-msgid "There can only be one Reactor"
-msgstr "只能有一臺反應機"
-
-#: src/cgame/cg_servercmds.cpp:601
-msgid "Your team cannot have any more drills"
-msgstr "我方鑽井數已達上限"
 
 #: src/cgame/cg_servercmds.cpp:605
 msgid ""
@@ -5075,23 +5112,11 @@ msgid ""
 "can be placed."
 msgstr "主腦不存在。必須首先建造主腦，才能建造其他設施。"
 
-#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
-msgid "There is no Overmind"
-msgstr "主腦不存在"
-
 #: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr "只能有一隻主腦。若需要移動主腦，請標記現有的主腦，再建造以移動之。"
-
-#: src/cgame/cg_servercmds.cpp:669
-msgid "There can only be one Overmind"
-msgstr "只能有一隻主腦"
-
-#: src/cgame/cg_servercmds.cpp:674
-msgid "Your team cannot have any more leeches"
-msgstr "蛭的建造數已達上限"
 
 #: src/cgame/cg_servercmds.cpp:678
 msgid ""
@@ -5167,11 +5192,6 @@ msgstr "你不能以%s的形態生成"
 msgid "The %s is not allowed"
 msgstr "%s不可用"
 
-#: src/cgame/cg_servercmds.cpp:743
-#, c-format
-msgid "The %s has not been unlocked yet"
-msgstr "%s尚未解鎖"
-
 #: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
@@ -5191,7 +5211,7 @@ msgstr "%s來自 ^7%s 的私密訊息"
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:1390
+#: src/cgame/cg_servercmds.cpp:1411
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "未知的客戶端遊戲指令: %s"
@@ -5556,11 +5576,11 @@ msgstr "^1電腦尋路網生成失敗！"
 msgid "Server: generating bot navigation meshes... $1$%"
 msgstr "伺服器: 生成電腦玩家導航網路… $1$%"
 
-#: src/sgame/sg_buildable.cpp:1702
+#: src/sgame/sg_buildable.cpp:1804
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$2$^2 建造了$1$^*，^3替換了^*$3$"
 
-#: src/sgame/sg_buildable.cpp:1703
+#: src/sgame/sg_buildable.cpp:1805
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$2$^2 建造了^*$1$$3$"
 
@@ -5849,12 +5869,12 @@ msgid "Team vote passed ($1$ — $2$)"
 msgstr "團隊投票透過 ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:892
-#, c-format
+#, fuzzy
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "投票被駁回 ($1$ — $2$，需要 $3$%)"
 
 #: src/sgame/sg_votes.cpp:893
-#, c-format
+#, fuzzy
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "團隊投票被駁回 ($1$ — $2$，需要 $3$%)"
 
@@ -5881,6 +5901,9 @@ msgstr "異形"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "人類"
+
+#~ msgid "build points"
+#~ msgstr "建築點"
 
 #~ msgid "Gamma:"
 #~ msgstr "伽瑪值:"

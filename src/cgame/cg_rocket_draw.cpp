@@ -364,13 +364,14 @@ private:
 
 };
 
-class AmmoHudElement : public TextHudElement
+class AmmoHudElement : public HudElement
 {
 public:
 	AmmoHudElement( const Rml::String& tag ) :
-			TextHudElement( tag, ELEMENT_BOTH ),
+			HudElement( tag, ELEMENT_BOTH ),
 			showTotalAmmo_( false ),
 			builder_( false ),
+			showingInfiniteAmmo_( false ),
 			ammo_( 0 ),
 			spentBudget_( 0 ),
 			markedBudget_( 0 ),
@@ -379,7 +380,7 @@ public:
 
 	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
-		TextHudElement::OnAttributeChange( changed_attributes );
+		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
 		{
 			const Rml::String& type = GetAttribute<Rml::String>( "type", "" );
@@ -389,12 +390,20 @@ public:
 
 	void DoOnUpdate() override
 	{
-		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+		weapon_t weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
 		switch ( weapon )
 		{
 			case WP_NONE:
+				return;
+
 			case WP_BLASTER:
+				if ( !showingInfiniteAmmo_ )
+				{
+					SetInnerRML( "∞" );
+					showingInfiniteAmmo_ = true;
+				}
+				builder_ = false;
 				return;
 
 			case WP_ABUILD:
@@ -414,6 +423,7 @@ public:
 				totalBudget_  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
 				queuedBudget_ = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
 				builder_      = true;
+				showingInfiniteAmmo_ = false;
 
 				break;
 
@@ -421,7 +431,7 @@ public:
 				if ( showTotalAmmo_ )
 				{
 					int maxAmmo = BG_Weapon( weapon )->maxAmmo;
-					if ( !builder_ &&
+					if ( !builder_ && !showingInfiniteAmmo_ &&
 					     ammo_ == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
 					{
 						return;
@@ -431,7 +441,7 @@ public:
 				}
 				else
 				{
-					if ( !builder_ &&
+					if ( !builder_ && !showingInfiniteAmmo_ &&
 					     ammo_ == cg.snap->ps.ammo )
 					{
 						return;
@@ -441,6 +451,7 @@ public:
 				}
 
 				builder_ = false;
+				showingInfiniteAmmo_ = false;
 
 				break;
 		}
@@ -452,22 +463,23 @@ public:
 
 			if ( markedBudget_ != 0 )
 			{
-				SetText( va( "%d+%d = %d", freeBudget, markedBudget_, available ) );
+				SetInnerRML(va("%d+%d = %d&nbsp;<translate>build points</translate>", freeBudget, markedBudget_, available));
 			}
 			else
 			{
-				SetText( va( "%d", freeBudget ) );
+				SetInnerRML(va("%d&nbsp;<translate>build points</translate>", freeBudget));
 			}
 		}
 		else
 		{
-			SetText( va( "%d", ammo_ ) );
+			SetInnerRML(va("%d", ammo_));
 		}
 	}
 
 private:
 	bool showTotalAmmo_;
 	bool builder_;
+	bool showingInfiniteAmmo_;
 	int  ammo_;
 	int  spentBudget_;
 	int  markedBudget_;
@@ -488,7 +500,7 @@ public:
 		int           value;
 		playerState_t *ps = &cg.snap->ps;
 
-		if ( BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->infiniteAmmo )
+		if ( BG_Weapon( BG_GetPlayerWeapon( ps ) )->infiniteAmmo )
 		{
 			if ( clips_ != -1 )
 			{
@@ -1189,6 +1201,33 @@ public:
 private:
 	int weapon_;
 	bool isNoAmmo_;
+};
+
+class MedkitElement : public HudElement
+{
+public:
+	MedkitElement(const Rml::String &tag) :
+			HudElement(tag, ELEMENT_HUMANS),
+			isShown_(false)
+	{}
+
+	void DoOnUpdate() override
+	{
+		const playerState_t &ps = cg.snap->ps;
+		const bool shouldShow = ps.stats[STAT_HEALTH] > 0
+			&& ps.stats[STAT_HEALTH] < BG_Class(ps.stats[STAT_CLASS])->health
+			&& BG_InventoryContainsUpgrade(UP_MEDKIT, ps.stats);
+
+		if (shouldShow != isShown_)
+		{
+			isShown_ = shouldShow;
+			SetInnerRML(va("<img src='/$handle/%d' /><keybind class='keycap flashing' cmd='itemact medkit' team='humans' />", cg_upgrades[UP_MEDKIT].upgradeIcon));
+			SetProperty(Rml::PropertyId::Display, Rml::Property(shouldShow ? Rml::Style::Display::Block : Rml::Style::Display::None));
+		}
+	}
+
+private:
+	bool isShown_;
 };
 
 class WallwalkElement : public HudElement
@@ -3014,7 +3053,7 @@ static void CG_DrawPlayerAmmoStack()
 	int           maxVal, align;
 	static int    lastws, maxwt, lastval, valdiff;
 	playerState_t *ps = &cg.snap->ps;
-	weapon_t      primary = BG_PrimaryWeapon( ps->stats );
+	weapon_t      primary = BG_GetPlayerWeapon( ps );
 	Color::Color  localColor, foreColor;
 	rectDef_t     rect;
 	static char   buf[ 100 ];
@@ -3023,9 +3062,10 @@ static void CG_DrawPlayerAmmoStack()
 	CG_GetRocketElementColor( foreColor );
 	CG_GetRocketElementRect( &rect );
 
-	maxVal = BG_Weapon( primary )->maxAmmo;
+	const weaponAttributes_t *attributes = BG_Weapon( primary );
+	maxVal = attributes->maxAmmo;
 
-	if ( maxVal <= 0 )
+	if ( attributes->infiniteAmmo || maxVal <= 0 )
 	{
 		return; // not an ammo-carrying weapon
 	}
@@ -3125,9 +3165,10 @@ static void CG_DrawPlayerClipsStack()
 	CG_GetRocketElementColor( foreColor );
 	CG_GetRocketElementRect( &rect );
 
-	maxVal = BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->maxClips;
+	const weaponAttributes_t *attributes = BG_Weapon( BG_GetPlayerWeapon( ps ) );
+	maxVal = attributes->maxClips;
 
-	if ( !maxVal )
+	if ( attributes->infiniteAmmo || !maxVal )
 	{
 		return; // not a clips weapon
 	}
@@ -3155,6 +3196,30 @@ static void CG_DrawPlayerClipsStack()
 	}
 
 	CG_DrawStack( &rect, foreColor, 0.8, LALIGN_TOPLEFT, val, maxVal );
+}
+
+static void CG_SetStackVisibility( bool visible )
+{
+	char display[ 16 ] = "";
+	const char *newDisplay = visible ? "block" : "none";
+	Rocket_GetProperty( "display", display, sizeof( display ), rocketVarType_t::ROCKET_STRING );
+
+	if ( Q_stricmp( display, newDisplay ) )
+	{
+		Rocket_SetPropertyById( "", "display", newDisplay );
+	}
+}
+
+static void CG_UpdatePlayerAmmoStack()
+{
+	const weaponAttributes_t *attributes = BG_Weapon( BG_GetPlayerWeapon( &cg.snap->ps ) );
+	CG_SetStackVisibility( !attributes->infiniteAmmo && attributes->maxAmmo > 0 );
+}
+
+static void CG_UpdatePlayerClipsStack()
+{
+	const weaponAttributes_t *attributes = BG_Weapon( BG_GetPlayerWeapon( &cg.snap->ps ) );
+	CG_SetStackVisibility( !attributes->infiniteAmmo && attributes->maxClips > 0 );
 }
 
 static void CG_Rocket_DrawMinimap()
@@ -3849,9 +3914,9 @@ struct elementRenderCmd_t
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "ammo_stack", nullptr, &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
+	{ "ammo_stack", &CG_UpdatePlayerAmmoStack, &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "chattype", &CG_Rocket_DrawChatType, nullptr, ELEMENT_ALL },
-	{ "clip_stack", nullptr, &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
+	{ "clip_stack", &CG_UpdatePlayerClipsStack, &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, nullptr, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, nullptr, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, nullptr, ELEMENT_ALL },
@@ -3936,6 +4001,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<CreditsValueElement>( "credits" );
 	RegisterElement<EvosValueElement>( "evos" );
 	RegisterElement<WeaponIconElement>( "weapon_icon" );
+	RegisterElement<MedkitElement>("medkit");
 	RegisterElement<WallwalkElement>( "wallwalk" );
 	RegisterElement<StaminaElement>( "stamina" );
 	RegisterElement<UsableBuildableElement>( "usable_buildable" );

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 16:59+0200\n"
+"POT-Creation-Date: 2026-09-26 20:55+0100\n"
 "PO-Revision-Date: 2026-06-19 02:31+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -19,11 +19,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.7.dev0\n"
 
-#: ui/alien_build.rml:126 ui/human_build.rml:127
+#: ui/alien_build.rml:132 ui/human_build.rml:133
 msgid "Build"
 msgstr "Rakenna"
 
-#: ui/alien_build.rml:133 ui/alien_evo.rml:147 ui/human_build.rml:133
+#: ui/alien_build.rml:139 ui/alien_evo.rml:147 ui/human_build.rml:139
 #: ui/human_buy.rml:217 ui/human_buy.rml:233
 msgid "Price:"
 msgstr "Hinta:"
@@ -403,9 +403,9 @@ msgstr "Hyökättynä"
 #: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
-"team when at 75% health, at 50% health, at 25% health and when destroyed."
-"Destroying other buildings will trigger “under attack” warnings for the "
-"owning team."
+"team when at 75% health, at 50% health, at 25% health and when "
+"destroyed.Destroying other buildings will trigger “under attack” warnings "
+"for the owning team."
 msgstr ""
 "[reactor] Reaktori ja [overmind] ylihallitsija antavat joukkueelle "
 "varoituksia 75% kuntotasosta, 50% kuntotasosta, 25% kuntotasosta ja "
@@ -577,11 +577,7 @@ msgstr "fps"
 msgid "ms"
 msgstr "ms"
 
-#: ui/hud_bp.rml:29
-msgid "build points"
-msgstr "rakennuspistettä"
-
-#: ui/hud_human.rml:268
+#: ui/hud_human.rml:288
 msgid "Credits"
 msgstr "Krediittiä"
 
@@ -768,6 +764,34 @@ msgstr "Beta"
 msgid "Fields of view"
 msgstr "Näkökenttä"
 
+#: ui/options.rml:11
+msgid "Player"
+msgstr "Pelaaja"
+
+#: ui/options.rml:13 ui/options_movements_cosmetic.rml:7
+msgid "Movement and Cosmetic"
+msgstr "Liikkuminen ja ulkoasu"
+
+#: ui/options.rml:15 ui/options_graphics.rml:20
+msgid "Graphics"
+msgstr "Grafiikka"
+
+#: ui/options.rml:17 ui/options_keys.rml:7
+msgid "Key bindings"
+msgstr "Näppäinasetukset"
+
+#: ui/options.rml:19 ui/options_mouse.rml:7
+msgid "Mouse and Aiming"
+msgstr "Hiiri ja tähtääminen"
+
+#: ui/options.rml:21 ui/options_sound.rml:7
+msgid "Sound"
+msgstr "Ääni"
+
+#: ui/options.rml:23
+msgid "User interface and HUD"
+msgstr "Käyttöliittymä ja HUD"
+
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
 msgstr "Lisää alienbotti"
@@ -881,7 +905,7 @@ msgid "Mild"
 msgstr "Kevyt"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1557
 msgid "Default"
 msgstr "Normaali"
 
@@ -900,10 +924,6 @@ msgstr "Kameran kierto"
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
 msgstr "Kiertävä liikkuminen"
-
-#: ui/options_graphics.rml:20 ui/options.rml:15
-msgid "Graphics"
-msgstr "Grafiikka"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 #: ui/server_setup.rml:162
@@ -1284,7 +1304,7 @@ msgstr ""
 "suorituskykyyn."
 
 #: ui/options_graphics.rml:232 ui/options_ui.rml:30
-#: src/cgame/cg_rocket_datasource.cpp:1551
+#: src/cgame/cg_rocket_datasource.cpp:1594
 msgid "No"
 msgstr "Ei"
 
@@ -1591,10 +1611,6 @@ msgstr "Vauhtisokeuden taso."
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Pienin liikkumisnopeus vauhtisokeuden aktivoitumiselle"
 
-#: ui/options_keys.rml:7 ui/options.rml:17
-msgid "Key bindings"
-msgstr "Näppäinasetukset"
-
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
 msgstr "Paina Esc peruuttaaksesi näppäimen valinnan."
@@ -1810,10 +1826,6 @@ msgstr "Hiirellä katselu:"
 msgid "Centerview:"
 msgstr "Keskitä näkymä:"
 
-#: ui/options_mouse.rml:7 ui/options.rml:19
-msgid "Mouse and Aiming"
-msgstr "Hiiri ja tähtääminen"
-
 #: ui/options_mouse.rml:9
 msgid "Y axis"
 msgstr "Y‐akseli"
@@ -1858,10 +1870,6 @@ msgstr "Ympyrävalikon hiiren kaappaus"
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
 "Ympyrävalikot (paitsi Asevarikon valikko) antavat tehdä valintoja hiirellä"
-
-#: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
-msgid "Movement and Cosmetic"
-msgstr "Liikkuminen ja ulkoasu"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -2013,18 +2021,6 @@ msgstr "Näytä ainoastaan joukkuekeskustelu"
 #: ui/options_player.rml:224
 msgid "Show obituaries"
 msgstr "Luettele kuolemat"
-
-#: ui/options.rml:11
-msgid "Player"
-msgstr "Pelaaja"
-
-#: ui/options.rml:21 ui/options_sound.rml:7
-msgid "Sound"
-msgstr "Ääni"
-
-#: ui/options.rml:23
-msgid "User interface and HUD"
-msgstr "Käyttöliittymä ja HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
@@ -3326,1264 +3322,1264 @@ msgstr ""
 "Tekee raskaasti vahinkoa joka laukauksella.\n"
 "Laaja rypäs, menettää paljon tehokkuutta etäällä."
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "male"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*putosi kuolemaansa"
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "female"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*putosi kuolemaansa"
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*putosi kuolemaansa"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*murskaantui kuoliaaksi"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*murskaantui kuoliaaksi"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*murskaantui kuoliaaksi"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "male"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*hukkui"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "female"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*hukkui"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*hukkui"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "male"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*suli"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "female"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*suli"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "neuter"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*suli"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*kastautui laavaan"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*kastautui laavaan"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*kastautui laavaan"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*oli väärässä paikassa"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*oli väärässä paikassa"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*oli väärässä paikassa"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*jäi räjähdyksen sisälle"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*jäi räjähdyksen sisälle"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*jäi räjähdyksen sisälle"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*juuttui happoon"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*juuttui happoon"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*juuttui happoon"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*jäi torjunta-aseen tuleen"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*jäi torjunta-aseen tuleen"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*jäi torjunta-aseen tuleen"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*jäi torjunta-aseen tuleen; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*jäi torjunta-aseen tuleen; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*jäi torjunta-aseen tuleen; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s%s ^*sai raketista"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s%s ^*sai raketista"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s%s ^*sai raketista"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*sai raketista; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*sai raketista; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*sai raketista; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*joutui happoputken syövyttämäksi"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*joutui happoputken syövyttämäksi"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*joutui happoputken syövyttämäksi"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui happoputken syövyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui happoputken syövyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui happoputken syövyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*joutui piikittimen lävistämäksi"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*joutui piikittimen lävistämäksi"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*joutui piikittimen lävistämäksi"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui piikittimen lävistämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui piikittimen lävistämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui piikittimen lävistämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*joutui ylihallitsijan ruoskimaksi"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*joutui ylihallitsijan ruoskimaksi"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*joutui ylihallitsijan ruoskimaksi"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui ylihallitsijan ruoskimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui ylihallitsijan ruoskimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui ylihallitsijan ruoskimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*joutui reaktorin käristämäksi"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*joutui reaktorin käristämäksi"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*joutui reaktorin käristämäksi"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui reaktorin käristämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui reaktorin käristämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui reaktorin käristämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*ei päässyt grangeria karkuun"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*ei päässyt grangeria karkuun"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*ei päässyt grangeria karkuun"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*ei päässyt grangeria karkuun; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*ei päässyt grangeria karkuun; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*ei päässyt grangeria karkuun; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*joutui parven kaluamaksi"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*joutui parven kaluamaksi"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*joutui parven kaluamaksi"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui parven kaluamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui parven kaluamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui parven kaluamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "male"
 msgid "%s%s ^*saw the light"
 msgstr "%s%s ^*näki valon"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "female"
 msgid "%s%s ^*saw the light"
 msgstr "%s%s ^*näki valon"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
 msgstr "%s%s ^*näki valon"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*näki valon; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*näki valon; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*näki valon; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n sahaamaksi"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n sahaamaksi"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n sahaamaksi"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n sahaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n sahaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n sahaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n räjäyttämäksi"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n räjäyttämäksi"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n räjäyttämäksi"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n räjäyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n räjäyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n räjäyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n konepyssyttämäksi"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n konepyssyttämäksi"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n konepyssyttämäksi"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n konepyssyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n konepyssyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n konepyssyttämäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n lahtaamaksi"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n lahtaamaksi"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n lahtaamaksi"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n lahtaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n lahtaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n lahtaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n suolaamaksi"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n suolaamaksi"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n suolaamaksi"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n suolaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n suolaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n suolaamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*rei'ittyi %s%s%s^*:n pulssitulituksessa"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*rei'ittyi %s%s%s^*:n pulssitulituksessa"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*rei'ittyi %s%s%s^*:n pulssitulituksessa"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr "%s%s ^*rei'ittyi %s%s%s^*:n pulssitulituksessa; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr "%s%s ^*rei'ittyi %s%s%s^*:n pulssitulituksessa; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr "%s%s ^*rei'ittyi %s%s%s^*:n pulssitulituksessa; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tarkka-ampumaksi"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tarkka-ampumaksi"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tarkka-ampumaksi"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n tarkka-ampumaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n tarkka-ampumaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n tarkka-ampumaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n laaseroimaksi"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n laaseroimaksi"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n laaseroimaksi"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n laaseroimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n laaseroimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n laaseroimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*grillaantui %s%s%s^*:n liekissä"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*grillaantui %s%s%s^*:n liekissä"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*grillaantui %s%s%s^*:n liekissä"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr "%s%s ^*grillaantui %s%s%s^*:n liekissä; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr "%s%s ^*grillaantui %s%s%s^*:n liekissä; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr "%s%s ^*grillaantui %s%s%s^*:n liekissä; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*kärähti karrelle"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*kärähti karrelle"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*kärähti karrelle"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*paloi %s%s%s^*:n tulessa"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*paloi %s%s%s^*:n tulessa"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*paloi %s%s%s^*:n tulessa"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*paloi %s%s%s^*:n tulessa; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*paloi %s%s%s^*:n tulessa; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*paloi %s%s%s^*:n tulessa; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:439
-msgctxt "male"
-msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*paloi kuoliaaksi"
-
-#: src/cgame/cg_event.cpp:439
-msgctxt "female"
-msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*paloi kuoliaaksi"
-
-#: src/cgame/cg_event.cpp:439
-msgctxt "neuter"
-msgid "%s%s ^*was burned to death"
-msgstr "%s%s ^*paloi kuoliaaksi"
-
-#: src/cgame/cg_event.cpp:443
-msgctxt "male"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä"
-
-#: src/cgame/cg_event.cpp:443
-msgctxt "female"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä"
-
-#: src/cgame/cg_event.cpp:443
-msgctxt "neuter"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä"
-
-#: src/cgame/cg_event.cpp:444
-msgctxt "male"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:444
-msgctxt "female"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:444
-msgctxt "neuter"
-msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:448
-msgctxt "male"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä"
-
-#: src/cgame/cg_event.cpp:448
-msgctxt "female"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä"
-
-#: src/cgame/cg_event.cpp:448
-msgctxt "neuter"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä"
-
-#: src/cgame/cg_event.cpp:449
-msgctxt "male"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:449
-msgctxt "female"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:449
-msgctxt "neuter"
-msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:450
-msgctxt "male"
-msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*sai säteilymyrkytyksen"
-
-#: src/cgame/cg_event.cpp:450
-msgctxt "female"
-msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*sai säteilymyrkytyksen"
-
-#: src/cgame/cg_event.cpp:450
-msgctxt "neuter"
-msgid "%s%s ^*was irradiated"
-msgstr "%s%s ^*sai säteilymyrkytyksen"
-
-#: src/cgame/cg_event.cpp:454
-msgctxt "male"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista"
-
-#: src/cgame/cg_event.cpp:454
-msgctxt "female"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista"
-
-#: src/cgame/cg_event.cpp:454
-msgctxt "neuter"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista"
-
-#: src/cgame/cg_event.cpp:455
-msgctxt "male"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:455
-msgctxt "female"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:455
-msgctxt "neuter"
-msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
-msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:456
-msgctxt "male"
-msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*räjähti"
-
-#: src/cgame/cg_event.cpp:456
-msgctxt "female"
-msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*räjähti"
-
-#: src/cgame/cg_event.cpp:456
-msgctxt "neuter"
-msgid "%s%s ^*was blown up"
-msgstr "%s%s ^*räjähti"
-
-#: src/cgame/cg_event.cpp:460
-msgctxt "male"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista"
-
-#: src/cgame/cg_event.cpp:460
-msgctxt "female"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista"
-
-#: src/cgame/cg_event.cpp:460
-msgctxt "neuter"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
-msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista"
-
-#: src/cgame/cg_event.cpp:461
-msgctxt "male"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:461
-msgctxt "female"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:461
-msgctxt "neuter"
-msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
-msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:462
-msgctxt "male"
-msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*paloi tuhkaksi"
-
-#: src/cgame/cg_event.cpp:462
-msgctxt "female"
-msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*paloi tuhkaksi"
-
-#: src/cgame/cg_event.cpp:462
-msgctxt "neuter"
-msgid "%s%s ^*was incinerated"
-msgstr "%s%s ^*paloi tuhkaksi"
-
-#: src/cgame/cg_event.cpp:466
-msgctxt "male"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi"
-
-#: src/cgame/cg_event.cpp:466
-msgctxt "female"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi"
-
-#: src/cgame/cg_event.cpp:466
-msgctxt "neuter"
-msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
-msgstr "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi"
 
 #: src/cgame/cg_event.cpp:467
+msgctxt "male"
+msgid "%s%s ^*was burned to death"
+msgstr "%s%s ^*paloi kuoliaaksi"
+
+#: src/cgame/cg_event.cpp:467
+msgctxt "female"
+msgid "%s%s ^*was burned to death"
+msgstr "%s%s ^*paloi kuoliaaksi"
+
+#: src/cgame/cg_event.cpp:467
+msgctxt "neuter"
+msgid "%s%s ^*was burned to death"
+msgstr "%s%s ^*paloi kuoliaaksi"
+
+#: src/cgame/cg_event.cpp:471
+msgctxt "male"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä"
+
+#: src/cgame/cg_event.cpp:471
+msgctxt "female"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä"
+
+#: src/cgame/cg_event.cpp:471
+msgctxt "neuter"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä"
+
+#: src/cgame/cg_event.cpp:472
+msgctxt "male"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:472
+msgctxt "female"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:472
+msgctxt "neuter"
+msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*hajosi %s%s%s^*:n plasmatykityksessä; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:476
+msgctxt "male"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä"
+
+#: src/cgame/cg_event.cpp:476
+msgctxt "female"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä"
+
+#: src/cgame/cg_event.cpp:476
+msgctxt "neuter"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
+msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä"
+
+#: src/cgame/cg_event.cpp:477
+msgctxt "male"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:477
+msgctxt "female"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:477
+msgctxt "neuter"
+msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
+msgstr "%s%s ^*säteilymyrkyttyi %s%s%s^*:n plasmatykityksestä; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:478
+msgctxt "male"
+msgid "%s%s ^*was irradiated"
+msgstr "%s%s ^*sai säteilymyrkytyksen"
+
+#: src/cgame/cg_event.cpp:478
+msgctxt "female"
+msgid "%s%s ^*was irradiated"
+msgstr "%s%s ^*sai säteilymyrkytyksen"
+
+#: src/cgame/cg_event.cpp:478
+msgctxt "neuter"
+msgid "%s%s ^*was irradiated"
+msgstr "%s%s ^*sai säteilymyrkytyksen"
+
+#: src/cgame/cg_event.cpp:482
+msgctxt "male"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
+msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista"
+
+#: src/cgame/cg_event.cpp:482
+msgctxt "female"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
+msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista"
+
+#: src/cgame/cg_event.cpp:482
+msgctxt "neuter"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
+msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista"
+
+#: src/cgame/cg_event.cpp:483
+msgctxt "male"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
+msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:483
+msgctxt "female"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
+msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:483
+msgctxt "neuter"
+msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
+msgstr "%s%s ^*pirstoutui %s%s%s^*:n kranaatista; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:484
+msgctxt "male"
+msgid "%s%s ^*was blown up"
+msgstr "%s%s ^*räjähti"
+
+#: src/cgame/cg_event.cpp:484
+msgctxt "female"
+msgid "%s%s ^*was blown up"
+msgstr "%s%s ^*räjähti"
+
+#: src/cgame/cg_event.cpp:484
+msgctxt "neuter"
+msgid "%s%s ^*was blown up"
+msgstr "%s%s ^*räjähti"
+
+#: src/cgame/cg_event.cpp:488
+msgctxt "male"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
+msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista"
+
+#: src/cgame/cg_event.cpp:488
+msgctxt "female"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
+msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista"
+
+#: src/cgame/cg_event.cpp:488
+msgctxt "neuter"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
+msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista"
+
+#: src/cgame/cg_event.cpp:489
+msgctxt "male"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
+msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:489
+msgctxt "female"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
+msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:489
+msgctxt "neuter"
+msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
+msgstr "%s%s ^*tuhkaantui %s%s%s^*:n palopommista; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:490
+msgctxt "male"
+msgid "%s%s ^*was incinerated"
+msgstr "%s%s ^*paloi tuhkaksi"
+
+#: src/cgame/cg_event.cpp:490
+msgctxt "female"
+msgid "%s%s ^*was incinerated"
+msgstr "%s%s ^*paloi tuhkaksi"
+
+#: src/cgame/cg_event.cpp:490
+msgctxt "neuter"
+msgid "%s%s ^*was incinerated"
+msgstr "%s%s ^*paloi tuhkaksi"
+
+#: src/cgame/cg_event.cpp:494
+msgctxt "male"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
+msgstr "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi"
+
+#: src/cgame/cg_event.cpp:494
+msgctxt "female"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
+msgstr "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi"
+
+#: src/cgame/cg_event.cpp:494
+msgctxt "neuter"
+msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
+msgstr "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi"
+
+#: src/cgame/cg_event.cpp:495
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:495
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*joutui %s%s%s^*:n grangerin hellästi näykkimäksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:499
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi"
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:499
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi"
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:499
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*joutui %s%s%s^*:n mantisin viipaloimaksi"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*joutui %s%s%s^*:n mantisin viipaloimaksi"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*joutui %s%s%s^*:n mantisin viipaloimaksi"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n mantisin viipaloimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n mantisin viipaloimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n mantisin viipaloimaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*joutui %s%s%s^*:n marauderin silppuamaksi"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*joutui %s%s%s^*:n marauderin silppuamaksi"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*joutui %s%s%s^*:n marauderin silppuamaksi"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n marauderin silppuamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n marauderin silppuamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n marauderin silppuamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*sai sähköiskun %s%s%s^*:n marauderilta"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*sai sähköiskun %s%s%s^*:n marauderilta"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*sai sähköiskun %s%s%s^*:n marauderilta"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*sai sähköiskun %s%s%s^*:n marauderilta; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*sai sähköiskun %s%s%s^*:n marauderilta; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*sai sähköiskun %s%s%s^*:n marauderilta; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin suolistamaksi"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin suolistamaksi"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin suolistamaksi"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin suolistamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin suolistamaksi; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin suolistamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:496
-msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn"
-
-#: src/cgame/cg_event.cpp:496
-msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn"
-
-#: src/cgame/cg_event.cpp:496
-msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn"
-
-#: src/cgame/cg_event.cpp:497
-msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:497
-msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:497
-msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:501
-msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi"
-
-#: src/cgame/cg_event.cpp:501
-msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi"
-
-#: src/cgame/cg_event.cpp:501
-msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi"
-
-#: src/cgame/cg_event.cpp:502
-msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:502
-msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:502
-msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:503
-msgctxt "male"
-msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*sai piikkipallosta"
-
-#: src/cgame/cg_event.cpp:503
-msgctxt "female"
-msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*sai piikkipallosta"
-
-#: src/cgame/cg_event.cpp:503
-msgctxt "neuter"
-msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*sai piikkipallosta"
-
-#: src/cgame/cg_event.cpp:507
-msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi"
-
-#: src/cgame/cg_event.cpp:507
-msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi"
-
-#: src/cgame/cg_event.cpp:507
-msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi"
-
-#: src/cgame/cg_event.cpp:508
-msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:508
-msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:508
-msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:512
-msgctxt "male"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle"
-
-#: src/cgame/cg_event.cpp:512
-msgctxt "female"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle"
-
-#: src/cgame/cg_event.cpp:512
-msgctxt "neuter"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "male"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
-"assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "female"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
-"assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "neuter"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
-"assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "male"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "female"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "neuter"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "male"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "female"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "neuter"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:523
-msgctxt "male"
-msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
-
-#: src/cgame/cg_event.cpp:523
-msgctxt "female"
-msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
-
-#: src/cgame/cg_event.cpp:523
-msgctxt "neuter"
-msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
 
 #: src/cgame/cg_event.cpp:524
+msgctxt "male"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn"
+
+#: src/cgame/cg_event.cpp:524
+msgctxt "female"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn"
+
+#: src/cgame/cg_event.cpp:524
+msgctxt "neuter"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn"
+
+#: src/cgame/cg_event.cpp:525
+msgctxt "male"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:525
+msgctxt "female"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:525
+msgctxt "neuter"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr "%s%s ^*jäi %s%s%s^*:n dragoonin syöksyyn; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:529
+msgctxt "male"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi"
+
+#: src/cgame/cg_event.cpp:529
+msgctxt "female"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi"
+
+#: src/cgame/cg_event.cpp:529
+msgctxt "neuter"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr "%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi"
+
+#: src/cgame/cg_event.cpp:530
+msgctxt "male"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
+"%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:530
+msgctxt "female"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
+"%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:530
+msgctxt "neuter"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
+"%s%s ^*joutui %s%s%s^*:n dragoonin piikkipallottamaksi; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:531
+msgctxt "male"
+msgid "%s%s ^*was barbed"
+msgstr "%s%s ^*sai piikkipallosta"
+
+#: src/cgame/cg_event.cpp:531
+msgctxt "female"
+msgid "%s%s ^*was barbed"
+msgstr "%s%s ^*sai piikkipallosta"
+
+#: src/cgame/cg_event.cpp:531
+msgctxt "neuter"
+msgid "%s%s ^*was barbed"
+msgstr "%s%s ^*sai piikkipallosta"
+
+#: src/cgame/cg_event.cpp:535
+msgctxt "male"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi"
+
+#: src/cgame/cg_event.cpp:535
+msgctxt "female"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi"
+
+#: src/cgame/cg_event.cpp:535
+msgctxt "neuter"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi"
+
+#: src/cgame/cg_event.cpp:536
+msgctxt "male"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:536
+msgctxt "female"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:536
+msgctxt "neuter"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr "%s%s ^*joutui %s%s%s^*:n tyrantin mukiloimaksi; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:540
+msgctxt "male"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle"
+
+#: src/cgame/cg_event.cpp:540
+msgctxt "female"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle"
+
+#: src/cgame/cg_event.cpp:540
+msgctxt "neuter"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle"
+
+#: src/cgame/cg_event.cpp:541
+msgctxt "male"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:541
+msgctxt "female"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:541
+msgctxt "neuter"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr "%s%s ^*jäi %s%s%s^*:n tyrantin tielle; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:546
+msgctxt "male"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
+msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
+
+#: src/cgame/cg_event.cpp:546
+msgctxt "female"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
+msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
+
+#: src/cgame/cg_event.cpp:546
+msgctxt "neuter"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
+msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
+
+#: src/cgame/cg_event.cpp:547
+msgctxt "male"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
+msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:547
+msgctxt "female"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
+msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:547
+msgctxt "neuter"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
+msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
+
+#: src/cgame/cg_event.cpp:551
+msgctxt "male"
+msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
+msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
+
+#: src/cgame/cg_event.cpp:551
+msgctxt "female"
+msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
+msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
+
+#: src/cgame/cg_event.cpp:551
+msgctxt "neuter"
+msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
+msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
+
+#: src/cgame/cg_event.cpp:552
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -4591,7 +4587,7 @@ msgstr ""
 "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan; %s%s%s^* "
 "avusti"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -4599,7 +4595,7 @@ msgstr ""
 "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan; %s%s%s^* "
 "avusti"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -4607,122 +4603,137 @@ msgstr ""
 "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan; %s%s%s^* "
 "avusti"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*yritti tunkeutua %s%s%s^*:n henkilökohtaiseen tilaan"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*yritti tunkeutua %s%s%s^*:n henkilökohtaiseen tilaan"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*yritti tunkeutua %s%s%s^*:n henkilökohtaiseen tilaan"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*päätyi tyhjyyteen"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*päätyi tyhjyyteen"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*päätyi tyhjyyteen"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n ja %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n ja %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n ja %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*teki itsemurhan"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*teki itsemurhan"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*teki itsemurhan"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:647
+msgctxt "male"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:647
+msgctxt "female"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:647
+msgctxt "neuter"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:650
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:650
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:650
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
@@ -4732,37 +4743,37 @@ msgstr "%s%s^* kuoli"
 msgid "Listed %2d clients"
 msgstr "Luetteloitu %2d käyttäjää"
 
-#: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
+#: src/cgame/cg_event.cpp:272 src/cgame/cg_event.cpp:637
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "Tapoit ^1JOUKKUETOVERIN^* %s"
 
-#: src/cgame/cg_event.cpp:1218
+#: src/cgame/cg_event.cpp:1289
 msgid "The Overmind is under attack!"
 msgstr "Ylihallitsijaa vastaan hyökätään!"
 
-#: src/cgame/cg_event.cpp:1225
+#: src/cgame/cg_event.cpp:1296
 msgid "The reactor is under attack!"
 msgstr "Reaktoriin hyökätään!"
 
-#: src/cgame/cg_event.cpp:1240
+#: src/cgame/cg_event.cpp:1311
 msgid "The Overmind is dying!"
 msgstr "Ylihallitsija tekee kuolemaa!"
 
-#: src/cgame/cg_event.cpp:1246
+#: src/cgame/cg_event.cpp:1317
 msgid "The reactor is going down!"
 msgstr "Reaktori sammuu!"
 
-#: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
+#: src/cgame/cg_event.cpp:1334 src/cgame/cg_event.cpp:1350
 msgid "Our base is under attack!"
 msgstr "Tukikohtaamme hyökätään!"
 
-#: src/cgame/cg_event.cpp:1269
+#: src/cgame/cg_event.cpp:1340
 #, c-format
 msgid "%s under attack – %s"
 msgstr "%s hyökkäyksessä – %s"
 
-#: src/cgame/cg_event.cpp:1273
+#: src/cgame/cg_event.cpp:1344
 #, c-format
 msgid "%s under attack"
 msgstr "%s hyökkäyksessä"
@@ -4914,132 +4925,174 @@ msgstr "Kustomoitu: %dx%d"
 msgid "Same as screen (%dx%d)"
 msgstr "Sama kuin näyttöruutu (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1399
+msgid "This buildable is disabled on this server"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1404 src/cgame/cg_servercmds.cpp:743
+#, c-format
+msgid "The %s has not been unlocked yet"
+msgstr "%s ei ole vielä avautunut käyttöön"
+
+#: src/cgame/cg_rocket_datasource.cpp:1410 src/cgame/cg_servercmds.cpp:562
+msgid "Building has been disabled for your team"
+msgstr "Rakentaminen joukkueessasi on poistettu käytöstä"
+
+#: src/cgame/cg_rocket_datasource.cpp:1413 src/cgame/cg_servercmds.cpp:663
+#: src/cgame/cg_servercmds.cpp:703
+msgid "There is no Overmind"
+msgstr "Ylihallitsijaa ei ole"
+
+#: src/cgame/cg_rocket_datasource.cpp:1416 src/cgame/cg_servercmds.cpp:669
+msgid "There can only be one Overmind"
+msgstr "Ylihallitsijoita voi olla vain yksi"
+
+#: src/cgame/cg_rocket_datasource.cpp:1419 src/cgame/cg_servercmds.cpp:590
+msgid "There is no reactor"
+msgstr "Reaktoria ei ole"
+
+#: src/cgame/cg_rocket_datasource.cpp:1422 src/cgame/cg_servercmds.cpp:596
+msgid "There can only be one Reactor"
+msgstr "Reaktoreita voi olla vain yksi"
+
+#: src/cgame/cg_rocket_datasource.cpp:1425 src/cgame/cg_servercmds.cpp:674
+msgid "Your team cannot have any more leeches"
+msgstr "Joukkueellasi ei voi olla enempää loisia"
+
+#: src/cgame/cg_rocket_datasource.cpp:1428 src/cgame/cg_servercmds.cpp:601
+msgid "Your team cannot have any more drills"
+msgstr "Joukkueellasi ei voi olla enempää poria"
+
+#: src/cgame/cg_rocket_datasource.cpp:1436
+msgid "Not enough build points"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1557
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr "Vakiokäytös. Botit toimivat tämän mukaan pelin alkaessa."
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1558
+#: src/cgame/cg_rocket_datasource.cpp:1591
 msgid "Defend"
 msgstr "Puolusta"
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1558
 msgid "The bots stay in the base."
 msgstr "Botit pysyvät tukikohdassa."
 
-#: src/cgame/cg_rocket_datasource.cpp:1516
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1559
+#: src/cgame/cg_rocket_datasource.cpp:1592
 msgid "Attack"
 msgstr "Hyökkää"
 
-#: src/cgame/cg_rocket_datasource.cpp:1516
+#: src/cgame/cg_rocket_datasource.cpp:1559
 msgid "The bots attack the enemy base."
 msgstr "Botit hyökkäävät vihollisen tukikohtaan."
 
-#: src/cgame/cg_rocket_datasource.cpp:1517
+#: src/cgame/cg_rocket_datasource.cpp:1560
 msgid "Stay Here"
 msgstr "Pysy Täällä"
 
-#: src/cgame/cg_rocket_datasource.cpp:1517
+#: src/cgame/cg_rocket_datasource.cpp:1560
 msgid "The bots stay where you are currently."
 msgstr "Botit jäävät sinne, missä olet tällä hetkellä."
 
-#: src/cgame/cg_rocket_datasource.cpp:1518
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1561
+#: src/cgame/cg_rocket_datasource.cpp:1593
 msgid "Follow"
 msgstr "Seuraa"
 
-#: src/cgame/cg_rocket_datasource.cpp:1518
+#: src/cgame/cg_rocket_datasource.cpp:1561
 msgid "The bots follow you wherever you go."
 msgstr "Botit seuraavat sinua kaikkialle, minne menet."
 
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1591
 msgid "Defend our base!!"
 msgstr "Puolustakaa tukikohtaamme!!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1592
 msgid "Attack!"
 msgstr "Hyökätkää!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1593
 msgid "Follow me!"
 msgstr "Seuraa minua!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1551
+#: src/cgame/cg_rocket_datasource.cpp:1594
 msgid "No."
 msgstr "Ei."
 
-#: src/cgame/cg_rocket_datasource.cpp:1552
+#: src/cgame/cg_rocket_datasource.cpp:1595
 msgid "Yes"
 msgstr "Kyllä"
 
-#: src/cgame/cg_rocket_datasource.cpp:1552
+#: src/cgame/cg_rocket_datasource.cpp:1595
 msgid "Yes."
 msgstr "Kyllä."
 
-#: src/cgame/cg_rocket_datasource.cpp:1553
+#: src/cgame/cg_rocket_datasource.cpp:1596
 msgid "Flank"
 msgstr "Sivusta"
 
-#: src/cgame/cg_rocket_datasource.cpp:1553
+#: src/cgame/cg_rocket_datasource.cpp:1596
 msgid "Flank, behind you!"
 msgstr "Sivustalta, takanasi!"
 
-#: src/cgame/cg_rocket_draw.cpp:2630
+#: src/cgame/cg_rocket_draw.cpp:2669
 msgid "You are at the front of the spawn queue"
 msgstr "Olet tukijoukkojonon kärjessä"
 
-#: src/cgame/cg_rocket_draw.cpp:2634
+#: src/cgame/cg_rocket_draw.cpp:2673
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Olet sijalla %d tukijoukkojonossa"
 
-#: src/cgame/cg_rocket_draw.cpp:2674
+#: src/cgame/cg_rocket_draw.cpp:2713
 msgid "There are no spawns remaining"
 msgstr "Tukijoukkorakennelmia ei ole"
 
-#: src/cgame/cg_rocket_draw.cpp:2678
+#: src/cgame/cg_rocket_draw.cpp:2717
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Tukijoukkorakennelmia on %d kappale"
 msgstr[1] "Tukijoukkorakennelmia on %d kappaletta"
 
-#: src/cgame/cg_rocket_draw.cpp:3227
+#: src/cgame/cg_rocket_draw.cpp:3292
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Odotetaan yhteyttä…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3231
+#: src/cgame/cg_rocket_draw.cpp:3296
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Odotetaan varmistusta…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3235
+#: src/cgame/cg_rocket_draw.cpp:3300
 msgid "Awaiting gamestate…"
 msgstr "Odotetaan pelitilannetta…"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3401
 msgid "Say:"
 msgstr "Sano:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3402
 msgid "Team Say:"
 msgstr "Kerro joukkueelle:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3403
 msgid "Admin Say:"
 msgstr "Kerro valvojille:"
 
-#: src/cgame/cg_rocket_draw.cpp:3339
+#: src/cgame/cg_rocket_draw.cpp:3404
 msgid "Command:"
 msgstr "Komento:"
 
-#: src/cgame/cg_rocket_draw.cpp:3689
+#: src/cgame/cg_rocket_draw.cpp:3754
 msgid "FIGHT!"
 msgstr "TAISTELE!"
 
-#: src/cgame/cg_rocket_draw.cpp:3783
+#: src/cgame/cg_rocket_draw.cpp:3848
 msgid "estimating"
 msgstr "arvioidaan"
 
@@ -5192,10 +5245,6 @@ msgstr "Et voi purkaa tätä rakennelmaa"
 msgid "Building has been disabled on the server for your team."
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä palvelimen kautta."
 
-#: src/cgame/cg_servercmds.cpp:562
-msgid "Building has been disabled for your team"
-msgstr "Rakentaminen joukkueessasi on poistettu käytöstä"
-
 #: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "Sinulla ei enää ole lupaa rakentaa."
@@ -5244,24 +5293,12 @@ msgstr ""
 "Reaktoria ei ole. Reaktori täytyy rakentaa ennen kuin voit asettaa mitään "
 "muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:590
-msgid "There is no reactor"
-msgstr "Reaktoria ei ole"
-
 #: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Reaktoreita voi olla vain yksi. Merkkaa nykyinen reaktori jos aiot siirtää "
 "sitä."
-
-#: src/cgame/cg_servercmds.cpp:596
-msgid "There can only be one Reactor"
-msgstr "Reaktoreita voi olla vain yksi"
-
-#: src/cgame/cg_servercmds.cpp:601
-msgid "Your team cannot have any more drills"
-msgstr "Joukkueellasi ei voi olla enempää poria"
 
 #: src/cgame/cg_servercmds.cpp:605
 msgid ""
@@ -5360,10 +5397,6 @@ msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa ennen kuin voit asettaa "
 "mitään muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
-msgid "There is no Overmind"
-msgstr "Ylihallitsijaa ei ole"
-
 #: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
@@ -5371,14 +5404,6 @@ msgid ""
 msgstr ""
 "Ylihallitsijoita voi olla vain yksi. Merkkaa nykyinen ylihallitsija jos aiot "
 "siirtää sitä."
-
-#: src/cgame/cg_servercmds.cpp:669
-msgid "There can only be one Overmind"
-msgstr "Ylihallitsijoita voi olla vain yksi"
-
-#: src/cgame/cg_servercmds.cpp:674
-msgid "Your team cannot have any more leeches"
-msgstr "Joukkueellasi ei voi olla enempää loisia"
 
 #: src/cgame/cg_servercmds.cpp:678
 msgid ""
@@ -5461,11 +5486,6 @@ msgstr "Et voi aloittaa %sina"
 msgid "The %s is not allowed"
 msgstr "%s ei ole sallittu"
 
-#: src/cgame/cg_servercmds.cpp:743
-#, c-format
-msgid "The %s has not been unlocked yet"
-msgstr "%s ei ole vielä avautunut käyttöön"
-
 #: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
@@ -5485,7 +5505,7 @@ msgstr "%sYksityisviesti pelaajalta ^7%s"
 msgid ">> to reply, say: '/m %d [your message]' or '/r [your message]' <<"
 msgstr ">> vastaa sanomalla: '/m %d [viestisi]' tai '/r [viestisi]' <<"
 
-#: src/cgame/cg_servercmds.cpp:1390
+#: src/cgame/cg_servercmds.cpp:1411
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Tuntematon pelaajan pelikomento: %s"
@@ -5850,11 +5870,11 @@ msgstr "^1Botin kulkuverkon muodostus epäonnistui!"
 msgid "Server: generating bot navigation meshes... $1$%"
 msgstr "Palvelin: luodaan bottien kulkuverkostoja... $1$%"
 
-#: src/sgame/sg_buildable.cpp:1702
+#: src/sgame/sg_buildable.cpp:1804
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$2$ ^2teki rakennelman^* $1$, ^3korvaten^* $3$"
 
-#: src/sgame/sg_buildable.cpp:1703
+#: src/sgame/sg_buildable.cpp:1805
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$2$$3$ ^2teki rakennelman^* $1$"
 
@@ -6148,12 +6168,12 @@ msgid "Team vote passed ($1$ — $2$)"
 msgstr "Joukkueäänestys hyväksytty ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:892
-#, c-format
+#, fuzzy
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Äänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 
 #: src/sgame/sg_votes.cpp:893
-#, c-format
+#, fuzzy
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Joukkueäänestys epäonnistui ($1$ — $2$; tarvitaan $3$%)"
 
@@ -6180,6 +6200,9 @@ msgstr "alienit"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid "build points"
+#~ msgstr "rakennuspistettä"
 
 #~ msgid ""
 #~ "Ugly method for increasing brightness. (Consider resetting and using tone "

@@ -80,6 +80,9 @@
 	.circlemenu button.active .sell {
 		display: none;
 	}
+	.infobox .reason {
+		color: #ff5555;
+	}
 	tabs {
 		display: none;
 	}
@@ -90,6 +93,7 @@
 		document:GetElementById("b_name").inner_rml = ""
 		document:GetElementById("b_price").inner_rml = ""
 		document:GetElementById("b_desc").inner_rml = ""
+		document:GetElementById("b_reason").inner_rml = ""
 	end
 	function AlienBuildableClick(idx, event)
 		if idx > #alien_buildables then return end
@@ -105,11 +109,13 @@
 		document:GetElementById("b_name").inner_rml = buildable[2]
 		document:GetElementById("b_price").inner_rml = buildable[4]
 		document:GetElementById("b_desc").inner_rml = buildable[3]
+		local reason = buildable[6]
+		document:GetElementById("b_reason").inner_rml = (reason and reason ~= "") and ("<br/>" .. reason) or ""
 	end
 	function BuildAlienBuildMenu(document)
 		ClearAlienBuildableInfo(document)
 		CDataSource.Build("alienBuildList", "default")
-		alien_buildables = CDataSource.Read("alienBuildList", "default", "icon,name,description,cost,availability")
+		alien_buildables = CDataSource.Read("alienBuildList", "default", "icon,name,description,cost,availability,reason")
 		local circlemenu = document:GetElementById("alienBuildMenu")
 		circlemenu.inner_rml = CirclemenuSkeleton(#alien_buildables)
 		for i = 1,#alien_buildables do
@@ -131,7 +137,7 @@
 <h2 id="b_name"></h2>
 <p class="text">
 <translate>Price:</translate>&nbsp;<span id="b_price"/><br/>
-<span id="b_desc" /></p>
+<span id="b_desc" /><span class="reason" id="b_reason" /></p>
 </div>
 </panel>
 </tabset>

@@ -207,6 +207,12 @@ static void CG_Obituary( entityState_t *ent )
 			attackerTeam = meansOfDeath[ mod ].team;
 		}
 
+		// Victim should always be shown the full text so they can see the "killed by" big text
+		if ( target == cg.clientNum )
+		{
+			goto is_long_kill_message;
+		}
+
 		// if the long form is needed, show it; but we need a kill icon for this kill type
 		if ( *meansOfDeath[ mod ].icon == '>' )
 		{
@@ -368,6 +374,28 @@ static void CG_Obituary( entityState_t *ent )
 
 		if ( message )
 		{
+			if ( target == cg.clientNum )
+			{
+				if ( messageAssisted && assistantInfo )
+				{
+					CG_CenterPrint(
+						va(
+							messageAssisted,
+							teamTag[ ci->team ],
+							targetName,
+							( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+							teamTag[ assistantTeam ],
+							assistantName
+						),
+						1.5f
+					);
+				}
+				else
+				{
+					CG_CenterPrint( va( message, teamTag[ ci->team ], targetName ), 1.5f );
+				}
+			}
+
 			if ( messageAssisted && assistantInfo )
 			{
 				Log::Notice( messageAssisted,
@@ -543,6 +571,44 @@ static void CG_Obituary( entityState_t *ent )
 
 		if ( message )
 		{
+			if ( target == cg.clientNum )
+			{
+				if ( messageSuicide && ( !cgs.clientinfo[ attacker ].infoValid || attacker == target ) )
+				{
+					CG_CenterPrint( va( messageSuicide, teamTag[ ci->team ], targetName ), 1.5f );
+				}
+				else if ( messageAssisted && assistantInfo )
+				{
+					CG_CenterPrint(
+						va(
+							messageAssisted,
+							teamTag[ ci->team ],
+							targetName,
+							( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+							teamTag[ attackerTeam ],
+							attackerName,
+							( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+							teamTag[ assistantTeam ],
+							assistantName
+						),
+						1.5f
+					);
+				}
+				else
+				{
+					CG_CenterPrint(
+						va(
+							message,
+							teamTag[ ci->team ],
+							targetName,
+							( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+							teamTag[ attackerTeam ],
+							attackerName
+						),
+						1.5f
+					);
+				}
+			}
 
 			// Argument order: victim, attacker, [class,] [assistant]. Each has team tag first.
 			if ( messageSuicide && ( !cgs.clientinfo[ attacker ].infoValid || attacker == target ) )
@@ -576,6 +642,11 @@ static void CG_Obituary( entityState_t *ent )
 		}
 
 		// we don't know what it was
+		if ( target == cg.clientNum )
+		{
+			CG_CenterPrint( G_( "You died" ), 1.5f );
+		}
+
 		Log::Notice( G_( "%s%s^* died" ), teamTag[ ci->team ], targetName );
 	}
 }

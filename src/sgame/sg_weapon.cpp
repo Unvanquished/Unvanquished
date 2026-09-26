@@ -887,6 +887,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	// open build menu
 	if ( buildable <= BA_NONE )
 	{
+		G_SendBuildableMenuReasons( self );
 		G_TriggerMenu( self->num(), menu );
 		return;
 	}

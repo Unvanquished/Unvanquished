@@ -21,12 +21,15 @@
 		ammo {
 			color: red;
 		}
+		ammo translate {
+			color: #999999;
+		}
 </style>
 </head>
 <body id="hud_bp">
 	<div>
 		<!-- FIXME: We may want to include <ammo/> in the translatable string. -->
-		<ammo/>&nbsp;<translate>build points</translate>
+		<ammo/>
 	</div>
 </body>
 </rml>

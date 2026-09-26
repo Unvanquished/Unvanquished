@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 16:59+0200\n"
+"POT-Creation-Date: 2026-09-26 20:55+0100\n"
 "PO-Revision-Date: 2025-10-10 13:07+0000\n"
 "Last-Translator: SecularSteve <fairfull.playing@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/unvanquished/"
@@ -20,11 +20,11 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.14-dev\n"
 
-#: ui/alien_build.rml:126 ui/human_build.rml:127
+#: ui/alien_build.rml:132 ui/human_build.rml:133
 msgid "Build"
 msgstr "Verzija"
 
-#: ui/alien_build.rml:133 ui/alien_evo.rml:147 ui/human_build.rml:133
+#: ui/alien_build.rml:139 ui/alien_evo.rml:147 ui/human_build.rml:139
 #: ui/human_buy.rml:217 ui/human_buy.rml:233
 msgid "Price:"
 msgstr "Cijena:"
@@ -407,9 +407,9 @@ msgstr "Pod napadom"
 #: ui/help_gameplay.rml:118
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
-"team when at 75% health, at 50% health, at 25% health and when destroyed."
-"Destroying other buildings will trigger “under attack” warnings for the "
-"owning team."
+"team when at 75% health, at 50% health, at 25% health and when "
+"destroyed.Destroying other buildings will trigger “under attack” warnings "
+"for the owning team."
 msgstr ""
 "Reaktor [reactor] i nadsvjesni [overmind] će izdavati upozorenja timu kada "
 "su na 75% srčane snage, na 50% srčane snage, na 25% srčane snage i kada su "
@@ -582,11 +582,7 @@ msgstr "broj sličica u sekundi"
 msgid "ms"
 msgstr "ms"
 
-#: ui/hud_bp.rml:29
-msgid "build points"
-msgstr "bodovi za izgradnju"
-
-#: ui/hud_human.rml:268
+#: ui/hud_human.rml:288
 msgid "Credits"
 msgstr "Zasluge"
 
@@ -773,6 +769,34 @@ msgstr "Beta verzija"
 msgid "Fields of view"
 msgstr "Vidna polja"
 
+#: ui/options.rml:11
+msgid "Player"
+msgstr "Igrač"
+
+#: ui/options.rml:13 ui/options_movements_cosmetic.rml:7
+msgid "Movement and Cosmetic"
+msgstr "Pokret i kozmetika"
+
+#: ui/options.rml:15 ui/options_graphics.rml:20
+msgid "Graphics"
+msgstr "Grafika"
+
+#: ui/options.rml:17 ui/options_keys.rml:7
+msgid "Key bindings"
+msgstr "Veze tipki"
+
+#: ui/options.rml:19 ui/options_mouse.rml:7
+msgid "Mouse and Aiming"
+msgstr "Miš i ciljanje"
+
+#: ui/options.rml:21 ui/options_sound.rml:7
+msgid "Sound"
+msgstr "Zvuk"
+
+#: ui/options.rml:23
+msgid "User interface and HUD"
+msgstr "Korisnički interfejs i HUD"
+
 #: ui/options_bots.rml:10
 msgid "Add an alien bot"
 msgstr "Dodajte vanzemaljskog bota"
@@ -886,7 +910,7 @@ msgid "Mild"
 msgstr "Blago"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1557
 msgid "Default"
 msgstr "Zadano"
 
@@ -905,10 +929,6 @@ msgstr "Kamera snima"
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
 msgstr "Uvijanje"
-
-#: ui/options_graphics.rml:20 ui/options.rml:15
-msgid "Graphics"
-msgstr "Grafika"
 
 #: ui/options_graphics.rml:23 ui/options_graphics.rml:25 ui/options_keys.rml:12
 #: ui/server_setup.rml:162
@@ -1278,7 +1298,7 @@ msgstr ""
 "rezolucije na njima. Ovo uglavnom ne utiče na performanse."
 
 #: ui/options_graphics.rml:232 ui/options_ui.rml:30
-#: src/cgame/cg_rocket_datasource.cpp:1551
+#: src/cgame/cg_rocket_datasource.cpp:1594
 msgid "No"
 msgstr "Ne"
 
@@ -1584,10 +1604,6 @@ msgstr "Nivo zamućenja pokreta."
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Minimalna brzina kretanja za aktiviranje zamućenja pokreta"
 
-#: ui/options_keys.rml:7 ui/options.rml:17
-msgid "Key bindings"
-msgstr "Veze tipki"
-
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
 msgstr "Pritisnite Escape da biste otkazali promjenu kombinacije tipki."
@@ -1803,10 +1819,6 @@ msgstr "Izgled miša:"
 msgid "Centerview:"
 msgstr "Središnji pogled:"
 
-#: ui/options_mouse.rml:7 ui/options.rml:19
-msgid "Mouse and Aiming"
-msgstr "Miš i ciljanje"
-
 #: ui/options_mouse.rml:9
 msgid "Y axis"
 msgstr "Y osa"
@@ -1850,10 +1862,6 @@ msgstr "Snimanje mišem u kružnom meniju"
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr "Kružni meniji (osim menija Oružarnica) primaju unose mišem"
-
-#: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
-msgid "Movement and Cosmetic"
-msgstr "Pokret i kozmetika"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -2006,18 +2014,6 @@ msgstr "Prikaži samo timski chat"
 #: ui/options_player.rml:224
 msgid "Show obituaries"
 msgstr "Prikaži osmrtnice"
-
-#: ui/options.rml:11
-msgid "Player"
-msgstr "Igrač"
-
-#: ui/options.rml:21 ui/options_sound.rml:7
-msgid "Sound"
-msgstr "Zvuk"
-
-#: ui/options.rml:23
-msgid "User interface and HUD"
-msgstr "Korisnički interfejs i HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
@@ -3184,1231 +3180,1231 @@ msgid ""
 "High spread, rapidly loses effectiveness at range."
 msgstr ""
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "male"
 msgid "%s%s ^*fell to death"
 msgstr "%s% ^*je pao u smrt"
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "female"
 msgid "%s%s ^*fell to death"
 msgstr "%s% ^*je pala u smrt"
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:288
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
 msgstr "%s% ^*su pali u smrt"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*je smrvljen"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*je smrvljena"
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:292
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^*su smrvljeni"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "male"
 msgid "%s%s ^*drowned"
 msgstr "%s% ^*se utopio"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "female"
 msgid "%s%s ^*drowned"
 msgstr "%s% ^*se utopila"
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:296
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
 msgstr "%s% ^*su se utopili"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "male"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*se otopi"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "female"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*se otopila"
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:300
 msgctxt "neuter"
 msgid "%s%s ^*melted"
 msgstr "%s%s ^*su se otopili"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*se okupao u lavi"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*se okupala u lavi"
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:304
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
 msgstr "%s%s ^*su se okupali u lavi"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*je bio na pogrešnom mjestu"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*je bila na pogrešnom mjestu"
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:308
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
 msgstr "%s%s ^*su bili na pogrešnom mjestu"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*je bio uhvaćen u eksploziji"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*je bila uhvaćena u eksploziji"
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:314
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*su bili uhvaćeni u eksploziji"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*je bio uhvaćen u kiselini"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*je bila uhvaćena u kiselini"
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
 msgstr "%s%s ^*su bili uhvaćeni u kiselini"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*je oborila topovska kupola"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*je oborila topovska kupola"
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:324
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr "%s%s ^*je oborila topovska kupola"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*je oborila topovska kupola; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*je oborila topovska kupola; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:325
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr "%s%s ^*je oborila topovska kupola; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s% ^*je uhvatio raketu"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s% ^*je uhvatila raketu"
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:329
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
 msgstr "%s% ^*su uhvatili raketu"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*je uhvatio raketu; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*je uhvatila raketu; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:330
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr "%s%s ^*su uhvatili raketu; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*je rastopljen od kisele cijevi"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*je rastopljena od kisele cijevi"
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:334
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr "%s%s ^*su rastopljeni od kisele cijevi"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*je rastopljen pomoću kisele cijevi; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*je rastopljena pomoću kisele cijevi; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:335
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*su rastopljeni pomoću kisele cijevi; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*je bio pogođen smečem"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*je bila pogođena smečem"
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:339
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*su bili pogođeni smečem"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*je bio udaren smečerom; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*je bila udarena smečerom; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:340
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr "%s%s ^*su bili udareni smečerom; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*je bičevan od strane nadrazuma"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*je bičevana od strane nadrazuma"
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:344
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr "%s%s ^*su bičevani od strane nadrazuma"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*je bičevan od strane nadrazuma; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*je bičevana od strane nadrazuma; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:345
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr "%s%s ^*su bičevani od strane nadrazuma; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*je spržio reaktor"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*je spržio reaktor"
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:349
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
 msgstr "%s%s ^*je spržio reaktor"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*je spržen u reaktoru; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*je spržena u reaktoru; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:350
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr "%s%s ^*su sprženi u reaktoru; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*nije mogao izbjeći grangera"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*nije mogla izbjeći grangera"
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr "%s%s ^*nisu mogli izbjeći grangera"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*nije mogao izbjeći grangera; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*nije mogla izbjeći grangera; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:355
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*nisu mogli izbjeći grangera; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "Roj je konzumirao %s% ^*"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "Roj je konzumirao %s% ^*"
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:359
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "Roj je konzumirao %s% ^*"
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:360
 msgctxt "male"
-msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
-
-#: src/cgame/cg_event.cpp:354
-msgctxt "female"
-msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
-
-#: src/cgame/cg_event.cpp:354
-msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
 
 #: src/cgame/cg_event.cpp:360
+msgctxt "female"
+msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
+msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
+
+#: src/cgame/cg_event.cpp:360
+msgctxt "neuter"
+msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
+msgstr "%s%s ^*je progutao roj; %s%s%s^* su pomogli"
+
+#: src/cgame/cg_event.cpp:366
 msgctxt "male"
 msgid "%s%s ^*saw the light"
 msgstr "%s% ^*je ugledao svjetlo"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "female"
 msgid "%s%s ^*saw the light"
 msgstr "%s% ^*je ugledala svjetlo"
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:366
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
 msgstr "%s% ^*su ugledali svjetlo"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*je ugledao svjetlo; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*je ugledala svjetlo; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:367
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr "%s%s ^*su ugledali svjetlo; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*je opiljen od %s%s%s"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*je opiljena od %s%s%s"
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:418
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr "%s%s ^*su opiljeni od %s%s%s"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je opiljen od %s%s%s; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je opiljena od %s%s%s; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:419
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*su opiljeni od %s%s%s; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*je napadnut od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*je napadnuta od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:423
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr "%s%s ^*su napadnuti od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je napadnut od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je napadnuta od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:424
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*su napadnuti od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*je bio pogođen mitraljezom od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*je bila pogođena mitraljezom od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:428
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr "%s%s ^*su bili pogođeni mitraljezom od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bio pogođen mitraljezom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bila pogođena mitraljezom od strane %s%s%s^*; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:429
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su bili pogođeni mitraljezom od strane %s%s%s^*; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*je pokošen od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*je pokošena od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:433
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr "%s%s ^*su pokošeni od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je pokošen od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je pokošena od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:434
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*su pokošeni od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*je upucan od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*je upucana od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr "%s%s ^*su upucani od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je upucan od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je upucana od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:439
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*su upucani od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*je bio spaljen pulsirajućim udarom %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*je bila spaljena pulsirajućim udarom %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr "%s%s ^*su bili spaljeni pulsirajućim udarom %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bio spaljen pulsirajućim udarom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bila spaljena pulsirajućim udarom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:444
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su bili spaljeni pulsirajućim udarom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*je bio pogođen snajperom od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*je bila pogođena snajperom od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr "%s%s ^*su bili pogođeni snajperom od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bio pogođen snajperom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bila pogođena snajperom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su bili pogođeni snajperom od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*je laserski spržen od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*je laserski spržena od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:453
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr "%s%s ^*su laserski sprženi od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je laserski spržen od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je laserski spržena od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*su laserski sprženi od strane %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*je bio ispečen od strane %s%s%s^*-ovog plamena"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*je bila ispečena od strane %s%s%s^*-ovog plamena"
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:459
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr "%s%s ^*su bili ispečeni od strane %s%s%s^*-ovog plamena"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bio ispečen od strane %s%s%s^*-ovog plamena; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bila ispečena od strane %s%s%s^*-ovog plamena; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su bili ispečeni od strane %s%s%s^*-ovog plamena; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*je bio hrskavo ugljenisan"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*je bila hrskavo ugljenisana"
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
 msgstr "%s%s ^*su bili hrskavo ugljenisani"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*je spaljen od %s%s%s^*-ovine vatre"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*je spaljena od %s%s%s^*-ovine vatre"
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:465
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr "%s%s ^*su spaljeni od %s%s%s^*-ovine vatre"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*je opečen od %s%s%s^*-ovine vatre; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*je opečena od %s%s%s^*-ovine vatre; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr "%s%s ^*su opečeni od %s%s%s^*-ovine vatre; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:467
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
 msgstr "%s%s ^*je izgorjeo do smrti"
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:467
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
 msgstr "%s%s ^*je izgorjela do smrti"
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:467
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
 msgstr "%s%s ^*su izgorjeli do smrti"
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*je uništen plazmatskom eksplozijom od %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*je uništena plazmatskom eksplozijom od %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*su uništeni plazmatskom eksplozijom od %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:472
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je uništen plazmatskom eksplozijom od %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:472
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je uništena plazmatskom eksplozijom od %s%s%s^*; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:472
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su uništeni plazmatskom eksplozijom od %s%s%s^*; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*je ozračen plazmatskom eksplozijom %s%s%s^"
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*je ozračena plazmatskom eksplozijom %s%s%s^"
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr "%s%s ^*su ozračeni plazmatskom eksplozijom %s%s%s^"
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:477
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je ozračen plazmatskom eksplozijom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:477
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je ozračena plazmatskom eksplozijom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:477
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su ozračeni plazmatskom eksplozijom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:478
 msgctxt "male"
 msgid "%s%s ^*was irradiated"
 msgstr "%s%s ^*je ozračeno"
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:478
 msgctxt "female"
 msgid "%s%s ^*was irradiated"
 msgstr "%s%s ^*je ozračena"
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:478
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated"
 msgstr "%s%s ^*su ozračeni"
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr "%s%s ^*je dignut u zrak granatom koju je napravio %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr "%s%s ^*je dignuta u zrak granatom koju je napravio %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr "%s%s ^*su dignuti u zrak granatom koju je napravio %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:483
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr "%s%s ^*je dignut u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:483
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je dignuta u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:483
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su dignuti u zrak %s%s%s^*-ovom granatom; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:484
 msgctxt "male"
 msgid "%s%s ^*was blown up"
 msgstr "%s%s ^*je eksplodirao"
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:484
 msgctxt "female"
 msgid "%s%s ^*was blown up"
 msgstr "%s%s ^*je eksplodirala"
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:484
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
 msgstr "%s%s ^*su eksplodirali"
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:488
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr "%s%s ^*je spaljen zapaljivom bombom koju su bacili %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:488
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr "%s%s ^*je spaljena zapaljivom bombom koju su bacili %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:488
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr "%s%s ^*su spaljeni zapaljivom bombom koju su bacili %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:489
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr "%s%s ^*je spaljen zapaljivom bombom %s%s%s^*; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:489
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr "%s%s ^*je spaljena zapaljivom bombom %s%s%s^*; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:489
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr "%s%s ^*su spaljeni zapaljivom bombom %s%s%s^*; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:462
+#: src/cgame/cg_event.cpp:490
 msgctxt "male"
 msgid "%s%s ^*was incinerated"
 msgstr "%s%s ^*je spaljen"
 
-#: src/cgame/cg_event.cpp:462
+#: src/cgame/cg_event.cpp:490
 msgctxt "female"
 msgid "%s%s ^*was incinerated"
 msgstr "%s%s ^*je spaljena"
 
-#: src/cgame/cg_event.cpp:462
+#: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated"
 msgstr "%s%s ^*su spaljeni"
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:494
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr "%s%s ^*je nježno grickao %s%s%s^*-ov granger"
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:494
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr "%s%s ^*je nježno grickala %s%s%s^*-ova grangerka"
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:494
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr "%s%s ^*su nježno grickali %s%s%s^*-ovi grangeri"
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:495
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr "%s%s ^*je nježno grickao %s%s%s^*-ov granger; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:495
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr "%s%s ^*je nježno grickala %s%s%s^*-ova grangerka; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr "%s%s ^*su nježno grickali %s%s%s^*-ovi grangeri; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:499
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr "%s%s ^*je ugrizen od %s%s%s"
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:499
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr "%s%s ^*je ugrizena od %s%s%s"
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:499
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr "%s%s ^*su ugrizeni od %s%s%s"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je ugrizen od %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*je ugrizena od %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*su ugrizeni od %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-a"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-e"
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:504
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
 msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-i"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-a; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-e; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:505
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr "%s%s ^*je prerezala bogomoljka od %s%s%s^*-i; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš"
 
-#: src/cgame/cg_event.cpp:481
+#: src/cgame/cg_event.cpp:509
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:510
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*je rastrgao %s%s%s^*-ov pljačkaš; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*je udaren strujom %s%s%s^*-ovog pljačkaša"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*je udarena strujom %s%s%s^*-ovog pljačkaša"
 
-#: src/cgame/cg_event.cpp:486
+#: src/cgame/cg_event.cpp:514
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr "%s%s ^*su udareni strujom %s%s%s^*-ovog pljačkaša"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*je udaren strujom %s%s%s^*-ovog pljačkaša; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*je udarena strujom %s%s%s^*-ovog pljačkaša; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:515
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr "%s%s ^*su udareni strujom %s%s%s^*-ovog pljačkaša; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*je bio raskomadao %s%s%s^*ov zmaj"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*je bila raskomadala %s%s%s^*ov zmaj"
 
-#: src/cgame/cg_event.cpp:491
+#: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*su bili raskomadali %s%s%s^*ov zmaj"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*je bio raskomadao %s%s%s^*-ov zmaj; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*je bila raskomadala %s%s%s^*-ov zmaj; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:492
+#: src/cgame/cg_event.cpp:520
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr "%s%s ^*su bili raskomadali %s%s%s^*-ov zmaj; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:496
+#: src/cgame/cg_event.cpp:524
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr "Na %s%s ^*je skočio %s%s%s^*ov zmaj"
 
-#: src/cgame/cg_event.cpp:496
+#: src/cgame/cg_event.cpp:524
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr "Na %s%s ^*je skočio %s%s%s^*ov zmaj"
 
-#: src/cgame/cg_event.cpp:496
+#: src/cgame/cg_event.cpp:524
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr "Na %s%s ^*je skočio %s%s%s^*ov zmaj"
 
-#: src/cgame/cg_event.cpp:497
+#: src/cgame/cg_event.cpp:525
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je napadnut od strane %s%s%s^*-ovog draguna; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:497
+#: src/cgame/cg_event.cpp:525
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je napadnuta od strane %s%s%s^*-ovog draguna; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:497
+#: src/cgame/cg_event.cpp:525
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su napadnuti od strane %s%s%s^*-ovog draguna; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:529
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*je bio bodljikav od strane %s%s%s^*-ovog zmaja"
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:529
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*je bia bodljikava od strane %s%s%s^*-ovog zmaja"
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:529
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr "%s%s ^*su bili bodljikavi od strane %s%s%s^*-ovog zmaja"
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:530
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bio napadnut od strane %s%s%s^*-ovog zmaja; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:530
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bila napadnuta od strane %s%s%s^*-ovog zmaja; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:530
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su bili napadnuti od strane %s%s%s^*-ovog zmaja; %s%s%s^* su "
 "asistirali"
 
-#: src/cgame/cg_event.cpp:503
+#: src/cgame/cg_event.cpp:531
 msgctxt "male"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*je bio bodljikav"
 
-#: src/cgame/cg_event.cpp:503
+#: src/cgame/cg_event.cpp:531
 msgctxt "female"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*je bila bodljikava"
 
-#: src/cgame/cg_event.cpp:503
+#: src/cgame/cg_event.cpp:531
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*su bili bodljikavi"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:535
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr "%s%s ^*je bio napadnut od strane %s%s%s^*-ovog tiranina"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:535
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr "%s%s ^*je bila napadnuta od strane %s%s%s^*-ovog tiranina"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:535
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr "%s%s ^*su bili napadnuti od strane %s%s%s^*-ovog tiranina"
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:536
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bio napadnut od strane %s%s%s^*-ovog tiranina; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:536
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*je bila napadnuta od strane %s%s%s^*-ovog tiranina; %s%s%s^* su "
 "pomagali"
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:536
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*su bili napadnuti od strane %s%s%s^*-ovog tiranina; %s%s%s^* su "
 "pomagali"
 
-#: src/cgame/cg_event.cpp:512
+#: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr "%s%s ^*se trebao maknuti s puta %s%s%s^*-ovog tiranina"
 
-#: src/cgame/cg_event.cpp:512
+#: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr "%s%s ^*se trebala maknuti s puta %s%s%s^*-ovog tiranina"
 
-#: src/cgame/cg_event.cpp:512
+#: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr "%s%s ^*su se trebali maknuti s puta %s%s%s^*-ovog tiranina"
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:541
 msgctxt "male"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
@@ -4416,7 +4412,7 @@ msgid ""
 msgstr ""
 "%s%s ^*se trebao maknuti s puta %s%s%s^*-ovog tiranina; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:541
 msgctxt "female"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
@@ -4424,7 +4420,7 @@ msgid ""
 msgstr ""
 "%s%s ^*se trebala maknuti s puta %s%s%s^*-ovog tiranina; %s%s%s^* su pomagali"
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:541
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
@@ -4433,52 +4429,52 @@ msgstr ""
 "%s%s ^*su se trebali maknuti s puta %s%s%s^*-ovog tiranina; %s%s%s^* su "
 "pomagali"
 
-#: src/cgame/cg_event.cpp:518
+#: src/cgame/cg_event.cpp:546
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*je bio zgnječen pod težinom %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:518
+#: src/cgame/cg_event.cpp:546
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*je bila zgnječena pod težinom %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:518
+#: src/cgame/cg_event.cpp:546
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*su bili zgnječeni pod težinom %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:547
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*je bio zgnječen pod težinom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:547
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*je bila zgnječena pod težinom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:547
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*su bili zgnječeni pod težinom %s%s%s^*; %s%s%s^* su asistirali"
 
-#: src/cgame/cg_event.cpp:523
+#: src/cgame/cg_event.cpp:551
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*je trebao koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova"
 
-#: src/cgame/cg_event.cpp:523
+#: src/cgame/cg_event.cpp:551
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*je trebala koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova"
 
-#: src/cgame/cg_event.cpp:523
+#: src/cgame/cg_event.cpp:551
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*su trebali koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -4486,7 +4482,7 @@ msgstr ""
 "%s%s ^*je trebao koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
 "%s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -4494,7 +4490,7 @@ msgstr ""
 "%s%s ^*je trebala koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
 "%s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:524
+#: src/cgame/cg_event.cpp:552
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -4502,122 +4498,137 @@ msgstr ""
 "%s%s ^*su trebali koristiti prvu pomoć protiv %s%s%s^*-ovinog otrova; "
 "%s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*je pokušao da naruši lični prostor korisnika %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*je pokušala da naruši lični prostor korisnika %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:528
+#: src/cgame/cg_event.cpp:556
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*su pokušali da naruše lični prostor korisnika %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*je završio u praznini"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*je završila u praznini"
 
-#: src/cgame/cg_event.cpp:529
+#: src/cgame/cg_event.cpp:557
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*su završili u praznini"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*je osjetio %s%s%s^*ovin autoritet"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*je osjetila %s%s%s^*ovin autoritet"
 
-#: src/cgame/cg_event.cpp:533
+#: src/cgame/cg_event.cpp:561
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*su osjetili %s%s%s^*ovin autoritet"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*je osjetio %s%s%s^*-inov autoritet; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*je osjetila %s%s%s^*-inov autoritet; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:534
+#: src/cgame/cg_event.cpp:562
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*su osjetili %s%s%s^*-inov autoritet; %s%s%s^* su pomogli"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*je ubijen od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*je ubijena od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:538
+#: src/cgame/cg_event.cpp:566
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*su ubijeni od strane %s%s%s"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*je ubijen od strane %s%s%s^* i %s%s%s"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*je ubijena od strane %s%s%s^* i %s%s%s"
 
-#: src/cgame/cg_event.cpp:539
+#: src/cgame/cg_event.cpp:567
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*su ubijeni od strane %s%s%s^* i %s%s%s"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr "%s% ^*je izvršio samoubistvo"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr "%s% ^*je izvršila samoubistvo"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:568
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr "%s% ^*su izvršili samoubistvo"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:647
+msgctxt "male"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:647
+msgctxt "female"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:647
+msgctxt "neuter"
+msgid "You died"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:650
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr "%s%s^* je umro"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:650
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr "%s%s^* je umrla"
 
-#: src/cgame/cg_event.cpp:579
+#: src/cgame/cg_event.cpp:650
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr "%s%s^* su umrli"
@@ -4627,37 +4638,37 @@ msgstr "%s%s^* su umrli"
 msgid "Listed %2d clients"
 msgstr "Navedeno %2d klijenata"
 
-#: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:571
+#: src/cgame/cg_event.cpp:272 src/cgame/cg_event.cpp:637
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "Ubio si ^1SAIGRAČA^* %s"
 
-#: src/cgame/cg_event.cpp:1218
+#: src/cgame/cg_event.cpp:1289
 msgid "The Overmind is under attack!"
 msgstr "Nadsveštenje je napadnuto!"
 
-#: src/cgame/cg_event.cpp:1225
+#: src/cgame/cg_event.cpp:1296
 msgid "The reactor is under attack!"
 msgstr "Reaktor je napadnut!"
 
-#: src/cgame/cg_event.cpp:1240
+#: src/cgame/cg_event.cpp:1311
 msgid "The Overmind is dying!"
 msgstr "Nadsveštenstvo umire!"
 
-#: src/cgame/cg_event.cpp:1246
+#: src/cgame/cg_event.cpp:1317
 msgid "The reactor is going down!"
 msgstr "Reaktor se gasi!"
 
-#: src/cgame/cg_event.cpp:1263 src/cgame/cg_event.cpp:1279
+#: src/cgame/cg_event.cpp:1334 src/cgame/cg_event.cpp:1350
 msgid "Our base is under attack!"
 msgstr "Naša baza je napadnuta!"
 
-#: src/cgame/cg_event.cpp:1269
+#: src/cgame/cg_event.cpp:1340
 #, c-format
 msgid "%s under attack – %s"
 msgstr "%s pod napadom – %s"
 
-#: src/cgame/cg_event.cpp:1273
+#: src/cgame/cg_event.cpp:1344
 #, c-format
 msgid "%s under attack"
 msgstr "%s pod napadom"
@@ -4809,91 +4820,133 @@ msgstr "Prilagođeno: %dx%d"
 msgid "Same as screen (%dx%d)"
 msgstr "Isto kao i ekran (%dx%d)"
 
-#: src/cgame/cg_rocket_datasource.cpp:1514
+#: src/cgame/cg_rocket_datasource.cpp:1399
+msgid "This buildable is disabled on this server"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1404 src/cgame/cg_servercmds.cpp:743
+#, c-format
+msgid "The %s has not been unlocked yet"
+msgstr "%s još nije otključano"
+
+#: src/cgame/cg_rocket_datasource.cpp:1410 src/cgame/cg_servercmds.cpp:562
+msgid "Building has been disabled for your team"
+msgstr "Izgradnja je onemogućena za vaš tim"
+
+#: src/cgame/cg_rocket_datasource.cpp:1413 src/cgame/cg_servercmds.cpp:663
+#: src/cgame/cg_servercmds.cpp:703
+msgid "There is no Overmind"
+msgstr "Ne postoji Nadsvestan um"
+
+#: src/cgame/cg_rocket_datasource.cpp:1416 src/cgame/cg_servercmds.cpp:669
+msgid "There can only be one Overmind"
+msgstr "Može postojati samo jedan Nadsvest"
+
+#: src/cgame/cg_rocket_datasource.cpp:1419 src/cgame/cg_servercmds.cpp:590
+msgid "There is no reactor"
+msgstr "Nema reaktora"
+
+#: src/cgame/cg_rocket_datasource.cpp:1422 src/cgame/cg_servercmds.cpp:596
+msgid "There can only be one Reactor"
+msgstr "Može postojati samo jedan reaktor"
+
+#: src/cgame/cg_rocket_datasource.cpp:1425 src/cgame/cg_servercmds.cpp:674
+msgid "Your team cannot have any more leeches"
+msgstr "Vaš tim ne može imati više pijavica"
+
+#: src/cgame/cg_rocket_datasource.cpp:1428 src/cgame/cg_servercmds.cpp:601
+msgid "Your team cannot have any more drills"
+msgstr "Vaš tim ne može imati više vježbi"
+
+#: src/cgame/cg_rocket_datasource.cpp:1436
+msgid "Not enough build points"
+msgstr ""
+
+#: src/cgame/cg_rocket_datasource.cpp:1557
 msgid "The default behavior. This is what bots do when the game starts."
 msgstr "Zadano ponašanje. Ovo je ono što botovi rade kada igra počne."
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1558
+#: src/cgame/cg_rocket_datasource.cpp:1591
 msgid "Defend"
 msgstr "Braniti"
 
-#: src/cgame/cg_rocket_datasource.cpp:1515
+#: src/cgame/cg_rocket_datasource.cpp:1558
 msgid "The bots stay in the base."
 msgstr "Botovi ostaju u bazi."
 
-#: src/cgame/cg_rocket_datasource.cpp:1516
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1559
+#: src/cgame/cg_rocket_datasource.cpp:1592
 msgid "Attack"
 msgstr "Napad"
 
-#: src/cgame/cg_rocket_datasource.cpp:1516
+#: src/cgame/cg_rocket_datasource.cpp:1559
 msgid "The bots attack the enemy base."
 msgstr "Botovi napadaju neprijateljsku bazu."
 
-#: src/cgame/cg_rocket_datasource.cpp:1517
+#: src/cgame/cg_rocket_datasource.cpp:1560
 msgid "Stay Here"
 msgstr "Ostani ovdje"
 
-#: src/cgame/cg_rocket_datasource.cpp:1517
+#: src/cgame/cg_rocket_datasource.cpp:1560
 msgid "The bots stay where you are currently."
 msgstr "Botovi ostaju tamo gdje se trenutno nalazite."
 
-#: src/cgame/cg_rocket_datasource.cpp:1518
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1561
+#: src/cgame/cg_rocket_datasource.cpp:1593
 msgid "Follow"
 msgstr "Prati"
 
-#: src/cgame/cg_rocket_datasource.cpp:1518
+#: src/cgame/cg_rocket_datasource.cpp:1561
 msgid "The bots follow you wherever you go."
 msgstr "Botovi vas prate gdje god da idete."
 
-#: src/cgame/cg_rocket_datasource.cpp:1548
+#: src/cgame/cg_rocket_datasource.cpp:1591
 msgid "Defend our base!!"
 msgstr "Branimo našu bazu!!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1549
+#: src/cgame/cg_rocket_datasource.cpp:1592
 msgid "Attack!"
 msgstr "Napad!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1550
+#: src/cgame/cg_rocket_datasource.cpp:1593
 msgid "Follow me!"
 msgstr "Prati me!"
 
-#: src/cgame/cg_rocket_datasource.cpp:1551
+#: src/cgame/cg_rocket_datasource.cpp:1594
 msgid "No."
 msgstr "Br."
 
-#: src/cgame/cg_rocket_datasource.cpp:1552
+#: src/cgame/cg_rocket_datasource.cpp:1595
 msgid "Yes"
 msgstr "Da"
 
-#: src/cgame/cg_rocket_datasource.cpp:1552
+#: src/cgame/cg_rocket_datasource.cpp:1595
 msgid "Yes."
 msgstr "Da."
 
-#: src/cgame/cg_rocket_datasource.cpp:1553
+#: src/cgame/cg_rocket_datasource.cpp:1596
 msgid "Flank"
 msgstr "Bok"
 
-#: src/cgame/cg_rocket_datasource.cpp:1553
+#: src/cgame/cg_rocket_datasource.cpp:1596
 msgid "Flank, behind you!"
 msgstr "Bok, iza tebe!"
 
-#: src/cgame/cg_rocket_draw.cpp:2630
+#: src/cgame/cg_rocket_draw.cpp:2669
 msgid "You are at the front of the spawn queue"
 msgstr "Nalazite se na početku reda za pojavljivanje"
 
-#: src/cgame/cg_rocket_draw.cpp:2634
+#: src/cgame/cg_rocket_draw.cpp:2673
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Nalazite se na poziciji %d u redu čekanja za pojavljivanje"
 
-#: src/cgame/cg_rocket_draw.cpp:2674
+#: src/cgame/cg_rocket_draw.cpp:2713
 msgid "There are no spawns remaining"
 msgstr "Nema preostalih mrijestilišta"
 
-#: src/cgame/cg_rocket_draw.cpp:2678
+#: src/cgame/cg_rocket_draw.cpp:2717
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
@@ -4901,41 +4954,41 @@ msgstr[0] "Preostalo je %d mjesto mrijesta"
 msgstr[1] "Preostala su %d mjesta mrijesta"
 msgstr[2] "Preostalo je %d mjesta mrijesta"
 
-#: src/cgame/cg_rocket_draw.cpp:3227
+#: src/cgame/cg_rocket_draw.cpp:3292
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Čekanje veze…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3231
+#: src/cgame/cg_rocket_draw.cpp:3296
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Čeka se izazov…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3235
+#: src/cgame/cg_rocket_draw.cpp:3300
 msgid "Awaiting gamestate…"
 msgstr "Čekanje stanja igre…"
 
-#: src/cgame/cg_rocket_draw.cpp:3336
+#: src/cgame/cg_rocket_draw.cpp:3401
 msgid "Say:"
 msgstr "Reci:"
 
-#: src/cgame/cg_rocket_draw.cpp:3337
+#: src/cgame/cg_rocket_draw.cpp:3402
 msgid "Team Say:"
 msgstr "Tim kaže:"
 
-#: src/cgame/cg_rocket_draw.cpp:3338
+#: src/cgame/cg_rocket_draw.cpp:3403
 msgid "Admin Say:"
 msgstr "Administrator kaže:"
 
-#: src/cgame/cg_rocket_draw.cpp:3339
+#: src/cgame/cg_rocket_draw.cpp:3404
 msgid "Command:"
 msgstr "Naredba:"
 
-#: src/cgame/cg_rocket_draw.cpp:3689
+#: src/cgame/cg_rocket_draw.cpp:3754
 msgid "FIGHT!"
 msgstr "BORBA!"
 
-#: src/cgame/cg_rocket_draw.cpp:3783
+#: src/cgame/cg_rocket_draw.cpp:3848
 msgid "estimating"
 msgstr "procjena"
 
@@ -5091,10 +5144,6 @@ msgstr "Ne smijete dekonstruirati ovu strukturu"
 msgid "Building has been disabled on the server for your team."
 msgstr "Izgradnja je onemogućena na serveru za vaš tim."
 
-#: src/cgame/cg_servercmds.cpp:562
-msgid "Building has been disabled for your team"
-msgstr "Izgradnja je onemogućena za vaš tim"
-
 #: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build."
 msgstr "Više vam nije dozvoljeno da gradite."
@@ -5143,24 +5192,12 @@ msgstr ""
 "Nema reaktora. Reaktor mora biti izgrađen prije nego što se može postaviti "
 "bilo koja druga struktura."
 
-#: src/cgame/cg_servercmds.cpp:590
-msgid "There is no reactor"
-msgstr "Nema reaktora"
-
 #: src/cgame/cg_servercmds.cpp:594
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Može postojati samo jedan Reaktor. Označite postojeći ako ga želite "
 "premjestiti."
-
-#: src/cgame/cg_servercmds.cpp:596
-msgid "There can only be one Reactor"
-msgstr "Može postojati samo jedan reaktor"
-
-#: src/cgame/cg_servercmds.cpp:601
-msgid "Your team cannot have any more drills"
-msgstr "Vaš tim ne može imati više vježbi"
 
 #: src/cgame/cg_servercmds.cpp:605
 msgid ""
@@ -5260,10 +5297,6 @@ msgstr ""
 "Ne postoji Nadsvijest. Nadsvijest mora biti izgrađena prije nego što se može "
 "postaviti bilo koja druga struktura."
 
-#: src/cgame/cg_servercmds.cpp:663 src/cgame/cg_servercmds.cpp:703
-msgid "There is no Overmind"
-msgstr "Ne postoji Nadsvestan um"
-
 #: src/cgame/cg_servercmds.cpp:667
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
@@ -5271,14 +5304,6 @@ msgid ""
 msgstr ""
 "Može postojati samo jedan Nadsvestan. Dekonstruišite postojeći ako ga želite "
 "premjestiti."
-
-#: src/cgame/cg_servercmds.cpp:669
-msgid "There can only be one Overmind"
-msgstr "Može postojati samo jedan Nadsvest"
-
-#: src/cgame/cg_servercmds.cpp:674
-msgid "Your team cannot have any more leeches"
-msgstr "Vaš tim ne može imati više pijavica"
 
 #: src/cgame/cg_servercmds.cpp:678
 msgid ""
@@ -5362,11 +5387,6 @@ msgstr "Ne možete se pojaviti kao %s"
 msgid "The %s is not allowed"
 msgstr "%s nije dozvoljeno"
 
-#: src/cgame/cg_servercmds.cpp:743
-#, c-format
-msgid "The %s has not been unlocked yet"
-msgstr "%s još nije otključano"
-
 #: src/cgame/cg_servercmds.cpp:748
 #, c-format
 msgid "cgame: debug: no such menu %d"
@@ -5388,7 +5408,7 @@ msgstr ""
 ">> da biste odgovorili, recite: '/m %d [vaša poruka]' ili '/r [vaša poruka]' "
 "<<"
 
-#: src/cgame/cg_servercmds.cpp:1390
+#: src/cgame/cg_servercmds.cpp:1411
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Nepoznata naredba klijentske igre: %s"
@@ -5755,11 +5775,11 @@ msgstr "^1Generisanje navigacijske mreže bota nije uspjelo!"
 msgid "Server: generating bot navigation meshes... $1$%"
 msgstr "Server: generiranje mreža za navigaciju botova... $1$%"
 
-#: src/sgame/sg_buildable.cpp:1702
+#: src/sgame/sg_buildable.cpp:1804
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$1$ ^2izgrađeno^* od strane $2$^*, ^3zamjenjuje^* $3$"
 
-#: src/sgame/sg_buildable.cpp:1703
+#: src/sgame/sg_buildable.cpp:1805
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$1$ ^2izgrađeno^* od strane $2$$3$"
 
@@ -6049,12 +6069,10 @@ msgid "Team vote passed ($1$ — $2$)"
 msgstr "Glasanje tima je prošlo ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:892
-#, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Glasanje nije uspjelo ($1$ — $2$; potrebno $3$% n)"
 
 #: src/sgame/sg_votes.cpp:893
-#, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Glasanje tima nije uspjelo ($1$ — $2$; potrebno $3$% n)"
 
@@ -6081,6 +6099,9 @@ msgstr "vanzemaljci"
 #: src/shared/bg_misc.cpp:2517
 msgid "humans"
 msgstr "ljudi"
+
+#~ msgid "build points"
+#~ msgstr "bodovi za izgradnju"
 
 #~ msgid ""
 #~ "Ugly method for increasing brightness. (Consider resetting and using tone "

@@ -1383,21 +1383,60 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 	}
 }
 
-static Str::StringRef BuildableAvailability( buildable_t buildable )
+static int BuildableAvailableBudget()
 {
 	int spentBudget     = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
 	int markedBudget    = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
 	int totalBudet      = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
 	int queuedBudget    = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
-	int availableBudget = std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
+	return std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
+}
 
-	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
-		return "locked";
+static const char *BuildableUnavailableReason( buildable_t buildable )
+{
+	if ( BG_BuildableDisabled( buildable ) )
+	{
+		return _( "This buildable is disabled on this server" );
+	}
 
-	if ( BG_Buildable( buildable )->buildPoints > availableBudget )
-		return "expensive";
+	if ( !BG_BuildableUnlocked( buildable ) )
+	{
+		return va( _( "The %s has not been unlocked yet" ), _( BG_Buildable( buildable )->humanName ) );
+	}
 
-	return "available";
+	switch ( cg.buildableMenuReasons[ buildable ] )
+	{
+		case IBE_DISABLED:
+			return _( "Building has been disabled for your team" );
+
+		case IBE_NOOVERMIND:
+			return _( "There is no Overmind" );
+
+		case IBE_ONEOVERMIND:
+			return _( "There can only be one Overmind" );
+
+		case IBE_NOREACTOR:
+			return _( "There is no reactor" );
+
+		case IBE_ONEREACTOR:
+			return _( "There can only be one Reactor" );
+
+		case IBE_NOMORELEECHES:
+			return _( "Your team cannot have any more leeches" );
+
+		case IBE_NOMOREDRILLS:
+			return _( "Your team cannot have any more drills" );
+
+		default:
+			break;
+	}
+
+	if ( BG_Buildable( buildable )->buildPoints > BuildableAvailableBudget() )
+	{
+		return _( "Not enough build points" );
+	}
+
+	return nullptr;
 }
 
 static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, char const* tableName )
@@ -1424,13 +1463,17 @@ static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, cha
 
 			buf[ 0 ] = '\0';
 
+			const char *reason = BuildableUnavailableReason( buildable_t( i ) );
+			bool locked = BG_BuildableDisabled( i ) || !BG_BuildableUnlocked( i ) || cg.buildableMenuReasons[ i ] != IBE_NONE;
+
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 			Info_SetValueForKey( buf, "name", _( BG_Buildable( i )->humanName ), false );
 			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
 			Info_SetValueForKey( buf, "description", _( BG_Buildable( i )->info ), false );
 			Info_SetValueForKey( buf, "icon", BG_Buildable( i )->icon, false );
 			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
-			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
+			Info_SetValueForKey( buf, "availability", reason == nullptr ? "available" : ( locked ? "locked" : "expensive" ), false );
+			Info_SetValueForKey( buf, "reason", reason == nullptr ? "" : reason, false );
 
 			Rocket_DSAddRow( tableName, "default", buf );
 		}
