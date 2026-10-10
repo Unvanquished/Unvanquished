@@ -1,0 +1,89 @@
+# Documentation: https://wiki.unvanquished.net/wiki/Continuous_integration
+
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+      - 'for-*.*.*/sync' # Next-release branch
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - .github/workflows/build_test.yml
+      # The rest of this list should stay in sync with .appveyor.yml
+      - 'daemon/**'
+      - 'libs/**'
+      - 'src/**'
+      - .gitmodules
+      - CMakeLists.txt
+      - '**.cmake'
+      - 'macosx/**'
+      - 'tools/cbse/**'
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.vm_image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux GCC Native DLL
+            vm_image: ubuntu-22.04
+            install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
+            cmake_options: -G Ninja -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
+            builder_options: -j$(nproc) -k 10
+          - name: Linux Clang Native DLL
+            vm_image: ubuntu-22.04
+            install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
+            cmake_options: -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
+            builder_options: -j$(nproc) -k 10
+          - name: Linux NaCl
+            vm_image: ubuntu-22.04
+            install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build
+            cmake_options: -G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1
+            builder_options: -j$(nproc) -k 10
+          - name: Mac
+            vm_image: macos-15-intel
+            install_deps: python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt
+            cmake_options: -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
+            builder_options: -j$(sysctl -n hw.logicalcpu)
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check out submodules
+        shell: bash
+        env:
+          # For example: "master" (on pull requests only)
+          PR_TARGET_BRANCH: ${{ github.base_ref }}
+          # Target branch name, on pull requests only. Even if the branch comes from an external
+          # repo it is just the bare branch name, for example "new-feature".
+          PR_SOURCE_BRANCH: ${{ github.head_ref }}
+          # For example: "master" for a build of the 'master' branch
+          # Other formats exist for builds on pull requests
+          BUILD_SOURCE_BRANCH: ${{ github.ref_name }}
+          # "push" or "pull_request" (see 'on:')
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -e
+          echo "Variables: PR_TARGET_BRANCH=${PR_TARGET_BRANCH} PR_SOURCE_BRANCH=${PR_SOURCE_BRANCH} BUILD_SOURCE_BRANCH=${BUILD_SOURCE_BRANCH}"
+          curl -fsSL https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules
+          SYNC_ARGS=()
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+              SYNC_ARGS=("--sub-ref=${PR_TARGET_BRANCH}:has=/sync" "--sub-ref=${PR_SOURCE_BRANCH}:has=/sync")
+          else  # It is a branch build
+              SYNC_ARGS=("--sub-ref=${BUILD_SOURCE_BRANCH}:has=/sync")
+          fi
+          echo "${#SYNC_ARGS[@]} branch-name-based checkout arg(s): ${SYNC_ARGS[@]}"
+          bash ~/git-checkout-modules --update "${SYNC_ARGS[@]}" --print
+
+      - name: Build
+        shell: bash
+        run: |
+          set -e
+          ${{ matrix.install_deps }}
+          cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 ${{ matrix.cmake_options }} -H. -Bbuild
+          cmake --build build -- ${{ matrix.builder_options }}
