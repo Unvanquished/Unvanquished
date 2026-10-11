@@ -30,22 +30,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Linux GCC Native DLL
+          - name: Linux amd64 GCC
             vm_image: ubuntu-22.04
             install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
             cmake_options: -G Ninja -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
             builder_options: -j$(nproc) -k 10
-          - name: Linux Clang Native DLL
+          - name: Linux amd64 Clang
             vm_image: ubuntu-22.04
             install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
             cmake_options: -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
             builder_options: -j$(nproc) -k 10
-          - name: Linux NaCl
+          - name: NaCl
             vm_image: ubuntu-22.04
             install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build
             cmake_options: -G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1
             builder_options: -j$(nproc) -k 10
-          - name: Mac
+          - name: MacOS amd64 AppleClang
             vm_image: macos-15-intel
             install_deps: python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt
             cmake_options: -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
