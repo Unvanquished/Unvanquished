@@ -50,11 +50,11 @@ then
 fi
 
 # Denoise the diff only if the file is already tracked by Git.
-if git ls-files --error-unmatch "${1}" >/dev/null 2>&1
+if relative_filename="$(git ls-files --error-unmatch "${1}" 2>/dev/null)"
 then
 	# Revert the file if only the POT date changed.
-	if is_modified_file "${1}"
+	if is_modified_file "${relative_filename}"
 	then
-		git checkout "${1}" >/dev/null 2>&1
+		git checkout "${relative_filename}" >/dev/null 2>&1
 	fi
 fi
