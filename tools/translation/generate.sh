@@ -24,10 +24,11 @@
 #
 # ===========================================================================
 
-set -u -e -o pipefail
-
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+. "${script_dir}/common.sh"
 
-"${script_dir}/generate_pot.sh"
-"${script_dir}/update_po.sh"
+parse_args "${@}"
+
+"${script_dir}/generate_pot.sh" "${options[@]}" "${translations[@]}"
+"${script_dir}/update_po.sh" "${translations[@]}"
 "${script_dir}/ignore_incomplete.sh"
