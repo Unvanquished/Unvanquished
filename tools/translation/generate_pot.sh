@@ -74,17 +74,18 @@ generate_commands_pot () (
 		src/sgame/sg_maprotation.cpp
 )
 
-cd "${repo_dir}"
-
 for name in "${translations[@]}"
 do
 	temp_pot_file="$(mktemp)"
 
+	cd "${repo_dir}"
+
 	"generate_${name}_pot"
 
-	pot_file="${pot_dir}/${name}.pot"
+	pot_file="${name}.pot"
 
 	mkdir -p "${pot_dir}"
+	cd "${pot_dir}"
 
 	mv "${temp_pot_file}" "${pot_file}"
 
