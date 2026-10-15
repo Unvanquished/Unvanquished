@@ -74,6 +74,5 @@ override_dh_installxfonts:
 override_dh_installgsettings:
 override_dh_bugfiles:
 override_dh_ucf:
-override_dh_gconf:
 override_dh_perl:
 override_dh_usrlocal:
