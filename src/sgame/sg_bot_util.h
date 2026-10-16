@@ -49,7 +49,7 @@ void       BotFindClosestBuildings( gentity_t *self );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
-botEntityAndDistance_t BotGetHealTarget( const gentity_t *self );
+botGoalAndDistance_t BotGetHealTarget( const gentity_t *self );
 
 // aiming
 glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target, int lagPredictTime );
