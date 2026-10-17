@@ -190,15 +190,15 @@ void G_UpdateTeamConfigStrings()
 		humanTeam = {};
 	}
 
-	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TEAM_ALIENS,   &humanTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TEAM_ALIENS, &humanTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_ALIENS,    &humanTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_ALIENS,     &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_TIME + static_cast<int>(TEAM_ALIENS),   &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_STRING + static_cast<int>(TEAM_ALIENS), &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_YES + static_cast<int>(TEAM_ALIENS),    &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_NO + static_cast<int>(TEAM_ALIENS),     &humanTeam );
 
-	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TEAM_HUMANS,   &alienTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TEAM_HUMANS, &alienTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_HUMANS,    &alienTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_HUMANS,     &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_TIME + static_cast<int>(TEAM_HUMANS),   &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_STRING + static_cast<int>(TEAM_HUMANS), &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_YES + static_cast<int>(TEAM_HUMANS),    &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_NO + static_cast<int>(TEAM_HUMANS),     &alienTeam );
 }
 
 /*
