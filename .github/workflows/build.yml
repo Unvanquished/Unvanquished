@@ -36,7 +36,7 @@ jobs:
             cmake_options: -G Ninja -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
             builder_options: -j$(nproc) -k 10
           - name: Linux amd64 Clang
-            vm_image: ubuntu-22.04
+            vm_image: ubuntu-24.04
             install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
             cmake_options: -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
             builder_options: -j$(nproc) -k 10
