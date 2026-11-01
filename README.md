@@ -6,17 +6,30 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 [![Github updater release](https://img.shields.io/github/downloads/Unvanquished/updater/total.svg?label=updater%20downloads)](https://github.com/Unvanquished/updater/releases/latest)
 [![Flatpak release](https://img.shields.io/flathub/downloads/net.unvanquished.Unvanquished.svg?label=flatpak%20installs)](https://flathub.org/apps/details/net.unvanquished.Unvanquished)
 [![Github universal zip release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/total.svg?label=zip%20downloads)](https://github.com/Unvanquished/Unvanquished/releases/latest)
-[![Sourceforge files](https://img.shields.io/sourceforge/dt/unvanquished.svg?label=sourceforge%20files)](https://sourceforge.net/projects/unvanquished/files/latest/download)
-
+[![Sourceforge files](https://img.shields.io/sourceforge/dt/unvanquished.svg?label=sourceforge%20files)](https://sourceforge.net/projects/unvanquished/files/latest/download)  
+[![Web](https://img.shields.io/badge/web-unvanquished.net-ffaaaa)](https://unvanquished.net)
+[![Forums](https://img.shields.io/badge/forums-forums.unvanquished.net-ffaaaa)](https://forums.unvanquished.net)
+[![Wiki](https://img.shields.io/badge/wiki-wiki.unvanquished.net-ffaaaa)](https://wiki.unvanquished.net)  
+[![Rules](https://img.shields.io/badge/chat-rules-ffdd00)](https://wiki.unvanquished.net/wiki/Chat#Rules)
 [![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-9cf.svg)](https://unvanquished.net/chat/)
-[![Matrix](https://img.shields.io/badge/matrix-Unvanquished-9cf)](https://matrix.to/#/!WnuetRiQZJNBTKwMrF:matrix.org?via=matrix.org)
-[![Discord](https://img.shields.io/badge/discord-Unvanquished-9cf)](https://discord.gg/usuDT9Pyna)
+[![Matrix](https://img.shields.io/badge/matrix-Unvanquished-9cf?logo=matrix)](https://matrix.to/#/!WnuetRiQZJNBTKwMrF:matrix.org?via=matrix.org)
+[![Discord](https://img.shields.io/badge/discord-Unvanquished-9cf?logo=discord)](https://discord.gg/usuDT9Pyna)
+
+## Validation
+
+Target & compiler|Build status|Target & compiler|Build status
+-|-|-|-
+<sub>Linux amd64 GCC</sub>|[![Build Status](https://img.shields.io/github/check-runs/Unvanquished/Unvanquished/master?nameFilter=Linux%20amd64%20GCC)](https://github.com/Unvanquished/Unvanquished/actions/workflows/build_test.yml?query=branch%3Amaster)|<sub>Windows amd64 MSVC</sub>|[![Build status](https://ci.appveyor.com/api/projects/status/github/Unvanquished/Unvanquished?banch=master&svg=true)](https://ci.appveyor.com/project/DolceTriade/Daemon/history)
+<sub>Linux amd64 Clang</sub>|[![Build Status](https://img.shields.io/github/check-runs/Unvanquished/Unvanquished/master?nameFilter=Linux%20amd64%20Clang)](https://github.com/Unvanquished/Unvanquished/actions/workflows/build_test.yml?query=branch%3Amaster)|<sub>NaCl</sub>|[![Build Status](https://img.shields.io/github/check-runs/Unvanquished/Unvanquished/master?nameFilter=NaCl)](https://github.com/Unvanquished/Unvanquished/actions/workflows/build_test.yml?query=branch%3Amaster)
+<sub>macOS amd64 AppleClang</sub>|[![Build Status](https://img.shields.io/github/check-runs/Unvanquished/Unvanquished/master?nameFilter=macOS%20amd64%20AppleClang)](https://github.com/Unvanquished/Unvanquished/actions/workflows/build_test.yml?query=branch%3Amaster)|<sub>CodeQL C++ static analysis</sub>|[![Build Status](https://img.shields.io/github/check-runs/Unvanquished/Unvanquished/master?nameFilter=Analyze%20%28c-cpp%29)](https://github.com/Unvanquished/Unvanquished/actions/workflows/codeql.yml?query=branch%3Amaster)
+
+## Onboarding
 
 ℹ️ We provide ready-to-use downloads for the Unvanquished game on the [download page](https://unvanquished.net/download/).
 
 ℹ️ This repository contains the source code for the game logic of Unvanquished.
 
-💡️ If you only want to play the game or run a server and want to rebuild, you only need to build the [Dæmon engine](https://github.com/DaemonEngine/Daemon) and [download the game's assets](#downloading-the-games-assets).
+💡️ If you only want to play the game or run a server and want to rebuild it, you only need to build the [Dæmon engine](https://github.com/DaemonEngine/Daemon) and [download the game's assets](#downloading-the-games-assets).
 
 💡️ You need to build this repository if you want to contribute to the game logic or make a mod with custom game logic binaries.
 
@@ -27,9 +40,9 @@ If you are interested in creating or using Unvanquished packages for package man
 
 ## Translating the game
 
-[![Weblate](https://hosted.weblate.org/widgets/unvanquished/-/multi-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
+[![Weblate](https://hosted.weblate.org/widget/unvanquished/matrix-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
 
-The Unvanquished game is translated on the [Weblate](https://hosted.weblate.org/projects/unvanquished/unvanquished) platform, this is the easier way to contribute translations since it offers a central place where people can contribute and review translations while reducing risks of merge conflicts. Weblate preserves authorship and automatically produces commits that can be associated with your GitHub account.
+The Unvanquished game is translated on [the Weblate platform](https://hosted.weblate.org/projects/unvanquished), this is the easier way to contribute translations since it offers a central place where people can contribute and review translations while reducing risks of merge conflicts. Weblate preserves authorship and automatically produces commits that can be associated with your GitHub account.
 
 ## Requirements to build the game binaries
 
