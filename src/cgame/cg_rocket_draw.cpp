@@ -2420,20 +2420,32 @@ public:
 			buildable_t buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 			const char *msg = nullptr;
 			Color::Color color;
+			int deltaEfficiencyPct;
 
 			// The efficiency and budget deltas are signed values that are encode as the least and
 			// most significant byte of the de-facto short ps->stats[STAT_PREDICTION], respectively.
 			// The efficiency delta is a value between -1 and 1, the budget delta is an integer
 			// between -128 and 127.
-			float deltaEfficiency    = (float)(signed char)(ps->stats[STAT_PREDICTION] & 0xff) / (float)0x7f;
-			int   deltaBudget        = (int)(signed char)(ps->stats[STAT_PREDICTION] >> 8);
-
-			int   deltaEfficiencyPct = (int)(deltaEfficiency * 100.0f);
+			int deltaBudget = (int)(signed char)(ps->stats[STAT_PREDICTION] >> 8);
+			if ( cgs.buildPointBudgetPerMiner > 0.0f )
+			{
+				float deltaEfficiency = (float)(signed char)(ps->stats[STAT_PREDICTION] & 0xff) / (float)0x7f;
+				deltaEfficiencyPct = (int)(deltaEfficiency * 100.0f);
+			}
+			else
+			{
+				deltaEfficiencyPct = -999; // mining disabled
+			}
 
 			if ( deltaEfficiencyPct != lastDeltaEfficiencyPct_ ||
 			     deltaBudget        != lastDeltaBudget_ )
 			{
-				if        ( deltaBudget < 0 ) {
+				if ( deltaEfficiencyPct == -999 )
+				{
+					color = Color::Orange;
+					msg = "Mining is disabled.";
+				}
+				else if ( deltaBudget < 0 ) {
 					color = Color::Red;
 					// Icon U+E000
 					msg = va( "<span class='material-icon error'>\xee\x80\x80</span> You are losing build points!"
@@ -2455,13 +2467,17 @@ public:
 					color = Color::Green;
 				}
 
-				std::string deltaEfficiencyPctStr = Rocket_QuakeToRML(
-					va( "%s%+d%%", Color::ToString(color).c_str(), deltaEfficiencyPct));
+				std::string deltaEfficiencyPctStr;
+				if ( deltaEfficiencyPct != -999 )
+				{
+					deltaEfficiencyPctStr = Rocket_QuakeToRML(
+						va( "%s%+d%% EFFICIENCY\n", Color::ToString(color).c_str(), deltaEfficiencyPct));
+				}
 				std::string deltaBudgetStr = Rocket_QuakeToRML(
 					va("%s%+d", Color::ToString(color).c_str(), deltaBudget));
 
 				SetInnerRML(Str::Format(
-					"%s EFFICIENCY<br/>%s BUILD POINTS%s%s",
+					"%s%s BUILD POINTS%s%s",
 					deltaEfficiencyPctStr, deltaBudgetStr, msg ? "<br/>" : "", msg ? msg : ""
 				));
 
