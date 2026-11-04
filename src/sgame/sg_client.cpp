@@ -552,7 +552,7 @@ bool G_IsUnnamed( const char *name )
 
 	length = g_unnamedNamePrefix.Get().size();
 
-	if ( g_unnamedNumbering.Get() && length &&
+	if ( length &&
 	     !Q_strnicmp( testName, g_unnamedNamePrefix.Get().c_str(), length ) )
 	{
 		return true;
@@ -560,7 +560,7 @@ bool G_IsUnnamed( const char *name )
 
 	length = g_unnamedBotNamePrefix.Get().size();
 
-	if ( g_unnamedNumbering.Get() && length &&
+	if ( length &&
 	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.Get().c_str(), length ) )
 	{
 		return true;
@@ -571,82 +571,31 @@ bool G_IsUnnamed( const char *name )
 
 /*
 ===========
-G_FindFreeUnnamed
-============
-*/
-static unnamed_t G_FindFreeUnnamed( unnamed_t number )
-{
-	int i;
-
-	do
-	{
-		for ( i = 0; i < level.maxclients; ++i )
-		{
-			if ( level.clients[i].pers.namelog && level.clients[i].pers.namelog->unnamedNumber == number )
-			{
-				number = ++number < 0 ? 1 : number;
-				break;
-			}
-		}
-	} while ( i != level.maxclients );
-
-	return number;
-}
-
-
-/*
-===========
 G_UnnamedClientName
 ============
 */
-static const char *G_UnnamedClientName( gclient_t *client )
+static std::string G_UnnamedClientName( gclient_t *client )
 {
-	static unnamed_t nextNumber = 1;
-	static char      name[ MAX_NAME_LENGTH ];
-	unnamed_t        number;
-
-	if ( !g_unnamedNumbering.Get() || !client )
-	{
-		return UNNAMED_PLAYER;
-	}
-
-	if( client->pers.namelog->unnamedNumber )
-	{
-		number = client->pers.namelog->unnamedNumber;
-	}
-	else
-	{
-		if( g_unnamedNumbering.Get() > 0 )
-		{
-			// server op may have reset this, so check for numbers in use
-			number = G_FindFreeUnnamed( g_unnamedNumbering.Get() );
-			g_unnamedNumbering.Set( number + 1 < 0 ? 1 : number + 1 );
-		}
-		else
-		{
-			// checking for numbers in use here is probably overkill...
-			// however, belt and braces - could be a Long Game
-			number = G_FindFreeUnnamed( nextNumber );
-			nextNumber = number + 1 < 0 ? 1 : number + 1;
-		}
-	}
-
-	client->pers.namelog->unnamedNumber = number;
+	std::string prefix;
 
 	if ( client->pers.isBot )
 	{
-		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-			!g_unnamedBotNamePrefix.Get().empty() ? g_unnamedBotNamePrefix.Get().c_str() : UNNAMED_BOT "#",
-			number );
+		prefix = g_unnamedBotNamePrefix.Get();
+		if ( prefix.empty() )
+		{
+			prefix = UNNAMED_BOT "#";
+		}
 	}
 	else
 	{
-		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-			!g_unnamedNamePrefix.Get().empty() ? g_unnamedNamePrefix.Get().c_str() : UNNAMED_PLAYER "#",
-			number );
+		prefix = g_unnamedNamePrefix.Get();
+		if ( prefix.empty() )
+		{
+			prefix = UNNAMED_PLAYER "#";
+		}
 	}
 
-	return name;
+	return Str::Format( "%.*s%d", MAX_NAME_LENGTH - 11, prefix, client->num() );
 }
 
 /*
@@ -764,7 +713,7 @@ void G_ClientCleanName( const char *in, char *out, size_t outSize, gclient_t *cl
 	// if something made the name bad, put them back to UnnamedPlayer
 	if ( invalid )
 	{
-		Q_strncpyz( out, G_UnnamedClientName( client ), static_cast<int>(outSize) );
+		Q_strncpyz( out, G_UnnamedClientName( client ).c_str(), static_cast<int>(outSize));
 	}
 	else
 	{
@@ -878,14 +827,14 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 
 		if ( revertName )
 		{
-			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
+			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ).c_str(),
 			            sizeof( client->pers.netname ) );
 		}
 		else
 		{
 			if( G_IsUnnamed( newname ) )
 			{
-				Q_strncpyz( client->pers.netname, G_UnnamedClientName( client ), sizeof( client->pers.netname ) );
+				Q_strncpyz( client->pers.netname, G_UnnamedClientName( client ).c_str(), sizeof(client->pers.netname));
 			}
 			else
 			{
