@@ -1685,7 +1685,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	}
 
 	// find out what data we want to display
-	showMineEfficiency = ( attr->number == BA_A_LEECH || attr->number == BA_H_DRILL );
+	showMineEfficiency = ( attr->number == BA_A_LEECH || attr->number == BA_H_DRILL )
+		&& cgs.buildPointBudgetPerMiner > 0;
 
 	// calculate mine efficiency bar size
 	if ( showMineEfficiency )
