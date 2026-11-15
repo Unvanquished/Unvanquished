@@ -33,6 +33,12 @@ Maryland 20850 USA.
 */
 
 #include "common/Common.h"
+
+#include <RmlUi/Core/Factory.h>
+#include <RmlUi/Core/FontEffect.h>
+#include <RmlUi/Core/FontEffectInstancer.h>
+#include <RmlUi/Core/PropertyDefinition.h>
+
 #include "common/FileSystem.h"
 #include "cg_local.h"
 
@@ -40,6 +46,8 @@ rocketInfo_t rocketInfo = {};
 
 Cvar::Cvar<std::string> rocket_menuFile("rocket_menuFile", "VFS path of config file for menus", Cvar::CHEAT, "ui/rocket.txt");
 Cvar::Cvar<std::string> rocket_hudFile("rocket_hudFile", "VFS path of config file for HUD", Cvar::CHEAT, "ui/rockethud.txt");
+
+static Cvar::Cvar<bool> cg_fontOutlines("cg_fontOutlines", "render font outlines (requires cgame restart)", Cvar::NONE, true);
 
 static connstate_t oldConnState;
 
@@ -67,6 +75,27 @@ void CG_Rocket_Init( const WindowConfig& windowConfig )
 
 	// Register elements
 	CG_Rocket_RegisterElements();
+
+	if (!cg_fontOutlines.Get()) {
+		// Override effect with no-op version
+		class NopEffectInstancer : public Rml::FontEffectInstancer
+		{
+		public:
+			NopEffectInstancer()
+			{
+				// To avoid parser warnings. Copied from FontEffectOutlineInstancer
+				RegisterProperty("width", "1px", true).AddParser("length").GetId();
+				RegisterProperty("color", "white", false).AddParser("color").GetId();
+				RegisterShorthand("font-effect", "width, color", Rml::ShorthandType::FallThrough);
+			}
+			Rml::SharedPtr<Rml::FontEffect> InstanceFontEffect(const Rml::String&, const Rml::PropertyDictionary&) override
+			{
+				return std::make_shared<Rml::FontEffect>();
+			}
+		};
+		static NopEffectInstancer nop;
+		Rml::Factory::RegisterFontEffectInstancer("outline", &nop);
+	}
 
 	Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
 	Rocket_RegisterProperty( "momentum-border-width", "0.5", false, false, "number" );
