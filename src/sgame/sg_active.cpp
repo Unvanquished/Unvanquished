@@ -176,7 +176,7 @@ static void P_WorldEffects( gentity_t *ent )
 				{
 					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "*drown" ) );
 				}
-				else if ( rand() < RAND_MAX / 2 + 1 )
+				else if ( BG_randrange( 2 ) )
 				{
 					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "sound/player/gurp1" ) );
 				}

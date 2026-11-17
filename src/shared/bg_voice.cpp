@@ -734,7 +734,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
 	}
 
 	// return randomly selected match
-	selectedMatch = rand() / ( RAND_MAX / matchCount + 1 );
+	selectedMatch = BG_randrange( matchCount );
 	vt = head;
 	i = 0;
 	j = 0;

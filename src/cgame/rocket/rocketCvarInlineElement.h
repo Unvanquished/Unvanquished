@@ -116,21 +116,15 @@ public:
 
 			if ( type != NUMBER )
 			{
-				int flags = 0;
+				bool quakeColors = HasAttribute( "quake" ); // interpret colors + emoticons
 
-				if ( HasAttribute( "quake" ) )
+				if ( quakeColors )
 				{
-					flags |= RP_QUAKE;
+					value = Rocket_QuakeToRML( value );
 				}
-
-				if ( HasAttribute( "emoticons" ) )
+				else
 				{
-					flags |= RP_EMOTICONS;
-				}
-
-				if ( flags )
-				{
-					value = Rocket_QuakeToRML( value.c_str(), flags );
+					value = CG_EscapeHTMLText( value );
 				}
 			}
 

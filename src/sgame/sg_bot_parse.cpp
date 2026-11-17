@@ -373,7 +373,7 @@ static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
 
 static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 {
-	return AIBoxFloat( random() );
+	return AIBoxFloat( BG_random() );
 }
 
 static AIValue_t resupplyScore( gentity_t* self, const AIValue_t* )

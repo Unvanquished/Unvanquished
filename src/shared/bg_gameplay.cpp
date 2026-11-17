@@ -48,7 +48,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
  * A value can be shared between cgame and sgame in three ways:
  * 1. Here, using a constant symbol that will be included in both VM files
  * 2. Using config files
- * 3. Using a SERVERINFO cvar
+ * 3. Using cvars transmitted via configstring
  *
  * This file has the upside of being simple, but doesn't allow runtime
  * modification, and needs a recompilation at every change.
@@ -63,8 +63,9 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
  * file packaging.
  *
  * Cvars have the upside of allowing runtime edits. The process of adding one
- * is more complicated: after creating the cvar with the SERVERINFO, you must
- * parse it in cgame (see g_devolveMaxBaseDistance for an example).
+ * is more complicated: after adding the cvar to the CS_GAMEPLAY_CVARS
+ * configstring in G_TransmitGameplayCvars(), you must parse it in cgame (see
+ * g_devolveMaxBaseDistance for an example).
  * Use this solution if you expect server admins to want to change this value.
  * This solution has downsides too. One is that large scale modifications are
  * pretty unpractical and one loses the ability to have proper tools such as
@@ -268,8 +269,8 @@ const int   DEFAULT_FREEKILL_PERIOD = 120;
 
 // resources
 const float RGS_RANGE = 1000.0f;
-const int   DEFAULT_BP_INITIAL_BUDGET = 80;
-const int   DEFAULT_BP_BUDGET_PER_MINER = 50;
+const int   DEFAULT_BP_INITIAL_BUDGET = 120;
+const int   DEFAULT_BP_BUDGET_PER_MINER = 0;
 const int   DEFAULT_BP_RECOVERY_INITIAL_RATE = 16;
 const int   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE = 10;
 

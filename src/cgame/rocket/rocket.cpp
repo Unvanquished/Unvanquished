@@ -55,7 +55,6 @@ Maryland 20850 USA.
 #include "rocketFormControlSelect.h"
 #include "rocketConditionalElement.h"
 #include "rocketColorInput.h"
-#include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
 #include <RmlUi/Debugger.h>
 #include "lua/register_lua_extensions.h"
@@ -381,7 +380,7 @@ void Rocket_Init()
 
 	// Initialize Lua
 	Rml::Lua::Initialise();
-	Rml::Lua::Interpreter::DoString("math.randomseed(os.time())");
+	Rml::Lua::Interpreter::DoString(Str::Format("math.randomseed(%u)", BG_RandomEngine()()));
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaEvents(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
@@ -425,7 +424,6 @@ void Rocket_Init()
 	RegisterElement<CvarElementFormControlSelect>( "select" );
 	RegisterElement<RocketConditionalElement>( "if" );
 	RegisterElement<RocketColorInput>( "colorinput" );
-	RegisterElement<RocketIncludeElement>( "include" );
 	RegisterElement<RocketCvarInlineElement>( "inlinecvar" );
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_2D );
@@ -550,16 +548,14 @@ std::string CG_EscapeHTMLText( Str::StringRef text )
 	return out;
 }
 
-// TODO: Make this take Rml::String as an input.
-// FIXME: This always parses colors even when RP_QUAKE is not specified. Many callers rely on this behavior.
-Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
+Rml::String Rocket_QuakeToRML( Str::StringRef in, bool emoticons )
 {
 	Rml::String out;
 	Rml::String spanstr;
 	bool span = false;
 	bool spanHasContent = false;
 
-	Color::Parser parser(in, Color::Color());
+	Color::Parser parser(in.c_str(), Color::Color());
 	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
 	{
 		const Color::Token& token = *iter;
@@ -626,7 +622,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				span = false;
 				spanHasContent = false;
 			}
-			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.RawToken().begin() ) ) )
+			else if ( emoticons && ( emoticon = BG_EmoticonAt( token.RawToken().begin() ) ) )
 			{
 				if ( span && !spanHasContent )
 				{
@@ -657,11 +653,6 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	}
 
 	return out;
-}
-
-void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
-{
-	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).c_str(), length );
 }
 
 // FIXME: Poor naming, this deals with the custom cursors as well

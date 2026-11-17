@@ -2712,9 +2712,9 @@ bool G_admin_slap( gentity_t *ent )
 	}
 	else
 	{
-		dir[0] = crandom();
-		dir[1] = crandom();
-		dir[2] = random();
+		dir[0] = BG_crandom();
+		dir[1] = BG_crandom();
+		dir[2] = BG_random();
 		VectorScale( dir, static_cast<float> (accel), kvel );
 	}
 
@@ -6524,7 +6524,7 @@ bool G_admin_bot( gentity_t *ent )
 			const std::string& teamStr = args.Argv( 3 );
 			team = BG_PlayableTeamFromString( teamStr.c_str() );
 		}
-		for ( int i = 0; i < MAX_CLIENTS; ++i )
+		for ( int i = 0; i < level.maxclients; ++i )
 		{
 			if ( team != TEAM_NONE && G_Team( &g_entities[ i ] ) != team )
 			{

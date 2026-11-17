@@ -167,19 +167,18 @@ struct attachment_t
 
 	vec3_t           lastValidAttachmentPoint;
 
-	//AT_STATIC
+	//AT_STATIC and AT_TAG
 	vec3_t origin;
 	axis_t axis;
 
-	//AT_TAG
-	orientation_t orientation;
-	centity_t* centity;
-	uint16_t entity;
-	qhandle_t   model;
-	std::string tagName;
-
-	//AT_CENT
+	//AT_CENT and AT_TAG
 	int centNum;
+
+	//AT_TAG
+	qhandle_t   model;
+	uint16_t    entity;
+	centity_t*  centity;
+	std::string tagName;
 
 	//AT_PARTICLE
 	particle_t *particle;
@@ -766,10 +765,11 @@ struct centity_t
 
 	playerEntity_t pe;
 
+	// position and size of the currently allocated contiguous range in the entity cache
 	uint16_t refEntitiesOffset        = 0;
 	uint8_t  refEntitiesCount         = 0;
-	uint8_t  refEntitiesFrame         = 0;
-	uint8_t  refEntitiesFrameCount[2] { 0, 0 };
+
+	uint8_t  refEntitiesFrameCount; // number of ref entities associated with this centity_t
 
 	bool       extrapolated; // false if origin / angles is an interpolation
 	vec3_t         rawOrigin;
@@ -885,30 +885,16 @@ struct clientInfo_t
 	char        modelName[ MAX_QPATH ];
 	char        skinName[ MAX_QPATH ];
 
-	bool    iqm; // true if model is an iqm model
+	bool    iqm; // true if model is an iqm model, false if md5 (model is always skeletal)
 	bool    fixedlegs; // true if legs yaw is always the same as torso yaw
 	bool    fixedtorso; // true if torso never changes yaw
-	bool    nonsegmented; // true if model is Q2 style nonsegmented
-	bool    skeletal; // true if model is a skeletal model
 
 	vec3_t      headOffset; // move head in icon views
 	footstep_t  footsteps;
 	gender_t    gender; // from model
 
-	qhandle_t   legsModel;
-	qhandle_t   legsSkin;
-
-	qhandle_t   torsoModel;
-	qhandle_t   torsoSkin;
-
-	qhandle_t   headModel;
-	qhandle_t   headSkin;
-
-	qhandle_t   nonSegModel; //non-segmented model system
-	qhandle_t   nonSegSkin; //non-segmented model system
-
-	qhandle_t   bodyModel; //md5 model format
-	qhandle_t   bodySkin; //md5 model format
+	qhandle_t   bodyModel;
+	qhandle_t   bodySkin;
 
 	qhandle_t   modelIcon;
 
@@ -1241,9 +1227,7 @@ struct cg_t
 
 	// development tool
 	refEntity_t             testModelEntity;
-	refEntity_t             testModelBarrelEntity;
 	char                    testModelName[ MAX_QPATH ];
-	char                    testModelBarrelName[ MAX_QPATH ];
 	bool                testGun;
 	qhandle_t hTestShader;
 	polyVert_t testShaderPoly[ 4 ];
@@ -1356,11 +1340,6 @@ enum rocketMenuType_t {
 	ROCKETMENU_BOTTACTIC,
 	ROCKETMENU_VSAY,
 	ROCKETMENU_NUM_TYPES
-};
-
-enum rocketInnerRMLParseTypes_t {
-	RP_QUAKE = 1 << 0,
-	RP_EMOTICONS = 1 << 1,
 };
 
 struct rocketMenu_t
@@ -1593,11 +1572,6 @@ struct cgMedia_t
 	sfxHandle_t alienL4ChargePrepare;
 	sfxHandle_t alienL4ChargeStart;
 
-	//light armour
-	qhandle_t   larmourHeadSkin;
-	qhandle_t   larmourLegsSkin;
-	qhandle_t   larmourTorsoSkin;
-
 	qhandle_t   jetpackModel;
 	qhandle_t   radarModel;
 
@@ -1698,8 +1672,6 @@ struct cgs_t
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
 	// parsed from serverinfo
-	int      timelimit;
-	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
 	float    devolveMaxBaseDistance; // used for evolve/devolve ui
@@ -2187,9 +2159,7 @@ void     CG_ShowScores_f();
 //
 void CG_ExecuteServerCommands( snapshot_t* snap );
 void CG_SetMapNameFromServerinfo();
-void CG_ParseServerinfo();
-void CG_SetConfigValues();
-void CG_ShaderStateChanged();
+void CG_ConfigStringModified( int num );
 void CG_CenterPrint_f();
 
 //
@@ -2320,7 +2290,6 @@ const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *attribute );
 int CG_StringToNetSource( const char *src );
 const char *CG_NetSourceToString( int netSrc );
-const char *CG_Rocket_QuakeToRML( const char *in );
 bool CG_Rocket_IsCommandAllowed( rocketElementType_t type );
 bool CG_Rocket_LoadCursor( Str::StringRef cursorPath );
 void CG_Rocket_EnableCursor( bool enable );
@@ -2387,9 +2356,9 @@ void Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
 void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
 void Rocket_DSClearTable( const char *name, const char *table );
-void Rocket_SetInnerRML( const char* text, int parseFlags );
+void Rocket_SetInnerPlainText( Str::StringRef text );
+void Rocket_SetInnerQuake( Str::StringRef text );
 void Rocket_SetInnerRMLRaw( const char* RML );
-void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length );
 void Rocket_GetEventParameters( char *params, int length );
 void Rocket_RegisterDataFormatter( const char *name );
 void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );

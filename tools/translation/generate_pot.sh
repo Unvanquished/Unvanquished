@@ -2,7 +2,7 @@
 
 # ===========================================================================
 #
-# Copyright (c) 2017-2024 Unvanquished Developers
+# Copyright (c) 2017-2026 Unvanquished Developers
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -42,9 +42,15 @@ generate_game_pot () (
 		| xargs -I'{}' \
 			"${script_dir}/generate_rml_pot.py" '{}' \
 			>> "${temp_pot_file}"
+
+		find -type f -name '*.attr.cfg' \
+		| sort \
+		| xargs -I'{}' \
+			"${script_dir}/generate_attr_pot.py" '{}' \
+			>> "${temp_pot_file}"
 	)
 
-	"${script_dir}/generate_gender_pot.pl" \
+	"${script_dir}/generate_gender_pot.py" \
 		'src/cgame/cg_event.cpp' \
 		>> "${temp_pot_file}"
 
@@ -70,18 +76,17 @@ generate_commands_pot () (
 
 cd "${repo_dir}"
 
-for name in 'game' 'commands'
+for name in "${translations[@]}"
 do
-	if eval "\${${name}}"
-	then
-		temp_pot_file="$(mktemp)"
+	temp_pot_file="$(mktemp)"
 
-		"generate_${name}_pot"
+	"generate_${name}_pot"
 
-		pot_file="${pot_dir}/${name}.pot"
+	pot_file="${pot_dir}/${name}.pot"
 
-		mkdir -p "${pot_dir}"
+	mkdir -p "${pot_dir}"
 
-		mv "${temp_pot_file}" "${pot_file}"
-	fi
+	mv "${temp_pot_file}" "${pot_file}"
+
+	"${script_dir}/denoise_po_diff.sh" "${pot_file}"
 done

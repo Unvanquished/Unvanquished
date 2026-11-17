@@ -405,7 +405,7 @@ static const char *choose( const char *first, ... )
 		return first;
 	}
 
-	count = rand() % count;
+	count = BG_randrange( count );
 
 	ret = first;
 	va_start( ap, first );
@@ -1031,11 +1031,6 @@ static void CG_RegisterClients()
 		}
 	}
 
-	// Borrow these variables for MD5 models so we don't have to create new ones.
-	cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmet.skin" );
-	cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
-	cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
-
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.iqm" );
 	cgs.media.radarModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" ); // HACK: Use old battpack
 
@@ -1258,8 +1253,6 @@ Will perform callbacks to make the loading info screen update.
 
 void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowConfig, const GameStateCSs& gameState)
 {
-	const char *s;
-
 	bool fullscreen;
 	if ( Cvar::ParseCvarValue( Cvar::GetValue( "r_fullscreen" ), fullscreen ) && !fullscreen )
 	{
@@ -1298,14 +1291,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	// let's do it now.
 	trap_UpdateScreen();
 
-	// Set up the pmove params with sensible default values, the server params will
-	// be communicated with the "pmove_params" server commands.
-	// These values are the same as the default values of the servers to preserve
-	// compatibility with official Alpha 34 servers, but shouldn't be necessary anymore for Alpha 35
-	cg.pmoveParams.fixed = cg.pmoveParams.synchronous = 0;
-	cg.pmoveParams.accurate = 1;
-	cg.pmoveParams.msec = 8;
-
 	cg.clientNum = clientNum;
 
 	// Initialize item locking state
@@ -1315,26 +1300,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	trap_S_BeginRegistration( clientNum );
 
 	cg.weaponSelect = WP_NONE;
-
-	// copy vote display strings so they don't show up blank if we see
-	// the same one directly after connecting
-	Q_strncpyz( cgs.voteString[ TEAM_NONE ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_NONE ),
-	            sizeof( cgs.voteString ) );
-	Q_strncpyz( cgs.voteString[ TEAM_ALIENS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
-	            sizeof( cgs.voteString[ TEAM_ALIENS ] ) );
-	Q_strncpyz( cgs.voteString[ TEAM_HUMANS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_HUMANS ),
-	            sizeof( cgs.voteString[ TEAM_HUMANS ] ) );
-
-	// check version
-	s = CG_ConfigString( CS_GAME_VERSION );
-	//   if( strcmp( s, GAME_VERSION ) )
-	//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
-
-	s = CG_ConfigString( CS_LEVEL_START_TIME );
-	cgs.levelStartTime = atoi( s );
 
 	CG_SetMapNameFromServerinfo();
 
@@ -1363,10 +1328,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	// load configs after initializing particles and trails since it registers some
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
 	BG_InitAllConfigs();
-	// parse the serverinfo only now because infos such as
-	// disabledEquipment wouldn't be parsed correctly before
-	// loading the configs
-	CG_ParseServerinfo();
 
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
@@ -1389,9 +1350,21 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	CG_InitClasses();
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
+	// Human predicted player entity has stuff added from 2 different places. Reallocation
+	// when ref entities have already been added doesn't work, so allocate the
+	// maximum space beforehand
+	cg.predictedPlayerEntity.refEntitiesOffset = entityCache.Alloc( 64 );
+	cg.predictedPlayerEntity.refEntitiesCount = 64;
+
 	CG_UpdateLoadingStep( LOAD_HUDS );
 	CG_Rocket_LoadHuds();
 	CG_LoadBeaconsConfig();
+
+	// update state from configstrings
+	for ( int cs = 0; cs < CS_PLAYERS; cs++ )
+	{
+		CG_ConfigStringModified( cs );
+	}
 
 	trap_S_EndRegistration();
 
@@ -1410,16 +1383,6 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	{
 		CG_UpdateLoadingStep( LOAD_DONE );
 	}
-
-	// Make sure we have update values (scores)
-	CG_SetConfigValues();
-
-	CG_ShaderStateChanged();
-
-	ui_winner.Set( "" ); // Clear the previous round's winner.
-
-	// Request server to resend pmoveParams.
-	trap_SendClientCommand( "client_ready" );
 }
 
 /*

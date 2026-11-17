@@ -536,14 +536,6 @@ void CG_Rocket_Frame( cgClientState_t state )
 	{
 		switch ( rocketInfo.cstate.connState )
 		{
-			case connstate_t::CA_DISCONNECTED:
-				// Kill the server if its still running
-				if ( trap_Cvar_VariableIntegerValue( "sv_running" ) )
-				{
-					trap_Cvar_Set( "sv_killserver", "1" );
-				}
-				break;
-
 			case connstate_t::CA_CONNECTING:
 			case connstate_t::CA_CHALLENGING:
 			case connstate_t::CA_CONNECTED:
@@ -636,13 +628,6 @@ const char *CG_Rocket_GetAttribute( const char *attribute )
 
 	Rocket_GetAttribute( "", "", attribute, buffer, sizeof( buffer ) );
 
-	return buffer;
-}
-
-const char *CG_Rocket_QuakeToRML( const char *in )
-{
-	static char buffer[ MAX_STRING_CHARS ];
-	Rocket_QuakeToRMLBuffer( in, buffer, sizeof( buffer ) );
 	return buffer;
 }
 

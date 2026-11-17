@@ -182,7 +182,7 @@ Called for alien buildables that are about to blow up
 void CG_AlienBuildableDying( buildable_t, vec3_t origin )
 {
 	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, 
-	                   ( rand() % 2 ? cgs.media.alienBuildableDying1 : cgs.media.alienBuildableDying2 ) );
+	                   ( BG_randrange( 2 ) ? cgs.media.alienBuildableDying1 : cgs.media.alienBuildableDying2));
 }
 
 /*
@@ -2375,7 +2375,7 @@ void CG_Buildable( centity_t *cent )
 		{
 			if ( team == TEAM_HUMANS )
 			{
-				int i = rand() % 4;
+				int i = BG_randrange( 4 );
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
 

@@ -242,9 +242,7 @@ enum team_t
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 enum
 {
-  CS_MUSIC = RESERVED_CONFIGSTRINGS,
-  CS_MESSAGE, // from the map worldspawn's message field
-  CS_MOTD, // g_motd string for server message of the day
+  CS_MOTD = RESERVED_CONFIGSTRINGS, // g_motd string for server message of the day
   CS_WARMUP, // server time when the match will be restarted
 
   CS_VOTE_TIME, // Vote stuff each needs NUM_TEAMS slots
@@ -253,12 +251,23 @@ enum
   CS_VOTE_NO = CS_VOTE_YES + NUM_TEAMS,
   CS_VOTE_CALLER = CS_VOTE_NO + NUM_TEAMS,
 
-  CS_GAME_VERSION = CS_VOTE_CALLER + NUM_TEAMS,
-  CS_LEVEL_START_TIME, // so the timer only shows the current level
+  CS_LEVEL_START_TIME = CS_VOTE_CALLER + NUM_TEAMS, // so the timer only shows the current level
   CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
   CS_SHADERSTATE,
+  CS_PMOVE_PARAMS,
+  CS_BP_VAMPIRE,
+  CS_GAMEPLAY_CVARS,
   CS_CLIENTS_READY,
+
+  // Everything before CS_PLAYERS gets a CG_ConfigStringModified(n) event generated in CG_Init
+
+  CS_PLAYERS,
+
+  // Stuff below this normally never changes after the match starts
+
+  CS_MUSIC = CS_PLAYERS + MAX_CLIENTS,
+  CS_MESSAGE, // from the map worldspawn's message field
 
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
@@ -267,8 +276,7 @@ enum
   CS_REVERB_EFFECTS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
   CS_PARTICLE_SYSTEMS = CS_REVERB_EFFECTS + MAX_REVERB_EFFECTS,
 
-  CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
-  CS_LOCATIONS = CS_PLAYERS + MAX_CLIENTS,
+  CS_LOCATIONS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
   CS_MAX = CS_LOCATIONS + MAX_LOCATIONS
 };
 
@@ -1703,7 +1711,6 @@ public:
 // Parsers
 bool                  BG_ReadWholeFile( const char *filename, char *buffer, size_t size);
 bool                  BG_CheckConfigVars();
-bool                  BG_NonSegModel( const char *filename );
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
 void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );
@@ -1903,6 +1910,12 @@ void BG_BoundingBox( class_t cl, glm::vec3* mins, glm::vec3* maxs, glm::vec3* cm
 void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
 
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
+
+void BG_InitRandom();
+WARN_UNUSED_RESULT float BG_random();
+WARN_UNUSED_RESULT float BG_crandom();
+WARN_UNUSED_RESULT int BG_randrange( int n );
+WARN_UNUSED_RESULT std::minstd_rand &BG_RandomEngine();
 
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
 WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles );

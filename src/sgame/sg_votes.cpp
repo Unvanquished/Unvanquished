@@ -778,9 +778,9 @@ void G_HandleVote( gentity_t* ent )
 	}
 
 	level.team[ team ].voteTime = level.time;
-	trap_SetConfigstring( CS_VOTE_TIME + team, va( "%d", level.team[ team ].voteTime ) );
-	trap_SetConfigstring( CS_VOTE_STRING + team, level.team[ team ].voteDisplayString );
-	trap_SetConfigstring( CS_VOTE_CALLER + team, ent->client->pers.netname );
+	trap_SetConfigstring( CS_VOTE_TIME + static_cast<int>(team), va( "%d", level.team[ team ].voteTime ) );
+	trap_SetConfigstring( CS_VOTE_STRING + static_cast<int>(team), level.team[ team ].voteDisplayString );
+	trap_SetConfigstring( CS_VOTE_CALLER + static_cast<int>(team), ent->client->pers.netname );
 
 	if ( vi.special != VOTE_NO_AUTO )
 	{
@@ -922,10 +922,10 @@ void G_ResetVote( team_t team )
 		level.clients[ i ].pers.voteNo &= ~( 1 << team );
 	}
 
-	trap_SetConfigstring( CS_VOTE_TIME + team, "" );
-	trap_SetConfigstring( CS_VOTE_STRING + team, "" );
-	trap_SetConfigstring( CS_VOTE_YES + team, "0" );
-	trap_SetConfigstring( CS_VOTE_NO + team, "0" );
+	trap_SetConfigstring( CS_VOTE_TIME + static_cast<int>(team), "" );
+	trap_SetConfigstring( CS_VOTE_STRING + static_cast<int>(team), "" );
+	trap_SetConfigstring( CS_VOTE_YES + static_cast<int>(team), "0" );
+	trap_SetConfigstring( CS_VOTE_NO + static_cast<int>(team), "0" );
 }
 
 /*
@@ -957,13 +957,13 @@ void G_Vote( gentity_t* ent, team_t team, bool voting )
 		if ( ent->client->pers.voteYes & ( 1 << team ) )
 		{
 			level.team[ team ].voteYes++;
-			trap_SetConfigstring( CS_VOTE_YES + team, va( "%d", level.team[ team ].voteYes ) );
+			trap_SetConfigstring( CS_VOTE_YES + static_cast<int>(team), va( "%d", level.team[ team ].voteYes ) );
 		}
 
 		if ( ent->client->pers.voteNo & ( 1 << team ) )
 		{
 			level.team[ team ].voteNo++;
-			trap_SetConfigstring( CS_VOTE_NO + team, va( "%d", level.team[ team ].voteNo ) );
+			trap_SetConfigstring( CS_VOTE_NO + static_cast<int>(team), va( "%d", level.team[ team ].voteNo ) );
 		}
 		return;
 	}
@@ -983,12 +983,12 @@ void G_Vote( gentity_t* ent, team_t team, bool voting )
 	if ( wasYes )
 	{
 		level.team[ team ].voteYes--;
-		trap_SetConfigstring( CS_VOTE_YES + team, va( "%d", level.team[ team ].voteYes ) );
+		trap_SetConfigstring( CS_VOTE_YES + static_cast<int>(team), va( "%d", level.team[ team ].voteYes ) );
 	}
 	if ( wasNo )
 	{
 		level.team[ team ].voteNo--;
-		trap_SetConfigstring( CS_VOTE_NO + team, va( "%d", level.team[ team ].voteNo ) );
+		trap_SetConfigstring( CS_VOTE_NO + static_cast<int>(team), va( "%d", level.team[ team ].voteNo ) );
 	}
 }
 static constexpr char MARKER = '$';

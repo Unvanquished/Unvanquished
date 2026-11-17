@@ -2,6 +2,7 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/template" href="/ui/shared/language_list.rml" />
 		<script>
 			function setWeapon(document, weapon)
 				if document == nil then
@@ -20,29 +21,8 @@
 			<tab><translate>Main</translate></tab>
 			<panel class="main">
 				<row>
-					<!-- Keep in sync with language menu in options_welcome.rml -->
 					<h3><translate>Language</translate></h3>
-					<p><translate>Some languages are not fully translated.</translate></p>
-
-					<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
-					<select cvar="language">
-						<option value="bs">Bosanski</option>
-						<option value="de">Deutsch</option>
-						<option value="en">English</option>
-						<option value="es">Español</option>
-						<option value="fi">Suomi</option>
-						<option value="fr">Français</option>
-						<option value="it">Italiano</option>
-						<option value="nb_NO">Bokmål</option>
-						<option value="nl">Nederlands</option>
-						<option value="pt_BR">Português (Brasil)</option>
-						<option value="pt">Português</option>
-						<option value="ru">Русский</option>
-						<option value="zh_Hans">中文（简体）</option>
-						<option value="zh_Hant_HK">中文（香港）</option>
-						<option value="zh_Hant">中文（正體）</option>
-					</select>
-					<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Cmd.exec("updatelanguage")'><translate>Change language</translate></button>
+					<template src="language_list" />
 				</row>
 				<row>
 					<h3><translate>Real-time clock</translate></h3>

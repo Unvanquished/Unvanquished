@@ -159,6 +159,16 @@
 				<input type="range" min="0" max="400" step="10" cvar="g_BPInitialBudget"/>
 				<p><inlinecvar cvar="g_BPInitialBudget" type="number" format="%g"/>&nbsp; bp<ilink onclick='Cmd.exec("reset g_BPInitialBudget")'> (reset) </ilink></p>
 			</row>
+			<h2><translate>Presets</translate></h2>
+			<row class="presets">
+				<button onclick='Cmd.exec("preset presets/gameplay/vampire.cfg")'><translate>BP Vampire</translate></button>
+				<span><translate>Bleed build points from the enemy team by killing buildables.</translate></span>
+			</row>
+			<row class="presets">
+				<button onclick='Cmd.exec("preset presets/gameplay/mining.cfg")'><translate>Mining</translate></button>
+				<span><translate>Increase build budget by building mining structures. BP returns slowly when a buildable is lost.</translate></span>
+			</row>
+			<h2><translate>Mining mode options</translate></h2>
 			<row>
 				<parent>
 					<h3><translate>Miner bonus</translate></h3>

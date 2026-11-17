@@ -502,7 +502,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	}
 
 	//return a random one from among the choices
-	return choices[ rand() % totalChoiceCount ];
+	return choices[ BG_randrange( totalChoiceCount ) ];
 }
 
 gentity_t *G_PickRandomEntityOfClass( const char *classname )
@@ -704,7 +704,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	}
 
 	//return a random one from among the choices
-	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	return choices[ BG_randrange( totalChoiceCount ) ];
 }
 
 struct gentityTargetChoice_t
@@ -734,7 +734,7 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 		return;
 
 	//return a random one from among the choices
-	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	selectedChoice = &choices[ BG_randrange( totalChoiceCount ) ];
 
 	call.definition = selectedChoice->callDefinition;
 	call.caller = entity;

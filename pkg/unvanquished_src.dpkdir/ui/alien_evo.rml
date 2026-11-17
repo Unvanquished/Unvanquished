@@ -144,10 +144,7 @@
 <div class="circlemenu-circle" id="evolveMenu"/>
 <div class="infobox">
 <h2 id="e_name"></h2>
-<p class="text">
-<!--Price: -->
-<!-- FIXME: We may want to include <span id="e_price"/> in the translatable string, maybe with a specific markup to make it easy. -->
-<span id="e_price"/>&nbsp;<translate>morph points</translate>
+<p class="text"><translate>Price:</translate>&nbsp;<span id="e_price"/>&nbsp;<translate>morph points</translate>
 <br /><span id="e_desc"/></p>
 </div>
 </panel>

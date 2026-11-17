@@ -1277,7 +1277,7 @@ bool BotMoveToGoal( gentity_t *self )
 			// a lot of maneuverability
 			int msec = level.time - level.previousTime;
 			constexpr float jumpChance = 0.2f; // chance per second
-			if ( (jumpChance / 1000.0f) * msec > random() )
+			if ( (jumpChance / 1000.0f) * msec > BG_random() )
 			{
 				BotJump( self );
 			}

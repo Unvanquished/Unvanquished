@@ -252,7 +252,7 @@ static void CG_Rocket_EventPlay()
 		return;
 	}
 
-	const char *track = args.Argv( rand() % numSounds + 1 ).c_str();
+	const char *track = args.Argv( BG_randrange( numSounds ) + 1).c_str();
 	trap_S_StartBackgroundTrack( track, track );
 }
 

@@ -479,8 +479,8 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 		{
 			for ( i = tb->nodes; i; i = i->next )
 			{
-				i->jitters[ j ][ 0 ] = ( crandom() * btb->jitters[ j ].magnitude );
-				i->jitters[ j ][ 1 ] = ( crandom() * btb->jitters[ j ].magnitude );
+				i->jitters[ j ][ 0 ] = ( BG_crandom() * btb->jitters[ j ].magnitude );
+				i->jitters[ j ][ 1 ] = ( BG_crandom() * btb->jitters[ j ].magnitude );
 			}
 
 			tb->nextJitterTimes[ j ] = cg.time + btb->jitters[ j ].period;

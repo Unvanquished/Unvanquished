@@ -3,7 +3,7 @@
 only_commits:
   files:
     - .appveyor.yml
-    # The rest of this list should stay in sync with azure-pipelines.yml
+    # The rest of this list should stay in sync with .github/workflows/build.yml
     - daemon/
     - libs/
     - src/

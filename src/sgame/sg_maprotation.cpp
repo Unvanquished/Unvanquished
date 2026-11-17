@@ -311,7 +311,7 @@ static bool ParseValue( const char *token, mrValue_t &result )
 	}
 	else if ( !Q_stricmp( token, "random" ) )
 	{
-		result = rand() & 1;
+		result = BG_randrange( 2 );
 	}
 	else if ( !Q_stricmp( token, "time" ) ) // 0000 to 2359
 	{

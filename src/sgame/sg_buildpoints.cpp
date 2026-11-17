@@ -70,16 +70,6 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  * @brief Calculate the build point budgets for both teams.
  */
 
-void G_UpdateBPVampire( int client ) // -1 to update everyone
-{
-	if ( !g_BPVampire.Get() )
-	{
-		return;
-	}
-
-	trap_SendServerCommand( client, va( "bpvampire %d %d", static_cast<int>( level.team[ TEAM_HUMANS ].totalBudget ), static_cast<int>( level.team[ TEAM_ALIENS ].totalBudget ) ) );
-}
-
 void G_UpdateBuildPointBudgets() {
 	int abp = g_BPInitialBudgetAliens.Get();
 	int hbp = g_BPInitialBudgetHumans.Get();
@@ -106,7 +96,6 @@ void G_UpdateBuildPointBudgets() {
 		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
 		                                                 g_buildPointBudgetPerMiner.Get();
 	});
-	G_UpdateBPVampire( -1 );
 }
 
 void G_RecoverBuildPoints() {

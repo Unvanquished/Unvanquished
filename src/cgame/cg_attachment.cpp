@@ -149,7 +149,7 @@ bool CG_AttachmentDir( attachment_t *a, vec3_t v )
 				return false;
 			}
 
-			VectorCopy( a->orientation.axis[ 0 ], v );
+			VectorCopy( a->axis[ 0 ], v );
 			break;
 
 		case AT_CENT:
@@ -217,7 +217,7 @@ bool CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 				return false;
 			}
 
-			AxisCopy( a->orientation.axis, axis );
+			AxisCopy( a->axis, axis );
 			break;
 
 		case AT_CENT:
@@ -423,7 +423,7 @@ void CG_SetAttachmentTag( attachment_t *a, centity_t* centity, const uint16_t en
 	}
 
 	a->centity = centity;
-	a->entity = entity + centity->refEntitiesFrameCount[centity->refEntitiesFrame];
+	a->entity = entity + centity->refEntitiesFrameCount;
 	a->model = model;
 	a->tagName = tagName;
 	a->tagValid = true;

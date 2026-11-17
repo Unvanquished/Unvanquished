@@ -117,7 +117,6 @@ void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmou
 void              G_SpendBudget(team_t team, int amount);
 int               G_BuildableDeconValue(gentity_t *ent);
 void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
-void              G_UpdateBPVampire( int client );
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
@@ -230,7 +229,6 @@ void              G_InitGame( int levelTime, int randomSeed, bool inClient );
 void              G_RunFrame( int levelTime );
 void              G_ShutdownGame( int restart );
 void              G_CheckPmoveParamChanges();
-void              G_SendClientPmoveParams(int client);
 void              G_PrepareEntityNetCode();
 Str::StringRef G_NextMapCommand();
 

@@ -2,7 +2,7 @@
 
 # ===========================================================================
 #
-# Copyright (c) 2024 Unvanquished Developers
+# Copyright (c) 2024-2026 Unvanquished Developers
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,13 +31,15 @@ repo_dir="$(realpath "${script_dir}/../..")"
 dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
 pot_dir="${dpk_dir}/translation"
 
+. "${script_dir}/translation.conf"
+
 action_file="${dpk_dir}/.urcheon/action/build.txt"
 action_list="$(grep -v -E '^ignore translation/' "${action_file}")"
 echo "${action_list}" > "${action_file}"
 
 cd "${pot_dir}"
 
-for name in 'game'
+for name in "${translations[@]}"
 do
 	for po_file in $(find "${name}" -name '*.po' | sort)
 	do

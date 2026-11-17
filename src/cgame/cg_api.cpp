@@ -53,7 +53,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                     Log::Notice("cgame %s %s (%s) %s", PLATFORM_STRING, DAEMON_ARCH_STRING, DAEMON_CXX_COMPILER_STRING, __DATE__);
                     VM::InitializeProxies(milliseconds);
                     FS::Initialize();
-                    srand(time(nullptr));
+                    BG_InitRandom();
 		    cmdBuffer.Init();
                 });
                 break;

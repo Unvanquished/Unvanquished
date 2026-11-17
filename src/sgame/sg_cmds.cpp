@@ -970,7 +970,7 @@ static void Cmd_Team_f( gentity_t *ent )
 		}
 		else
 		{
-			team = (team_t) ( TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 ) );
+			team = (team_t) ( TEAM_ALIENS + BG_randrange( 2 ) );
 		}
 	}
 	else
@@ -2230,11 +2230,6 @@ static void Cmd_Class_f( gentity_t *ent )
 
 		if ( Cmd_Class_internal( ent, s, i == args ) ) break;
 	}
-}
-
-static void Cmd_ClientReady_f( gentity_t *ent )
-{
-	G_SendClientPmoveParams( ent->num() );
 }
 
 static void Cmd_Deconstruct_f( gentity_t *ent )
@@ -4275,7 +4270,6 @@ static const commands_t cmds[] =
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },
 	{ "callvote",        CMD_MESSAGE,                         Cmd_CallVote_f         },
 	{ "class",           CMD_TEAM,                            Cmd_Class_f            },
-	{ "client_ready",    0,                                   Cmd_ClientReady_f      },
 	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
 	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Deconstruct_f      },
 	{ "devteam",         CMD_CHEAT,                           Cmd_Devteam_f          },

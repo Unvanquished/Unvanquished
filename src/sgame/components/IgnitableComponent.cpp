@@ -45,7 +45,6 @@ IgnitableComponent::IgnitableComponent(Entity& entity, bool alwaysOnFire, Thinki
 	, immuneUntil(0)
 	, spreadAt(INT_MAX)
 	, fireStarter(nullptr)
-	, randomGenerator(rand()) // TODO: Have one PRNG for all of sgame.
 	, normalDistribution(0.0f, (float)BASE_AVERAGE_BURN_TIME) {
 	REGISTER_THINKER(DamageSelf, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 	REGISTER_THINKER(DamageArea, ThinkingComponent::SCHEDULER_AVERAGE, 100);
@@ -94,7 +93,7 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 	igniteTime = level.time;
 
 	// The spread delay follows a normal distribution: More likely to spread early than late.
-	int spreadTarget = level.time + (int)std::abs(normalDistribution(randomGenerator));
+	int spreadTarget = level.time + (int)std::abs(normalDistribution(BG_RandomEngine()));
 
 	// Allow re-ignition to update the spread delay to a lower value.
 	if (spreadTarget < spreadAt) {
@@ -186,7 +185,7 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	float averageTotalBurnTime = averagePostMinBurnTime + (float)MIN_BURN_TIME;
 
 	// Attempt to stop burning.
-	if (random() < burnStopChance) {
+	if (BG_random() < burnStopChance) {
 		fireLogger.Notice("Stopped burning after %.1fs, target average lifetime was %.1fs.",
 		                  (float)(level.time - igniteTime) / 1000.0f, averageTotalBurnTime / 1000.0f);
 
@@ -219,7 +218,7 @@ void IgnitableComponent::ConsiderSpread(int /*timeDelta*/) {
 		float distanceMod  = 1.0f - distanceFrac;
 		float spreadChance = distanceMod;
 
-		if (random() < spreadChance) {
+		if (BG_random() < spreadChance) {
 			if (G_LineOfSight(entity.oldEnt, other.oldEnt) && other.Ignite(fireStarter)) {
 				fireLogger.Notice("Ignited a neighbour, chance to do so was %.0f%%.",
 				                  spreadChance*100.0f);

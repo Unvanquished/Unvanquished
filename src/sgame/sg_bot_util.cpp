@@ -1600,7 +1600,7 @@ static int BotGetAimTime( gentity_t *self )
 	{
 		baseTime = baseTime * 3 / 5;
 	}
-	auto time = ( 10 - self->botMind->skillLevel ) * baseTime * std::max( random(), 0.5f );
+	auto time = ( 10 - self->botMind->skillLevel ) * baseTime * std::max( BG_random(), 0.5f );
 	return std::max( 1, int(time) );
 }
 
@@ -2003,7 +2003,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 
 	int msec = level.time - level.previousTime;
 	constexpr float jumpChance = 0.1f; // chance per second
-	if ( botIsJumper && self->botMind->nav().directPathToGoal && (jumpChance / 1000.0f) * msec > random() )
+	if ( botIsJumper && self->botMind->nav().directPathToGoal && (jumpChance / 1000.0f) * msec > BG_random() )
 	{
 		BotJump( self );
 	}

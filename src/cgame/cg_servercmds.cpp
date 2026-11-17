@@ -32,6 +32,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 #include "shared/CommonProxies.h"
 
+static void ParsePmoveParams() {
+	Cmd::Args args(CG_ConfigString( CS_PMOVE_PARAMS ));
+	if (args.Argc() != 4) {
+		Log::Warn( "ParsePmoveParams: bad configstring" );
+		return;
+	}
+
+	cg.pmoveParams.synchronous = atoi(args.Argv(0).c_str());
+	cg.pmoveParams.fixed = atoi(args.Argv(1).c_str());
+	cg.pmoveParams.msec = Math::Clamp( atoi(args.Argv(2).c_str()), 8, 33 );
+	cg.pmoveParams.accurate = atoi(args.Argv(3).c_str());
+}
+
 /*
 =================
 CG_ParseScores
@@ -85,13 +98,23 @@ CG_BPVampire
 */
 static void CG_BPVampire()
 {
-	cg.bpVampireTime = cg.time;
+	int bpA, bpH;
 
-	cg.bpVampireOld[ TEAM_HUMANS ] = cg.bpVampire[ TEAM_HUMANS ];
-	cg.bpVampireOld[ TEAM_ALIENS ] = cg.bpVampire[ TEAM_ALIENS ];
+	if ( 2 == sscanf( CG_ConfigString( CS_BP_VAMPIRE ), "%d %d", &bpA, &bpH ) )
+	{
+		cg.bpVampireTime = cg.time;
 
-	cg.bpVampire[ TEAM_HUMANS ] = atoi( CG_Argv( 1 ) );
-	cg.bpVampire[ TEAM_ALIENS ] = atoi( CG_Argv( 2 ) );
+		cg.bpVampireOld[ TEAM_HUMANS ] = cg.bpVampire[ TEAM_HUMANS ];
+		cg.bpVampireOld[ TEAM_ALIENS ] = cg.bpVampire[ TEAM_ALIENS ];
+
+		cg.bpVampire[ TEAM_HUMANS ] = bpH;
+		cg.bpVampire[ TEAM_ALIENS ] = bpA;
+	}
+	else
+	{
+		// Off. String should be empty
+		cg.bpVampireTime = 0;
+	}
 }
 
 static void CG_PrintBPMessage_f()
@@ -161,22 +184,9 @@ void CG_SetMapNameFromServerinfo()
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 
-/*
-================
-CG_ParseServerinfo
-
-This is called explicitly when the gamestate is first received,
-and whenever the server updates any serverinfo flagged cvars
-================
-*/
-void CG_ParseServerinfo()
+static void CG_ParseGameplayCvars()
 {
-	const char *info;
-
-	info = CG_ConfigString( CS_SERVERINFO );
-
-	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
-	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+	const char *info = CG_ConfigString( CS_GAMEPLAY_CVARS );
 
 	cgs.devolveMaxBaseDistance = atof( Info_ValueForKey( info, "g_devolveMaxBaseDistance" ) );
 
@@ -187,38 +197,10 @@ void CG_ParseServerinfo()
 	cgs.buildPointRecoveryInitialRate  = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
 	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
 
+	// weapons/equipment/etc. must be parsed first for this to work!
 	BG_SetForbiddenEquipment(  std::string( Info_ValueForKey( info, "g_disabledEquipment"  ) ) );
 	BG_SetForbiddenClasses(    std::string( Info_ValueForKey( info, "g_disabledClasses"    ) ) );
 	BG_SetForbiddenBuildables( std::string( Info_ValueForKey( info, "g_disabledBuildables" ) ) );
-}
-
-/*
-==================
-CG_ParseWarmup
-==================
-*/
-static void CG_ParseWarmup()
-{
-	const char *info;
-	int        warmup;
-
-	info = CG_ConfigString( CS_WARMUP );
-
-	warmup = atoi( info );
-	cg.warmupTime = warmup;
-}
-
-/*
-================
-CG_SetConfigValues
-
-Called on load to set the initial values from configure strings
-================
-*/
-void CG_SetConfigValues()
-{
-	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
-	cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
 }
 
 /*
@@ -226,7 +208,7 @@ void CG_SetConfigValues()
 CG_ShaderStateChanged
 =====================
 */
-void CG_ShaderStateChanged()
+static void CG_ShaderStateChanged()
 {
 	char       originalShader[ MAX_QPATH ];
 	char       newShader[ MAX_QPATH ];
@@ -275,41 +257,40 @@ void CG_ShaderStateChanged()
 	}
 }
 
-/*
-================
-CG_ConfigStringModified
 
-================
-*/
-static void CG_ConfigStringModified()
+static void CG_ConfigStringModified_f()
 {
-	const char *str;
-	int        num;
-
 	// update the config string state with the new data, keeping in sync
 	// with the config strings in the engine.
 	// The engine already checked the inputs
-	num = atoi( CG_Argv( 1 ) );
+	int num = atoi( CG_Argv( 1 ) );
 	cgs.gameState[num] = CG_Argv(2);
 
-	// look up the individual string that was modified
-	str = CG_ConfigString( num );
+	// react to new value
+	CG_ConfigStringModified( num );
+}
 
-	//Log::Debug("configstring modification %i: %s", num, str);
+void CG_ConfigStringModified( int num )
+{
+	// look up the individual string that was modified
+	const char *str = CG_ConfigString( num );
 
 	// do something with it if necessary
-	if ( num == CS_MUSIC )
-	{
-		CG_StartMusic();
-	}
-	else if ( num == CS_SERVERINFO )
+	if ( num == CS_SERVERINFO )
 	{
 		CG_SetMapNameFromServerinfo();
-		CG_ParseServerinfo();
+	}
+	else if ( num == CS_GAMEPLAY_CVARS )
+	{
+		CG_ParseGameplayCvars();
+	}
+	else if ( num == CS_PMOVE_PARAMS )
+	{
+		ParsePmoveParams();
 	}
 	else if ( num == CS_WARMUP )
 	{
-		CG_ParseWarmup();
+		cg.warmupTime = atoi( CG_ConfigString( CS_WARMUP ) );
 	}
 	else if ( num == CS_LEVEL_START_TIME )
 	{
@@ -343,10 +324,7 @@ static void CG_ConfigStringModified()
 	else if ( num == CS_INTERMISSION )
 	{
 		cg.intermissionStarted = atoi( str );
-		if ( cg.intermissionStarted )
-		{
-			Rocket_ShowScoreboard( "scoreboard", true );
-		}
+		Rocket_ShowScoreboard( "scoreboard", cg.intermissionStarted );
 	}
 	else if ( num >= CS_MODELS && num < CS_MODELS + MAX_MODELS )
 	{
@@ -385,6 +363,10 @@ static void CG_ConfigStringModified()
 	else if ( num == CS_SHADERSTATE )
 	{
 		CG_ShaderStateChanged();
+	}
+	else if ( num == CS_BP_VAMPIRE )
+	{
+		CG_BPVampire();
 	}
 }
 
@@ -1352,28 +1334,9 @@ static void CG_GameCmds_f()
 	}
 }
 
-static void CG_PmoveParams_f() {
-	char arg1[64], arg2[64], arg3[64], arg4[64];
-
-	if (trap_Argc() != 5) {
-		return;
-	}
-
-	trap_Argv(1, arg1, sizeof(arg1));
-	trap_Argv(2, arg2, sizeof(arg2));
-	trap_Argv(3, arg3, sizeof(arg3));
-	trap_Argv(4, arg4, sizeof(arg4));
-
-	cg.pmoveParams.synchronous = atoi(arg1);
-	cg.pmoveParams.fixed = atoi(arg2);
-	cg.pmoveParams.msec = Math::Clamp( atoi(arg3), 8, 33 );
-	cg.pmoveParams.accurate = atoi(arg4);
-}
-
 static const consoleCommand_t svcommands[] =
 {	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
-	{ "bpvampire",        CG_BPVampire            },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
@@ -1381,9 +1344,8 @@ static const consoleCommand_t svcommands[] =
 	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
 	{ "cp_tr",            CG_CenterPrintTR_f      },
 	{ "cp_tr_p",          CG_CenterPrintTR_plural_f },
-	{ "cs",               CG_ConfigStringModified },
+	{ "cs",               CG_ConfigStringModified_f },
 	{ "map_restart",      CG_MapRestart           },
-	{ "pmove_params",     CG_PmoveParams_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_bp_message", CG_PrintBPMessage_f     },
 	{ "print_tr",         CG_PrintTR_f            },

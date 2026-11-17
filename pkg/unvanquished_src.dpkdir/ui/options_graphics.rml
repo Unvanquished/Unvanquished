@@ -160,6 +160,18 @@
 					<p><translate>Non-physical lighting technique to make models less dark.</translate></p>
 				</row>
 				<row>
+					<h3><translate>sRGB conversion accuracy</translate></h3>
+					<input cvar="r_accurateSRGB" type="checkbox" />
+					<p><translate>Disabling accuracy makes color conversions faster but less precise.</translate></p>
+				</row>
+				<row>
+					<select cvar="r_forceBlendRegime" style="width:20em;">
+						<option value="0"><translate>Detect</translate></option>
+						<option value="1"><translate>Forced naive blend (approximation)</translate></option>
+					</select>
+					<h3><translate>Blend regime</translate></h3>
+				</row>
+				<row>
 					<select cvar="cg_shadows" style="width:20em;">
 						<option value="1"><translate>Blobs</translate>&nbsp;(<translate>low</translate>)</option>
 						<option value="0"><translate>None</translate></option>

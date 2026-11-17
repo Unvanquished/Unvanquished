@@ -90,7 +90,7 @@ public:
 			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
 				Rml::ElementPtr childPtr = Rml::Factory::InstanceElement( this, "#text", "span", Rml::XMLAttributes() );
-				Rml::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text.c_str(), RP_EMOTICONS ));
+				Rml::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text ));
 				childPtr->SetId( va( "%d", lines[ line ].time ) );
 				AppendChild( std::move( childPtr ) );
 			}

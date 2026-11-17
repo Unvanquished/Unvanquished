@@ -145,7 +145,7 @@ static const char *G_BotSelectName( team_t team )
 		return nullptr;
 	}
 
-	unsigned int choice = rand() % count;
+	unsigned int choice = BG_randrange( count );
 
 	unsigned int index = 0;
 	for ( nameInfo_t &nameInfo : botNames[team] )

@@ -34,7 +34,7 @@ MAJOR_REPLACEMENTS = [
     (
         "daemon/src/common/IPC/Common.h",
         r'SYSCALL_ABI_VERSION = "[^"]*"',
-        r'SYSCALL_ABI_VERSION = "{version}"'
+        r'SYSCALL_ABI_VERSION = "{abiVersion}"'
     ),
 ]
 
@@ -52,6 +52,8 @@ def update_version(version, majorness, dry_run):
         "major": REPLACEMENTS + MAJOR_REPLACEMENTS,
     }[majorness]
 
+    abiVersion = ".".join(version.split(".")[0:2])
+
     for filename, pattern, replacement in replacements:
         filename = os.path.join(root, filename)
         if filename not in changes:
@@ -61,7 +63,9 @@ def update_version(version, majorness, dry_run):
         if not re.search(pattern, changes[filename][1]):
             raise Exception("Replacement for %s matched nothing" % filename)
         changes[filename][1] = re.sub(
-            pattern, replacement.format(version=version), changes[filename][1])
+            pattern,
+            replacement.format(version=version, abiVersion=abiVersion),
+            changes[filename][1])
 
     if dry_run:
         for filename, (old, new) in changes.items():

@@ -224,8 +224,8 @@ bool SpikerComponent::Fire() {
 
 		// Launch missiles in the current row.
 		for (int spike = 0; spike < spikes; spike++) {
-			float spikeAltitude = rowAltitude + (0.5f * crandom() * M_PI_2 / (float)MISSILEROWS);
-			float spikeAzimuth = 2.0f * M_PI * (((float)spike + 0.5f * crandom()) / (float)spikes);
+			float spikeAltitude = rowAltitude + (0.5f * BG_crandom() * M_PI_2 / (float)MISSILEROWS);
+			float spikeAzimuth = 2.0f * M_PI * (((float)spike + 0.5f * BG_crandom()) / (float)spikes);
 
 			// Set launch direction altitude.
 			RotatePointAroundVector(dir, rotAxis, zenith, RAD2DEG(M_PI_2 - spikeAltitude));

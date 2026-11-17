@@ -344,7 +344,7 @@ static void CG_Speaker( centity_t *cent )
 
 	//  ent->s.frame = ent->wait * 10;
 	//  ent->s.clientNum = ent->random * 10;
-	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * crandom();
+	cent->miscTime = cg.time + cent->currentState.frame * 100 + cent->currentState.clientNum * 100 * BG_crandom();
 }
 
 //============================================================================
@@ -1247,11 +1247,11 @@ void CG_AddPacketEntities()
 
 	// generate and add the entity from the playerstate
 	ps = &cg.predictedPlayerState;
-	BG_PlayerStateToEntityState( ps, &cg.predictedPlayerEntity.currentState, false );
-	cg.predictedPlayerEntity.valid = true;
-	cg.predictedPlayerEntity.refEntitiesFrame ^= 1;
-	cg.predictedPlayerEntity.refEntitiesFrameCount[cg.predictedPlayerEntity.refEntitiesFrame] = 0;
-	CG_AddCEntity( &cg.predictedPlayerEntity );
+	centity_t* playerEnt = &cg.predictedPlayerEntity;
+
+	BG_PlayerStateToEntityState( ps, &playerEnt->currentState, false );
+
+	CG_AddCEntity( playerEnt );
 
 	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ] );
@@ -1278,17 +1278,14 @@ void CG_AddPacketEntities()
 
 		cent->valid = true;
 
-		cent->refEntitiesFrame ^= 1;
-		cent->refEntitiesFrameCount[cent->refEntitiesFrame] = 0;
+		cent->refEntitiesFrameCount = 0;
 		CG_AddCEntity( cent );
 
-		if ( cent != &cg.predictedPlayerEntity ) {
-			uint8_t lastFrameCount = cent->refEntitiesFrameCount[cent->refEntitiesFrame];
+		const uint8_t lastFrameCount = cent->refEntitiesFrameCount;
 
-			if ( cent->refEntitiesCount > lastFrameCount ) {
-				entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
-				cent->refEntitiesCount = lastFrameCount;
-			}
+		if ( cent->refEntitiesCount > lastFrameCount ) {
+			entityCache.Free( cent->refEntitiesOffset + lastFrameCount, cent->refEntitiesCount - lastFrameCount, true );
+			cent->refEntitiesCount = lastFrameCount;
 		}
 
 		done[ num ] = true;

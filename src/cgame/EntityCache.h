@@ -62,15 +62,21 @@ class EntityCache {
 	public:
 	uint32_t Alloc( const uint32_t count );
 	void Free( const uint32_t offset, const uint32_t count, const bool update );
+	void Deactivate( uint32_t offset, uint32_t count );
 
 	void Clear();
 
 	private:
-	static constexpr uint32_t blockCount   = PAD( MAX_REF_ENTITIES / 64, 64 );
-	static constexpr uint32_t blockCountL2 = ( blockCount + 63 )   / 64;
+	using block1_t = uint64_t;
+	using block2_t = uint64_t;
+	static constexpr uint32_t blockSize1 = std::numeric_limits<block1_t>::digits; // "digits" = num bits
+	static constexpr uint32_t blockSize2 = std::numeric_limits<block2_t>::digits;
 
-	uint64_t blocksL2[blockCountL2];
-	uint64_t blocks[blockCount];
+	static constexpr uint32_t blockCount   = MAX_REF_ENTITIES / blockSize1;
+	static constexpr uint32_t blockCountL2 = blockCount / blockSize2;
+
+	block2_t blocksL2[blockCountL2];
+	block1_t blocks[blockCount];
 };
 
 extern EntityCache entityCache;

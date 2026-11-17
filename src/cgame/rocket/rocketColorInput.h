@@ -124,7 +124,7 @@ private:
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
 
-		Rml::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.c_str(), RP_QUAKE ) );
+		Rml::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string, /*emoticons=*/ false ) );
 	}
 
 	Rml::Element *input;

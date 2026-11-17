@@ -187,7 +187,7 @@ static int ImpactFlamer( gentity_t *ent, const trace2_t *trace, gentity_t *hitEn
 	gentity_t *neighbor = nullptr;
 
 	// ignite on direct hit
-	if ( random() < FLAMER_IGNITE_CHANCE )
+	if ( BG_random() < FLAMER_IGNITE_CHANCE )
 	{
 		hitEnt->entity->Ignite( ent->parent );
 	}
@@ -201,7 +201,7 @@ static int ImpactFlamer( gentity_t *ent, const trace2_t *trace, gentity_t *hitEn
 			continue;
 		}
 
-		if ( random() < FLAMER_IGNITE_SPLCHANCE )
+		if ( BG_random() < FLAMER_IGNITE_SPLCHANCE )
 		{
 			neighbor->entity->Ignite( ent->parent );
 		}
@@ -210,7 +210,7 @@ static int ImpactFlamer( gentity_t *ent, const trace2_t *trace, gentity_t *hitEn
 	// set the environment on fire
 	if ( hitEnt->num() == ENTITYNUM_WORLD )
 	{
-		if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
+		if ( BG_random() < FLAMER_LEAVE_FIRE_CHANCE )
 		{
 			G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 		}

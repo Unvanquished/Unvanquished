@@ -425,6 +425,11 @@ void G_UpdateBuildablePowerStates()
 				return;
 			}
 
+			if (g_BPVampire.Get()) {
+				buildableComponent.SetPowerState(true);
+				return;
+			}
+
 			// In order to make good a deficit, don't shut down buildables that have no cost.
 			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
 			if (!entity.oldEnt->powered) {
@@ -2080,7 +2085,7 @@ void G_LayoutSelect()
 		return;
 	}
 
-	layoutNum = ( rand() % cnt ) + 1;
+	layoutNum = BG_randrange( cnt ) + 1;
 	Q_strncpyz( layouts2, layouts, sizeof( layouts2 ) );
 	layoutPtr = &layouts2[ 0 ];
 
@@ -2254,7 +2259,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 			{
 				float val = ( targ->client->ps.eFlags & EF_WALLCLIMB ) ? 300.0 : 150.0;
 
-				VectorSet( push, crandom() * val, crandom() * val, random() * val );
+				VectorSet( push, BG_crandom() * val, BG_crandom() * val, BG_random() * val );
 				VectorAdd( targ->client->ps.velocity, push, targ->client->ps.velocity );
 				victims++;
 			}
@@ -2377,7 +2382,6 @@ void G_BuildLogRevert( int id )
 		level.team[ TEAM_HUMANS ].totalBudget = log->humanBP;
 		level.team[ TEAM_ALIENS ].totalBudget = log->alienBP;
 
-		G_UpdateBPVampire( -1 );
 	}
 
 	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
