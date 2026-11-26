@@ -160,3 +160,11 @@ progress {
 	margin-top: auto;
 	margin-bottom: auto;
 }
+
+icon {
+	display: inline-block;
+	font-family: "Font Awesome 6 Free";
+	font-style: normal;
+	font-weight: 900;
+	line-height: 1;
+}
