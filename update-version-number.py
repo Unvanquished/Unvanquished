@@ -22,12 +22,6 @@ REPLACEMENTS = [
         r"current_unvanquished_version='[^']*'",
         r"current_unvanquished_version='{version}'"
     ),
-    # This could also go in MAJOR_REPLACEMENTS as it should already be false in a minor release
-    (
-        "daemon/src/common/IPC/Common.h",
-        r"DAEMON_HAS_COMPATIBILITY_BREAKING_SYSCALL_CHANGES = (true|false)",
-        r"DAEMON_HAS_COMPATIBILITY_BREAKING_SYSCALL_CHANGES = false"
-    ),
 ]
 
 MAJOR_REPLACEMENTS = [
