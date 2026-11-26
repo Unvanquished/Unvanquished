@@ -45,7 +45,7 @@ jobs:
             install_deps: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python3-yaml python3-jinja2 ninja-build
             cmake_options: -G Ninja -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1
             builder_options: -j$(nproc) -k 10
-          - name: MacOS amd64 AppleClang
+          - name: macOS amd64 AppleClang
             vm_image: macos-15-intel
             install_deps: python3 -m venv build/cbse-venv && build/cbse-venv/bin/pip install -r tools/cbse/requirements.txt
             cmake_options: -DCBSE_PYTHON_PATH=build/cbse-venv/bin/python3 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0
