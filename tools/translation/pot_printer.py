@@ -38,7 +38,7 @@ def load(filename):
     file.close()
     return content
 
-def run(process):
+def run(process, load=load):
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", action="store_true", help="sort strings")
     parser.add_argument("-d", action="store_true", help="print debug information")

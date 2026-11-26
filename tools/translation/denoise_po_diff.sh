@@ -24,7 +24,8 @@
 #
 # ===========================================================================
 
-set -u -e -o pipefail
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+. "${script_dir}/common.sh"
 
 erase_date () {
 	sed '/^"POT-Creation-Date:/d'
@@ -32,11 +33,6 @@ erase_date () {
 
 is_modified_file () {
 	diff -q <(git show "HEAD:./${1}" | erase_date) <(erase_date < "${1}") >/dev/null 2>&1
-}
-
-error () {
-	echo "ERROR: ${1}" >&2
-	false
 }
 
 if [ -z "${1:-}" ]

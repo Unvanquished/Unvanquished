@@ -24,14 +24,49 @@
 #
 # ===========================================================================
 
-set -u -e -o pipefail
+known_options=('data_dir')
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-repo_dir="$(realpath "${script_dir}/../..")"
-dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
-pot_dir="${dpk_dir}/translation"
+. "${script_dir}/common.sh"
 
-. "${script_dir}/translation.conf"
+parse_args "${@}"
+set_paths
+
+generate_data_pot () (
+	if [ -z "${option_data_dir:-}" ]
+	then
+		error "missing data directory"
+	fi
+
+	if [ ! -d "${option_data_dir}" ]
+	then
+		error "not a directory: ${option_data_dir}"
+	fi
+
+	for pak_dir in $(find "${option_data_dir}/pkg" -type d -name 'map-*.dpkdir')
+	do
+	(
+		cd "${pak_dir}"
+
+		find maps -type f -name '*.map' \
+		| sort \
+		| xargs -I{} \
+			"${script_dir}/generate_map_pot.py" {} \
+			>> "${temp_pot_file}"
+
+		find meta -type f -name '*.arena' \
+		| sort \
+		| xargs -I{} \
+			"${script_dir}/generate_arena_pot.py" {} \
+			>> "${temp_pot_file}"
+	)
+	done
+
+	# HACK: Let xgettext reprocess the file to deduplicate comments.
+	echo '' | xgettext --from-code=UTF-8 \
+		-j -o "${temp_pot_file}" \
+		-f -
+)
 
 generate_game_pot () (
 	(
