@@ -59,6 +59,20 @@ enum AIEntity_t
 	E_ENEMYBUILDING,    // closest alive enemy building
 	E_SELF
 };
+#if defined __GNUC__
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wenum-compare"
+#endif
+static_assert(E_NONE == BA_NONE                    , "Please keep buildable_t and AIEntity_t in sync" );
+static_assert(E_NUM_BUILDABLES == BA_NUM_BUILDABLES, "Please keep buildable_t and AIEntity_t in sync" );
+static_assert(E_H_SPAWN == BA_H_SPAWN              , "Please keep buildable_t and AIEntity_t in sync" );
+static_assert(E_H_REACTOR == BA_H_REACTOR          , "Please keep buildable_t and AIEntity_t in sync" );
+static_assert(E_A_SPIKER == BA_A_SPIKER            , "Please keep buildable_t and AIEntity_t in sync" );
+static_assert(E_A_OVERMIND == BA_A_OVERMIND        , "Please keep buildable_t and AIEntity_t in sync" );
+#if defined __GNUC__
+#    pragma GCC diagnostic pop
+#endif
+
 
 // all behavior tree nodes must return one of
 // these status when finished
