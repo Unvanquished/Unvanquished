@@ -47,12 +47,6 @@ enum class navMeshStatus_t
 };
 extern navMeshStatus_t navMeshLoaded;
 
-struct botEntityAndDistance_t
-{
-	gentity_t const *ent;
-	float distance;
-};
-
 class botTarget_t
 {
 public:
@@ -75,6 +69,12 @@ private:
 	GentityConstRef ent;
 	glm::vec3 coord;
 	enum class targetType { EMPTY, COORDS, ENTITY } type;
+};
+
+struct botGoalAndDistance_t
+{
+	botTarget_t goal;
+	float distance;
 };
 
 #define MAX_ENEMY_QUEUE 32
@@ -192,14 +192,14 @@ public:
 	int blackboardTransient; // queryable by other bots
 
 	// Transient caches. These are populated before each think and valid for only one frame {
-		botEntityAndDistance_t bestEnemy;
-		botEntityAndDistance_t closestDamagedBuilding; // friendly only
+		botGoalAndDistance_t bestEnemy;
+		botGoalAndDistance_t closestDamagedBuilding; // friendly only
 
 	botJetpackState_t jetpackState;
 
 		// For allied buildable types: closest alive and active buildable
 		// For enemy buildable types: closest alive buildable with a tag beacon
-		botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
+		botGoalAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
 	// }
 
 	// Scratch area, reset each frame {
