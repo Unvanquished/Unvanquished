@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-17 16:59+0200\n"
-"PO-Revision-Date: 2026-05-22 22:11+0000\n"
-"Last-Translator: niv41 <niv41.trabajando@proton.me>\n"
+"PO-Revision-Date: 2026-11-27 22:27+0000\n"
+"Last-Translator: fserrador <fserrador@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -231,7 +231,6 @@ msgstr ""
 "una supermente viva para evolucionar!"
 
 #: ui/help_gameplay.rml:55
-#, fuzzy
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -239,7 +238,7 @@ msgid ""
 msgstr ""
 "Los humanos pueden ganar créditos matando alienígenas y destruyendo "
 "construcciones alienígenas, y luego pueden usar esos créditos para comprar "
-"nuevas armas [lcannon], armaduras o trajes de batalla [bsuit], y accesorios "
+"armas nuevas [lcannon], armaduras o trajes de batalla [bsuit], y accesorios "
 "como un radar o una mochila propulsora."
 
 #: ui/help_gameplay.rml:58
@@ -528,12 +527,11 @@ msgstr ""
 "(antes 9)."
 
 #: ui/help_gameplay.rml:172
-#, fuzzy
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
-"Las etapas se sustituyeron por el impulso, y los puntos de acumulación "
+"Las etapas fueron sustituidas por el impulso, y los puntos de acumulación "
 "dependen directamente del número de ejercicios."
 
 #: ui/help_gameplay.rml:175
@@ -545,14 +543,13 @@ msgstr ""
 "defensa, pero pueden construir vainas de cohetes."
 
 #: ui/help_gameplay.rml:178
-#, fuzzy
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
-"Los alienígenas tienen el spiker construible que puede herir profundamente a "
-"los humanos imprudentes, pero es una estructura muy vulnerable, ¡no la "
-"pongas a la vista!"
+"Los alienígenas tienen el púas creadas que puede que puede herir "
+"profundamente a los humanos imprudentes, pero es una estructura muy "
+"vulnerable, ¡no la pongas a la vista!"
 
 #: ui/help_gameplay.rml:181
 msgid ""
@@ -1022,7 +1019,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:77
 msgid "Anti-aliasing"
-msgstr ""
+msgstr "Anti‐alias"
 
 #: ui/options_graphics.rml:80
 msgid "Multisample anti-aliasing is preferred when both are enabled."
@@ -1387,6 +1384,9 @@ msgid ""
 "Adds static cubemap reflections on supported surfaces. Requires normal, "
 "specular and deluxe mapping. Currently unsupported with physical mapping."
 msgstr ""
+"Añade reflejos de mapas de cubos (cubemaps) estáticos en superficies "
+"compatibles. Requiere mapeado de normales, especular y «deluxe». Actualmente "
+"no es compatible con el mapeado físico."
 
 #: ui/options_graphics.rml:299
 msgid "Very low"
@@ -1430,11 +1430,13 @@ msgstr "Reconstruir siempre"
 
 #: ui/options_graphics.rml:323
 msgid "Static reflection cubemaps autobuild"
-msgstr ""
+msgstr "Auto‐compilación de mapas cúbicos de reflexión estática"
 
 #: ui/options_graphics.rml:324
 msgid "Automatically build/load/save reflection cubemaps."
 msgstr ""
+"Generar, cargar y guardar automáticamente mapas de cubos (cubemaps) de "
+"reflexión."
 
 #: ui/options_graphics.rml:332 ui/options_graphics.rml:334
 #: ui/options_sound.rml:13
@@ -1451,11 +1453,11 @@ msgstr "Hace brillar las zonas luminosas de tu pantalla."
 
 #: ui/options_graphics.rml:341
 msgid "Color grading"
-msgstr ""
+msgstr "Corrección de color"
 
 #: ui/options_graphics.rml:343
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Altera colores para crear ambientes específicos."
 
 #: ui/options_graphics.rml:346
 msgid "Heat-haze"
@@ -1495,11 +1497,11 @@ msgstr "Renderizador"
 
 #: ui/options_graphics.rml:375
 msgid "Read-only depth buffer"
-msgstr ""
+msgstr "Tampón de profundidad de solo lectura"
 
 #: ui/options_graphics.rml:377 ui/options_graphics.rml:379
 msgid "Material system"
-msgstr ""
+msgstr "Sistema material"
 
 #: ui/options_graphics.rml:381
 msgid ""
@@ -1512,19 +1514,19 @@ msgstr ""
 
 #: ui/options_graphics.rml:384
 msgid "GPU frustum culling"
-msgstr ""
+msgstr "Descarte de frustum de GPU"
 
 #: ui/options_graphics.rml:386
 msgid "Cull surfaces that are out of view."
-msgstr ""
+msgstr "Desechar superficies que estén fuera de la vista."
 
 #: ui/options_graphics.rml:389
 msgid "GPU occlusion culling"
-msgstr ""
+msgstr "Sacrificar oclusión de la GPU"
 
 #: ui/options_graphics.rml:391
 msgid "Cull hidden surfaces."
-msgstr ""
+msgstr "Sacrificar superficies ocultas."
 
 #: ui/options_graphics.rml:398
 msgid "Gameplay"
@@ -1767,7 +1769,7 @@ msgstr "Menú de baliza:"
 
 #: ui/options_keys.rml:159
 msgid "Vsays menu:"
-msgstr ""
+msgstr "Menú Vsays:"
 
 #: ui/options_keys.rml:163
 msgid "Bot tactic menu:"
@@ -1859,11 +1861,13 @@ msgstr "Desactívalo solamente si eres adicto a Quake."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Captura del ratón en menú circular"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
+"Los menúes circulares (a excepción del menú de Armería) toman entradas del "
+"ratón"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
@@ -1906,7 +1910,7 @@ msgstr "Activa / desactiva el sprint"
 
 #: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
-msgstr "Apariencia"
+msgstr "Cosmético"
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
@@ -1984,17 +1988,20 @@ msgid "You can put emoticons in your nickname too."
 msgstr "También puedes añadir emoticonos a tu nombre."
 
 #: ui/options_player.rml:70
+#, fuzzy
 msgid ""
 "Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
 msgstr ""
+"Ejemplo: ^7^^3Fred^^1Bolsón[^7granada]^* se convierte en "
+"^3Fred^1Bolsones[granada]"
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr "La lista de los emoticonos disponibles:"
+msgstr "Aquí está el listado de los emoticonos disponibles:"
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
-msgstr "Construible por humanos"
+msgstr "Construíbles por humanos"
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
@@ -2014,11 +2021,11 @@ msgstr "Mostrar consejos para los atajos de teclado en pantalla."
 
 #: ui/options_player.rml:220
 msgid "Show only team chat"
-msgstr "Mostrar únicamente el chat de equipo"
+msgstr "Solo mostrar el chat de equipo"
 
 #: ui/options_player.rml:224
 msgid "Show obituaries"
-msgstr "Mostrar obutiarios"
+msgstr "Mostrar obituarios"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -2102,25 +2109,27 @@ msgstr "Muestra la duración de la partida."
 
 #: ui/options_ui.rml:42
 msgid "Console input persistence on map change"
-msgstr ""
+msgstr "Persistencia de la entrada de consola al cambiar de mapa"
 
 #: ui/options_ui.rml:44
 msgid ""
 "Current console input will be restored the first time the console is opened "
 "after a new map is loaded."
 msgstr ""
+"La entrada de consola actual se restaurará la primera vez que se abra la "
+"consola tras cargar un mapa nuevo."
 
 #: ui/options_ui.rml:47
 msgid "Chat field auto-clear"
-msgstr ""
+msgstr "Auto‐vaciado del campo de charla"
 
 #: ui/options_ui.rml:49
 msgid "Clear chat field when closed."
-msgstr "Limpiar el campo de chat al cerrarlo."
+msgstr "Vaciar campo de charla al cerrarlo."
 
 #: ui/options_ui.rml:53
 msgid "Show ping"
-msgstr "Muestra el ping"
+msgstr "Mostrar ping"
 
 #: ui/options_ui.rml:55
 msgid "Time that information takes to get to the server and back."
@@ -2193,7 +2202,7 @@ msgstr "Escopeta"
 
 #: ui/options_ui.rml:104 ui/server_setup.rml:297 configs/weapon/lgun.attr.cfg:1
 msgid "Lasgun"
-msgstr ""
+msgstr "Pistola láser"
 
 #: ui/options_ui.rml:105 ui/server_setup.rml:301
 #: configs/weapon/mdriver.attr.cfg:1
@@ -2282,6 +2291,7 @@ msgstr "Tamaño del borde de la retícula"
 #: ui/options_ui.rml:179
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
+"Los valores negativos harán que el contorno se sitúe dentro del retículo."
 
 #: ui/options_ui.rml:182
 msgid "Scale:"
@@ -2289,7 +2299,7 @@ msgstr "Escala:"
 
 #: ui/options_ui.rml:186
 msgid "Offset:"
-msgstr ""
+msgstr "Desplazamiento:"
 
 #: ui/options_ui.rml:191
 msgid "Crosshair outline colours"
@@ -2377,22 +2387,27 @@ msgstr "Iniciar"
 
 #: ui/server_mismatch.rml:8
 msgid "Engine version mismatch"
-msgstr ""
+msgstr "Incompatibilidad de versión del motor"
 
 #: ui/server_mismatch.rml:9
 msgid ""
 "This server uses a different Daemon engine version, which is not compatible."
 msgstr ""
+"Este servidor utiliza una versión diferente del motor Daemon, la cual no es "
+"compatible."
 
 #: ui/server_mismatch.rml:11
 msgid ""
 "The latest Unvanquished release can be downloaded through the Updater app, "
 "at <web dest=\"download\"/>, or in one of the official package repositories."
 msgstr ""
+"La versión más reciente de Unvanquished se puede descargar a través de la "
+"aplicación Updater, en <web dest=\"download\"/> o en uno de los repositorios "
+"oficiales de paquetes."
 
 #: ui/server_mismatch.rml:12
 msgid "Connect anyway"
-msgstr ""
+msgstr "Conectar de todos modos"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
@@ -2424,9 +2439,8 @@ msgid "Human:"
 msgstr "Humano:"
 
 #: ui/server_setup.rml:35
-#, fuzzy
 msgid "Friendly buildable fire"
-msgstr "Fuego construible amigable"
+msgstr "Fuego amigable y construible"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
@@ -2482,7 +2496,7 @@ msgstr "Aleja las personas lentas de los spawns."
 
 #: ui/server_setup.rml:93
 msgid "Momentum"
-msgstr ""
+msgstr "Impulso"
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
@@ -2559,25 +2573,29 @@ msgstr "Puntos de construcción iniciales"
 
 #: ui/server_setup.rml:164
 msgid "BP Vampire"
-msgstr ""
+msgstr "Vampiro BP"
 
 #: ui/server_setup.rml:165
 msgid "Bleed build points from the enemy team by killing buildables."
 msgstr ""
+"Resta puntos de construcción al equipo enemigo destruyendo sus estructuras."
 
 #: ui/server_setup.rml:168
 msgid "Mining"
-msgstr ""
+msgstr "Minería"
 
 #: ui/server_setup.rml:169
 msgid ""
 "Increase build budget by building mining structures. BP returns slowly when "
 "a buildable is lost."
 msgstr ""
+"Aumenta el presupuesto de construcción erigiendo estructuras mineras. Los "
+"puntos de construcción (BP) se recuperan lentamente cuando se pierde un "
+"elemento construible."
 
 #: ui/server_setup.rml:171
 msgid "Mining mode options"
-msgstr ""
+msgstr "Opciones del modo de minería"
 
 #: ui/server_setup.rml:174
 msgid "Miner bonus"
@@ -2597,15 +2615,17 @@ msgstr "La velocidad inicial a la que se recuperan BP (en BP por minuto)"
 
 #: ui/server_setup.rml:190
 msgid "Half regeneration time"
-msgstr ""
+msgstr "Mitad de tiempo de regeneración"
 
 #: ui/server_setup.rml:191
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
+"La duración de espera antes de que la recuperación de la presión arterial "
+"(PB) se vuelva el doble de lenta"
 
 #: ui/server_setup.rml:199
 msgid "Bots: General"
-msgstr ""
+msgstr "Bots: General"
 
 #: ui/server_setup.rml:202
 msgid "Minimum bots per team"
@@ -2621,111 +2641,111 @@ msgstr "bots"
 
 #: ui/server_setup.rml:210
 msgid "Default skill level"
-msgstr ""
+msgstr "Nivel de habilidad predeterminado"
 
 #: ui/server_setup.rml:211
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Solo funciona para bots nuevos."
 
 #: ui/server_setup.rml:216
 msgid "Humanity"
-msgstr ""
+msgstr "Humanidad"
 
 #: ui/server_setup.rml:219
 msgid "Field of view"
-msgstr ""
+msgstr "Campo de visión"
 
 #: ui/server_setup.rml:227
 msgid "Reaction time"
-msgstr ""
+msgstr "Tiempo de reacción"
 
 #: ui/server_setup.rml:234
 msgid "Behaviour"
-msgstr ""
+msgstr "Comportamiento"
 
 #: ui/server_setup.rml:237
 msgid "Attack structures"
-msgstr ""
+msgstr "Atacar estructuras"
 
 #: ui/server_setup.rml:239
 msgid "Cheating"
-msgstr ""
+msgstr "Infiel"
 
 #: ui/server_setup.rml:242
 msgid "Infinite funds"
-msgstr ""
+msgstr "Fondos infinitos"
 
 #: ui/server_setup.rml:246
 msgid "Ignore momentum"
-msgstr ""
+msgstr "Ignorar impulso"
 
 #: ui/server_setup.rml:248
 msgid "Navmesh generation"
-msgstr ""
+msgstr "Generación de NavMesh"
 
 #: ui/server_setup.rml:251
 msgid "Generate navmeshes at load time"
-msgstr ""
+msgstr "Generar navmeshes en el momento de la carga"
 
 #: ui/server_setup.rml:255
 msgid "Number of worker threads"
-msgstr ""
+msgstr "Número de hilos del trabajador"
 
 #: ui/server_setup.rml:263
 msgid "Bots: Humans"
-msgstr ""
+msgstr "Bots: Humanos"
 
 #: ui/server_setup.rml:264 ui/server_setup.rml:349
 msgid "Overall"
-msgstr ""
+msgstr "En general"
 
 #: ui/server_setup.rml:267
 msgid "Human bots purchase equipment"
-msgstr ""
+msgstr "Bots humanos compran equipamiento"
 
 #: ui/server_setup.rml:271 ui/server_setup.rml:356
 msgid "Aim speed modifier (higher is slower)"
-msgstr ""
+msgstr "Modificador de velocidad de apuntado (más alto implica mayor lentitud)"
 
 #: ui/server_setup.rml:277 ui/server_setup.rml:363
 msgid "Individually"
-msgstr ""
+msgstr "Individualmente"
 
 #: ui/server_setup.rml:278
 msgid "Primary Weapons"
-msgstr ""
+msgstr "Armas Primarias"
 
 #: ui/server_setup.rml:281
 msgid "Construction Kit (repairs)"
-msgstr ""
+msgstr "Kit de Construcción (reparar)"
 
 #: ui/server_setup.rml:289 configs/weapon/psaw.attr.cfg:1
 msgid "Painsaw"
-msgstr ""
+msgstr "Motosierra del dolor"
 
 #: ui/server_setup.rml:309 configs/weapon/flamer.attr.cfg:1
 msgid "Flamethrower"
-msgstr ""
+msgstr "Echador de llama"
 
 #: ui/server_setup.rml:319
 msgid "Armors"
-msgstr ""
+msgstr "Armaduras"
 
 #: ui/server_setup.rml:322
 msgid "whether bots buy Light Armour"
-msgstr ""
+msgstr "si los bots compran armadura ligera"
 
 #: ui/server_setup.rml:326
 msgid "whether bots buy Medium Armour"
-msgstr ""
+msgstr "si los bots compran armadura media"
 
 #: ui/server_setup.rml:330
 msgid "whether bots buy the Battlesuit"
-msgstr ""
+msgstr "si los bots compran el traje de combate"
 
 #: ui/server_setup.rml:335 configs/upgrades/firebomb.attr.cfg:2
 msgid "Firebomb"
-msgstr ""
+msgstr "Bomba incendiaria"
 
 #: ui/server_setup.rml:339 configs/upgrades/gren.attr.cfg:2
 msgid "Grenade"
@@ -2733,19 +2753,19 @@ msgstr "Granada"
 
 #: ui/server_setup.rml:343 configs/upgrades/radar.attr.cfg:2
 msgid "Radar"
-msgstr ""
+msgstr "Radar"
 
 #: ui/server_setup.rml:352
 msgid "Alien bots morph"
-msgstr ""
+msgstr "Bots alienígenas se transforman"
 
 #: ui/server_setup.rml:374
 msgid "Advanced Marauder"
-msgstr ""
+msgstr "Merodeador avanzado"
 
 #: ui/server_setup.rml:382
 msgid "Advanced Dragoon"
-msgstr ""
+msgstr "Dragón avanzado"
 
 #: ui/shared/language_list.rml:4
 msgid "Some languages are not fully translated."
@@ -2797,6 +2817,9 @@ msgid ""
 "Sprays corrosive gas on approaching humans.\n"
 "Most effective in groups or in conjunction with a trapper."
 msgstr ""
+"Defensa de base alienígena.\n"
+"Rocía gas corrosivo sobre los humanos que se acercan.\n"
+"Resulta más eficaz en grupo o en combinación con un trampero."
 
 #: configs/buildables/arm.attr.cfg:2
 msgid "Armoury"
@@ -2808,6 +2831,9 @@ msgid ""
 "Provides equipment for sale to the human team.\n"
 "Required in order to access more advanced weapons and items."
 msgstr ""
+"Estructura de mejoras para los humanos.\n"
+"Ofrece equipamiento a la venta para el equipo humano.\n"
+"Es necesaria para acceder a armas y objetos más avanzados."
 
 #: configs/buildables/barricade.attr.cfg:2
 msgid "Barricade"
@@ -2819,6 +2845,9 @@ msgid ""
 "Absorbs large amounts of damage and obstructs movement.\n"
 "Can shrink to allow aliens to pass over it."
 msgstr ""
+"Muro alienígena viviente.\n"
+"Absorbe grandes cantidades de daño y obstaculiza el movimiento.\n"
+"Puede encogerse para permitir que los alienígenas pasen por encima."
 
 #: configs/buildables/booster.attr.cfg:2
 msgid "Booster"
@@ -2830,10 +2859,15 @@ msgid ""
 "Provides a healing aura to regenerate aliens surrounding it.\n"
 "Contact with the booster provides temporary poison to alien attacks."
 msgstr ""
+"Estructura de apoyo para alienígenas.\n"
+"Genera un aura curativa que regenera a los alienígenas que se encuentran a "
+"su alrededor.\n"
+"El contacto con este potenciador confiere un efecto de veneno temporal a los "
+"ataques de los alienígenas."
 
 #: configs/buildables/drill.attr.cfg:2
 msgid "Drill"
-msgstr ""
+msgstr "Perforadora"
 
 #: configs/buildables/drill.attr.cfg:3
 msgid ""
@@ -2841,6 +2875,9 @@ msgid ""
 "Generates build points for human expansion.\n"
 "Must be spaced out for optimal extraction."
 msgstr ""
+"Estructura de extracción humana.\n"
+"Genera puntos de construcción para la expansión humana.\n"
+"Debe estar espaciada para una extracción óptima."
 
 #: configs/buildables/eggpod.attr.cfg:2
 msgid "Egg"
@@ -2852,6 +2889,9 @@ msgid ""
 "Building more will reduce the spawn queue.\n"
 "If all are destroyed, new aliens cannot spawn."
 msgstr ""
+"Estructura de engendro alienígena.\n"
+"Construir más reducirá la cola de engendro.\n"
+"Si todos son destruidos, no podrán desovar alienígenas nuevos."
 
 #: configs/buildables/hive.attr.cfg:2
 msgid "Hive"
@@ -2863,10 +2903,14 @@ msgid ""
 "Launches a swarm of angry, buzzing aliens.\n"
 "The swarm will chase and severely damage approaching humans."
 msgstr ""
+"Estructura defensiva alienígena.\n"
+"Lanza un enjambre de alienígenas furiosos y zumbantes.\n"
+"El enjambre perseguirá a los humanos que se acerquen y les infligirá daños "
+"graves."
 
 #: configs/buildables/leech.attr.cfg:2
 msgid "Leech"
-msgstr ""
+msgstr "Sanguijuela"
 
 #: configs/buildables/leech.attr.cfg:3
 msgid ""
@@ -2874,6 +2918,9 @@ msgid ""
 "Generates build points for alien expansion.\n"
 "Must be spaced out for optimal extraction."
 msgstr ""
+"Estructura de extracción alienígena.\n"
+"Genera puntos de construcción para la expansión alienígena.\n"
+"Debe estar espaciada para lograr una extracción óptima."
 
 #: configs/buildables/medistat.attr.cfg:2
 msgid "Medistation"
@@ -2885,6 +2932,10 @@ msgid ""
 "Heals the health and stamina of one human standing on it.\n"
 "Provides medkits to be used in the field."
 msgstr ""
+"Estructura de apoyo para humanos.\n"
+"Restaura la salud y la resistencia de un humano que se encuentre sobre "
+"ella.\n"
+"Proporciona botiquines para su uso en el terreno."
 
 #: configs/buildables/mgturret.attr.cfg:2 configs/weapon/mgturret.attr.cfg:1
 msgid "Machinegun Turret"
@@ -2895,6 +2946,9 @@ msgid ""
 "Automated defense structure.\n"
 "Deals reliable damage at close range with an automated machine gun."
 msgstr ""
+"Estructura defensiva automatizada.\n"
+"Inflige daño constante a corta distancia mediante una ametralladora "
+"automatizada."
 
 #: configs/buildables/overmind.attr.cfg:2
 msgid "Overmind"
@@ -2906,6 +2960,9 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the alien advance."
 msgstr ""
+"Estructura alienígena crucial.\n"
+"Permite adquirir mejoras y construir estructuras.\n"
+"Su destrucción ralentiza el avance alienígena."
 
 #: configs/buildables/reactor.attr.cfg:2
 msgid "Reactor"
@@ -2917,10 +2974,13 @@ msgid ""
 "Allows for upgrades to be purchased and structures to be built.\n"
 "Destruction slows the human advance."
 msgstr ""
+"Estructura humana fundamental.\n"
+"Permite adquirir mejoras y construir estructuras.\n"
+"Su destrucción ralentiza el avance humano."
 
 #: configs/buildables/rocketpod.attr.cfg:2 configs/weapon/rocketpod.attr.cfg:1
 msgid "Rocket Pod"
-msgstr ""
+msgstr "Módulo de cohetes"
 
 #: configs/buildables/rocketpod.attr.cfg:3
 msgid ""
@@ -2928,10 +2988,14 @@ msgid ""
 "Shoots tracking missiles that deal high damage at a large range.\n"
 "Won't shoot if it could damage itself or humans and their equipment."
 msgstr ""
+"Estructura defensiva automatizada.\n"
+"Dispara misiles teledirigidos que infligen un gran daño a larga distancia.\n"
+"No dispara si existe el riesgo de dañarse a sí misma, a seres humanos o al "
+"equipamiento de estos."
 
 #: configs/buildables/spiker.attr.cfg:2
 msgid "Spiker"
-msgstr ""
+msgstr "Rematador"
 
 #: configs/buildables/spiker.attr.cfg:3
 msgid ""
@@ -2940,6 +3004,10 @@ msgid ""
 "Will weigh the risk of hurting friendly units against the odds of hurting "
 "enemies."
 msgstr ""
+"Defensa de base alienígena.\n"
+"Lanza una ráfaga de púas contra los enemigos que se acercan.\n"
+"Evalúa el riesgo de dañar a unidades aliadas frente a la probabilidad de "
+"dañar a los enemigos."
 
 #: configs/buildables/telenode.attr.cfg:2
 msgid "Telenode"
@@ -2951,6 +3019,9 @@ msgid ""
 "Building more will reduce the spawn queue.\n"
 "If all are destroyed, new humans cannot spawn."
 msgstr ""
+"Estructura de aparición de humanos.\n"
+"Construir más reducirá la cola de aparición.\n"
+"Si todas son destruidas, no podrán aparecer nuevos humanos."
 
 #: configs/buildables/trapper.attr.cfg:2
 msgid "Trapper"
@@ -2962,6 +3033,9 @@ msgid ""
 "Does not deal damage, but traps humans with a sticky blob.\n"
 "Must be built on walls or ceilings for full effect."
 msgstr ""
+"Estructura defensiva alienígena.\n"
+"No inflige daño, pero atrapa a los humanos con una masa pegajosa.\n"
+"Debe construirse en paredes o techos para lograr su efecto completo."
 
 #: configs/classes/builder.attr.cfg:1
 msgid ""
@@ -2969,6 +3043,9 @@ msgid ""
 "Capable of spawning alien base structures.\n"
 "Has a weak biting attack."
 msgstr ""
+"Forma de construcción alienígena.\n"
+"Capaz de generar estructuras de base alienígena.\n"
+"Posee un ataque de mordisco débil."
 
 #: configs/classes/builderupg.attr.cfg:1
 msgid ""
